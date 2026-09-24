@@ -1,0 +1,2825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TWIN TOWN EXPRESS SERVICES PVT LTD - ERP</title>
+
+<!-- PWA & Mobile Standalone App Metadata -->
+<meta name="theme-color" content="#0f3d6c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TTESPL ERP">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/9422/9422891.png">
+
+<!-- Inline Embedded PWA Web Manifest -->
+<link rel="manifest" href='data:application/manifest+json,{"name":"Twin Town Express Services ERP","short_name":"TTESPL ERP","start_url":".","display":"standalone","background_color":"%230f3d6c","theme_color":"%230f3d6c","orientation":"portrait","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"192x192","type":"image/png"},{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"512x512","type":"image/png"}]}'>
+
+<!-- SheetJS (xlsx) for Excel / CSV Imports -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+  :root {
+    --primary: #0f3d6c;
+    --primary-dark: #0a2544;
+    --accent: #d9531e;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --text: #111827;
+    --text-muted: #64748b;
+    --border: #cbd5e1;
+    --success: #15803d;
+    --success-bg: #dcfce7;
+    --warning: #b45309;
+    --warning-bg: #fef3c7;
+    --danger: #b91c1c;
+    --danger-bg: #fee2e2;
+    --wa-color: #25D366;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  body { background: var(--bg); color: var(--text); padding-bottom: 74px; }
+
+  /* Cloud Sync Status Indicator */
+  .sync-badge {
+    font-size: 10px; padding: 2px 7px; border-radius: 12px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); color: #fff;
+  }
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
+  .sync-dot.offline { background: #f87171; }
+
+  /* Audit Log Box Styles */
+  .audit-log-box {
+    background: #f8fafc; border-top: 1px dashed var(--border); padding: 6px 8px;
+    margin-top: 6px; border-radius: 4px; font-size: 10px; color: var(--text-muted);
+  }
+  .audit-item { margin-bottom: 2px; }
+
+  /* Auth Screens */
+  .auth-overlay {
+    position: fixed; inset: 0; background: rgba(10, 37, 68, 0.96);
+    display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 16px;
+  }
+  .auth-card {
+    background: white; border-radius: 14px; width: 100%; max-width: 440px; padding: 22px;
+    box-shadow: 0 16px 36px rgba(0,0,0,0.35); max-height: 94vh; overflow-y: auto;
+  }
+  .auth-brand { text-align: center; margin-bottom: 16px; }
+  .auth-brand h2 { font-size: 16px; color: var(--primary); font-weight: 800; line-height: 1.2; }
+  .auth-brand span { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white; padding: 12px 14px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center;
+  }
+  .brand-title { font-size: 14px; font-weight: 800; letter-spacing: 0.2px; line-height: 1.2; }
+  .user-badge {
+    background: rgba(255,255,255,0.18); font-size: 11px; padding: 4px 8px; border-radius: 16px;
+    display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.25);
+  }
+
+  /* Daily Global Reminder Banner */
+  .daily-reminder-banner {
+    background: #fffbeb; border-bottom: 1.5px solid #fde68a; padding: 8px 14px; font-size: 11.5px;
+    color: #92400e; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+
+  /* Navigation */
+  .nav-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; background: white;
+    display: flex; border-top: 1px solid var(--border); z-index: 100;
+  }
+  .nav-item {
+    flex: 1; padding: 7px 2px; text-align: center; font-size: 10px; color: var(--text-muted);
+    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; font-weight: 600;
+  }
+  .nav-item.active { color: var(--accent); }
+  .nav-icon { font-size: 16px; }
+
+  /* Containers */
+  .container { max-width: 860px; margin: 0 auto; padding: 12px; }
+  .view-panel { display: none; }
+  .view-panel.active { display: block; animation: fadeIn 0.15s ease-in; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* Cards */
+  .card {
+    background: white; border-radius: var(--radius); padding: 14px; margin-bottom: 12px;
+    border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9; padding-bottom: 6px;
+  }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--primary); }
+
+  /* Badges */
+  .badge { padding: 3px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 700; display: inline-block; }
+  .badge-pending { background: var(--warning-bg); color: var(--warning); }
+  .badge-delivered { background: var(--success-bg); color: var(--success); }
+  .badge-danger { background: var(--danger-bg); color: var(--danger); }
+  .badge-info { background: #e0f2fe; color: #0284c7; }
+  .badge-today { background: #fef08a; color: #854d0e; font-weight: 800; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
+  /* Forms */
+  .form-group { margin-bottom: 10px; }
+  .form-label { display: block; font-size: 11.5px; font-weight: 600; margin-bottom: 3px; color: #334155; }
+  .form-control {
+    width: 100%; padding: 8px 10px; border: 1.2px solid var(--border); border-radius: 7px;
+    font-size: 13px; outline: none; background: white;
+  }
+  .form-control:focus { border-color: var(--primary); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+    padding: 8px 12px; border-radius: 7px; font-size: 12px; font-weight: 700;
+    border: none; cursor: pointer; text-decoration: none;
+  }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-accent { background: var(--accent); color: white; }
+  .btn-wa { background: #25D366; color: white; }
+  .btn-excel { background: #107c41; color: white; }
+  .btn-print { background: #475569; color: white; }
+  .btn-sm { padding: 4px 8px; font-size: 11px; }
+  .btn-outline { background: transparent; border: 1.2px solid var(--border); color: #475569; }
+  .btn-danger-sm { background: var(--danger-bg); color: var(--danger); padding: 2px 6px; border: 1px solid #fca5a5; }
+  .btn-block { width: 100%; }
+
+  .items-table { width: 100%; border-collapse: collapse; margin: 6px 0; }
+  .items-table th { background: #f8fafc; padding: 6px; font-size: 11px; text-align: left; color: #475569; }
+  .items-table td { padding: 5px 4px; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
+
+  /* Sub-tabs */
+  .sub-tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1.5px solid var(--border); padding-bottom: 6px; }
+  .sub-tab-btn { padding: 5px 12px; font-size: 12px; font-weight: 700; border: none; background: #e2e8f0; border-radius: 6px; cursor: pointer; }
+  .sub-tab-btn.active { background: var(--primary); color: white; }
+
+  /* Printable A4 GST Tax Invoice Styles */
+  @media print {
+    body * { visibility: hidden; }
+    #printableInvoiceArea, #printableInvoiceArea * { visibility: visible; }
+    #printableInvoiceArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; }
+    .no-print { display: none !important; }
+  }
+  .invoice-box { border: 1.5px solid #0f3d6c; padding: 18px; border-radius: 8px; background: white; color: #111827; font-size: 12px; }
+  .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0f3d6c; padding-bottom: 8px; }
+  .inv-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 11.5px; }
+  .inv-table th, .inv-table td { border: 1px solid #cbd5e1; padding: 6px; text-align: left; }
+  .inv-table th { background: #f1f5f9; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- Hidden File Input for Excel/CSV Import -->
+<input type="file" id="bulkExcelFileInput" style="display:none;" accept=".xlsx, .xls, .csv" onchange="processSelectedExcelFile(event)">
+
+<!-- ================= AUTH SYSTEM ================= -->
+<div id="authScreen" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <h2>TWIN TOWN EXPRESS SERVICES PVT LTD</h2>
+      <span>Authorised Detailing & Machinery Portal</span>
+    </div>
+
+    <!-- 1. LOGIN FORM -->
+    <div id="loginFormSection">
+      <div class="form-group">
+        <label class="form-label">Registered Mobile Number</label>
+        <input type="tel" id="loginPhone" class="form-control" placeholder="10-digit mobile number" maxlength="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="loginPass" class="form-control" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary btn-block" onclick="processLogin()" style="margin-top:10px;">🔐 Secure Login</button>
+      
+      <div style="display:flex; justify-content:space-between; margin-top:14px; font-size:12px;">
+        <a href="javascript:void(0)" onclick="showAuthMode('forgot')" style="color:var(--danger); text-decoration:none; font-weight:600;">Forgot Password?</a>
+        <a href="javascript:void(0)" onclick="showAuthMode('register')" style="color:var(--primary); text-decoration:none; font-weight:600;">+ Create New Account</a>
+      </div>
+    </div>
+
+    <!-- 2. REGISTER FORM -->
+    <div id="registerFormSection" style="display:none;">
+      <div style="font-size:13.5px; font-weight:700; color:var(--primary); margin-bottom:10px;">Staff Registration</div>
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="regName" class="form-control" placeholder="e.g. Ramesh Kumar">
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Mobile Number</label>
+          <input type="tel" id="regPhone" class="form-control" placeholder="10-digit phone" maxlength="10">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select id="regRole" class="form-control">
+            <option value="Machinery Specialist">Machinery Lead</option>
+            <option value="Field Technician">Field Technician</option>
+            <option value="Sales & Support">Sales & Support</option>
+            <option value="Store Manager">Store / Inventory</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Create Password</label>
+        <input type="password" id="regPass" class="form-control" placeholder="Min 4 characters">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Security PIN (For Password Reset)</label>
+        <input type="password" id="regPin" class="form-control" placeholder="4-digit PIN (e.g. 1234)" maxlength="4">
+      </div>
+      <button class="btn btn-accent btn-block" onclick="processRegister()">✓ Register Account</button>
+      <div style="text-align:center; margin-top:12px; font-size:12px;">
+        <a href="javascript:void(0)" onclick="showAuthMode('login')" style="color:var(--primary); text-decoration:none; font-weight:600;">Back to Login</a>
+      </div>
+    </div>
+
+    <!-- 3. FORGOT PASSWORD FORM -->
+    <div id="forgotFormSection" style="display:none;">
+      <div style="font-size:13.5px; font-weight:700; color:var(--danger); margin-bottom:10px;">Reset Password</div>
+      <div class="form-group">
+        <label class="form-label">Mobile Number</label>
+        <input type="tel" id="recPhone" class="form-control" placeholder="Registered 10-digit mobile">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Security PIN</label>
+        <input type="password" id="recPin" class="form-control" placeholder="4-digit PIN" maxlength="4">
+      </div>
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" id="recNewPass" class="form-control" placeholder="Enter New Password">
+      </div>
+      <button class="btn btn-primary btn-block" onclick="processPasswordReset()">Update Password</button>
+      <div style="text-align:center; margin-top:12px; font-size:12px;">
+        <a href="javascript:void(0)" onclick="showAuthMode('login')" style="color:var(--text-muted); text-decoration:none;">Back to Login</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= MAIN APP UI ================= -->
+<div id="mainAppWrapper">
+
+  <!-- Global Daily Work Reminder Alert -->
+  <div class="daily-reminder-banner" id="dailyReminderBanner">
+    <div>
+      <strong>📅 TODAY'S SCHEDULE:</strong>
+      <span id="dailyReminderText">Checking schedules...</span>
+    </div>
+    <button class="btn btn-outline btn-sm" style="padding:2px 6px; font-size:10px;" onclick="document.getElementById('dailyReminderBanner').style.display='none'">✕</button>
+  </div>
+
+  <!-- TOP HEADER -->
+  <header>
+    <div>
+      <div class="brand-title">TWIN TOWN EXPRESS SERVICES</div>
+      <div style="font-size:10px; opacity:0.85;">TTESPL — Rasulgarh, BBSR</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:6px;">
+      <!-- PWA Install Prompt Button (Auto-appears on mobile/desktop) -->
+      <button class="btn btn-sm btn-accent" id="pwaInstallBtn" style="display:none; padding:3px 8px; font-size:10.5px;" onclick="triggerPWAInstall()">📲 Install App</button>
+      
+      <div class="sync-badge" id="cloudSyncStatus">
+        <span class="sync-dot" id="syncDot"></span> <span id="syncText">Connecting...</span>
+      </div>
+      <div class="user-badge">
+        <span>👤</span> <strong id="activeStaffDisplay">Staff</strong>
+      </div>
+      <button class="btn btn-outline btn-sm" style="color:white; border-color:rgba(255,255,255,0.3); padding:2px 6px;" onclick="performFullLogout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ================= TAB 1: LEADS ================= -->
+    <div id="view-leads" class="view-panel active">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div>
+          <h2 style="font-size:15px;">🎯 Machine Leads & Installations</h2>
+          <div style="font-size:11px; color:var(--text-muted);">Inquiry, Follow-up & 4 Free Service Timelines</div>
+        </div>
+        <button class="btn btn-accent btn-sm" onclick="openLeadModal()">+ New Lead</button>
+      </div>
+
+      <div id="leadsListContainer"></div>
+    </div>
+
+    <!-- ================= TAB 2: ORDERS ================= -->
+    <div id="view-orders" class="view-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div>
+          <h2 style="font-size:15px;">📦 Product & Chemical Orders</h2>
+          <div style="font-size:11px; color:var(--text-muted);">Stock validation, invoices & WhatsApp slips</div>
+        </div>
+        <button class="btn btn-accent btn-sm" onclick="openOrderModal()">+ New Order</button>
+      </div>
+
+      <div id="ordersListContainer"></div>
+    </div>
+
+    <!-- ================= TAB 3: SERVICES ================= -->
+    <div id="view-services" class="view-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div>
+          <h2 style="font-size:15px;">🛠️ Service Call & Machine Repair</h2>
+          <div style="font-size:11px; color:var(--text-muted);">Service logs, delay monitoring & auto stock debit</div>
+        </div>
+        <button class="btn btn-accent btn-sm" onclick="openServiceCallModal()">+ New Service Call</button>
+      </div>
+
+      <div id="serviceListContainer"></div>
+    </div>
+
+    <!-- ================= TAB 4: INVENTORY & CUSTOMER DIRECTORY ================= -->
+    <div id="view-inventory" class="view-panel">
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active" id="subTabStockBtn" onclick="switchInventorySubTab('stock')">📦 Spares & Stock</button>
+        <button class="sub-tab-btn" id="subTabCustBtn" onclick="switchInventorySubTab('customer')">👥 Customer Directory (4000+)</button>
+      </div>
+
+      <!-- SUB-TAB 1: STOCK MANAGEMENT -->
+      <div id="invSubPanelStock">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+          <span class="badge badge-delivered" id="totalPartsBadge">0 Items</span>
+          <div style="display:flex; gap:5px;">
+            <button class="btn btn-outline btn-sm" onclick="downloadSampleStockExcel()">📥 Sample Excel</button>
+            <button class="btn btn-excel btn-sm" onclick="triggerExcelImport('INVENTORY')">📤 Import Excel / CSV</button>
+            <button class="btn btn-accent btn-sm" onclick="openAddPartModal()">+ Add Item</button>
+          </div>
+        </div>
+        <input type="text" id="stockFilterInput" class="form-control" placeholder="🔍 Instant search part by name, code or category..." oninput="filterStockList(this.value)" style="margin-bottom:10px;">
+        <div id="stockListContainer"></div>
+      </div>
+
+      <!-- SUB-TAB 2: CUSTOMERS DIRECTORY -->
+      <div id="invSubPanelCustomer" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+          <span class="badge badge-info" id="totalCustBadge">Registered Clients</span>
+          <div style="display:flex; gap:5px;">
+            <button class="btn btn-outline btn-sm" onclick="downloadSampleCustExcel()">📥 Sample Excel</button>
+            <button class="btn btn-excel btn-sm" onclick="triggerExcelImport('CUSTOMERS')">📤 Import Excel / CSV</button>
+            <button class="btn btn-outline btn-sm" onclick="exportCustomersCSV()">📥 Export CSV</button>
+            <button class="btn btn-primary btn-sm" onclick="openAddCustomerModal()">+ Register Client</button>
+          </div>
+        </div>
+        <input type="text" id="custFilterInput" class="form-control" placeholder="🔍 Search among 4000+ customers by Name, Phone, GST, City..." oninput="filterCustomerList(this.value)" style="margin-bottom:10px;">
+        <div id="customerListContainer"></div>
+      </div>
+    </div>
+
+    <!-- ================= TAB 5: BILLING & LEDGER ================= -->
+    <div id="view-billing" class="view-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h2 style="font-size:15px;">📑 Billing & Ledger</h2>
+        <div style="display:flex; gap:4px;">
+          <button class="btn btn-accent btn-sm" onclick="openDailyCashClosingModal()">💰 Daily Cash Closing</button>
+          <button class="btn btn-outline btn-sm" onclick="exportLedgerCSV()">📥 CSV</button>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:10px;">
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:8px; border-top:3px solid var(--primary);" onclick="filterBilling('all')">
+          <div style="font-size:10px; color:var(--text-muted); font-weight:700;">TOTAL BILLED</div>
+          <div style="font-size:15px; font-weight:800; color:var(--primary);" id="metricTotalBilled">₹0</div>
+        </div>
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:8px; border-top:3px solid var(--success);" onclick="filterBilling('received')">
+          <div style="font-size:10px; color:var(--text-muted); font-weight:700;">RECEIVED</div>
+          <div style="font-size:15px; font-weight:800; color:var(--success);" id="metricTotalRecv">₹0</div>
+        </div>
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:8px; border-top:3px solid var(--danger); background:#fff5f5;" onclick="filterBilling('due')">
+          <div style="font-size:10px; color:var(--danger); font-weight:700;">DUE REMAINING</div>
+          <div style="font-size:15px; font-weight:800; color:var(--danger);" id="metricTotalDue">₹0</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:10px; background:#f8fafc; margin-bottom:10px;">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label" style="color:var(--danger); font-weight:700;">👤 Filter Due Amount by Assigned Staff:</label>
+          <select id="billingEmployeeFilter" class="form-control" onchange="filterBillingByEmployee(this.value)">
+            <option value="ALL">All Staff Combined</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="billingFilterTitle" style="font-size:12.5px; font-weight:700; margin-bottom:8px; color:var(--primary);">
+        Showing Invoices
+      </div>
+      <div id="billingListContainer"></div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <div class="nav-bar">
+    <div class="nav-item active" onclick="switchTab('leads', this)">
+      <div class="nav-icon">🎯</div>
+      <span>Leads</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('orders', this)">
+      <div class="nav-icon">📦</div>
+      <span>Orders</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('services', this)">
+      <div class="nav-icon">🛠️</div>
+      <span>Services</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('inventory', this)">
+      <div class="nav-icon">📊</div>
+      <span>Stock/Clients</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('billing', this)">
+      <div class="nav-icon">📑</div>
+      <span>Ledger</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= MODALS ================= -->
+
+<datalist id="customerDatalist"></datalist>
+<datalist id="productDatalist"></datalist>
+
+<!-- 1. LEAD MODAL -->
+<div id="leadModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title" id="leadModalTitle">Machine Inquiry & Lead</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeLeadModal()">✕</button>
+    </div>
+    <input type="hidden" id="editLeadId">
+    
+    <div class="form-group">
+      <label class="form-label">🔍 Type Customer Name or Phone (Instant Filter 4000+):</label>
+      <input type="text" id="leadCustSearchInput" class="form-control" list="customerDatalist" placeholder="Type name or phone...">
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Inquiry Date</label>
+        <input type="date" id="leadInqDate" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Handled By</label>
+        <select id="leadStaffSelect" class="form-control emp-dropdown"></select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Machine Inquired</label>
+        <input type="text" id="leadMachine" class="form-control" placeholder="e.g. AR Triplex 200 Bar">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quoted Price (₹)</label>
+        <input type="number" id="leadPrice" class="form-control" placeholder="85000">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Next Follow-up Date</label>
+      <input type="date" id="leadFollowupDate" class="form-control">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Discussion Remarks</label>
+      <textarea id="leadRemarks" class="form-control" rows="2" placeholder="Discussion notes..."></textarea>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveLeadAction()">💾 Save Machine Lead</button>
+  </div>
+</div>
+
+<!-- 2. INSTALLATION MODAL -->
+<div id="installationModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title">⚙️ Machine Installation & Warranty</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeInstallModal()">✕</button>
+    </div>
+    <div id="insCustHeading" style="font-size:12px; font-weight:bold; color:var(--primary); margin-bottom:8px;"></div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Installation Date</label>
+        <input type="date" id="insDate" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Final Price (₹)</label>
+        <input type="number" id="insFinalPrice" class="form-control">
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="form-group">
+        <label class="form-label">Machine S/N</label>
+        <input type="text" id="insMachSN" class="form-control" placeholder="SN-2026-09">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pump S/N</label>
+        <input type="text" id="insPumpSN" class="form-control" placeholder="AR-9812">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Invoice No</label>
+        <input type="text" id="insInvNo" class="form-control" placeholder="TTESPL/26/092">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveInstallationAction()">✓ Confirm & Schedule 4 Free Services</button>
+  </div>
+</div>
+
+<!-- 3. ATTEND FREE SERVICE MODAL -->
+<div id="attendFreeServiceModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title">🛠️ Attend Free Service Record</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeAttendModal()">✕</button>
+    </div>
+    <div id="freeSrvHeading" style="font-size:12px; font-weight:bold; color:var(--primary); margin-bottom:8px;"></div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Actual Attended Date</label>
+        <input type="date" id="freeSrvActDate" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Attended Engineer</label>
+        <select id="freeSrvStaff" class="form-control emp-dropdown"></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Action Taken / Service Summary</label>
+      <textarea id="freeSrvAction" class="form-control" rows="2" placeholder="Replaced oil, calibrated pressure..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Spare Parts Replaced (If Any)</label>
+      <input type="text" id="freeSrvParts" class="form-control" placeholder="1L HPW Oil, 1x Seal kit">
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveFreeServiceAction()">Save Free Service Slip</button>
+  </div>
+</div>
+
+<!-- 4. ORDER MODAL -->
+<div id="orderModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card" style="max-width:560px;">
+    <div class="card-header">
+      <strong class="card-title" id="orderModalTitle">Multi-Item Product Order</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeOrderModal()">✕</button>
+    </div>
+    <input type="hidden" id="editOrderId">
+    
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">🔍 Customer (Instant Search):</label>
+        <input type="text" id="ordCustSearchInput" class="form-control" list="customerDatalist" placeholder="Type customer name/phone...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Order Booked By</label>
+        <select id="ordStaffSelect" class="form-control emp-dropdown"></select>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Order Date</label>
+        <input type="date" id="ordDate" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Expected Delivery Date</label>
+        <input type="date" id="ordDelDate" class="form-control">
+      </div>
+    </div>
+
+    <label class="form-label">Order Items (Search Direct from Stock):</label>
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Product / Chemical Item</th>
+          <th style="width:65px;">Qty</th>
+          <th style="width:75px;">Rate (₹)</th>
+          <th style="width:70px;">Total</th>
+          <th style="width:25px;"></th>
+        </tr>
+      </thead>
+      <tbody id="orderItemsTbody"></tbody>
+    </table>
+    <button class="btn btn-outline btn-sm" onclick="addOrderItemRow()" style="margin-bottom:8px;">+ Add Product Item</button>
+
+    <div class="grid-3" style="background:#f8fafc; padding:8px; border-radius:6px; margin-bottom:8px;">
+      <div>
+        <label class="form-label">Total Bill</label>
+        <input type="number" id="ordTotalAmt" class="form-control" readonly style="font-weight:bold;">
+      </div>
+      <div>
+        <label class="form-label">Received (₹)</label>
+        <input type="number" id="ordRecvAmt" class="form-control" value="0" oninput="calcOrderBalance()">
+      </div>
+      <div>
+        <label class="form-label">Due (₹)</label>
+        <input type="number" id="ordDueAmt" class="form-control" readonly style="font-weight:bold; color:var(--danger);">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Payment Mode Collected:</label>
+      <select id="ordPayMode" class="form-control">
+        <option value="Cash">💵 Cash</option>
+        <option value="UPI / QR Code">📱 UPI / QR Code (GooglePay/PhonePe)</option>
+        <option value="Net Banking / NEFT">🏦 Net Banking / NEFT / RTGS</option>
+        <option value="Cheque">📜 Cheque</option>
+        <option value="Not Paid / Full Due">⏳ Not Paid / Full Due</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary btn-block" onclick="saveOrderAction()">💾 Save Order & Generate Invoice</button>
+  </div>
+</div>
+
+<!-- 5. SERVICE CALL MODAL -->
+<div id="serviceModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card" style="max-width:520px;">
+    <div class="card-header">
+      <strong class="card-title" id="serviceModalTitle">Service & Repair Record</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeServiceModal()">✕</button>
+    </div>
+    <input type="hidden" id="editServiceId">
+    
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">🔍 Select Customer:</label>
+        <input type="text" id="srvCustSearchInput" class="form-control" list="customerDatalist" placeholder="Type customer name...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Attended Engineer</label>
+        <select id="srvStaffSelect" class="form-control emp-dropdown"></select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Machine Model</label>
+        <input type="text" id="srvMachine" class="form-control" placeholder="AR Pump 15.20 / Compressor">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Call Received Date</label>
+        <input type="date" id="srvRecvDate" class="form-control">
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Target Service Date</label>
+        <input type="date" id="srvTargetDate" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Service Status</label>
+        <select id="srvStatusSelect" class="form-control" onchange="toggleServiceCompletionFields(this.value)">
+          <option value="Pending / Scheduled">Pending / Scheduled</option>
+          <option value="Work Completed">Work Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Reported Issue / Symptoms</label>
+      <textarea id="srvProblem" class="form-control" rows="2" placeholder="Symptoms..."></textarea>
+    </div>
+
+    <div id="srvCompletedFields" style="display:none; background:#f0fdf4; border:1px solid #bbf7d0; padding:8px; border-radius:6px; margin-bottom:8px;">
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Completion Date</label>
+          <input type="date" id="srvDoneDate" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Part Used (Stock Deducted)</label>
+          <input type="text" id="srvPartSearchInput" class="form-control" list="productDatalist" placeholder="Search replaced part...">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Action Taken & Root Cause</label>
+        <input type="text" id="srvActionDone" class="form-control" placeholder="Replaced ceramic plunger & valve seals">
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-block" onclick="saveServiceAction()">💾 Save Service Call</button>
+  </div>
+</div>
+
+<!-- 6. STOCK ITEM MODAL -->
+<div id="stockItemModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title" id="stockModalTitle">Inventory Item</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeStockModal()">✕</button>
+    </div>
+    <input type="hidden" id="editStockId">
+    <div class="form-group">
+      <label class="form-label">Part / Product Name</label>
+      <input type="text" id="stkName" class="form-control" placeholder="e.g. AR Pump Ceramic Plunger 18mm">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Part / SKU Code</label>
+        <input type="text" id="stkCode" class="form-control" placeholder="AR-PL-18">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select id="stkCategory" class="form-control">
+          <option value="Pump Spares">Pump Spares</option>
+          <option value="Chemicals">Chemicals</option>
+          <option value="Compressor Spares">Compressor Spares</option>
+          <option value="Accessories">Accessories</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Current Stock (Qty)</label>
+        <input type="number" id="stkQty" class="form-control" value="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Unit Rate (₹)</label>
+        <input type="number" id="stkRate" class="form-control" value="1500">
+      </div>
+    </div>
+    <button class="btn btn-accent btn-block" onclick="saveStockItemAction()">💾 Save Item</button>
+  </div>
+</div>
+
+<!-- 7. CUSTOMER PROFILE MODAL -->
+<div id="customerModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title" id="custModalTitle">Customer Profile</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeCustomerModal()">✕</button>
+    </div>
+    <input type="hidden" id="editCustId">
+    <div class="form-group">
+      <label class="form-label">Customer / Studio / Garage Name</label>
+      <input type="text" id="cName" class="form-control" placeholder="e.g. Jagannath Detailing Studio">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" id="cPhone" class="form-control" placeholder="10-digit number" maxlength="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email ID</label>
+        <input type="email" id="cEmail" class="form-control" placeholder="client@gmail.com">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Workshop / Garage Address</label>
+      <input type="text" id="cAddress" class="form-control" placeholder="Plot No, Street, City, Odisha">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">GST Number (Optional)</label>
+        <input type="text" id="cGst" class="form-control" placeholder="21AAAAA0000A1Z5">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contact Person Name</label>
+        <input type="text" id="cPerson" class="form-control" placeholder="Owner / Manager">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveCustomerAction()">💾 Save Customer Profile</button>
+  </div>
+</div>
+
+<!-- ================= 8. DAILY CASH CLOSING MODAL ================= -->
+<div id="cashClosingModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card" style="max-width:540px;">
+    <div class="card-header">
+      <strong class="card-title">💰 Daily Shift & Cash Closing Summary</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeDailyCashClosingModal()">✕</button>
+    </div>
+    
+    <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">
+      Date: <strong id="closeSummaryDate">Today</strong> | Verified By: <strong id="closeSummaryStaff">Staff</strong>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:12px;">
+      <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:8px; border-radius:6px; text-align:center;">
+        <div style="font-size:10px; color:#166534; font-weight:700;">CASH COLLECTED</div>
+        <div style="font-size:16px; font-weight:800; color:#15803d;" id="closeCashAmt">₹0</div>
+      </div>
+      <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:8px; border-radius:6px; text-align:center;">
+        <div style="font-size:10px; color:#1e40af; font-weight:700;">UPI / QR CODE</div>
+        <div style="font-size:16px; font-weight:800; color:#1d4ed8;" id="closeUpiAmt">₹0</div>
+      </div>
+      <div style="background:#faf5ff; border:1px solid #e9d5ff; padding:8px; border-radius:6px; text-align:center;">
+        <div style="font-size:10px; color:#6b21a8; font-weight:700;">BANK / CHEQUE</div>
+        <div style="font-size:16px; font-weight:800; color:#7e22ce;" id="closeBankAmt">₹0</div>
+      </div>
+    </div>
+
+    <div style="background:#f8fafc; border:1.2px solid #e2e8f0; border-radius:8px; padding:10px; margin-bottom:10px;">
+      <div style="font-size:11.5px; font-weight:700; color:var(--primary); margin-bottom:6px;">💵 Cash Drawer Denomination Tally (Physical Cash):</div>
+      <div class="grid-3" style="font-size:11px; row-gap:6px;">
+        <div>₹500 x <input type="number" id="note500" class="form-control" style="width:60px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹200 x <input type="number" id="note200" class="form-control" style="width:60px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹100 x <input type="number" id="note100" class="form-control" style="width:60px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹50 &nbsp;x <input type="number" id="note50" class="form-control" style="width:60px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹20 &nbsp;x <input type="number" id="note20" class="form-control" style="width:60px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹10 &nbsp;x <input type="number" id="note10" class="form-control" style="width:60px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+      </div>
+      <div style="margin-top:8px; display:flex; justify-content:space-between; font-weight:800; font-size:12px; border-top:1px dashed #cbd5e1; padding-top:4px;">
+        <span>Total Physical Cash Count:</span>
+        <span id="denomTotalDisplay" style="color:var(--primary);">₹0</span>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:6px;">
+      <button class="btn btn-wa btn-block" onclick="sendClosingSummaryWhatsApp()">💬 Send Day Close Report on WhatsApp</button>
+      <button class="btn btn-outline btn-sm" onclick="closeDailyCashClosingModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 9. GST TAX INVOICE PREVIEW & PRINT MODAL ================= -->
+<div id="invoicePrintModal" class="auth-overlay" style="display:none; z-index:3000;">
+  <div class="auth-card" style="max-width:720px; width:95%;">
+    <div class="card-header no-print">
+      <strong class="card-title">🖨️ GST Tax Invoice Preview</strong>
+      <div style="display:flex; gap:4px;">
+        <button class="btn btn-print btn-sm" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        <button class="btn btn-outline btn-sm" onclick="closeInvoicePrintModal()">✕ Close</button>
+      </div>
+    </div>
+
+    <div id="printableInvoiceArea">
+      <div class="invoice-box">
+        <div class="invoice-header">
+          <div>
+            <h2 style="color:#0f3d6c; font-size:16px; font-weight:900;">TWIN TOWN EXPRESS SERVICES PVT LTD</h2>
+            <div style="font-size:10.5px; color:#475569;">
+              Plot No: 148, Rasulgarh Industrial Estate, Bhubaneswar, Odisha - 751010<br>
+              <strong>GSTIN:</strong> 21AAACT9812K1Z9 | <strong>Email:</strong> accounts@twintownexpress.com<br>
+              <strong>Ph:</strong> +91 8917465040 / 0674-2580123
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:14px; font-weight:800; color:#d9531e;">TAX INVOICE</div>
+            <div style="font-size:11px;">Invoice No: <strong id="invPrintId">ORD-901</strong></div>
+            <div style="font-size:11px;">Date: <strong id="invPrintDate">2026-09-24</strong></div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; border-bottom:1px solid #cbd5e1; padding-bottom:8px;">
+          <div>
+            <strong style="color:#0f3d6c; font-size:11.5px;">BILLED TO / CUSTOMER:</strong>
+            <div style="font-size:12px; font-weight:700;" id="invPrintCustName">Kalinga Auto Spa</div>
+            <div style="font-size:11px;" id="invPrintCustAddress">Plot 21, Patia, Bhubaneswar</div>
+            <div style="font-size:11px;">Mobile: <span id="invPrintCustPhone">9861099881</span></div>
+            <div style="font-size:11px;">GSTIN: <strong id="invPrintCustGst">21AABCK1234F1Z1</strong></div>
+          </div>
+          <div style="text-align:right; font-size:11px;">
+            <div>Payment Mode: <strong id="invPrintPayMode">UPI</strong></div>
+            <div>Place of Supply: <strong>21-Odisha</strong></div>
+            <div>Billed By: <strong id="invPrintStaff">Dipak Rout</strong></div>
+          </div>
+        </div>
+
+        <table class="inv-table">
+          <thead>
+            <tr>
+              <th style="width:30px;">#</th>
+              <th>Description of Goods / Spares</th>
+              <th style="width:65px;">HSN/SAC</th>
+              <th style="width:40px;">Qty</th>
+              <th style="width:70px;">Rate (₹)</th>
+              <th style="width:75px;">Taxable (₹)</th>
+            </tr>
+          </thead>
+          <tbody id="invPrintItemsTbody"></tbody>
+        </table>
+
+        <div style="display:flex; justify-content:flex-end; margin-top:6px;">
+          <div style="width:260px; font-size:11.5px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
+              <span>Total Taxable Amount:</span>
+              <strong id="invPrintTaxable">₹0</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
+              <span>CGST (9%):</span>
+              <span id="invPrintCgst">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
+              <span>SGST (9%):</span>
+              <span id="invPrintSgst">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-top:1.5px solid #0f3d6c; padding-top:4px; font-size:13px; font-weight:800; color:#0f3d6c;">
+              <span>Grand Total:</span>
+              <span id="invPrintGrandTotal">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:2px;">
+              <span>Amount Received:</span>
+              <span id="invPrintRecv">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; color:#b91c1c; font-weight:700;">
+              <span>Balance Due:</span>
+              <span id="invPrintDue">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px; border-top:1px solid #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:flex-end;">
+          <div style="font-size:9.5px; color:#64748b; line-height:1.4;">
+            <strong>Declaration & Terms:</strong><br>
+            1. Goods once sold will not be taken back without original warranty seal.<br>
+            2. High-pressure machinery requires 3-phase stable voltage.
+          </div>
+          <div style="text-align:center; font-size:11px;">
+            <div style="font-weight:700; color:#0f3d6c;">For TWIN TOWN EXPRESS SERVICES PVT LTD</div>
+            <div style="height:35px;"></div>
+            <div>Authorised Signatory</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= PERSISTENT DATABASE ENGINE & CLOUD BRIDGE ================= */
+const DB_PREFIX = "TTESPL_ERP_";
+window.DB_PREFIX = DB_PREFIX;
+
+function getStored(key, defaultVal) {
+  const val = localStorage.getItem(DB_PREFIX + key);
+  return val ? JSON.parse(val) : defaultVal;
+}
+window.getStored = getStored;
+
+function setStored(key, val) {
+  localStorage.setItem(DB_PREFIX + key, JSON.stringify(val));
+  if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') {
+    window.cloudSync.pushKey(key, val);
+  }
+}
+window.setStored = setStored;
+
+let registeredEmployees = getStored("STAFF", [
+  { id: 1, name: "Dipak Rout", role: "Machinery Lead", mobile: "8917465040", pass: "1234", pin: "0000" },
+  { id: 2, name: "Sunil Mohanty", role: "Sales & Support", mobile: "9876500001", pass: "1234", pin: "0000" },
+  { id: 3, name: "Manash Jena", role: "Field Technician", mobile: "9876500002", pass: "1234", pin: "0000" },
+  { id: 4, name: "Gautam", role: "Store & Inventory", mobile: "9876500003", pass: "1234", pin: "0000" }
+]);
+window.registeredEmployees = registeredEmployees;
+
+let currentUser = getStored("SESSION_USER", null);
+
+let customerDatabase = getStored("CUSTOMERS", [
+  { id: 1, name: "Kalinga Auto Spa", person: "Ranjan Babu", phone: "9861099881", email: "kalinga.autospa@gmail.com", address: "Patia, Bhubaneswar", gst: "21AABCK1234F1Z1" },
+  { id: 2, name: "Capital Car Care", person: "Bijay Mohapatra", phone: "9437012345", email: "capitalcarcare@gmail.com", address: "Saheed Nagar, Bhubaneswar", gst: "21BBDCK5678F1Z8" },
+  { id: 3, name: "Royal Car Wash", person: "Asit Rout", phone: "9853011223", email: "royalwash@gmail.com", address: "Madhupatna, Cuttack", gst: "21CCECK9012F1Z4" },
+  { id: 4, name: "Apex Detailing Hub", person: "Subrat", phone: "9937088112", email: "apexdetail@gmail.com", address: "Talcher, Angul", gst: "Unregistered" }
+]);
+window.customerDatabase = customerDatabase;
+
+let sampleInventory = getStored("INVENTORY", [
+  { id: 101, name: "AR Pump Plunger Ceramic 18mm", stock: 65, rate: 1450, code: "AR-PL-18", category: "Pump Spares", hsn: "84139190" },
+  { id: 102, name: "AR Pump Water Seal Kit 18mm", stock: 110, rate: 1850, code: "AR-WS-18", category: "Pump Spares", hsn: "84139190" },
+  { id: 103, name: "AR Heavy Brass Unloader Valve", stock: 32, rate: 3200, code: "AR-V-UNL", category: "Pump Spares", hsn: "84818030" },
+  { id: 104, name: "Car Wash Snow Foam Shampoo (20L)", stock: 85, rate: 2800, code: "CH-FOAM-20", category: "Chemicals", hsn: "34029099" },
+  { id: 105, name: "High Gloss Polish Wax (5L)", stock: 40, rate: 1950, code: "CH-WAX-05", category: "Chemicals", hsn: "34053000" },
+  { id: 106, name: "Industrial Air Compressor 3HP Piston Ring", stock: 150, rate: 750, code: "CP-RG-3HP", category: "Compressor Spares", hsn: "84149090" },
+  { id: 107, name: "Microfiber Towel 800 GSM (Pack of 10)", stock: 120, rate: 1200, code: "AC-MF-800", category: "Accessories", hsn: "63071010" }
+]);
+window.sampleInventory = sampleInventory;
+
+let leadsData = getStored("LEADS", [
+  {
+    id: "LEAD-101",
+    customerName: "Kalinga Auto Spa",
+    phone: "9861099881",
+    inquiryDate: "2026-09-12",
+    handledBy: "Dipak Rout",
+    machine: "AR 200 Bar Commercial High Pressure Washer",
+    quotedPrice: 85000,
+    status: "Installed",
+    followupDate: "2026-09-24",
+    remarks: "Agreed at ₹85,000 including starter panel.",
+    auditTrail: [{ by: "Dipak Rout", time: "2026-09-12 10:15", note: "Lead registered" }],
+    installation: {
+      isInstalled: true,
+      installDate: "2026-09-20",
+      finalPrice: 85000,
+      machineSerial: "TTESPL-M-2026-081",
+      pumpSerial: "AR-PUMP-9812",
+      invoiceNo: "TTESPL/26-27/092",
+      freeServices: [
+        { num: 1, label: "1st Free Service (30 Days / 50 Hrs)", dueDate: "2026-10-20", attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" },
+        { num: 2, label: "2nd Free Service (4th Month)", dueDate: "2027-01-20", attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" },
+        { num: 3, label: "3rd Free Service (7th Month)", dueDate: "2027-04-20", attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" },
+        { num: 4, label: "4th Free Service (10th Month)", dueDate: "2027-07-20", attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" }
+      ]
+    }
+  }
+]);
+window.leadsData = leadsData;
+
+let ordersData = getStored("ORDERS", [
+  {
+    id: "ORD-901",
+    customerName: "Capital Car Care",
+    phone: "9437012345",
+    orderDate: "2026-09-24",
+    deliveryDate: "2026-09-24",
+    items: [
+      { id: 104, name: "Car Wash Snow Foam Shampoo (20L)", hsn: "34029099", qty: 2, rate: 2800, total: 5600 }
+    ],
+    totalAmount: 5600,
+    recvAmount: 5600,
+    dueAmount: 0,
+    payMode: "UPI / QR Code",
+    status: "Delivered",
+    bookedBy: "Dipak Rout",
+    auditTrail: [{ by: "Dipak Rout", time: "2026-09-24 11:30", note: "Order entered" }]
+  }
+]);
+window.ordersData = ordersData;
+
+let serviceCallsData = getStored("SERVICES", [
+  {
+    id: "SRV-501",
+    customerName: "Apex Detailing Hub",
+    phone: "9937088112",
+    machine: "AR 15.20 Triplex Plunger Pump",
+    recvDate: "2026-09-20",
+    targetDate: "2026-09-24",
+    status: "Pending / Scheduled",
+    problem: "Pump vibration and pressure falling from 160 to 70 Bar.",
+    attendedBy: "Dipak Rout",
+    doneDate: "",
+    actionDone: "",
+    partUsed: "",
+    auditTrail: [{ by: "Dipak Rout", time: "2026-09-20 09:30", note: "Service logged" }]
+  }
+]);
+window.serviceCallsData = serviceCallsData;
+
+/* ================= AUTHENTICATION LOGIC ================= */
+function checkAuthSession() {
+  if(!currentUser) {
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('mainAppWrapper').style.display = 'none';
+  } else {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('mainAppWrapper').style.display = 'block';
+    document.getElementById('activeStaffDisplay').textContent = currentUser.name;
+    refreshAllData();
+  }
+}
+
+function showAuthMode(mode) {
+  document.getElementById('loginFormSection').style.display = mode === 'login' ? 'block' : 'none';
+  document.getElementById('registerFormSection').style.display = mode === 'register' ? 'block' : 'none';
+  document.getElementById('forgotFormSection').style.display = mode === 'forgot' ? 'block' : 'none';
+}
+
+function processLogin() {
+  const p = document.getElementById('loginPhone').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+
+  const user = registeredEmployees.find(u => u.mobile === p && u.pass === pass);
+  if(user) {
+    currentUser = user;
+    setStored("SESSION_USER", user);
+    checkAuthSession();
+  } else {
+    alert("Invalid Mobile Number or Password!");
+  }
+}
+
+function processRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const mobile = document.getElementById('regPhone').value.trim();
+  const role = document.getElementById('regRole').value;
+  const pass = document.getElementById('regPass').value.trim();
+  const pin = document.getElementById('regPin').value.trim();
+
+  if(!name || mobile.length < 10 || pass.length < 4 || pin.length < 4) {
+    alert("Please fill all details correctly! Mobile 10-digits & 4-digit PIN.");
+    return;
+  }
+  if(registeredEmployees.some(u => u.mobile === mobile)) {
+    alert("An account already exists with this mobile number!");
+    return;
+  }
+
+  const newEmp = { id: Date.now(), name, mobile, role, pass, pin };
+  registeredEmployees.push(newEmp);
+  setStored("STAFF", registeredEmployees);
+
+  currentUser = newEmp;
+  setStored("SESSION_USER", newEmp);
+  alert(`Welcome ${name}! Registration successful.`);
+  checkAuthSession();
+}
+
+function processPasswordReset() {
+  const mobile = document.getElementById('recPhone').value.trim();
+  const pin = document.getElementById('recPin').value.trim();
+  const newPass = document.getElementById('recNewPass').value.trim();
+
+  const user = registeredEmployees.find(u => u.mobile === mobile && u.pin === pin);
+  if(user) {
+    if(newPass.length < 4) { alert("Password must be at least 4 characters!"); return; }
+    user.pass = newPass;
+    setStored("STAFF", registeredEmployees);
+    alert("Password updated successfully! Please login now.");
+    showAuthMode('login');
+  } else {
+    alert("Security PIN or Mobile Number did not match records!");
+  }
+}
+
+function performFullLogout() {
+  if(confirm("Confirm Logout from TTESPL ERP Portal?")) {
+    currentUser = null;
+    localStorage.removeItem(DB_PREFIX + "SESSION_USER");
+    checkAuthSession();
+  }
+}
+
+/* ================= UTILITY & DATALIST AUTO-COMPLETE ================= */
+function getNowStr() {
+  const d = new Date();
+  return d.toISOString().split('T')[0] + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function refreshAllData() {
+  populateDropdownsAndDatalists();
+  renderLeads();
+  renderOrders();
+  renderServices();
+  renderStockList();
+  renderCustomerList();
+  renderBilling('all');
+  updateGlobalReminders();
+}
+
+function populateDropdownsAndDatalists() {
+  document.querySelectorAll('.emp-dropdown').forEach(sel => {
+    sel.innerHTML = registeredEmployees.map(e => `<option value="${e.name}">${e.name} (${e.role})</option>`).join('');
+  });
+
+  const bFilter = document.getElementById('billingEmployeeFilter');
+  if(bFilter) {
+    bFilter.innerHTML = `<option value="ALL">All Staff Combined</option>` + registeredEmployees.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
+  }
+
+  const cDatalist = document.getElementById('customerDatalist');
+  cDatalist.innerHTML = customerDatabase.map(c => `
+    <option value="${c.name} (${c.phone})">${c.address} | GST: ${c.gst}</option>
+  `).join('');
+
+  const pDatalist = document.getElementById('productDatalist');
+  pDatalist.innerHTML = sampleInventory.map(p => `
+    <option value="${p.name} [${p.code}]">In-Stock: ${p.stock} | ₹${p.rate}</option>
+  `).join('');
+}
+window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
+
+function resolveCustomerFromSearch(text) {
+  if(!text) return null;
+  const match = text.match(/\((\d{10})\)/);
+  if(match) {
+    const phone = match[1];
+    return customerDatabase.find(c => c.phone === phone);
+  }
+  const t = text.toLowerCase().trim();
+  return customerDatabase.find(c => c.name.toLowerCase() === t || c.phone === t || text.includes(c.name));
+}
+
+function resolvePartFromSearch(text) {
+  if(!text) return null;
+  const match = text.match(/\[(.*?)\]/);
+  if(match) {
+    const code = match[1];
+    return sampleInventory.find(p => p.code === code);
+  }
+  const t = text.toLowerCase().trim();
+  return sampleInventory.find(p => p.name.toLowerCase().includes(t) || p.code.toLowerCase().includes(t));
+}
+
+function updateGlobalReminders() {
+  const today = new Date().toISOString().split('T')[0];
+  let delDue = ordersData.filter(o => o.status === 'Pending' && o.deliveryDate <= today).length;
+  let srvDue = serviceCallsData.filter(s => s.status !== 'Work Completed' && s.targetDate <= today).length;
+  let freeSrvDue = 0;
+  leadsData.forEach(l => {
+    if(l.installation && l.installation.freeServices) {
+      freeSrvDue += l.installation.freeServices.filter(fs => !fs.attended && fs.dueDate <= today).length;
+    }
+  });
+
+  const banner = document.getElementById('dailyReminderText');
+  banner.textContent = `${delDue} Product Delivery Orders Due | ${srvDue} Machine Repairs Due | ${freeSrvDue} Free Services Due`;
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  el.classList.add('active');
+
+  if(tab === 'leads') renderLeads();
+  if(tab === 'orders') renderOrders();
+  if(tab === 'services') renderServices();
+  if(tab === 'inventory') renderStockList();
+  if(tab === 'billing') renderBilling('all');
+}
+
+function switchInventorySubTab(type) {
+  if(type === 'stock') {
+    document.getElementById('subTabStockBtn').classList.add('active');
+    document.getElementById('subTabCustBtn').classList.remove('active');
+    document.getElementById('invSubPanelStock').style.display = 'block';
+    document.getElementById('invSubPanelCustomer').style.display = 'none';
+    renderStockList();
+  } else {
+    document.getElementById('subTabStockBtn').classList.remove('active');
+    document.getElementById('subTabCustBtn').classList.add('active');
+    document.getElementById('invSubPanelStock').style.display = 'none';
+    document.getElementById('invSubPanelCustomer').style.display = 'block';
+    renderCustomerList();
+  }
+}
+
+/* ================= EXCEL / CSV BULK IMPORT & TEMPLATE ENGINE ================= */
+let activeImportTarget = null;
+
+function triggerExcelImport(target) {
+  activeImportTarget = target;
+  const fileInput = document.getElementById('bulkExcelFileInput');
+  fileInput.value = '';
+  fileInput.click();
+}
+
+function processSelectedExcelFile(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+      if(!rows || rows.length === 0) {
+        alert("The selected Excel sheet has no data!");
+        return;
+      }
+
+      if(activeImportTarget === 'INVENTORY') {
+        importStockRows(rows);
+      } else if(activeImportTarget === 'CUSTOMERS') {
+        importCustomerRows(rows);
+      }
+    } catch(err) {
+      console.error(err);
+      alert("Failed to parse Excel file! Please check the column headers.");
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function normalizeKey(obj, keys) {
+  for(let k in obj) {
+    const cleanK = k.toString().trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    for(let target of keys) {
+      if(cleanK === target.toLowerCase().replace(/[^a-z0-9]/g, '')) {
+        return obj[k];
+      }
+    }
+  }
+  return "";
+}
+
+function importStockRows(rows) {
+  let count = 0;
+  rows.forEach(r => {
+    const name = normalizeKey(r, ["Item Name", "Part Name", "Product Name", "Description", "Name"]);
+    const code = normalizeKey(r, ["Part Code", "SKU", "Code", "Item Code", "Model", "Part Number"]);
+    const cat = normalizeKey(r, ["Category", "Group", "Type"]) || "Pump Spares";
+    const stockVal = normalizeKey(r, ["Stock", "Qty", "Quantity", "Available"]) || 0;
+    const rateVal = normalizeKey(r, ["Rate", "Price", "Unit Price", "MRP", "Amount"]) || 0;
+    const hsnVal = normalizeKey(r, ["HSN", "HSN Code", "SAC"]) || "84139190";
+
+    if(name && (code || name)) {
+      const pCode = code ? String(code).trim() : ("SKU-" + Math.floor(1000 + Math.random() * 9000));
+      const existing = sampleInventory.find(x => x.code.toLowerCase() === pCode.toLowerCase() || x.name.toLowerCase() === name.trim().toLowerCase());
+      
+      if(existing) {
+        existing.stock = parseInt(stockVal) || existing.stock;
+        existing.rate = parseFloat(rateVal) || existing.rate;
+        existing.category = cat || existing.category;
+      } else {
+        sampleInventory.push({
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          name: String(name).trim(),
+          code: pCode,
+          category: cat,
+          stock: parseInt(stockVal) || 0,
+          rate: parseFloat(rateVal) || 0,
+          hsn: String(hsnVal).trim()
+        });
+      }
+      count++;
+    }
+  });
+
+  setStored("INVENTORY", sampleInventory);
+  renderStockList();
+  populateDropdownsAndDatalists();
+  alert(`✓ Successfully imported/updated ${count} Spares & Products!`);
+}
+
+function importCustomerRows(rows) {
+  let count = 0;
+  rows.forEach(r => {
+    const name = normalizeKey(r, ["Customer Name", "Garage Name", "Studio Name", "Name", "Client"]);
+    const phone = normalizeKey(r, ["Phone", "Mobile", "Contact", "Phone Number", "Mobile Number"]);
+    const person = normalizeKey(r, ["Contact Person", "Person", "Owner", "Proprietor"]);
+    const address = normalizeKey(r, ["Address", "City", "Location", "Workshop Address"]);
+    const gst = normalizeKey(r, ["GST", "GSTIN", "GST Number"]);
+    const email = normalizeKey(r, ["Email", "Email ID", "Mail"]);
+
+    if(name && phone) {
+      const cleanPhone = String(phone).replace(/[^0-9]/g, '').slice(-10);
+      const existing = customerDatabase.find(x => x.phone === cleanPhone);
+
+      if(existing) {
+        existing.name = String(name).trim();
+        existing.person = person ? String(person).trim() : existing.person;
+        existing.address = address ? String(address).trim() : existing.address;
+        existing.gst = gst ? String(gst).trim() : existing.gst;
+        existing.email = email ? String(email).trim() : existing.email;
+      } else {
+        customerDatabase.push({
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          name: String(name).trim(),
+          phone: cleanPhone,
+          person: person ? String(person).trim() : String(name).trim(),
+          address: address ? String(address).trim() : "Bhubaneswar, Odisha",
+          gst: gst ? String(gst).trim() : "Unregistered",
+          email: email ? String(email).trim() : ""
+        });
+      }
+      count++;
+    }
+  });
+
+  setStored("CUSTOMERS", customerDatabase);
+  renderCustomerList();
+  populateDropdownsAndDatalists();
+  alert(`✓ Successfully imported/updated ${count} Customers!`);
+}
+
+function downloadSampleStockExcel() {
+  const sample = [
+    { "Part Name": "AR High Pressure Water Seal Kit 18mm", "Part Code": "AR-WS-18", "Category": "Pump Spares", "Stock": 50, "Rate": 1850, "HSN": "84139190" },
+    { "Part Name": "AR Ceramic Plunger 18mm", "Part Code": "AR-PL-18", "Category": "Pump Spares", "Stock": 30, "Rate": 1450, "HSN": "84139190" },
+    { "Part Name": "Snow Foam Wash Shampoo (20L)", "Part Code": "CH-FOAM-20", "Category": "Chemicals", "Stock": 25, "Rate": 2800, "HSN": "34029099" }
+  ];
+  const ws = XLSX.utils.json_to_sheet(sample);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Spares_Products");
+  XLSX.writeFile(wb, "TTESPL_Sample_Stock_Template.xlsx");
+}
+
+function downloadSampleCustExcel() {
+  const sample = [
+    { "Customer Name": "Jagannath Detailing Studio", "Contact Person": "Ramesh Behera", "Phone": "9861012345", "Address": "Rasulgarh Industrial Estate, BBSR", "GST": "21AAACT9812K1Z9", "Email": "client@gmail.com" },
+    { "Customer Name": "Konark Car Care", "Contact Person": "Alok Nayak", "Phone": "9437098765", "Address": "Badambadi, Cuttack", "GST": "Unregistered", "Email": "" }
+  ];
+  const ws = XLSX.utils.json_to_sheet(sample);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Customers");
+  XLSX.writeFile(wb, "TTESPL_Sample_Customer_Template.xlsx");
+}
+
+/* ================= TAB 1: LEADS ================= */
+function renderLeads() {
+  const c = document.getElementById('leadsListContainer');
+  c.innerHTML = '';
+
+  leadsData.forEach(lead => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    let installHtml = '';
+    if(lead.installation && lead.installation.isInstalled) {
+      const ins = lead.installation;
+      let freeSrvHtml = ins.freeServices.map(fs => {
+        let tag = '';
+        let btn = '';
+        if(fs.attended) {
+          tag = `<span class="badge badge-delivered">✓ Attended on ${fs.attendedDate} by ${fs.attendedStaff}</span>`;
+        } else {
+          const st = checkDueStatus(fs.dueDate);
+          tag = `<span class="badge ${st.badgeClass}">${st.text}</span>`;
+          btn = `<button class="btn btn-primary btn-sm" onclick="openAttendModal('${lead.id}', ${fs.num})">🛠️ Attend & Record</button>`;
+        }
+        return `
+          <div style="background:white; border:1px solid #cbd5e1; border-radius:6px; padding:6px 8px; margin-bottom:4px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <strong>#${fs.num}: ${fs.label}</strong>
+                <div style="font-size:10.5px; color:#64748b;">Scheduled Due Date: <strong>${fs.dueDate}</strong></div>
+              </div>
+              <div>${tag}</div>
+            </div>
+            ${fs.attended ? `
+              <div style="font-size:10.5px; color:#1e3a8a; margin-top:3px; background:#f8fafc; padding:3px 5px; border-radius:4px;">
+                📝 <strong>Done:</strong> ${fs.actionDone} | <strong>Parts:</strong> ${fs.partsReplaced}
+              </div>
+            ` : `<div style="margin-top:4px; text-align:right;">${btn}</div>`}
+          </div>
+        `;
+      }).join('');
+
+      installHtml = `
+        <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:8px; padding:8px; margin-top:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <strong style="font-size:12px; color:var(--primary);">🚀 MACHINE INSTALLED & WARRANTY RECORD</strong>
+            <span class="badge badge-delivered">Installed: ${ins.installDate}</span>
+          </div>
+          <div class="grid-3" style="font-size:11px; margin-bottom:6px; background:white; padding:4px; border-radius:4px;">
+            <div>Machine SN: <strong>${ins.machineSerial}</strong></div>
+            <div>Pump SN: <strong>${ins.pumpSerial}</strong></div>
+            <div>Invoice: <strong>${ins.invoiceNo}</strong></div>
+          </div>
+          <div style="font-size:11px; font-weight:700; color:#1e40af; margin-bottom:4px;">
+            🛡️ 4 FREE SERVICES SCHEDULE:
+          </div>
+          ${freeSrvHtml}
+        </div>
+      `;
+    }
+
+    let auditHtml = (lead.auditTrail || []).map(a => `<div class="audit-item">• By <strong>${a.by}</strong> at ${a.time} (${a.note})</div>`).join('');
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <strong style="font-size:14px;">${lead.customerName}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">Inquiry: ${lead.inquiryDate} | Lead Eng: <strong>${lead.handledBy}</strong></div>
+        </div>
+        <div style="display:flex; gap:4px; align-items:center;">
+          <span class="badge ${lead.status === 'Installed' ? 'badge-delivered' : 'badge-pending'}">${lead.status}</span>
+          <button class="btn btn-outline btn-sm" onclick="editLeadPrompt('${lead.id}')">✏️ Edit</button>
+        </div>
+      </div>
+
+      <div class="grid-2" style="font-size:11.5px; margin-bottom:6px;">
+        <div>Machine: <strong>${lead.machine}</strong></div>
+        <div>Quoted Amount: <strong>₹${lead.quotedPrice.toLocaleString('en-IN')}</strong></div>
+      </div>
+
+      <div style="background:#f8fafc; padding:6px; border-radius:6px; font-size:11.5px; margin-bottom:6px;">
+        <div style="display:flex; justify-content:space-between;">
+          <span>💬 <strong>Remarks:</strong> ${lead.remarks}</span>
+          <span style="color:var(--danger); font-weight:bold;">Next Followup: ${lead.followupDate}</span>
+        </div>
+        ${(!lead.installation || !lead.installation.isInstalled) ? `
+          <button class="btn btn-accent btn-sm" style="margin-top:6px;" onclick="openInstallModal('${lead.id}')">✓ Confirm Installation & Schedule Warranty</button>
+        ` : ''}
+      </div>
+
+      ${installHtml}
+      <div class="audit-log-box">${auditHtml}</div>
+    `;
+    c.appendChild(card);
+  });
+  updateGlobalReminders();
+}
+window.renderLeads = renderLeads;
+
+function openLeadModal(leadObj = null) {
+  const title = document.getElementById('leadModalTitle');
+  const editId = document.getElementById('editLeadId');
+
+  if(leadObj) {
+    title.textContent = "Edit Machine Lead & Followup";
+    editId.value = leadObj.id;
+    document.getElementById('leadCustSearchInput').value = `${leadObj.customerName} (${leadObj.phone || ''})`;
+    document.getElementById('leadInqDate').value = leadObj.inquiryDate;
+    document.getElementById('leadStaffSelect').value = leadObj.handledBy;
+    document.getElementById('leadMachine').value = leadObj.machine;
+    document.getElementById('leadPrice').value = leadObj.quotedPrice;
+    document.getElementById('leadFollowupDate').value = leadObj.followupDate;
+    document.getElementById('leadRemarks').value = leadObj.remarks;
+  } else {
+    title.textContent = "New Machine Inquiry Entry";
+    editId.value = "";
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('leadCustSearchInput').value = "";
+    document.getElementById('leadInqDate').value = today;
+    document.getElementById('leadFollowupDate').value = today;
+    document.getElementById('leadMachine').value = "";
+    document.getElementById('leadPrice').value = "";
+    document.getElementById('leadRemarks').value = "";
+  }
+  document.getElementById('leadModal').style.display = 'flex';
+}
+function closeLeadModal() { document.getElementById('leadModal').style.display = 'none'; }
+
+function saveLeadAction() {
+  const editId = document.getElementById('editLeadId').value;
+  const custSearch = document.getElementById('leadCustSearchInput').value.trim();
+  const cust = resolveCustomerFromSearch(custSearch);
+
+  const inqDate = document.getElementById('leadInqDate').value;
+  const staff = document.getElementById('leadStaffSelect').value;
+  const mach = document.getElementById('leadMachine').value.trim();
+  const price = parseFloat(document.getElementById('leadPrice').value) || 0;
+  const followup = document.getElementById('leadFollowupDate').value;
+  const rem = document.getElementById('leadRemarks').value.trim();
+
+  if(!custSearch || !mach) { alert("Please select a Customer and enter Machine Model!"); return; }
+
+  const custName = cust ? cust.name : custSearch.split('(')[0].trim();
+  const phone = cust ? cust.phone : "";
+
+  if(editId) {
+    const l = leadsData.find(x => x.id === editId);
+    if(l) {
+      l.customerName = custName;
+      l.phone = phone;
+      l.inquiryDate = inqDate;
+      l.handledBy = staff;
+      l.machine = mach;
+      l.quotedPrice = price;
+      l.followupDate = followup;
+      l.remarks = rem;
+      l.auditTrail = l.auditTrail || [];
+      l.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Updated details" });
+    }
+  } else {
+    leadsData.unshift({
+      id: "LEAD-" + Math.floor(100 + Math.random() * 900),
+      customerName: custName,
+      phone: phone,
+      inquiryDate: inqDate,
+      handledBy: staff,
+      machine: mach,
+      quotedPrice: price,
+      status: "Active Inquiry",
+      followupDate: followup,
+      remarks: rem || "Lead registered",
+      auditTrail: [{ by: currentUser.name, time: getNowStr(), note: "Created inquiry" }],
+      installation: { isInstalled: false }
+    });
+  }
+
+  setStored("LEADS", leadsData);
+  closeLeadModal();
+  renderLeads();
+  alert("Lead saved & synced to cloud!");
+}
+
+function editLeadPrompt(leadId) {
+  const l = leadsData.find(x => x.id === leadId);
+  if(l) openLeadModal(l);
+}
+
+let activeLeadForInstall = null;
+function openInstallModal(leadId) {
+  const l = leadsData.find(x => x.id === leadId);
+  if(!l) return;
+  activeLeadForInstall = l;
+  document.getElementById('insCustHeading').textContent = `Customer: ${l.customerName} | Machine: ${l.machine}`;
+  document.getElementById('insDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('insFinalPrice').value = l.quotedPrice;
+  document.getElementById('installationModal').style.display = 'flex';
+}
+function closeInstallModal() { document.getElementById('installationModal').style.display = 'none'; }
+
+function saveInstallationAction() {
+  if(!activeLeadForInstall) return;
+  const date = document.getElementById('insDate').value;
+  const price = parseFloat(document.getElementById('insFinalPrice').value) || 0;
+  const machSN = document.getElementById('insMachSN').value.trim();
+  const pumpSN = document.getElementById('insPumpSN').value.trim();
+  const inv = document.getElementById('insInvNo').value.trim();
+
+  if(!machSN || !pumpSN) { alert("Please enter both Machine Serial No & Pump Serial No!"); return; }
+
+  activeLeadForInstall.status = "Installed";
+  activeLeadForInstall.installation = {
+    isInstalled: true,
+    installDate: date,
+    finalPrice: price,
+    machineSerial: machSN,
+    pumpSerial: pumpSN,
+    invoiceNo: inv || "TTESPL/INV/" + Math.floor(100+Math.random()*900),
+    freeServices: [
+      { num: 1, label: "1st Free Service (30 Days / 50 Hrs)", dueDate: addMonths(date, 1), attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" },
+      { num: 2, label: "2nd Free Service (4th Month)", dueDate: addMonths(date, 4), attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" },
+      { num: 3, label: "3rd Free Service (7th Month)", dueDate: addMonths(date, 7), attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" },
+      { num: 4, label: "4th Free Service (10th Month)", dueDate: addMonths(date, 10), attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" }
+    ]
+  };
+  activeLeadForInstall.auditTrail = activeLeadForInstall.auditTrail || [];
+  activeLeadForInstall.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: `Installed machine (SN: ${machSN})` });
+
+  setStored("LEADS", leadsData);
+  closeInstallModal();
+  renderLeads();
+  alert("Installation saved & 4 Free Services scheduled!");
+}
+
+let activeFreeSrvRef = null;
+function openAttendModal(leadId, num) {
+  const l = leadsData.find(x => x.id === leadId);
+  if(!l) return;
+  const fs = l.installation.freeServices.find(s => s.num === num);
+  if(!fs) return;
+
+  activeFreeSrvRef = { l, fs };
+  document.getElementById('freeSrvHeading').textContent = `${l.customerName} — #${fs.num}: ${fs.label} (Due: ${fs.dueDate})`;
+  document.getElementById('freeSrvActDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('freeSrvAction').value = "";
+  document.getElementById('freeSrvParts').value = "";
+  document.getElementById('attendFreeServiceModal').style.display = 'flex';
+}
+function closeAttendModal() { document.getElementById('attendFreeServiceModal').style.display = 'none'; }
+
+function saveFreeServiceAction() {
+  if(!activeFreeSrvRef) return;
+  const { l, fs } = activeFreeSrvRef;
+  const actDate = document.getElementById('freeSrvActDate').value;
+  const staff = document.getElementById('freeSrvStaff').value;
+  const action = document.getElementById('freeSrvAction').value.trim();
+  const parts = document.getElementById('freeSrvParts').value.trim();
+
+  fs.attended = true;
+  fs.attendedDate = actDate;
+  fs.attendedStaff = staff;
+  fs.actionDone = action || "Free service maintenance completed";
+  fs.partsReplaced = parts || "None";
+
+  l.auditTrail = l.auditTrail || [];
+  l.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: `Attended Free Service #${fs.num}` });
+
+  setStored("LEADS", leadsData);
+  closeAttendModal();
+  renderLeads();
+  alert("Free Service recorded successfully!");
+}
+
+function checkDueStatus(dueDateStr) {
+  const today = new Date().toISOString().split('T')[0];
+  if(dueDateStr === today) return { text: "🔔 TODAY", badgeClass: "badge-today" };
+  const d1 = new Date(today);
+  const d2 = new Date(dueDateStr);
+  const diffDays = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+  if(diffDays === 1) return { text: "⚠️ TOMORROW", badgeClass: "badge-pending" };
+  if(diffDays > 1) return { text: `Due in ${diffDays}d`, badgeClass: "badge-info" };
+  return { text: `⚠️ Delayed by ${Math.abs(diffDays)}d`, badgeClass: "badge-danger" };
+}
+
+function addMonths(dateStr, m) {
+  const d = new Date(dateStr || new Date());
+  d.setMonth(d.getMonth() + m);
+  return d.toISOString().split('T')[0];
+}
+
+/* ================= TAB 2: ORDERS ================= */
+function renderOrders() {
+  const c = document.getElementById('ordersListContainer');
+  c.innerHTML = '';
+  const today = new Date().toISOString().split('T')[0];
+
+  ordersData.forEach(o => {
+    let statusBadge = 'badge-pending';
+    let statusText = o.status;
+    if(o.status === 'Pending' && o.deliveryDate < today) {
+      statusBadge = 'badge-danger';
+      statusText = '⚠️ Delayed (' + o.deliveryDate + ')';
+    } else if(o.status === 'Delivered') {
+      statusBadge = 'badge-delivered';
+      statusText = '✓ Delivered';
+    }
+
+    let itemsHtml = o.items.map(i => `<div>• ${i.name} (Qty: <strong>${i.qty}</strong> @ ₹${i.rate}) = ₹${i.total}</div>`).join('');
+    let auditHtml = (o.auditTrail || []).map(a => `<div class="audit-item">• By <strong>${a.by}</strong> at ${a.time} (${a.note})</div>`).join('');
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <strong style="font-size:14px;">${o.customerName}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">Invoice: ${o.id} | Date: ${o.orderDate} | Staff: <strong>${o.bookedBy}</strong></div>
+        </div>
+        <div style="display:flex; gap:4px; align-items:center;">
+          <span class="badge ${statusBadge}">${statusText}</span>
+          <button class="btn btn-outline btn-sm" onclick="editOrderPrompt('${o.id}')">✏️ Edit</button>
+        </div>
+      </div>
+
+      <div style="background:#f8fafc; padding:6px; border-radius:6px; font-size:11.5px; margin-bottom:6px;">
+        ${itemsHtml}
+        <div style="border-top:1px dashed #cbd5e1; margin-top:4px; padding-top:4px; display:flex; justify-content:space-between; font-weight:bold;">
+          <span>Total: ₹${o.totalAmount.toLocaleString('en-IN')}</span>
+          <span style="color:${o.dueAmount > 0 ? 'var(--danger)' : 'var(--success)'};">Due: ₹${o.dueAmount.toLocaleString('en-IN')}</span>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#475569; margin-bottom:6px;">
+        <div>Pay Mode: <strong>${o.payMode}</strong></div>
+        <div>Delivery: <strong>${o.deliveryDate}</strong></div>
+      </div>
+
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button class="btn btn-print btn-sm" style="flex:1;" onclick="openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice PDF</button>
+        <button class="btn btn-wa btn-sm" style="flex:1;" onclick="shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
+        ${o.status !== 'Delivered' ? `
+          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="markOrderDelivered('${o.id}')">✓ Delivered</button>
+        ` : ''}
+      </div>
+
+      <div class="audit-log-box">${auditHtml}</div>
+    `;
+    c.appendChild(card);
+  });
+  updateGlobalReminders();
+}
+window.renderOrders = renderOrders;
+
+function openOrderModal(orderObj = null) {
+  const tbody = document.getElementById('orderItemsTbody');
+  tbody.innerHTML = '';
+  const title = document.getElementById('orderModalTitle');
+  const editId = document.getElementById('editOrderId');
+
+  if(orderObj) {
+    title.textContent = "Edit Order & Items";
+    editId.value = orderObj.id;
+    document.getElementById('ordCustSearchInput').value = `${orderObj.customerName} (${orderObj.phone || ''})`;
+    document.getElementById('ordStaffSelect').value = orderObj.bookedBy;
+    document.getElementById('ordDate').value = orderObj.orderDate;
+    document.getElementById('ordDelDate').value = orderObj.deliveryDate;
+    document.getElementById('ordRecvAmt').value = orderObj.recvAmount;
+    document.getElementById('ordPayMode').value = orderObj.payMode;
+
+    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.rate));
+  } else {
+    title.textContent = "New Multi-Item Product Order";
+    editId.value = "";
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('ordCustSearchInput').value = "";
+    document.getElementById('ordDate').value = today;
+    document.getElementById('ordDelDate').value = today;
+    document.getElementById('ordRecvAmt').value = "0";
+    document.getElementById('ordPayMode').value = "Cash";
+    addOrderItemRow();
+  }
+
+  calcOrderTotals();
+  document.getElementById('orderModal').style.display = 'flex';
+}
+function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
+
+function addOrderItemRow(itemName = "", qty = 1, rate = 0) {
+  const tbody = document.getElementById('orderItemsTbody');
+  const tr = document.createElement('tr');
+
+  tr.innerHTML = `
+    <td>
+      <input type="text" class="form-control item-product-input" list="productDatalist" value="${itemName}" placeholder="Type part name..." oninput="onOrderItemInput(this)">
+      <div class="item-stock-warning" style="font-size:10px; color:var(--text-muted); margin-top:2px;"></div>
+    </td>
+    <td><input type="number" class="form-control item-qty" value="${qty}" min="1" oninput="calcOrderTotals()"></td>
+    <td><input type="number" class="form-control item-rate" value="${rate}" oninput="calcOrderTotals()"></td>
+    <td class="item-row-total" style="font-weight:bold; font-size:11.5px;">₹0</td>
+    <td><button class="btn btn-danger-sm" onclick="this.closest('tr').remove(); calcOrderTotals();">✕</button></td>
+  `;
+
+  tbody.appendChild(tr);
+  if(itemName) {
+    onOrderItemInput(tr.querySelector('.item-product-input'));
+  }
+}
+
+function onOrderItemInput(inputEl) {
+  const row = inputEl.closest('tr');
+  const part = resolvePartFromSearch(inputEl.value);
+  const warnDiv = row.querySelector('.item-stock-warning');
+
+  if(part) {
+    row.querySelector('.item-rate').value = part.rate;
+    warnDiv.innerHTML = `<span style="color:${part.stock > 0 ? 'var(--success)' : 'var(--danger)'}">Stock: ${part.stock} Pcs</span>`;
+  }
+  calcOrderTotals();
+}
+
+function calcOrderTotals() {
+  let total = 0;
+  document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
+    const q = parseFloat(r.querySelector('.item-qty').value) || 0;
+    const rate = parseFloat(r.querySelector('.item-rate').value) || 0;
+    const sub = q * rate;
+    r.querySelector('.item-row-total').textContent = '₹' + sub.toLocaleString('en-IN');
+    total += sub;
+  });
+  document.getElementById('ordTotalAmt').value = total;
+  calcOrderBalance();
+}
+
+function calcOrderBalance() {
+  const total = parseFloat(document.getElementById('ordTotalAmt').value) || 0;
+  const recv = parseFloat(document.getElementById('ordRecvAmt').value) || 0;
+  document.getElementById('ordDueAmt').value = Math.max(0, total - recv);
+}
+
+function saveOrderAction() {
+  const editId = document.getElementById('editOrderId').value;
+  const custSearch = document.getElementById('ordCustSearchInput').value.trim();
+  const cust = resolveCustomerFromSearch(custSearch);
+  const staff = document.getElementById('ordStaffSelect').value;
+  const ordDate = document.getElementById('ordDate').value;
+  const delDate = document.getElementById('ordDelDate').value;
+  const total = parseFloat(document.getElementById('ordTotalAmt').value) || 0;
+  const recv = parseFloat(document.getElementById('ordRecvAmt').value) || 0;
+  const due = parseFloat(document.getElementById('ordDueAmt').value) || 0;
+  const payMode = document.getElementById('ordPayMode').value;
+
+  let items = [];
+  document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
+    const pName = r.querySelector('.item-product-input').value.trim();
+    const qty = parseInt(r.querySelector('.item-qty').value) || 0;
+    const rate = parseFloat(r.querySelector('.item-rate').value) || 0;
+    const part = resolvePartFromSearch(pName);
+
+    if(pName && qty > 0) {
+      items.push({
+        id: part ? part.id : Date.now(),
+        name: part ? part.name : pName,
+        hsn: part ? (part.hsn || "84139190") : "84139190",
+        qty,
+        rate,
+        total: qty * rate
+      });
+    }
+  });
+
+  if(!custSearch || items.length === 0) { alert("Please select a Customer and add at least one item!"); return; }
+
+  const custName = cust ? cust.name : custSearch.split('(')[0].trim();
+  const phone = cust ? cust.phone : "";
+
+  if(editId) {
+    const o = ordersData.find(x => x.id === editId);
+    if(o) {
+      o.customerName = custName;
+      o.phone = phone;
+      o.bookedBy = staff;
+      o.orderDate = ordDate;
+      o.deliveryDate = delDate;
+      o.items = items;
+      o.totalAmount = total;
+      o.recvAmount = recv;
+      o.dueAmount = due;
+      o.payMode = payMode;
+      o.auditTrail = o.auditTrail || [];
+      o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Edited order" });
+    }
+  } else {
+    ordersData.unshift({
+      id: "ORD-" + Math.floor(100 + Math.random() * 900),
+      customerName: custName,
+      phone: phone,
+      orderDate: ordDate,
+      deliveryDate: delDate,
+      items: items,
+      totalAmount: total,
+      recvAmount: recv,
+      dueAmount: due,
+      payMode: payMode,
+      status: "Pending",
+      bookedBy: staff,
+      auditTrail: [{ by: currentUser.name, time: getNowStr(), note: "Created order" }]
+    });
+  }
+
+  setStored("ORDERS", ordersData);
+  closeOrderModal();
+  renderOrders();
+  renderBilling('all');
+  alert("Order saved & synced to cloud!");
+}
+
+function editOrderPrompt(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(o) openOrderModal(o);
+}
+
+function markOrderDelivered(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(!o) return;
+
+  o.items.forEach(it => {
+    const p = sampleInventory.find(x => x.id === it.id || x.name === it.name);
+    if(p) p.stock = Math.max(0, p.stock - it.qty);
+  });
+
+  o.status = "Delivered";
+  o.auditTrail = o.auditTrail || [];
+  o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Delivered & stock reduced" });
+  setStored("ORDERS", ordersData);
+  setStored("INVENTORY", sampleInventory);
+  alert(`Order ${ordId} Delivered! Stock automatically deducted.`);
+  renderOrders();
+  renderStockList();
+}
+
+function shareOrderWhatsApp(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(!o) return;
+  const itemsText = o.items.map(i => `${i.name} (x${i.qty}) - Rs.${i.total}`).join('%0A');
+  const msg = `*TWIN TOWN EXPRESS SERVICES PVT LTD*%0A*Invoice:* ${o.id}%0A*Customer:* ${o.customerName}%0A-----------------------%0A*Items:*%0A${itemsText}%0A-----------------------%0A*Total Bill:* Rs.${o.totalAmount}%0A*Paid:* Rs.${o.recvAmount}%0A*Due Remaining:* Rs.${o.dueAmount}%0A*Status:* ${o.status}%0A%0A_Authorised Partner - Rasulgarh, BBSR_`;
+  const url = o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
+  window.open(url, '_blank');
+}
+
+/* ================= GST TAX INVOICE PRINT ENGINE ================= */
+function openInvoicePrintModal(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(!o) return;
+
+  const cust = customerDatabase.find(c => c.phone === o.phone || c.name === o.customerName);
+
+  document.getElementById('invPrintId').textContent = o.id;
+  document.getElementById('invPrintDate').textContent = o.orderDate;
+  document.getElementById('invPrintCustName').textContent = o.customerName;
+  document.getElementById('invPrintCustPhone').textContent = o.phone || 'N/A';
+  document.getElementById('invPrintCustAddress').textContent = cust ? cust.address : 'Bhubaneswar, Odisha';
+  document.getElementById('invPrintCustGst').textContent = cust ? (cust.gst || 'Unregistered') : 'Unregistered';
+  document.getElementById('invPrintPayMode').textContent = o.payMode;
+  document.getElementById('invPrintStaff').textContent = o.bookedBy;
+
+  const taxable = Math.round((o.totalAmount / 1.18) * 100) / 100;
+  const tax = Math.round((o.totalAmount - taxable) * 100) / 100;
+  const halfTax = Math.round((tax / 2) * 100) / 100;
+
+  const tbody = document.getElementById('invPrintItemsTbody');
+  tbody.innerHTML = o.items.map((it, idx) => {
+    const itTaxable = Math.round((it.total / 1.18) * 100) / 100;
+    return `
+      <tr>
+        <td>${idx + 1}</td>
+        <td><strong>${it.name}</strong></td>
+        <td>${it.hsn || '84139190'}</td>
+        <td>${it.qty}</td>
+        <td>₹${it.rate}</td>
+        <td>₹${itTaxable.toFixed(2)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  document.getElementById('invPrintTaxable').textContent = '₹' + taxable.toFixed(2);
+  document.getElementById('invPrintCgst').textContent = '₹' + halfTax.toFixed(2);
+  document.getElementById('invPrintSgst').textContent = '₹' + halfTax.toFixed(2);
+  document.getElementById('invPrintGrandTotal').textContent = '₹' + o.totalAmount.toLocaleString('en-IN');
+  document.getElementById('invPrintRecv').textContent = '₹' + o.recvAmount.toLocaleString('en-IN');
+  document.getElementById('invPrintDue').textContent = '₹' + o.dueAmount.toLocaleString('en-IN');
+
+  document.getElementById('invoicePrintModal').style.display = 'flex';
+}
+function closeInvoicePrintModal() {
+  document.getElementById('invoicePrintModal').style.display = 'none';
+}
+
+/* ================= DAILY CASH CLOSING ENGINE ================= */
+function openDailyCashClosingModal() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('closeSummaryDate').textContent = today;
+  document.getElementById('closeSummaryStaff').textContent = currentUser ? currentUser.name : "Staff";
+
+  let cashTotal = 0;
+  let upiTotal = 0;
+  let bankTotal = 0;
+
+  ordersData.forEach(o => {
+    if(o.orderDate === today && o.recvAmount > 0) {
+      if(o.payMode === 'Cash') {
+        cashTotal += o.recvAmount;
+      } else if(o.payMode.includes('UPI')) {
+        upiTotal += o.recvAmount;
+      } else {
+        bankTotal += o.recvAmount;
+      }
+    }
+  });
+
+  document.getElementById('closeCashAmt').textContent = '₹' + cashTotal.toLocaleString('en-IN');
+  document.getElementById('closeUpiAmt').textContent = '₹' + upiTotal.toLocaleString('en-IN');
+  document.getElementById('closeBankAmt').textContent = '₹' + bankTotal.toLocaleString('en-IN');
+
+  ['500','200','100','50','20','10'].forEach(id => {
+    const el = document.getElementById('note' + id);
+    if(el) el.value = "0";
+  });
+  document.getElementById('denomTotalDisplay').textContent = '₹0';
+
+  document.getElementById('cashClosingModal').style.display = 'flex';
+}
+function closeDailyCashClosingModal() {
+  document.getElementById('cashClosingModal').style.display = 'none';
+}
+
+function calcCashDenominations() {
+  const n500 = parseInt(document.getElementById('note500').value) || 0;
+  const n200 = parseInt(document.getElementById('note200').value) || 0;
+  const n100 = parseInt(document.getElementById('note100').value) || 0;
+  const n50 = parseInt(document.getElementById('note50').value) || 0;
+  const n20 = parseInt(document.getElementById('note20').value) || 0;
+  const n10 = parseInt(document.getElementById('note10').value) || 0;
+
+  const total = (n500 * 500) + (n200 * 200) + (n100 * 100) + (n50 * 50) + (n20 * 20) + (n10 * 10);
+  document.getElementById('denomTotalDisplay').textContent = '₹' + total.toLocaleString('en-IN');
+}
+
+function sendClosingSummaryWhatsApp() {
+  const today = new Date().toISOString().split('T')[0];
+  const cash = document.getElementById('closeCashAmt').textContent;
+  const upi = document.getElementById('closeUpiAmt').textContent;
+  const bank = document.getElementById('closeBankAmt').textContent;
+  const physicalCash = document.getElementById('denomTotalDisplay').textContent;
+  const staff = currentUser ? currentUser.name : "Staff";
+
+  const msg = `*DAILY CASH & SALES CLOSING REPORT*%0A*Company:* TTESPL Rasulgarh, BBSR%0A*Date:* ${today}%0A*Verified By:* ${staff}%0A------------------------------------%0A*Cash Collected:* ${cash}%0A*UPI / Online:* ${upi}%0A*Bank / Cheque:* ${bank}%0A*Total Drawer Cash Count:* ${physicalCash}%0A------------------------------------%0A_Generated via TTESPL ERP Portal_`;
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+}
+
+/* ================= TAB 3: SERVICES & REPAIRS ================= */
+function renderServices() {
+  const c = document.getElementById('serviceListContainer');
+  c.innerHTML = '';
+  const today = new Date().toISOString().split('T')[0];
+
+  serviceCallsData.forEach(s => {
+    let statusBadge = 'badge-pending';
+    let statusText = s.status;
+
+    if(s.status !== 'Work Completed') {
+      if(s.targetDate === today) {
+        statusBadge = 'badge-today';
+        statusText = '🔔 DUE TODAY';
+      } else if(s.targetDate < today) {
+        const diff = Math.round((new Date(today) - new Date(s.targetDate)) / (1000 * 60 * 60 * 24));
+        statusBadge = 'badge-danger';
+        statusText = `⚠️ Delay (${diff}d)`;
+      } else {
+        statusBadge = 'badge-info';
+        statusText = `Target: ${s.targetDate}`;
+      }
+    } else {
+      statusBadge = 'badge-delivered';
+      statusText = `✓ Completed (${s.doneDate})`;
+    }
+
+    let auditHtml = (s.auditTrail || []).map(a => `<div class="audit-item">• By <strong>${a.by}</strong> at ${a.time} (${a.note})</div>`).join('');
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <strong style="font-size:14px;">${s.customerName}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">Call: ${s.recvDate} | Tech: <strong>${s.attendedBy}</strong></div>
+        </div>
+        <div style="display:flex; gap:4px; align-items:center;">
+          <span class="badge ${statusBadge}">${statusText}</span>
+          <button class="btn btn-outline btn-sm" onclick="editServicePrompt('${s.id}')">✏️ Edit</button>
+        </div>
+      </div>
+
+      <div style="font-size:12px; margin-bottom:4px;"><strong>Machine:</strong> ${s.machine}</div>
+      <div style="font-size:11.5px; margin-bottom:6px;"><strong>Reported Issue:</strong> ${s.problem}</div>
+
+      ${s.status === 'Work Completed' ? `
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:6px; border-radius:6px; font-size:11px; margin-bottom:6px;">
+          <div>✅ <strong>Action:</strong> ${s.actionDone}</div>
+          <div>⚙️ <strong>Part Deducted:</strong> ${s.partUsed || 'None'}</div>
+        </div>
+      ` : `
+        <button class="btn btn-primary btn-sm btn-block" onclick="openExecuteServiceModal('${s.id}')">🛠️ Attend & Mark Completed</button>
+      `}
+
+      <div class="audit-log-box">${auditHtml}</div>
+    `;
+    c.appendChild(card);
+  });
+  updateGlobalReminders();
+}
+window.renderServices = renderServices;
+
+function openServiceCallModal(srvObj = null) {
+  const title = document.getElementById('serviceModalTitle');
+  const editId = document.getElementById('editServiceId');
+
+  if(srvObj) {
+    title.textContent = "Edit Service Call";
+    editId.value = srvObj.id;
+    document.getElementById('srvCustSearchInput').value = `${srvObj.customerName} (${srvObj.phone || ''})`;
+    document.getElementById('srvStaffSelect').value = srvObj.attendedBy;
+    document.getElementById('srvMachine').value = srvObj.machine;
+    document.getElementById('srvRecvDate').value = srvObj.recvDate;
+    document.getElementById('srvTargetDate').value = srvObj.targetDate;
+    document.getElementById('srvStatusSelect').value = srvObj.status;
+    document.getElementById('srvProblem').value = srvObj.problem;
+    toggleServiceCompletionFields(srvObj.status);
+    if(srvObj.status === 'Work Completed') {
+      document.getElementById('srvDoneDate').value = srvObj.doneDate;
+      document.getElementById('srvActionDone').value = srvObj.actionDone;
+      document.getElementById('srvPartSearchInput').value = srvObj.partUsed;
+    }
+  } else {
+    title.textContent = "New Service / Repair Lead";
+    editId.value = "";
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('srvCustSearchInput').value = "";
+    document.getElementById('srvRecvDate').value = today;
+    document.getElementById('srvTargetDate').value = today;
+    document.getElementById('srvMachine').value = "";
+    document.getElementById('srvProblem').value = "";
+    document.getElementById('srvStatusSelect').value = "Pending / Scheduled";
+    toggleServiceCompletionFields("Pending / Scheduled");
+  }
+
+  document.getElementById('serviceModal').style.display = 'flex';
+}
+function closeServiceModal() { document.getElementById('serviceModal').style.display = 'none'; }
+
+function toggleServiceCompletionFields(statusVal) {
+  const f = document.getElementById('srvCompletedFields');
+  f.style.display = (statusVal === 'Work Completed') ? 'block' : 'none';
+  if(f.style.display === 'block') {
+    document.getElementById('srvDoneDate').value = new Date().toISOString().split('T')[0];
+  }
+}
+
+function saveServiceAction() {
+  const editId = document.getElementById('editServiceId').value;
+  const custSearch = document.getElementById('srvCustSearchInput').value.trim();
+  const cust = resolveCustomerFromSearch(custSearch);
+  const staff = document.getElementById('srvStaffSelect').value;
+  const mach = document.getElementById('srvMachine').value.trim();
+  const rDate = document.getElementById('srvRecvDate').value;
+  const tDate = document.getElementById('srvTargetDate').value;
+  const status = document.getElementById('srvStatusSelect').value;
+  const prob = document.getElementById('srvProblem').value.trim();
+
+  let doneDate = "";
+  let actDone = "";
+  let partUsedName = "";
+
+  if(status === 'Work Completed') {
+    doneDate = document.getElementById('srvDoneDate').value;
+    actDone = document.getElementById('srvActionDone').value.trim();
+    const partSearch = document.getElementById('srvPartSearchInput').value.trim();
+    const part = resolvePartFromSearch(partSearch);
+    if(part) {
+      partUsedName = `${part.name} [${part.code}]`;
+      part.stock = Math.max(0, part.stock - 1);
+      setStored("INVENTORY", sampleInventory);
+    } else {
+      partUsedName = partSearch;
+    }
+  }
+
+  const custName = cust ? cust.name : custSearch.split('(')[0].trim();
+  const phone = cust ? cust.phone : "";
+
+  if(editId) {
+    const s = serviceCallsData.find(x => x.id === editId);
+    if(s) {
+      s.customerName = custName;
+      s.phone = phone;
+      s.attendedBy = staff;
+      s.machine = mach;
+      s.recvDate = rDate;
+      s.targetDate = tDate;
+      s.status = status;
+      s.problem = prob;
+      if(status === 'Work Completed') {
+        s.doneDate = doneDate;
+        s.actionDone = actDone;
+        s.partUsed = partUsedName;
+      }
+      s.auditTrail = s.auditTrail || [];
+      s.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Updated status" });
+    }
+  } else {
+    serviceCallsData.unshift({
+      id: "SRV-" + Math.floor(100 + Math.random() * 900),
+      customerName: custName,
+      phone: phone,
+      machine: mach || "HPW Plunger Pump",
+      recvDate: rDate,
+      targetDate: tDate,
+      status: status,
+      problem: prob,
+      attendedBy: staff,
+      doneDate: doneDate,
+      actionDone: actDone,
+      partUsed: partUsedName,
+      auditTrail: [{ by: currentUser.name, time: getNowStr(), note: "Service logged" }]
+    });
+  }
+
+  setStored("SERVICES", serviceCallsData);
+  closeServiceModal();
+  renderServices();
+  renderStockList();
+  alert("Service record saved & synced to cloud!");
+}
+
+function openExecuteServiceModal(srvId) {
+  const s = serviceCallsData.find(x => x.id ===生长srvId);
+  if(s) {
+    openServiceCallModal(s);
+    document.getElementById('srvStatusSelect').value = "Work Completed";
+    toggleServiceCompletionFields("Work Completed");
+  }
+}
+function editServicePrompt(srvId) {
+  const s = serviceCallsData.find(x => x.id === srvId);
+  if(s) openServiceCallModal(s);
+}
+
+/* ================= TAB 4: INVENTORY & CUSTOMERS ================= */
+function renderStockList() {
+  const c = document.getElementById('stockListContainer');
+  c.innerHTML = '';
+  document.getElementById('totalPartsBadge').textContent = `${sampleInventory.length} Items Loaded`;
+
+  sampleInventory.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong style="font-size:13.5px;">${item.name}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">${item.code} | ${item.category} | HSN: ${item.hsn || '84139190'}</div>
+        </div>
+        <div style="text-align:right;">
+          <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}">${item.stock} in stock</span>
+          <div style="font-size:12px; font-weight:bold; color:var(--primary);">₹${item.rate}</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:6px; border-top:1px solid #f1f5f9; padding-top:4px;">
+        <button class="btn btn-outline btn-sm" onclick="editStockItemPrompt(${item.id})">✏️ Edit</button>
+        <button class="btn btn-danger-sm" onclick="deleteStockItem(${item.id})">🗑️</button>
+      </div>
+    `;
+    c.appendChild(card);
+  });
+}
+window.renderStockList = renderStockList;
+
+function filterStockList(val) {
+  const q = val.toLowerCase().trim();
+  const c = document.getElementById('stockListContainer');
+  c.innerHTML = '';
+  sampleInventory.filter(i => i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q) || i.category.toLowerCase().includes(q)).forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong style="font-size:13.5px;">${item.name}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">${item.code}</div>
+        </div>
+        <div style="text-align:right;">
+          <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}">${item.stock} in stock</span>
+          <div style="font-size:12px; font-weight:bold;">₹${item.rate}</div>
+        </div>
+      </div>
+    `;
+    c.appendChild(card);
+  });
+}
+
+function openAddPartModal(partObj = null) {
+  const title = document.getElementById('stockModalTitle');
+  const editId = document.getElementById('editStockId');
+  if(partObj) {
+    title.textContent = "Edit Inventory Part";
+    editId.value = partObj.id;
+    document.getElementById('stkName').value = partObj.name;
+    document.getElementById('stkCode').value = partObj.code;
+    document.getElementById('stkCategory').value = partObj.category;
+    document.getElementById('stkQty').value = partObj.stock;
+    document.getElementById('stkRate').value = partObj.rate;
+  } else {
+    title.textContent = "Add New Item to Inventory";
+    editId.value = "";
+    document.getElementById('stkName').value = "";
+    document.getElementById('stkCode').value = "";
+    document.getElementById('stkQty').value = "10";
+    document.getElementById('stkRate').value = "1000";
+  }
+  document.getElementById('stockItemModal').style.display = 'flex';
+}
+function closeStockModal() { document.getElementById('stockItemModal').style.display = 'none'; }
+
+function saveStockItemAction() {
+  const editId = document.getElementById('editStockId').value;
+  const name = document.getElementById('stkName').value.trim();
+  const code = document.getElementById('stkCode').value.trim();
+  const cat = document.getElementById('stkCategory').value;
+  const stock = parseInt(document.getElementById('stkQty').value) || 0;
+  const rate = parseFloat(document.getElementById('stkRate').value) || 0;
+
+  if(!name || !code) { alert("Please enter part name and code!"); return; }
+
+  if(editId) {
+    const item = sampleInventory.find(x => x.id === parseInt(editId));
+    if(item) {
+      item.name = name; item.code = code; item.category = cat; item.stock = stock; item.rate = rate;
+    }
+  } else {
+    sampleInventory.unshift({ id: Date.now(), name, code, category: cat, stock, rate, hsn: "84139190" });
+  }
+
+  setStored("INVENTORY", sampleInventory);
+  closeStockModal();
+  renderStockList();
+  populateDropdownsAndDatalists();
+  alert("Item saved in inventory & synced to cloud!");
+}
+
+function editStockItemPrompt(id) {
+  const it = sampleInventory.find(x => x.id === id);
+  if(it) openAddPartModal(it);
+}
+function deleteStockItem(id) {
+  if(confirm("Delete item from inventory?")) {
+    sampleInventory = sampleInventory.filter(x => x.id !== id);
+    setStored("INVENTORY", sampleInventory);
+    renderStockList();
+    populateDropdownsAndDatalists();
+  }
+}
+
+function renderCustomerList() {
+  const c = document.getElementById('customerListContainer');
+  c.innerHTML = '';
+  document.getElementById('totalCustBadge').textContent = `${customerDatabase.length} Registered Clients`;
+
+  customerDatabase.slice(0, 50).forEach(cust => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <strong style="font-size:14px; color:var(--primary);">${cust.name}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">Person: ${cust.person} | Ph: ${cust.phone}</div>
+        </div>
+        <div style="display:flex; gap:4px;">
+          <button class="btn btn-outline btn-sm" onclick="editCustomerPrompt(${cust.id})">✏️ Edit</button>
+          <button class="btn btn-danger-sm" onclick="deleteCustomer(${cust.id})">🗑️</button>
+        </div>
+      </div>
+      <div class="grid-2" style="font-size:11.5px; color:#475569;">
+        <div>📍 ${cust.address}</div>
+        <div>📧 ${cust.email || 'N/A'}</div>
+      </div>
+      <div style="font-size:11px; color:#64748b; margin-top:4px;">GST: <strong>${cust.gst || 'Unregistered'}</strong></div>
+    `;
+    c.appendChild(card);
+  });
+}
+window.renderCustomerList = renderCustomerList;
+
+function filterCustomerList(val) {
+  const q = val.toLowerCase().trim();
+  const c = document.getElementById('customerListContainer');
+  c.innerHTML = '';
+  customerDatabase.filter(cust => cust.name.toLowerCase().includes(q) || cust.phone.includes(q) || cust.address.toLowerCase().includes(q) || (cust.gst && cust.gst.toLowerCase().includes(q))).slice(0, 50).forEach(cust => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-header">
+        <strong style="font-size:14px;">${cust.name}</strong>
+        <div style="display:flex; gap:4px;">
+          <button class="btn btn-outline btn-sm" onclick="editCustomerPrompt(${cust.id})">✏️ Edit</button>
+        </div>
+      </div>
+      <div style="font-size:11.5px;">Ph: ${cust.phone} | Address: ${cust.address}</div>
+    `;
+    c.appendChild(card);
+  });
+}
+
+function openAddCustomerModal(cObj = null) {
+  const title = document.getElementById('custModalTitle');
+  const editId = document.getElementById('editCustId');
+  if(cObj) {
+    title.textContent = "Edit Customer Profile";
+    editId.value = cObj.id;
+    document.getElementById('cName').value = cObj.name;
+    document.getElementById('cPhone').value = cObj.phone;
+    document.getElementById('cEmail').value = cObj.email;
+    document.getElementById('cAddress').value = cObj.address;
+    document.getElementById('cGst').value = cObj.gst;
+    document.getElementById('cPerson').value = cObj.person;
+  } else {
+    title.textContent = "Register Client";
+    editId.value = "";
+    document.getElementById('cName').value = "";
+    document.getElementById('cPhone').value = "";
+    document.getElementById('cEmail').value = "";
+    document.getElementById('cAddress').value = "";
+    document.getElementById('cGst').value = "";
+    document.getElementById('cPerson').value = "";
+  }
+  document.getElementById('customerModal').style.display = 'flex';
+}
+function closeCustomerModal() { document.getElementById('customerModal').style.display = 'none'; }
+
+function saveCustomerAction() {
+  const editId = document.getElementById('editCustId').value;
+  const name = document.getElementById('cName').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  const email = document.getElementById('cEmail').value.trim();
+  const addr = document.getElementById('cAddress').value.trim();
+  const gst = document.getElementById('cGst').value.trim();
+  const person = document.getElementById('cPerson').value.trim();
+
+  if(!name || !phone) { alert("Please enter Customer Name and Phone Number!"); return; }
+
+  if(editId) {
+    const cust = customerDatabase.find(x => x.id === parseInt(editId));
+    if(cust) {
+      cust.name = name; cust.phone = phone; cust.email = email; cust.address = addr; cust.gst = gst; cust.person = person;
+    }
+  } else {
+    customerDatabase.unshift({
+      id: Date.now(), name, phone, email, address: addr, gst: gst || "Unregistered", person: person || name
+    });
+  }
+
+  setStored("CUSTOMERS", customerDatabase);
+  closeCustomerModal();
+  renderCustomerList();
+  populateDropdownsAndDatalists();
+  alert("Customer saved & synced to cloud!");
+}
+
+function editCustomerPrompt(id) {
+  const c = customerDatabase.find(x => x.id === id);
+  if(c) openAddCustomerModal(c);
+}
+function deleteCustomer(id) {
+  if(confirm("Delete customer from directory?")) {
+    customerDatabase = customerDatabase.filter(x => x.id !== id);
+    setStored("CUSTOMERS", customerDatabase);
+    renderCustomerList();
+    populateDropdownsAndDatalists();
+  }
+}
+
+function exportCustomersCSV() {
+  let csv = "Name,Phone,Email,Address,GST,Contact Person\n";
+  customerDatabase.forEach(c => {
+    csv += `"${c.name}","${c.phone}","${c.email}","${c.address}","${c.gst}","${c.person}"\n`;
+  });
+  downloadFile(csv, "TTESPL_Customers.csv", "text/csv");
+}
+
+/* ================= TAB 5: BILLING & LEDGER ================= */
+function renderBilling(filterType, empFilter = "ALL") {
+  let totalBilled = 0;
+  let totalRecv = 0;
+  let totalDue = 0;
+
+  ordersData.forEach(o => {
+    totalBilled += o.totalAmount;
+    totalRecv += o.recvAmount;
+    totalDue += o.dueAmount;
+  });
+
+  document.getElementById('metricTotalBilled').textContent = '₹' + totalBilled.toLocaleString('en-IN');
+  document.getElementById('metricTotalRecv').textContent = '₹' + totalRecv.toLocaleString('en-IN');
+  document.getElementById('metricTotalDue').textContent = '₹' + totalDue.toLocaleString('en-IN');
+
+  const container = document.getElementById('billingListContainer');
+  container.innerHTML = '';
+
+  let list = ordersData;
+  if(empFilter !== "ALL") {
+    list = list.filter(o => o.bookedBy === empFilter);
+  }
+
+  if(filterType === 'due') {
+    list = list.filter(o => o.dueAmount > 0);
+    document.getElementById('billingFilterTitle').innerHTML = `🔴 Filtered: <span style="color:var(--danger);">DUE CUSTOMERS ONLY (${list.length})</span>`;
+  } else if(filterType === 'received') {
+    list = list.filter(o => o.dueAmount === 0);
+    document.getElementById('billingFilterTitle').innerHTML = `🟢 Filtered: <span style="color:var(--success);">FULLY PAID (${list.length})</span>`;
+  } else {
+    document.getElementById('billingFilterTitle').textContent = `Showing Invoices (${list.length})`;
+  }
+
+  list.forEach(o => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <strong style="font-size:14px;">${o.customerName}</strong>
+          <div style="font-size:10.5px; color:var(--text-muted);">Invoice: ${o.id} | Staff: <strong>${o.bookedBy}</strong></div>
+        </div>
+        <span class="badge ${o.dueAmount > 0 ? 'badge-danger' : 'badge-delivered'}">${o.dueAmount > 0 ? 'Due: ₹' + o.dueAmount : 'Full Paid'}</span>
+      </div>
+      <div class="grid-3" style="background:#f8fafc; padding:6px; border-radius:6px; font-size:11px; margin-bottom:6px;">
+        <div>Billed: ₹${o.totalAmount}</div>
+        <div>Recv: ₹${o.recvAmount}</div>
+        <div>Due: <strong style="color:var(--danger);">₹${o.dueAmount}</strong></div>
+      </div>
+      <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+        <button class="btn btn-print btn-sm" style="flex:1;" onclick="openInvoicePrintModal('${o.id}')">🖨️ View / Print Tax Invoice</button>
+        ${o.dueAmount > 0 ? `
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="collectDuePayment('${o.id}')">💵 Collect Due</button>
+          <button class="btn btn-wa btn-sm" style="flex:1;" onclick="sendDueWhatsApp('${o.id}')">💬 Due Reminder</button>
+        ` : `<div style="font-size:11px; color:var(--success); font-weight:bold; flex:1; text-align:center;">✓ Cleared</div>`}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+window.renderBilling = renderBilling;
+
+function filterBilling(type) {
+  const emp = document.getElementById('billingEmployeeFilter').value;
+  renderBilling(type, emp);
+}
+function filterBillingByEmployee(empName) {
+  renderBilling('due', empName);
+}
+
+function collectDuePayment(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(!o) return;
+  const amt = prompt(`Collect payment for ${o.customerName} (Due: ₹${o.dueAmount}):`, o.dueAmount);
+  if(amt && !isNaN(amt) && parseFloat(amt) > 0) {
+    const p = parseFloat(amt);
+    const mode = prompt("Payment Mode (Cash / UPI / Bank):", "UPI");
+    o.recvAmount += p;
+    o.dueAmount = Math.max(0, o.totalAmount - o.recvAmount);
+    o.payMode = mode || o.payMode;
+    o.auditTrail = o.auditTrail || [];
+    o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: `Collected ₹${p} via ${mode}` });
+    setStored("ORDERS", ordersData);
+    renderBilling('due', document.getElementById('billingEmployeeFilter').value);
+  }
+}
+
+function sendDueWhatsApp(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(!o) return;
+  const msg = `*PAYMENT REMINDER - TTESPL*%0A*Customer:* ${o.customerName}%0A*Invoice:* ${o.id}%0A*Pending Due Amount:* Rs.${o.dueAmount}%0APlease clear the pending amount at your earliest.%0AThank you, TTESPL Rasulgarh, Bhubaneswar.`;
+  const url = o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
+  window.open(url, '_blank');
+}
+
+function exportLedgerCSV() {
+  let csv = "Invoice,Customer,Phone,Total,Received,Due,Mode,Staff,Date\n";
+  ordersData.forEach(o => {
+    csv += `"${o.id}","${o.customerName}","${o.phone}","${o.totalAmount}","${o.recvAmount}","${o.dueAmount}","${o.payMode}","${o.bookedBy}","${o.orderDate}"\n`;
+  });
+  downloadFile(csv, "TTESPL_Ledger.csv", "text/csv");
+}
+
+function downloadFile(content, fileName, mimeType) {
+  const a = document.createElement('a');
+  mimeType = mimeType || 'application/octet-stream';
+  if (navigator.msSaveBlob) {
+    navigator.msSaveBlob(new Blob([content], { type: mimeType }), fileName);
+  } else if (URL && 'download' in a) {
+    a.href = URL.createObjectURL(new Blob([content], { type: mimeType }));
+    a.setAttribute('download', fileName);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } else {
+    location.href = 'data:application/octet-stream,' + encodeURIComponent(content);
+  }
+}
+
+/* ================= PWA INSTALLATION PROMPT HANDLER ================= */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById('pwaInstallBtn');
+  if (btn) btn.style.display = 'inline-flex';
+});
+
+function triggerPWAInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choice) => {
+      if (choice.outcome === 'accepted') {
+        const btn = document.getElementById('pwaInstallBtn');
+        if (btn) btn.style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+  }
+}
+
+/* Register In-Memory Blob Service Worker for Offline PWA Capabilities */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    const swCode = `
+      self.addEventListener('install', e => self.skipWaiting());
+      self.addEventListener('activate', e => self.clients.claim());
+      self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+    `;
+    const blob = new Blob([swCode], { type: 'application/javascript' });
+    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => {
+      console.log('SW registration note:', err);
+    });
+  });
+}
+
+/* ================= INITIALIZATION ================= */
+window.onload = function() {
+  checkAuthSession();
+};
+</script>
+
+<!-- ================= FIREBASE FIRESTORE REAL-TIME SYNC ENGINE ================= -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { 
+    getFirestore, 
+    collection, 
+    doc, 
+    setDoc, 
+    onSnapshot, 
+    enableIndexedDbPersistence 
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAjsq2wbyXmt8_MjEazM9mAYd5vlZW0dy4",
+    authDomain: "ttespl.firebaseapp.com",
+    projectId: "ttespl",
+    storageBucket: "ttespl.firebasestorage.app",
+    messagingSenderId: "244674439608",
+    appId: "1:244674439608:web:7f7299ffd94e0a0cc5474d",
+    measurementId: "G-HGJFN4G1MV"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  try {
+    enableIndexedDbPersistence(db);
+  } catch (err) {
+    console.warn("Firestore offline persistence notice:", err.code);
+  }
+
+  function updateSyncUI(status, isOnline = true) {
+    const textEl = document.getElementById("syncText");
+    const dotEl = document.getElementById("syncDot");
+    if (textEl) textEl.textContent = status;
+    if (dotEl) {
+      if (isOnline) dotEl.classList.remove("offline");
+      else dotEl.classList.add("offline");
+    }
+  }
+
+  const collectionsMap = {
+    STAFF: { col: "staff", idField: "id" },
+    CUSTOMERS: { col: "customers", idField: "id" },
+    INVENTORY: { col: "inventory", idField: "id" },
+    LEADS: { col: "leads", idField: "id" },
+    ORDERS: { col: "orders", idField: "id" },
+    SERVICES: { col: "services", idField: "id" }
+  };
+
+  window.cloudSync = {
+    pushKey: async function(key, arrayData) {
+      const config = collectionsMap[key];
+      if (!config || !Array.isArray(arrayData)) return;
+
+      try {
+        updateSyncUI("Uploading...", true);
+        for (const item of arrayData) {
+          const docId = String(item[config.idField]);
+          if (docId) {
+            await setDoc(doc(db, config.col, docId), item, { merge: true });
+          }
+        }
+        updateSyncUI("Live Cloud", true);
+      } catch (err) {
+        console.error("Firestore push error:", err);
+        updateSyncUI("Sync Error", false);
+      }
+    }
+  };
+
+  function setupRealtimeListeners() {
+    updateSyncUI("Connecting...", true);
+
+    // 1. Leads
+    onSnapshot(collection(db, "leads"), (snapshot) => {
+      if (!snapshot.empty) {
+        const cloudLeads = [];
+        snapshot.forEach((d) => cloudLeads.push(d.data()));
+        window.leadsData = cloudLeads;
+        localStorage.setItem(window.DB_PREFIX + "LEADS", JSON.stringify(cloudLeads));
+        window.renderLeads();
+      }
+      updateSyncUI("Live Cloud", true);
+    }, (err) => updateSyncUI("Offline", false));
+
+    // 2. Orders & Ledger
+    onSnapshot(collection(db, "orders"), (snapshot) => {
+      if (!snapshot.empty) {
+        const cloudOrders = [];
+        snapshot.forEach((d) => cloudOrders.push(d.data()));
+        window.ordersData = cloudOrders;
+        localStorage.setItem(window.DB_PREFIX + "ORDERS", JSON.stringify(cloudOrders));
+        window.renderOrders();
+        window.renderBilling('all');
+      }
+      updateSyncUI("Live Cloud", true);
+    }, (err) => updateSyncUI("Offline", false));
+
+    // 3. Service Calls
+    onSnapshot(collection(db, "services"), (snapshot) => {
+      if (!snapshot.empty) {
+        const cloudServices = [];
+        snapshot.forEach((d) => cloudServices.push(d.data()));
+        window.serviceCallsData = cloudServices;
+        localStorage.setItem(window.DB_PREFIX + "SERVICES", JSON.stringify(cloudServices));
+        window.renderServices();
+      }
+      updateSyncUI("Live Cloud", true);
+    }, (err) => updateSyncUI("Offline", false));
+
+    // 4. Inventory
+    onSnapshot(collection(db, "inventory"), (snapshot) => {
+      if (!snapshot.empty) {
+        const cloudInv = [];
+        snapshot.forEach((d) => cloudInv.push(d.data()));
+        window.sampleInventory = cloudInv;
+        localStorage.setItem(window.DB_PREFIX + "INVENTORY", JSON.stringify(cloudInv));
+        window.renderStockList();
+        window.populateDropdownsAndDatalists();
+      }
+      updateSyncUI("Live Cloud", true);
+    }, (err) => updateSyncUI("Offline", false));
+
+    // 5. Customers
+    onSnapshot(collection(db, "customers"), (snapshot) => {
+      if (!snapshot.empty) {
+        const cloudCust = [];
+        snapshot.forEach((d) => cloudCust.push(d.data()));
+        window.customerDatabase = cloudCust;
+        localStorage.setItem(window.DB_PREFIX + "CUSTOMERS", JSON.stringify(cloudCust));
+        window.renderCustomerList();
+        window.populateDropdownsAndDatalists();
+      }
+      updateSyncUI("Live Cloud", true);
+    }, (err) => updateSyncUI("Offline", false));
+  }
+
+  async function seedInitialCloudData() {
+    for (const [key, config] of Object.entries(collectionsMap)) {
+      const localData = window.getStored(key, []);
+      if (localData && localData.length > 0) {
+        for (const item of localData) {
+          const docId = String(item[config.idField]);
+          if (docId) {
+            await setDoc(doc(db, config.col, docId), item, { merge: true });
+          }
+        }
+      }
+    }
+  }
+
+  seedInitialCloudData().then(() => {
+    setupRealtimeListeners();
+  });
+</script>
+</body>
+</html>
