@@ -3277,12 +3277,12 @@ window.onload = function() {
   link('teamChatData', () => teamChatData, v => { teamChatData = v; });
   link('currentUser', () => currentUser, v => { currentUser = v; });
 
-  // Chat file limit: Firestore doc max 1MB, so keep files small
+  // Chat file limit: Firestore doc max 10MB, so keep files small
   window.handleChatFileUpload = function (event) {
     const file = event.target.files[0];
     if (!file) return;
     if (file.size > 700 * 1024) {
-      alert("Please select files under 700 KB for live chat!");
+      alert("Please select files under 10000 KB for live chat!");
       event.target.value = '';
       return;
     }
@@ -3295,7 +3295,7 @@ window.onload = function() {
   };
 })();
 </script>
-  <script src="live-sync.js?v=2"></script>
+  <script src="live-sync.js?v=3"></script>
   <script type="text/plain">
 </body>
 </html>
