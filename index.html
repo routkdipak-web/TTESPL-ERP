@@ -16,7 +16,7 @@
 <!-- Inline Embedded PWA Web Manifest -->
 <link rel="manifest" href='data:application/manifest+json,{"name":"Twin Town Express Services ERP","short_name":"TTESPL ERP","start_url":".","display":"standalone","background_color":"%230f3d6c","theme_color":"%230f3d6c","orientation":"portrait","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"192x192","type":"image/png"},{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"512x512","type":"image/png"}]}'>
 
-<!-- SheetJS (xlsx) for Excel / CSV Imports -->
+<!-- SheetJS for Excel/CSV Parsing -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
@@ -39,7 +39,17 @@
     --radius: 10px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-  body { background: var(--bg); color: var(--text); padding-bottom: 74px; }
+  body { background: var(--bg); color: var(--text); padding-bottom: 74px; overflow-x: hidden; }
+
+  /* Pull To Refresh Banner */
+  #pullToRefreshIndicator {
+    position: fixed; top: 0; left: 0; right: 0; height: 42px;
+    background: var(--primary); color: #ffffff; font-size: 11.5px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transform: translateY(-100%); transition: transform 0.25s ease-out; z-index: 9999;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+  #pullToRefreshIndicator.visible { transform: translateY(0); }
 
   /* Cloud Sync Status Indicator */
   .sync-badge {
@@ -50,7 +60,7 @@
   .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
   .sync-dot.offline { background: #f87171; }
 
-  /* Audit Log Box Styles */
+  /* Audit Log Box */
   .audit-log-box {
     background: #f8fafc; border-top: 1px dashed var(--border); padding: 6px 8px;
     margin-top: 6px; border-radius: 4px; font-size: 10px; color: var(--text-muted);
@@ -159,11 +169,11 @@
   .items-table td { padding: 5px 4px; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
 
   /* Sub-tabs */
-  .sub-tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1.5px solid var(--border); padding-bottom: 6px; }
-  .sub-tab-btn { padding: 5px 12px; font-size: 12px; font-weight: 700; border: none; background: #e2e8f0; border-radius: 6px; cursor: pointer; }
+  .sub-tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1.5px solid var(--border); padding-bottom: 6px; overflow-x: auto; }
+  .sub-tab-btn { padding: 5px 12px; font-size: 11.5px; font-weight: 700; border: none; background: #e2e8f0; border-radius: 6px; cursor: pointer; white-space: nowrap; }
   .sub-tab-btn.active { background: var(--primary); color: white; }
 
-  /* WhatsApp Style Live Group Chat Layout */
+  /* Chat Box */
   .chat-box-card {
     background: #ffffff; border: 1px solid var(--border); border-radius: 12px;
     display: flex; flex-direction: column; height: calc(100vh - 195px); overflow: hidden;
@@ -172,40 +182,18 @@
     background: #f1f5f9; padding: 8px 12px; border-bottom: 1px solid var(--border);
     display: flex; justify-content: space-between; align-items: center;
   }
-  .typing-indicator-bar {
-    font-size: 11px; color: var(--success); font-weight: 700; height: 16px;
-    display: flex; align-items: center; gap: 4px;
-  }
-  .chat-stream {
-    flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
-    background: #e2e8f0;
-  }
-  .bubble {
-    max-width: 82%; padding: 8px 12px; border-radius: 12px; font-size: 12.5px; line-height: 1.35;
-    position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.08); word-break: break-word;
-  }
-  .bubble.me {
-    align-self: flex-end; background: #dcf8c6; border-bottom-right-radius: 2px; color: #064e3b;
-  }
-  .bubble.other {
-    align-self: flex-start; background: #ffffff; border-bottom-left-radius: 2px; color: #1e293b;
-  }
+  .typing-indicator-bar { font-size: 11px; color: var(--success); font-weight: 700; height: 16px; display: flex; align-items: center; gap: 4px; }
+  .chat-stream { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #e2e8f0; }
+  .bubble { max-width: 82%; padding: 8px 12px; border-radius: 12px; font-size: 12.5px; line-height: 1.35; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.08); word-break: break-word; }
+  .bubble.me { align-self: flex-end; background: #dcf8c6; border-bottom-right-radius: 2px; color: #064e3b; }
+  .bubble.other { align-self: flex-start; background: #ffffff; border-bottom-left-radius: 2px; color: #1e293b; }
   .bubble-author { font-size: 10.5px; font-weight: 800; color: var(--primary); margin-bottom: 2px; }
   .bubble-time { font-size: 9px; opacity: 0.65; text-align: right; margin-top: 4px; }
-  .bubble-file-link {
-    display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.05);
-    padding: 6px 8px; border-radius: 6px; text-decoration: none; color: inherit; font-weight: 600;
-    margin-top: 4px; border: 1px dashed #cbd5e1;
-  }
-  .bubble-img-preview {
-    max-width: 100%; border-radius: 6px; margin-top: 4px; cursor: pointer;
-  }
-  .chat-input-bar {
-    background: #ffffff; border-top: 1px solid var(--border); padding: 8px 10px;
-    display: flex; align-items: center; gap: 6px;
-  }
+  .bubble-file-link { display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.05); padding: 6px 8px; border-radius: 6px; text-decoration: none; color: inherit; font-weight: 600; margin-top: 4px; border: 1px dashed #cbd5e1; }
+  .bubble-img-preview { max-width: 100%; border-radius: 6px; margin-top: 4px; cursor: pointer; }
+  .chat-input-bar { background: #ffffff; border-top: 1px solid var(--border); padding: 8px 10px; display: flex; align-items: center; gap: 6px; }
 
-  /* Printable A4 GST Tax Invoice Styles */
+  /* Printable Invoice */
   @media print {
     body * { visibility: hidden; }
     #printableInvoiceArea, #printableInvoiceArea * { visibility: visible; }
@@ -220,6 +208,11 @@
 </style>
 </head>
 <body>
+
+<!-- Pull to Refresh Banner -->
+<div id="pullToRefreshIndicator">
+  <span>🔄</span> <span id="ptrText">Refreshing data from Cloud...</span>
+</div>
 
 <!-- Hidden File Inputs -->
 <input type="file" id="bulkExcelFileInput" style="display:none;" accept=".xlsx, .xls, .csv" onchange="processSelectedExcelFile(event)">
@@ -383,11 +376,12 @@
       <div id="serviceListContainer"></div>
     </div>
 
-    <!-- ================= TAB 4: INVENTORY & CUSTOMER DIRECTORY ================= -->
+    <!-- ================= TAB 4: INVENTORY, MACHINES & CUSTOMERS ================= -->
     <div id="view-inventory" class="view-panel">
       <div class="sub-tabs">
         <button class="sub-tab-btn active" id="subTabStockBtn" onclick="switchInventorySubTab('stock')">📦 Spares & Stock</button>
-        <button class="sub-tab-btn" id="subTabCustBtn" onclick="switchInventorySubTab('customer')">👥 Customer Directory (4000+)</button>
+        <button class="sub-tab-btn" id="subTabMachBtn" onclick="switchInventorySubTab('machines')">🚜 Machinery Catalog</button>
+        <button class="sub-tab-btn" id="subTabCustBtn" onclick="switchInventorySubTab('customer')">👥 Customer Directory</button>
       </div>
 
       <!-- SUB-TAB 1: STOCK MANAGEMENT -->
@@ -396,26 +390,40 @@
           <span class="badge badge-delivered" id="totalPartsBadge">0 Items</span>
           <div style="display:flex; gap:5px;">
             <button class="btn btn-outline btn-sm" onclick="downloadSampleStockExcel()">📥 Sample Excel</button>
-            <button class="btn btn-excel btn-sm" onclick="triggerExcelImport('INVENTORY')">📤 Import Excel / CSV</button>
+            <button class="btn btn-excel btn-sm" onclick="triggerExcelImport('INVENTORY')">📤 Import Excel</button>
             <button class="btn btn-accent btn-sm" onclick="openAddPartModal()">+ Add Item</button>
           </div>
         </div>
-        <input type="text" id="stockFilterInput" class="form-control" placeholder="🔍 Instant search part by name, code or category..." oninput="filterStockList(this.value)" style="margin-bottom:10px;">
+        <input type="text" id="stockFilterInput" class="form-control" placeholder="🔍 Search part by name, code or category..." oninput="filterStockList(this.value)" style="margin-bottom:10px;">
         <div id="stockListContainer"></div>
       </div>
 
-      <!-- SUB-TAB 2: CUSTOMERS DIRECTORY -->
+      <!-- SUB-TAB 2: MACHINERY DIRECTORY -->
+      <div id="invSubPanelMachinery" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+          <span class="badge badge-info" id="totalMachBadge">0 Machines</span>
+          <div style="display:flex; gap:5px;">
+            <button class="btn btn-outline btn-sm" onclick="downloadSampleMachExcel()">📥 Sample Excel</button>
+            <button class="btn btn-excel btn-sm" onclick="triggerExcelImport('MACHINES')">📤 Import Excel</button>
+            <button class="btn btn-primary btn-sm" onclick="openAddMachineModal()">+ Add Machine</button>
+          </div>
+        </div>
+        <input type="text" id="machFilterInput" class="form-control" placeholder="🔍 Search machine by Model, Pump Type, HP, or Bar..." oninput="filterMachineList(this.value)" style="margin-bottom:10px;">
+        <div id="machineryListContainer"></div>
+      </div>
+
+      <!-- SUB-TAB 3: CUSTOMERS DIRECTORY -->
       <div id="invSubPanelCustomer" style="display:none;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
           <span class="badge badge-info" id="totalCustBadge">Registered Clients</span>
           <div style="display:flex; gap:5px;">
             <button class="btn btn-outline btn-sm" onclick="downloadSampleCustExcel()">📥 Sample Excel</button>
-            <button class="btn btn-excel btn-sm" onclick="triggerExcelImport('CUSTOMERS')">📤 Import Excel / CSV</button>
-            <button class="btn btn-outline btn-sm" onclick="exportCustomersCSV()">📥 Export CSV</button>
-            <button class="btn btn-primary btn-sm" onclick="openAddCustomerModal()">+ Register Client</button>
+            <button class="btn btn-excel btn-sm" onclick="triggerExcelImport('CUSTOMERS')">📤 Import Excel</button>
+            <button class="btn btn-outline btn-sm" onclick="exportCustomersCSV()">📥 CSV</button>
+            <button class="btn btn-primary btn-sm" onclick="openAddCustomerModal()">+ Register</button>
           </div>
         </div>
-        <input type="text" id="custFilterInput" class="form-control" placeholder="🔍 Search among 4000+ customers by Name, Phone, GST, City..." oninput="filterCustomerList(this.value)" style="margin-bottom:10px;">
+        <input type="text" id="custFilterInput" class="form-control" placeholder="🔍 Search customers by Name, Phone, GST, City..." oninput="filterCustomerList(this.value)" style="margin-bottom:10px;">
         <div id="customerListContainer"></div>
       </div>
     </div>
@@ -463,7 +471,6 @@
     <!-- ================= TAB 6: WHATSAPP-STYLE LIVE TEAM CHAT ================= -->
     <div id="view-chat" class="view-panel">
       <div class="chat-box-card">
-        <!-- Live Header Bar -->
         <div class="chat-header-bar">
           <div>
             <strong style="color:var(--primary); font-size:13px;">💬 TTESPL Team Live Hub</strong>
@@ -472,10 +479,8 @@
           <span class="badge badge-delivered" id="chatCountBadge">0 msgs</span>
         </div>
 
-        <!-- Chat Stream -->
         <div class="chat-stream" id="chatMessagesContainer"></div>
 
-        <!-- Chat Input Bar -->
         <div class="chat-input-bar">
           <button class="btn btn-outline btn-sm" onclick="document.getElementById('chatAttachmentInput').click()" style="padding:6px 9px;" title="Send Picture / File">📎</button>
           <input type="text" id="chatInputMessage" class="form-control" placeholder="Type message..." oninput="handleTypingEvent()" onkeydown="if(event.key==='Enter') sendLiveChatMessage()">
@@ -516,10 +521,10 @@
 
 </div>
 
-<!-- ================= MODALS ================= -->
-
+<!-- ================= DATALISTS FOR SEARCHABLE DROPDOWNS ================= -->
 <datalist id="customerDatalist"></datalist>
 <datalist id="productDatalist"></datalist>
+<datalist id="machineDatalist"></datalist>
 
 <!-- 1. LEAD MODAL -->
 <div id="leadModal" class="auth-overlay" style="display:none;">
@@ -531,7 +536,7 @@
     <input type="hidden" id="editLeadId">
     
     <div class="form-group">
-      <label class="form-label">🔍 Type Customer Name or Phone (Instant Filter 4000+):</label>
+      <label class="form-label">🔍 Select Customer:</label>
       <input type="text" id="leadCustSearchInput" class="form-control" list="customerDatalist" placeholder="Type name or phone...">
     </div>
 
@@ -545,10 +550,12 @@
         <select id="leadStaffSelect" class="form-control emp-dropdown"></select>
       </div>
     </div>
+
+    <!-- Searchable Machine Select with Datalist -->
     <div class="grid-2">
       <div class="form-group">
-        <label class="form-label">Machine Inquired</label>
-        <input type="text" id="leadMachine" class="form-control" placeholder="e.g. AR Triplex 200 Bar">
+        <label class="form-label">🚜 Machine Model (Searchable):</label>
+        <input type="text" id="leadMachine" class="form-control" list="machineDatalist" placeholder="Type machine or select..." oninput="onMachineSelect(this.value)">
       </div>
       <div class="form-group">
         <label class="form-label">Quoted Price (₹)</label>
@@ -644,7 +651,7 @@
     
     <div class="grid-2">
       <div class="form-group">
-        <label class="form-label">🔍 Customer (Instant Search):</label>
+        <label class="form-label">🔍 Customer:</label>
         <input type="text" id="ordCustSearchInput" class="form-control" list="customerDatalist" placeholder="Type customer name/phone...">
       </div>
       <div class="form-group">
@@ -728,10 +735,12 @@
         <select id="srvStaffSelect" class="form-control emp-dropdown"></select>
       </div>
     </div>
+
+    <!-- Searchable Machine Select with Datalist -->
     <div class="grid-2">
       <div class="form-group">
-        <label class="form-label">Machine Model</label>
-        <input type="text" id="srvMachine" class="form-control" placeholder="AR Pump 15.20 / Compressor">
+        <label class="form-label">🚜 Machine Model (Searchable):</label>
+        <input type="text" id="srvMachine" class="form-control" list="machineDatalist" placeholder="Search machine model...">
       </div>
       <div class="form-group">
         <label class="form-label">Call Received Date</label>
@@ -820,7 +829,43 @@
   </div>
 </div>
 
-<!-- 7. CUSTOMER PROFILE MODAL -->
+<!-- 7. MACHINE CATALOG MODAL -->
+<div id="machineItemModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title" id="machModalTitle">Machinery Catalog Item</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeMachineModal()">✕</button>
+    </div>
+    <input type="hidden" id="editMachId">
+    <div class="form-group">
+      <label class="form-label">Machine Model Name</label>
+      <input type="text" id="mName" class="form-control" placeholder="e.g. AR Triplex 200 Bar Commercial Washer">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Pump Model</label>
+        <input type="text" id="mPump" class="form-control" placeholder="AR 15.20 / Hawk">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Motor Specs</label>
+        <input type="text" id="mMotor" class="form-control" placeholder="5 HP 3-Phase 1440 RPM">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Pressure (Bar)</label>
+        <input type="number" id="mBar" class="form-control" placeholder="200">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Standard Price (₹)</label>
+        <input type="number" id="mPrice" class="form-control" placeholder="85000">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveMachineAction()">💾 Save Machine</button>
+  </div>
+</div>
+
+<!-- 8. CUSTOMER PROFILE MODAL -->
 <div id="customerModal" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="card-header">
@@ -860,7 +905,7 @@
   </div>
 </div>
 
-<!-- ================= 8. DAILY CASH CLOSING MODAL ================= -->
+<!-- 9. DAILY CASH CLOSING MODAL -->
 <div id="cashClosingModal" class="auth-overlay" style="display:none;">
   <div class="auth-card" style="max-width:540px;">
     <div class="card-header">
@@ -910,7 +955,7 @@
   </div>
 </div>
 
-<!-- ================= 9. GST TAX INVOICE PREVIEW & PRINT MODAL ================= -->
+<!-- 10. GST TAX INVOICE PREVIEW & PRINT MODAL -->
 <div id="invoicePrintModal" class="auth-overlay" style="display:none; z-index:3000;">
   <div class="auth-card" style="max-width:720px; width:95%;">
     <div class="card-header no-print">
@@ -1015,7 +1060,7 @@
 </div>
 
 <script>
-/* ================= PERSISTENT DATABASE ENGINE & CLOUD BRIDGE ================= */
+/* ================= PERSISTENT STATE & CLOUD SYNC ENGINE ================= */
 const DB_PREFIX = "TTESPL_ERP_";
 window.DB_PREFIX = DB_PREFIX;
 
@@ -1062,6 +1107,14 @@ let sampleInventory = getStored("INVENTORY", [
 ]);
 window.sampleInventory = sampleInventory;
 
+let machineryDatabase = getStored("MACHINERY", [
+  { id: 201, name: "AR Triplex 200 Bar Commercial Washer", pump: "AR 15.20", motor: "5 HP 3-Phase", bar: 200, price: 85000 },
+  { id: 202, name: "Hawk Triplex 160 Bar Heavy Plunger Washer", pump: "Hawk NMT-1520", motor: "5 HP 3-Phase", bar: 160, price: 82000 },
+  { id: 203, name: "Industrial 3HP Two-Stage Air Compressor", pump: "Cast Iron 2-Cylinder", motor: "3 HP Single-Phase", bar: 12, price: 42000 },
+  { id: 204, name: "Automatic Upholstery Steam Extractor", pump: "Heavy Extraction Vacuum", motor: "2400W Dual", bar: 8, price: 38000 }
+]);
+window.machineryDatabase = machineryDatabase;
+
 let leadsData = getStored("LEADS", [
   {
     id: "LEAD-101",
@@ -1069,7 +1122,7 @@ let leadsData = getStored("LEADS", [
     phone: "9861099881",
     inquiryDate: "2026-09-12",
     handledBy: "Dipak Rout",
-    machine: "AR 200 Bar Commercial High Pressure Washer",
+    machine: "AR Triplex 200 Bar Commercial Washer",
     quotedPrice: 85000,
     status: "Installed",
     followupDate: "2026-09-24",
@@ -1119,7 +1172,7 @@ let serviceCallsData = getStored("SERVICES", [
     id: "SRV-501",
     customerName: "Apex Detailing Hub",
     phone: "9937088112",
-    machine: "AR 15.20 Triplex Plunger Pump",
+    machine: "AR Triplex 200 Bar Commercial Washer",
     recvDate: "2026-09-20",
     targetDate: "2026-09-24",
     status: "Pending / Scheduled",
@@ -1133,13 +1186,12 @@ let serviceCallsData = getStored("SERVICES", [
 ]);
 window.serviceCallsData = serviceCallsData;
 
-// WHATSAPP STYLE LIVE GROUP CHAT DATABASE
 let teamChatData = getStored("TEAM_CHATS", [
   { id: "msg_1", sender: "Dipak Rout", role: "Machinery Lead", text: "Welcome to TTESPL Live Portal. Updates direct yahan share karein.", time: "10:00 AM", file: null }
 ]);
 window.teamChatData = teamChatData;
 
-/* ================= AUTHENTICATION LOGIC ================= */
+/* ================= AUTHENTICATION ================= */
 function checkAuthSession() {
   if(!currentUser) {
     document.getElementById('authScreen').style.display = 'flex';
@@ -1161,7 +1213,6 @@ function showAuthMode(mode) {
 function processLogin() {
   const p = document.getElementById('loginPhone').value.trim();
   const pass = document.getElementById('loginPass').value.trim();
-
   const user = registeredEmployees.find(u => u.mobile === p && u.pass === pass);
   if(user) {
     currentUser = user;
@@ -1191,7 +1242,6 @@ function processRegister() {
   const newEmp = { id: Date.now(), name, mobile, role, pass, pin };
   registeredEmployees.push(newEmp);
   setStored("STAFF", registeredEmployees);
-
   currentUser = newEmp;
   setStored("SESSION_USER", newEmp);
   alert(`Welcome ${name}! Registration successful.`);
@@ -1202,7 +1252,6 @@ function processPasswordReset() {
   const mobile = document.getElementById('recPhone').value.trim();
   const pin = document.getElementById('recPin').value.trim();
   const newPass = document.getElementById('recNewPass').value.trim();
-
   const user = registeredEmployees.find(u => u.mobile === mobile && u.pin === pin);
   if(user) {
     if(newPass.length < 4) { alert("Password must be at least 4 characters!"); return; }
@@ -1223,7 +1272,7 @@ function performFullLogout() {
   }
 }
 
-/* ================= UTILITY & DATALIST AUTO-COMPLETE ================= */
+/* ================= UTILITY & DATALISTS ================= */
 function getNowStr() {
   const d = new Date();
   return d.toISOString().split('T')[0] + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1235,11 +1284,13 @@ function refreshAllData() {
   renderOrders();
   renderServices();
   renderStockList();
+  renderMachineryList();
   renderCustomerList();
   renderBilling('all');
   renderChatMessages();
   updateGlobalReminders();
 }
+window.refreshAllData = refreshAllData;
 
 function populateDropdownsAndDatalists() {
   document.querySelectorAll('.emp-dropdown').forEach(sel => {
@@ -1260,8 +1311,21 @@ function populateDropdownsAndDatalists() {
   pDatalist.innerHTML = sampleInventory.map(p => `
     <option value="${p.name} [${p.code}]">In-Stock: ${p.stock} | ₹${p.rate}</option>
   `).join('');
+
+  const mDatalist = document.getElementById('machineDatalist');
+  mDatalist.innerHTML = machineryDatabase.map(m => `
+    <option value="${m.name}">${m.pump} | ${m.motor} | ₹${m.price}</option>
+  `).join('');
 }
 window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
+
+function onMachineSelect(val) {
+  const m = machineryDatabase.find(x => x.name.toLowerCase() === val.toLowerCase() || val.includes(x.name));
+  if(m) {
+    const pInput = document.getElementById('leadPrice');
+    if(pInput && !pInput.value) pInput.value = m.price;
+  }
+}
 
 function resolveCustomerFromSearch(text) {
   if(!text) return null;
@@ -1321,276 +1385,26 @@ function switchTab(tab, el) {
 }
 
 function switchInventorySubTab(type) {
+  document.getElementById('subTabStockBtn').classList.remove('active');
+  document.getElementById('subTabMachBtn').classList.remove('active');
+  document.getElementById('subTabCustBtn').classList.remove('active');
+  document.getElementById('invSubPanelStock').style.display = 'none';
+  document.getElementById('invSubPanelMachinery').style.display = 'none';
+  document.getElementById('invSubPanelCustomer').style.display = 'none';
+
   if(type === 'stock') {
     document.getElementById('subTabStockBtn').classList.add('active');
-    document.getElementById('subTabCustBtn').classList.remove('active');
     document.getElementById('invSubPanelStock').style.display = 'block';
-    document.getElementById('invSubPanelCustomer').style.display = 'none';
     renderStockList();
+  } else if(type === 'machines') {
+    document.getElementById('subTabMachBtn').classList.add('active');
+    document.getElementById('invSubPanelMachinery').style.display = 'block';
+    renderMachineryList();
   } else {
-    document.getElementById('subTabStockBtn').classList.remove('active');
     document.getElementById('subTabCustBtn').classList.add('active');
-    document.getElementById('invSubPanelStock').style.display = 'none';
     document.getElementById('invSubPanelCustomer').style.display = 'block';
     renderCustomerList();
   }
-}
-
-/* ================= WHATSAPP STYLE REAL-TIME CHAT & FILE ATTACHMENTS ================= */
-let typingTimeout = null;
-
-function handleTypingEvent() {
-  if (window.cloudSync && typeof window.cloudSync.setTypingStatus === 'function') {
-    window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", true);
-    clearTimeout(typingTimeout);
-    typingTimeout = setTimeout(() => {
-      window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", false);
-    }, 2000);
-  }
-}
-
-function renderChatMessages() {
-  const container = document.getElementById('chatMessagesContainer');
-  if(!container) return;
-  container.innerHTML = '';
-  document.getElementById('chatCountBadge').textContent = `${teamChatData.length} msgs`;
-
-  teamChatData.forEach(msg => {
-    const isMine = currentUser && msg.sender === currentUser.name;
-    const bubble = document.createElement('div');
-    bubble.className = `bubble ${isMine ? 'me' : 'other'}`;
-    
-    let fileHtml = '';
-    if (msg.file) {
-      if (msg.file.type.startsWith('image/')) {
-        fileHtml = `<img src="${msg.file.data}" class="bubble-img-preview" alt="image" onclick="window.open(this.src)">`;
-      } else {
-        fileHtml = `
-          <a href="${msg.file.data}" download="${msg.file.name}" class="bubble-file-link">
-            <span>📄</span> <span>${msg.file.name}</span>
-          </a>
-        `;
-      }
-    }
-
-    bubble.innerHTML = `
-      <div class="bubble-author">${msg.sender} <span style="font-weight:normal; font-size:9.5px; opacity:0.8;">(${msg.role || 'Staff'})</span></div>
-      ${msg.text ? `<div>${msg.text}</div>` : ''}
-      ${fileHtml}
-      <div class="bubble-time">${msg.time}</div>
-    `;
-    container.appendChild(bubble);
-  });
-
-  container.scrollTop = container.scrollHeight;
-}
-window.renderChatMessages = renderChatMessages;
-
-function sendLiveChatMessage(fileObj = null) {
-  const input = document.getElementById('chatInputMessage');
-  const txt = input.value.trim();
-  if(!txt && !fileObj) return;
-
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  const newMsg = {
-    id: "msg_" + Date.now(),
-    sender: currentUser ? currentUser.name : "Staff",
-    role: currentUser ? currentUser.role : "Team",
-    text: txt,
-    time: timeStr,
-    timestamp: Date.now(),
-    file: fileObj || null
-  };
-
-  teamChatData.push(newMsg);
-  input.value = '';
-  
-  if (window.cloudSync && typeof window.cloudSync.setTypingStatus === 'function') {
-    window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", false);
-  }
-
-  setStored("TEAM_CHATS", teamChatData);
-  renderChatMessages();
-}
-
-function handleChatFileUpload(event) {
-  const file = event.target.files[0];
-  if(!file) return;
-
-  if (file.size > 2 * 1024 * 1024) {
-    alert("Please select files under 2MB for fast live synchronization!");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const fileObj = {
-      name: file.name,
-      type: file.type,
-      data: e.target.result
-    };
-    sendLiveChatMessage(fileObj);
-  };
-  reader.readAsDataURL(file);
-  event.target.value = '';
-}
-
-/* ================= EXCEL / CSV BULK IMPORT & TEMPLATE ENGINE ================= */
-let activeImportTarget = null;
-
-function triggerExcelImport(target) {
-  activeImportTarget = target;
-  const fileInput = document.getElementById('bulkExcelFileInput');
-  fileInput.value = '';
-  fileInput.click();
-}
-
-function processSelectedExcelFile(event) {
-  const file = event.target.files[0];
-  if(!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
-      const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-      if(!rows || rows.length === 0) {
-        alert("The selected Excel sheet has no data!");
-        return;
-      }
-
-      if(activeImportTarget === 'INVENTORY') {
-        importStockRows(rows);
-      } else if(activeImportTarget === 'CUSTOMERS') {
-        importCustomerRows(rows);
-      }
-    } catch(err) {
-      console.error(err);
-      alert("Failed to parse Excel file! Please check the column headers.");
-    }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-function normalizeKey(obj, keys) {
-  for(let k in obj) {
-    const cleanK = k.toString().trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-    for(let target of keys) {
-      if(cleanK === target.toLowerCase().replace(/[^a-z0-9]/g, '')) {
-        return obj[k];
-      }
-    }
-  }
-  return "";
-}
-
-function importStockRows(rows) {
-  let count = 0;
-  rows.forEach(r => {
-    const name = normalizeKey(r, ["Item Name", "Part Name", "Product Name", "Description", "Name"]);
-    const code = normalizeKey(r, ["Part Code", "SKU", "Code", "Item Code", "Model", "Part Number"]);
-    const cat = normalizeKey(r, ["Category", "Group", "Type"]) || "Pump Spares";
-    const stockVal = normalizeKey(r, ["Stock", "Qty", "Quantity", "Available"]) || 0;
-    const rateVal = normalizeKey(r, ["Rate", "Price", "Unit Price", "MRP", "Amount"]) || 0;
-    const hsnVal = normalizeKey(r, ["HSN", "HSN Code", "SAC"]) || "84139190";
-
-    if(name && (code || name)) {
-      const pCode = code ? String(code).trim() : ("SKU-" + Math.floor(1000 + Math.random() * 9000));
-      const existing = sampleInventory.find(x => x.code.toLowerCase() === pCode.toLowerCase() || x.name.toLowerCase() === name.trim().toLowerCase());
-      
-      if(existing) {
-        existing.stock = parseInt(stockVal) || existing.stock;
-        existing.rate = parseFloat(rateVal) || existing.rate;
-        existing.category = cat || existing.category;
-      } else {
-        sampleInventory.push({
-          id: Date.now() + Math.floor(Math.random() * 1000),
-          name: String(name).trim(),
-          code: pCode,
-          category: cat,
-          stock: parseInt(stockVal) || 0,
-          rate: parseFloat(rateVal) || 0,
-          hsn: String(hsnVal).trim()
-        });
-      }
-      count++;
-    }
-  });
-
-  setStored("INVENTORY", sampleInventory);
-  renderStockList();
-  populateDropdownsAndDatalists();
-  alert(`✓ Successfully imported/updated ${count} Spares & Products!`);
-}
-
-function importCustomerRows(rows) {
-  let count = 0;
-  rows.forEach(r => {
-    const name = normalizeKey(r, ["Customer Name", "Garage Name", "Studio Name", "Name", "Client"]);
-    const phone = normalizeKey(r, ["Phone", "Mobile", "Contact", "Phone Number", "Mobile Number"]);
-    const person = normalizeKey(r, ["Contact Person", "Person", "Owner", "Proprietor"]);
-    const address = normalizeKey(r, ["Address", "City", "Location", "Workshop Address"]);
-    const gst = normalizeKey(r, ["GST", "GSTIN", "GST Number"]);
-    const email = normalizeKey(r, ["Email", "Email ID", "Mail"]);
-
-    if(name && phone) {
-      const cleanPhone = String(phone).replace(/[^0-9]/g, '').slice(-10);
-      const existing = customerDatabase.find(x => x.phone === cleanPhone);
-
-      if(existing) {
-        existing.name = String(name).trim();
-        existing.person = person ? String(person).trim() : existing.person;
-        existing.address = address ? String(address).trim() : existing.address;
-        existing.gst = gst ? String(gst).trim() : existing.gst;
-        existing.email = email ? String(email).trim() : existing.email;
-      } else {
-        customerDatabase.push({
-          id: Date.now() + Math.floor(Math.random() * 1000),
-          name: String(name).trim(),
-          phone: cleanPhone,
-          person: person ? String(person).trim() : String(name).trim(),
-          address: address ? String(address).trim() : "Bhubaneswar, Odisha",
-          gst: gst ? String(gst).trim() : "Unregistered",
-          email: email ? String(email).trim() : ""
-        });
-      }
-      count++;
-    }
-  });
-
-  setStored("CUSTOMERS", customerDatabase);
-  renderCustomerList();
-  populateDropdownsAndDatalists();
-  alert(`✓ Successfully imported/updated ${count} Customers!`);
-}
-
-function downloadSampleStockExcel() {
-  const sample = [
-    { "Part Name": "AR High Pressure Water Seal Kit 18mm", "Part Code": "AR-WS-18", "Category": "Pump Spares", "Stock": 50, "Rate": 1850, "HSN": "84139190" },
-    { "Part Name": "AR Ceramic Plunger 18mm", "Part Code": "AR-PL-18", "Category": "Pump Spares", "Stock": 30, "Rate": 1450, "HSN": "84139190" },
-    { "Part Name": "Snow Foam Wash Shampoo (20L)", "Part Code": "CH-FOAM-20", "Category": "Chemicals", "Stock": 25, "Rate": 2800, "HSN": "34029099" }
-  ];
-  const ws = XLSX.utils.json_to_sheet(sample);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Spares_Products");
-  XLSX.writeFile(wb, "TTESPL_Sample_Stock_Template.xlsx");
-}
-
-function downloadSampleCustExcel() {
-  const sample = [
-    { "Customer Name": "Jagannath Detailing Studio", "Contact Person": "Ramesh Behera", "Phone": "9861012345", "Address": "Rasulgarh Industrial Estate, BBSR", "GST": "21AAACT9812K1Z9", "Email": "client@gmail.com" },
-    { "Customer Name": "Konark Car Care", "Contact Person": "Alok Nayak", "Phone": "9437098765", "Address": "Badambadi, Cuttack", "GST": "Unregistered", "Email": "" }
-  ];
-  const ws = XLSX.utils.json_to_sheet(sample);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Customers");
-  XLSX.writeFile(wb, "TTESPL_Sample_Customer_Template.xlsx");
 }
 
 /* ================= TAB 1: LEADS ================= */
@@ -1605,7 +1419,7 @@ function renderLeads() {
     let installHtml = '';
     if(lead.installation && lead.installation.isInstalled) {
       const ins = lead.installation;
-      let freeSrvHtml = ins.freeServices.map(fs => {
+      let freeSrvHtml = (ins.freeServices || []).map(fs => {
         let tag = '';
         let btn = '';
         if(fs.attended) {
@@ -1644,9 +1458,7 @@ function renderLeads() {
             <div>Pump SN: <strong>${ins.pumpSerial}</strong></div>
             <div>Invoice: <strong>${ins.invoiceNo}</strong></div>
           </div>
-          <div style="font-size:11px; font-weight:700; color:#1e40af; margin-bottom:4px;">
-            🛡️ 4 FREE SERVICES SCHEDULE:
-          </div>
+          <div style="font-size:11px; font-weight:700; color:#1e40af; margin-bottom:4px;">🛡️ 4 FREE SERVICES SCHEDULE:</div>
           ${freeSrvHtml}
         </div>
       `;
@@ -1663,12 +1475,13 @@ function renderLeads() {
         <div style="display:flex; gap:4px; align-items:center;">
           <span class="badge ${lead.status === 'Installed' ? 'badge-delivered' : 'badge-pending'}">${lead.status}</span>
           <button class="btn btn-outline btn-sm" onclick="editLeadPrompt('${lead.id}')">✏️ Edit</button>
+          <button class="btn btn-danger-sm" onclick="deleteLeadAction('${lead.id}')">🗑️</button>
         </div>
       </div>
 
       <div class="grid-2" style="font-size:11.5px; margin-bottom:6px;">
         <div>Machine: <strong>${lead.machine}</strong></div>
-        <div>Quoted Amount: <strong>₹${lead.quotedPrice.toLocaleString('en-IN')}</strong></div>
+        <div>Quoted: <strong>₹${lead.quotedPrice.toLocaleString('en-IN')}</strong></div>
       </div>
 
       <div style="background:#f8fafc; padding:6px; border-radius:6px; font-size:11.5px; margin-bottom:6px;">
@@ -1731,7 +1544,7 @@ function saveLeadAction() {
   const followup = document.getElementById('leadFollowupDate').value;
   const rem = document.getElementById('leadRemarks').value.trim();
 
-  if(!custSearch || !mach) { alert("Please select a Customer and enter Machine Model!"); return; }
+  if(!custSearch || !mach) { alert("Please select a Customer and select/enter Machine Model!"); return; }
 
   const custName = cust ? cust.name : custSearch.split('(')[0].trim();
   const phone = cust ? cust.phone : "";
@@ -1770,7 +1583,16 @@ function saveLeadAction() {
   setStored("LEADS", leadsData);
   closeLeadModal();
   renderLeads();
-  alert("Lead saved & synced to cloud!");
+  alert("Lead saved & synced to all staff phones!");
+}
+
+function deleteLeadAction(id) {
+  if(confirm("Confirm delete this Lead permanently from cloud?")) {
+    leadsData = leadsData.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("LEADS", id);
+    setStored("LEADS", leadsData);
+    renderLeads();
+  }
 }
 
 function editLeadPrompt(leadId) {
@@ -1911,6 +1733,7 @@ function renderOrders() {
         <div style="display:flex; gap:4px; align-items:center;">
           <span class="badge ${statusBadge}">${statusText}</span>
           <button class="btn btn-outline btn-sm" onclick="editOrderPrompt('${o.id}')">✏️ Edit</button>
+          <button class="btn btn-danger-sm" onclick="deleteOrderAction('${o.id}')">🗑️</button>
         </div>
       </div>
 
@@ -1958,7 +1781,6 @@ function openOrderModal(orderObj = null) {
     document.getElementById('ordDelDate').value = orderObj.deliveryDate;
     document.getElementById('ordRecvAmt').value = orderObj.recvAmount;
     document.getElementById('ordPayMode').value = orderObj.payMode;
-
     orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.rate));
   } else {
     title.textContent = "New Multi-Item Product Order";
@@ -1993,9 +1815,7 @@ function addOrderItemRow(itemName = "", qty = 1, rate = 0) {
   `;
 
   tbody.appendChild(tr);
-  if(itemName) {
-    onOrderItemInput(tr.querySelector('.item-product-input'));
-  }
+  if(itemName) onOrderItemInput(tr.querySelector('.item-product-input'));
 }
 
 function onOrderItemInput(inputEl) {
@@ -2106,6 +1926,16 @@ function saveOrderAction() {
   alert("Order saved & synced to cloud!");
 }
 
+function deleteOrderAction(id) {
+  if(confirm("Confirm delete this Order permanently?")) {
+    ordersData = ordersData.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("ORDERS", id);
+    setStored("ORDERS", ordersData);
+    renderOrders();
+    renderBilling('all');
+  }
+}
+
 function editOrderPrompt(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(o) openOrderModal(o);
@@ -2139,7 +1969,7 @@ function shareOrderWhatsApp(ordId) {
   window.open(url, '_blank');
 }
 
-/* ================= GST TAX INVOICE PRINT ENGINE ================= */
+/* ================= GST INVOICE PRINT ================= */
 function openInvoicePrintModal(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
@@ -2187,7 +2017,7 @@ function closeInvoicePrintModal() {
   document.getElementById('invoicePrintModal').style.display = 'none';
 }
 
-/* ================= DAILY CASH CLOSING ENGINE ================= */
+/* ================= DAILY CASH CLOSING ================= */
 function openDailyCashClosingModal() {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('closeSummaryDate').textContent = today;
@@ -2199,13 +2029,9 @@ function openDailyCashClosingModal() {
 
   ordersData.forEach(o => {
     if(o.orderDate === today && o.recvAmount > 0) {
-      if(o.payMode === 'Cash') {
-        cashTotal += o.recvAmount;
-      } else if(o.payMode.includes('UPI')) {
-        upiTotal += o.recvAmount;
-      } else {
-        bankTotal += o.recvAmount;
-      }
+      if(o.payMode === 'Cash') cashTotal += o.recvAmount;
+      else if(o.payMode.includes('UPI')) upiTotal += o.recvAmount;
+      else bankTotal += o.recvAmount;
     }
   });
 
@@ -2218,12 +2044,9 @@ function openDailyCashClosingModal() {
     if(el) el.value = "0";
   });
   document.getElementById('denomTotalDisplay').textContent = '₹0';
-
   document.getElementById('cashClosingModal').style.display = 'flex';
 }
-function closeDailyCashClosingModal() {
-  document.getElementById('cashClosingModal').style.display = 'none';
-}
+function closeDailyCashClosingModal() { document.getElementById('cashClosingModal').style.display = 'none'; }
 
 function calcCashDenominations() {
   const n500 = parseInt(document.getElementById('note500').value) || 0;
@@ -2232,7 +2055,6 @@ function calcCashDenominations() {
   const n50 = parseInt(document.getElementById('note50').value) || 0;
   const n20 = parseInt(document.getElementById('note20').value) || 0;
   const n10 = parseInt(document.getElementById('note10').value) || 0;
-
   const total = (n500 * 500) + (n200 * 200) + (n100 * 100) + (n50 * 50) + (n20 * 20) + (n10 * 10);
   document.getElementById('denomTotalDisplay').textContent = '₹' + total.toLocaleString('en-IN');
 }
@@ -2289,6 +2111,7 @@ function renderServices() {
         <div style="display:flex; gap:4px; align-items:center;">
           <span class="badge ${statusBadge}">${statusText}</span>
           <button class="btn btn-outline btn-sm" onclick="editServicePrompt('${s.id}')">✏️ Edit</button>
+          <button class="btn btn-danger-sm" onclick="deleteServiceAction('${s.id}')">🗑️</button>
         </div>
       </div>
 
@@ -2433,6 +2256,15 @@ function saveServiceAction() {
   alert("Service record saved & synced to cloud!");
 }
 
+function deleteServiceAction(id) {
+  if(confirm("Confirm delete this Service call permanently?")) {
+    serviceCallsData = serviceCallsData.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("SERVICES", id);
+    setStored("SERVICES", serviceCallsData);
+    renderServices();
+  }
+}
+
 function openExecuteServiceModal(srvId) {
   const s = serviceCallsData.find(x => x.id === srvId);
   if(s) {
@@ -2446,7 +2278,7 @@ function editServicePrompt(srvId) {
   if(s) openServiceCallModal(s);
 }
 
-/* ================= TAB 4: INVENTORY & CUSTOMERS ================= */
+/* ================= TAB 4: INVENTORY, MACHINERY & CUSTOMERS ================= */
 function renderStockList() {
   const c = document.getElementById('stockListContainer');
   c.innerHTML = '';
@@ -2493,6 +2325,9 @@ function filterStockList(val) {
           <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}">${item.stock} in stock</span>
           <div style="font-size:12px; font-weight:bold;">₹${item.rate}</div>
         </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:6px;">
+        <button class="btn btn-danger-sm" onclick="deleteStockItem(${item.id})">🗑️</button>
       </div>
     `;
     c.appendChild(card);
@@ -2552,11 +2387,128 @@ function editStockItemPrompt(id) {
   const it = sampleInventory.find(x => x.id === id);
   if(it) openAddPartModal(it);
 }
+
 function deleteStockItem(id) {
-  if(confirm("Delete item from inventory?")) {
+  if(confirm("Confirm DELETE this item completely from Cloud & all phones?")) {
     sampleInventory = sampleInventory.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("INVENTORY", id);
     setStored("INVENTORY", sampleInventory);
     renderStockList();
+    populateDropdownsAndDatalists();
+  }
+}
+
+/* Machinery Catalog Sub-Tab Engine */
+function renderMachineryList() {
+  const c = document.getElementById('machineryListContainer');
+  c.innerHTML = '';
+  document.getElementById('totalMachBadge').textContent = `${machineryDatabase.length} Machines`;
+
+  machineryDatabase.forEach(mach => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong style="font-size:14px; color:var(--primary);">🚜 ${mach.name}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">Pump: ${mach.pump} | Motor: ${mach.motor}</div>
+        </div>
+        <div style="text-align:right;">
+          <span class="badge badge-info">${mach.bar} Bar</span>
+          <div style="font-size:12.5px; font-weight:800; color:var(--primary);">₹${mach.price.toLocaleString('en-IN')}</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:6px; border-top:1px solid #f1f5f9; padding-top:4px;">
+        <button class="btn btn-outline btn-sm" onclick="editMachinePrompt(${mach.id})">✏️ Edit</button>
+        <button class="btn btn-danger-sm" onclick="deleteMachineAction(${mach.id})">🗑️</button>
+      </div>
+    `;
+    c.appendChild(card);
+  });
+}
+window.renderMachineryList = renderMachineryList;
+
+function filterMachineList(val) {
+  const q = val.toLowerCase().trim();
+  const c = document.getElementById('machineryListContainer');
+  c.innerHTML = '';
+  machineryDatabase.filter(m => m.name.toLowerCase().includes(q) || m.pump.toLowerCase().includes(q) || m.motor.toLowerCase().includes(q)).forEach(mach => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong style="font-size:14px;">${mach.name}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">${mach.pump} | ${mach.motor}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:12px; font-weight:bold;">₹${mach.price}</div>
+        </div>
+      </div>
+    `;
+    c.appendChild(card);
+  });
+}
+
+function openAddMachineModal(mObj = null) {
+  const title = document.getElementById('machModalTitle');
+  const editId = document.getElementById('editMachId');
+  if(mObj) {
+    title.textContent = "Edit Machinery Details";
+    editId.value = mObj.id;
+    document.getElementById('mName').value = mObj.name;
+    document.getElementById('mPump').value = mObj.pump;
+    document.getElementById('mMotor').value = mObj.motor;
+    document.getElementById('mBar').value = mObj.bar;
+    document.getElementById('mPrice').value = mObj.price;
+  } else {
+    title.textContent = "Add Machine to Catalog";
+    editId.value = "";
+    document.getElementById('mName').value = "";
+    document.getElementById('mPump').value = "AR Triplex Pump";
+    document.getElementById('mMotor').value = "5 HP 3-Phase";
+    document.getElementById('mBar').value = "200";
+    document.getElementById('mPrice').value = "85000";
+  }
+  document.getElementById('machineItemModal').style.display = 'flex';
+}
+function closeMachineModal() { document.getElementById('machineItemModal').style.display = 'none'; }
+
+function saveMachineAction() {
+  const editId = document.getElementById('editMachId').value;
+  const name = document.getElementById('mName').value.trim();
+  const pump = document.getElementById('mPump').value.trim();
+  const motor = document.getElementById('mMotor').value.trim();
+  const bar = parseInt(document.getElementById('mBar').value) || 0;
+  const price = parseFloat(document.getElementById('mPrice').value) || 0;
+
+  if(!name) { alert("Please enter machine model name!"); return; }
+
+  if(editId) {
+    const item = machineryDatabase.find(x => x.id === parseInt(editId));
+    if(item) { item.name = name; item.pump = pump; item.motor = motor; item.bar = bar; item.price = price; }
+  } else {
+    machineryDatabase.unshift({ id: Date.now(), name, pump, motor, bar, price });
+  }
+
+  setStored("MACHINERY", machineryDatabase);
+  closeMachineModal();
+  renderMachineryList();
+  populateDropdownsAndDatalists();
+  alert("Machinery catalog updated!");
+}
+
+function editMachinePrompt(id) {
+  const it = machineryDatabase.find(x => x.id === id);
+  if(it) openAddMachineModal(it);
+}
+
+function deleteMachineAction(id) {
+  if(confirm("Delete this machine from catalog?")) {
+    machineryDatabase = machineryDatabase.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("MACHINERY", id);
+    setStored("MACHINERY", machineryDatabase);
+    renderMachineryList();
     populateDropdownsAndDatalists();
   }
 }
@@ -2673,6 +2625,7 @@ function editCustomerPrompt(id) {
 function deleteCustomer(id) {
   if(confirm("Delete customer from directory?")) {
     customerDatabase = customerDatabase.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("CUSTOMERS", id);
     setStored("CUSTOMERS", customerDatabase);
     renderCustomerList();
     populateDropdownsAndDatalists();
@@ -2707,9 +2660,7 @@ function renderBilling(filterType, empFilter = "ALL") {
   container.innerHTML = '';
 
   let list = ordersData;
-  if(empFilter !== "ALL") {
-    list = list.filter(o => o.bookedBy === empFilter);
-  }
+  if(empFilter !== "ALL") list = list.filter(o => o.bookedBy === empFilter);
 
   if(filterType === 'due') {
     list = list.filter(o => o.dueAmount > 0);
@@ -2807,7 +2758,298 @@ function downloadFile(content, fileName, mimeType) {
   }
 }
 
-/* ================= PWA INSTALLATION PROMPT HANDLER ================= */
+/* ================= WHATSAPP STYLE REAL-TIME CHAT ================= */
+let typingTimeout = null;
+
+function handleTypingEvent() {
+  if (window.cloudSync && typeof window.cloudSync.setTypingStatus === 'function') {
+    window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", true);
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", false);
+    }, 2000);
+  }
+}
+
+function renderChatMessages() {
+  const container = document.getElementById('chatMessagesContainer');
+  if(!container) return;
+  container.innerHTML = '';
+  document.getElementById('chatCountBadge').textContent = `${teamChatData.length} msgs`;
+
+  teamChatData.forEach(msg => {
+    const isMine = currentUser && msg.sender === currentUser.name;
+    const bubble = document.createElement('div');
+    bubble.className = `bubble ${isMine ? 'me' : 'other'}`;
+    
+    let fileHtml = '';
+    if (msg.file) {
+      if (msg.file.type.startsWith('image/')) {
+        fileHtml = `<img src="${msg.file.data}" class="bubble-img-preview" alt="image" onclick="window.open(this.src)">`;
+      } else {
+        fileHtml = `
+          <a href="${msg.file.data}" download="${msg.file.name}" class="bubble-file-link">
+            <span>📄</span> <span>${msg.file.name}</span>
+          </a>
+        `;
+      }
+    }
+
+    bubble.innerHTML = `
+      <div class="bubble-author">${msg.sender} <span style="font-weight:normal; font-size:9.5px; opacity:0.8;">(${msg.role || 'Staff'})</span></div>
+      ${msg.text ? `<div>${msg.text}</div>` : ''}
+      ${fileHtml}
+      <div class="bubble-time">${msg.time}</div>
+    `;
+    container.appendChild(bubble);
+  });
+
+  container.scrollTop = container.scrollHeight;
+}
+window.renderChatMessages = renderChatMessages;
+
+function sendLiveChatMessage(fileObj = null) {
+  const input = document.getElementById('chatInputMessage');
+  const txt = input.value.trim();
+  if(!txt && !fileObj) return;
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const newMsg = {
+    id: "msg_" + Date.now(),
+    sender: currentUser ? currentUser.name : "Staff",
+    role: currentUser ? currentUser.role : "Team",
+    text: txt,
+    time: timeStr,
+    timestamp: Date.now(),
+    file: fileObj || null
+  };
+
+  teamChatData.push(newMsg);
+  input.value = '';
+  
+  if (window.cloudSync && typeof window.cloudSync.setTypingStatus === 'function') {
+    window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", false);
+  }
+
+  setStored("TEAM_CHATS", teamChatData);
+  renderChatMessages();
+}
+
+function handleChatFileUpload(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert("Please select files under 2MB for fast live synchronization!");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const fileObj = { name: file.name, type: file.type, data: e.target.result };
+    sendLiveChatMessage(fileObj);
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+/* ================= EXCEL / CSV BULK IMPORT ENGINE ================= */
+let activeImportTarget = null; // 'INVENTORY', 'MACHINES', 'CUSTOMERS'
+
+function triggerExcelImport(target) {
+  activeImportTarget = target;
+  const fileInput = document.getElementById('bulkExcelFileInput');
+  fileInput.value = '';
+  fileInput.click();
+}
+
+function processSelectedExcelFile(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+      if(!rows || rows.length === 0) {
+        alert("The selected Excel sheet has no data!");
+        return;
+      }
+
+      if(activeImportTarget === 'INVENTORY') importStockRows(rows);
+      else if(activeImportTarget === 'MACHINES') importMachineryRows(rows);
+      else if(activeImportTarget === 'CUSTOMERS') importCustomerRows(rows);
+    } catch(err) {
+      console.error(err);
+      alert("Failed to parse Excel file! Please check the column headers.");
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function normalizeKey(obj, keys) {
+  for(let k in obj) {
+    const cleanK = k.toString().trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    for(let target of keys) {
+      if(cleanK === target.toLowerCase().replace(/[^a-z0-9]/g, '')) return obj[k];
+    }
+  }
+  return "";
+}
+
+function importStockRows(rows) {
+  let count = 0;
+  rows.forEach(r => {
+    const name = normalizeKey(r, ["Item Name", "Part Name", "Product Name", "Description", "Name"]);
+    const code = normalizeKey(r, ["Part Code", "SKU", "Code", "Item Code", "Model", "Part Number"]);
+    const cat = normalizeKey(r, ["Category", "Group", "Type"]) || "Pump Spares";
+    const stockVal = normalizeKey(r, ["Stock", "Qty", "Quantity", "Available"]) || 0;
+    const rateVal = normalizeKey(r, ["Rate", "Price", "Unit Price", "MRP", "Amount"]) || 0;
+    const hsnVal = normalizeKey(r, ["HSN", "HSN Code", "SAC"]) || "84139190";
+
+    if(name && (code || name)) {
+      const pCode = code ? String(code).trim() : ("SKU-" + Math.floor(1000 + Math.random() * 9000));
+      const existing = sampleInventory.find(x => x.code.toLowerCase() === pCode.toLowerCase() || x.name.toLowerCase() === name.trim().toLowerCase());
+      
+      if(existing) {
+        existing.stock = parseInt(stockVal) || existing.stock;
+        existing.rate = parseFloat(rateVal) || existing.rate;
+        existing.category = cat || existing.category;
+      } else {
+        sampleInventory.push({
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          name: String(name).trim(),
+          code: pCode,
+          category: cat,
+          stock: parseInt(stockVal) || 0,
+          rate: parseFloat(rateVal) || 0,
+          hsn: String(hsnVal).trim()
+        });
+      }
+      count++;
+    }
+  });
+
+  setStored("INVENTORY", sampleInventory);
+  renderStockList();
+  populateDropdownsAndDatalists();
+  alert(`✓ Successfully imported/updated ${count} Spares & Products!`);
+}
+
+function importMachineryRows(rows) {
+  let count = 0;
+  rows.forEach(r => {
+    const name = normalizeKey(r, ["Machine Model", "Model Name", "Machine Name", "Name", "Model"]);
+    const pump = normalizeKey(r, ["Pump", "Pump Model", "Pump Type"]) || "Triplex Plunger Pump";
+    const motor = normalizeKey(r, ["Motor", "Motor HP", "Specs", "Motor Specs"]) || "5 HP 3-Phase";
+    const bar = normalizeKey(r, ["Bar", "Pressure", "Max Bar", "PSI"]) || 200;
+    const price = normalizeKey(r, ["Price", "Rate", "Amount", "Cost"]) || 85000;
+
+    if(name) {
+      const existing = machineryDatabase.find(m => m.name.toLowerCase() === String(name).trim().toLowerCase());
+      if(existing) {
+        existing.pump = pump; existing.motor = motor; existing.bar = parseInt(bar) || existing.bar; existing.price = parseFloat(price) || existing.price;
+      } else {
+        machineryDatabase.push({
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          name: String(name).trim(),
+          pump: String(pump).trim(),
+          motor: String(motor).trim(),
+          bar: parseInt(bar) || 200,
+          price: parseFloat(price) || 85000
+        });
+      }
+      count++;
+    }
+  });
+
+  setStored("MACHINERY", machineryDatabase);
+  renderMachineryList();
+  populateDropdownsAndDatalists();
+  alert(`✓ Successfully imported/updated ${count} Machines into Catalog!`);
+}
+
+function importCustomerRows(rows) {
+  let count = 0;
+  rows.forEach(r => {
+    const name = normalizeKey(r, ["Customer Name", "Garage Name", "Studio Name", "Name", "Client"]);
+    const phone = normalizeKey(r, ["Phone", "Mobile", "Contact", "Phone Number", "Mobile Number"]);
+    const person = normalizeKey(r, ["Contact Person", "Person", "Owner", "Proprietor"]);
+    const address = normalizeKey(r, ["Address", "City", "Location", "Workshop Address"]);
+    const gst = normalizeKey(r, ["GST", "GSTIN", "GST Number"]);
+    const email = normalizeKey(r, ["Email", "Email ID", "Mail"]);
+
+    if(name && phone) {
+      const cleanPhone = String(phone).replace(/[^0-9]/g, '').slice(-10);
+      const existing = customerDatabase.find(x => x.phone === cleanPhone);
+
+      if(existing) {
+        existing.name = String(name).trim();
+        existing.person = person ? String(person).trim() : existing.person;
+        existing.address = address ? String(address).trim() : existing.address;
+        existing.gst = gst ? String(gst).trim() : existing.gst;
+        existing.email = email ? String(email).trim() : existing.email;
+      } else {
+        customerDatabase.push({
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          name: String(name).trim(),
+          phone: cleanPhone,
+          person: person ? String(person).trim() : String(name).trim(),
+          address: address ? String(address).trim() : "Bhubaneswar, Odisha",
+          gst: gst ? String(gst).trim() : "Unregistered",
+          email: email ? String(email).trim() : ""
+        });
+      }
+      count++;
+    }
+  });
+
+  setStored("CUSTOMERS", customerDatabase);
+  renderCustomerList();
+  populateDropdownsAndDatalists();
+  alert(`✓ Successfully imported/updated ${count} Customers!`);
+}
+
+function downloadSampleStockExcel() {
+  const sample = [
+    { "Part Name": "AR High Pressure Water Seal Kit 18mm", "Part Code": "AR-WS-18", "Category": "Pump Spares", "Stock": 50, "Rate": 1850, "HSN": "84139190" },
+    { "Part Name": "AR Ceramic Plunger 18mm", "Part Code": "AR-PL-18", "Category": "Pump Spares", "Stock": 30, "Rate": 1450, "HSN": "84139190" }
+  ];
+  const ws = XLSX.utils.json_to_sheet(sample);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Spares_Products");
+  XLSX.writeFile(wb, "TTESPL_Sample_Stock.xlsx");
+}
+
+function downloadSampleMachExcel() {
+  const sample = [
+    { "Machine Model": "AR Triplex 200 Bar Commercial Washer", "Pump": "AR 15.20", "Motor": "5 HP 3-Phase", "Bar": 200, "Price": 85000 },
+    { "Machine Model": "Hawk Triplex 160 Bar Heavy Washer", "Pump": "Hawk NMT-1520", "Motor": "5 HP 3-Phase", "Bar": 160, "Price": 82000 }
+  ];
+  const ws = XLSX.utils.json_to_sheet(sample);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Machinery_Catalog");
+  XLSX.writeFile(wb, "TTESPL_Sample_Machinery.xlsx");
+}
+
+function downloadSampleCustExcel() {
+  const sample = [
+    { "Customer Name": "Jagannath Detailing Studio", "Contact Person": "Ramesh Behera", "Phone": "9861012345", "Address": "Rasulgarh Industrial Estate, BBSR", "GST": "21AAACT9812K1Z9", "Email": "client@gmail.com" }
+  ];
+  const ws = XLSX.utils.json_to_sheet(sample);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Customers");
+  XLSX.writeFile(wb, "TTESPL_Sample_Customers.xlsx");
+}
+
+/* ================= PWA & PULL-TO-REFRESH ================= */
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
@@ -2829,7 +3071,40 @@ function triggerPWAInstall() {
   }
 }
 
-/* Register In-Memory Blob Service Worker for Offline PWA Capabilities */
+// Touch Pull-To-Refresh Detection
+let touchStartY = 0;
+let isPulling = false;
+
+window.addEventListener('touchstart', (e) => {
+  if (window.scrollY === 0) {
+    touchStartY = e.touches[0].clientY;
+    isPulling = true;
+  }
+}, { passive: true });
+
+window.addEventListener('touchmove', (e) => {
+  if (!isPulling) return;
+  const currentY = e.touches[0].clientY;
+  const diff = currentY - touchStartY;
+  if (diff > 80 && window.scrollY === 0) {
+    const banner = document.getElementById('pullToRefreshIndicator');
+    if (banner) banner.classList.add('visible');
+  }
+}, { passive: true });
+
+window.addEventListener('touchend', (e) => {
+  if (!isPulling) return;
+  isPulling = false;
+  const banner = document.getElementById('pullToRefreshIndicator');
+  if (banner && banner.classList.contains('visible')) {
+    setTimeout(() => {
+      refreshAllData();
+      banner.classList.remove('visible');
+    }, 600);
+  }
+}, { passive: true });
+
+/* Register In-Memory Blob Service Worker */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     const swCode = `
@@ -2838,19 +3113,16 @@ if ('serviceWorker' in navigator) {
       self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
     `;
     const blob = new Blob([swCode], { type: 'application/javascript' });
-    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => {
-      console.log('SW registration note:', err);
-    });
+    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW note:', err));
   });
 }
 
-/* ================= INITIALIZATION ================= */
 window.onload = function() {
   checkAuthSession();
 };
 </script>
 
-<!-- ================= FIREBASE FIRESTORE REAL-TIME SYNC ENGINE ================= -->
+<!-- ================= FIREBASE FIRESTORE 100% REALTIME SYNC & CLOUD DELETE ================= -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
   import { 
@@ -2858,6 +3130,7 @@ window.onload = function() {
     collection, 
     doc, 
     setDoc, 
+    deleteDoc, 
     onSnapshot, 
     enableIndexedDbPersistence 
   } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
@@ -2878,7 +3151,7 @@ window.onload = function() {
   try {
     enableIndexedDbPersistence(db);
   } catch (err) {
-    console.warn("Firestore offline persistence notice:", err.code);
+    console.warn("Offline persistence note:", err.code);
   }
 
   function updateSyncUI(status, isOnline = true) {
@@ -2895,6 +3168,7 @@ window.onload = function() {
     STAFF: { col: "staff", idField: "id" },
     CUSTOMERS: { col: "customers", idField: "id" },
     INVENTORY: { col: "inventory", idField: "id" },
+    MACHINERY: { col: "machinery", idField: "id" },
     LEADS: { col: "leads", idField: "id" },
     ORDERS: { col: "orders", idField: "id" },
     SERVICES: { col: "services", idField: "id" },
@@ -2920,6 +3194,16 @@ window.onload = function() {
         updateSyncUI("Sync Error", false);
       }
     },
+    deleteItem: async function(key, itemId) {
+      const config = collectionsMap[key];
+      if (!config || !itemId) return;
+      try {
+        await deleteDoc(doc(db, config.col, String(itemId)));
+        updateSyncUI("Live Cloud", true);
+      } catch (err) {
+        console.error("Delete error:", err);
+      }
+    },
     setTypingStatus: async function(userName, isTyping) {
       try {
         await setDoc(doc(db, "chat_status", "typing_tracker"), {
@@ -2936,83 +3220,82 @@ window.onload = function() {
   function setupRealtimeListeners() {
     updateSyncUI("Connecting...", true);
 
-    // 1. Leads
+    // 1. Leads Real-time Listener (Sync additions, edits AND deletes)
     onSnapshot(collection(db, "leads"), (snapshot) => {
-      if (!snapshot.empty) {
-        const cloudLeads = [];
-        snapshot.forEach((d) => cloudLeads.push(d.data()));
-        window.leadsData = cloudLeads;
-        localStorage.setItem(window.DB_PREFIX + "LEADS", JSON.stringify(cloudLeads));
-        window.renderLeads();
-      }
+      const cloudLeads = [];
+      snapshot.forEach((d) => cloudLeads.push(d.data()));
+      window.leadsData = cloudLeads;
+      localStorage.setItem(window.DB_PREFIX + "LEADS", JSON.stringify(cloudLeads));
+      window.renderLeads();
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 2. Orders & Ledger
+    // 2. Orders Real-time Listener
     onSnapshot(collection(db, "orders"), (snapshot) => {
-      if (!snapshot.empty) {
-        const cloudOrders = [];
-        snapshot.forEach((d) => cloudOrders.push(d.data()));
-        window.ordersData = cloudOrders;
-        localStorage.setItem(window.DB_PREFIX + "ORDERS", JSON.stringify(cloudOrders));
-        window.renderOrders();
-        window.renderBilling('all');
-      }
+      const cloudOrders = [];
+      snapshot.forEach((d) => cloudOrders.push(d.data()));
+      window.ordersData = cloudOrders;
+      localStorage.setItem(window.DB_PREFIX + "ORDERS", JSON.stringify(cloudOrders));
+      window.renderOrders();
+      window.renderBilling('all');
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 3. Service Calls
+    // 3. Services Real-time Listener
     onSnapshot(collection(db, "services"), (snapshot) => {
-      if (!snapshot.empty) {
-        const cloudServices = [];
-        snapshot.forEach((d) => cloudServices.push(d.data()));
-        window.serviceCallsData = cloudServices;
-        localStorage.setItem(window.DB_PREFIX + "SERVICES", JSON.stringify(cloudServices));
-        window.renderServices();
-      }
+      const cloudServices = [];
+      snapshot.forEach((d) => cloudServices.push(d.data()));
+      window.serviceCallsData = cloudServices;
+      localStorage.setItem(window.DB_PREFIX + "SERVICES", JSON.stringify(cloudServices));
+      window.renderServices();
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 4. Inventory
+    // 4. Inventory Real-time Listener (Handles cloud deletions immediately)
     onSnapshot(collection(db, "inventory"), (snapshot) => {
-      if (!snapshot.empty) {
-        const cloudInv = [];
-        snapshot.forEach((d) => cloudInv.push(d.data()));
-        window.sampleInventory = cloudInv;
-        localStorage.setItem(window.DB_PREFIX + "INVENTORY", JSON.stringify(cloudInv));
-        window.renderStockList();
-        window.populateDropdownsAndDatalists();
-      }
+      const cloudInv = [];
+      snapshot.forEach((d) => cloudInv.push(d.data()));
+      window.sampleInventory = cloudInv;
+      localStorage.setItem(window.DB_PREFIX + "INVENTORY", JSON.stringify(cloudInv));
+      window.renderStockList();
+      window.populateDropdownsAndDatalists();
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 5. Customers
+    // 5. Machinery Catalog Real-time Listener
+    onSnapshot(collection(db, "machinery"), (snapshot) => {
+      const cloudMach = [];
+      snapshot.forEach((d) => cloudMach.push(d.data()));
+      window.machineryDatabase = cloudMach;
+      localStorage.setItem(window.DB_PREFIX + "MACHINERY", JSON.stringify(cloudMach));
+      window.renderMachineryList();
+      window.populateDropdownsAndDatalists();
+      updateSyncUI("Live Cloud", true);
+    }, (err) => updateSyncUI("Offline", false));
+
+    // 6. Customers Real-time Listener
     onSnapshot(collection(db, "customers"), (snapshot) => {
-      if (!snapshot.empty) {
-        const cloudCust = [];
-        snapshot.forEach((d) => cloudCust.push(d.data()));
-        window.customerDatabase = cloudCust;
-        localStorage.setItem(window.DB_PREFIX + "CUSTOMERS", JSON.stringify(cloudCust));
-        window.renderCustomerList();
-        window.populateDropdownsAndDatalists();
-      }
+      const cloudCust = [];
+      snapshot.forEach((d) => cloudCust.push(d.data()));
+      window.customerDatabase = cloudCust;
+      localStorage.setItem(window.DB_PREFIX + "CUSTOMERS", JSON.stringify(cloudCust));
+      window.renderCustomerList();
+      window.populateDropdownsAndDatalists();
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 6. WHATSAPP STYLE REAL-TIME CHAT MESSAGES STREAM
+    // 7. WhatsApp Live Chat Stream
     onSnapshot(collection(db, "team_chats"), (snapshot) => {
-      if (!snapshot.empty) {
-        const cloudChats = [];
-        snapshot.forEach((d) => cloudChats.push(d.data()));
-        cloudChats.sort((a,b) => ((a.timestamp || 0) - (b.timestamp || 0)));
-        window.teamChatData = cloudChats;
-        localStorage.setItem(window.DB_PREFIX + "TEAM_CHATS", JSON.stringify(cloudChats));
-        window.renderChatMessages();
-      }
+      const cloudChats = [];
+      snapshot.forEach((d) => cloudChats.push(d.data()));
+      cloudChats.sort((a,b) => ((a.timestamp || 0) - (b.timestamp || 0)));
+      window.teamChatData = cloudChats;
+      localStorage.setItem(window.DB_PREFIX + "TEAM_CHATS", JSON.stringify(cloudChats));
+      window.renderChatMessages();
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 7. REAL-TIME "TYPING..." LISTENER
+    // 8. Real-time "Typing..." Listener
     onSnapshot(doc(db, "chat_status", "typing_tracker"), (docSnap) => {
       const el = document.getElementById("liveTypingStatus");
       if (!el) return;
@@ -3028,9 +3311,7 @@ window.onload = function() {
       } else {
         el.innerHTML = "";
       }
-    }, (err) => {
-      console.warn("Typing listener notice:", err);
-    });
+    }, (err) => console.warn(err));
   }
 
   async function seedInitialCloudData() {
