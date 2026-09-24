@@ -173,7 +173,7 @@
   .sub-tab-btn { padding: 5px 12px; font-size: 11.5px; font-weight: 700; border: none; background: #e2e8f0; border-radius: 6px; cursor: pointer; white-space: nowrap; }
   .sub-tab-btn.active { background: var(--primary); color: white; }
 
-  /* Chat Box */
+  /* WhatsApp Style Live Group Chat */
   .chat-box-card {
     background: #ffffff; border: 1px solid var(--border); border-radius: 12px;
     display: flex; flex-direction: column; height: calc(100vh - 195px); overflow: hidden;
@@ -521,7 +521,7 @@
 
 </div>
 
-<!-- ================= DATALISTS FOR SEARCHABLE DROPDOWNS ================= -->
+<!-- ================= DATALISTS ================= -->
 <datalist id="customerDatalist"></datalist>
 <datalist id="productDatalist"></datalist>
 <datalist id="machineDatalist"></datalist>
@@ -551,7 +551,6 @@
       </div>
     </div>
 
-    <!-- Searchable Machine Select with Datalist -->
     <div class="grid-2">
       <div class="form-group">
         <label class="form-label">🚜 Machine Model (Searchable):</label>
@@ -736,7 +735,6 @@
       </div>
     </div>
 
-    <!-- Searchable Machine Select with Datalist -->
     <div class="grid-2">
       <div class="form-group">
         <label class="form-label">🚜 Machine Model (Searchable):</label>
@@ -1186,9 +1184,7 @@ let serviceCallsData = getStored("SERVICES", [
 ]);
 window.serviceCallsData = serviceCallsData;
 
-let teamChatData = getStored("TEAM_CHATS", [
-  { id: "msg_1", sender: "Dipak Rout", role: "Machinery Lead", text: "Welcome to TTESPL Live Portal. Updates direct yahan share karein.", time: "10:00 AM", file: null }
-]);
+let teamChatData = getStored("TEAM_CHATS", []);
 window.teamChatData = teamChatData;
 
 /* ================= AUTHENTICATION ================= */
@@ -2398,7 +2394,7 @@ function deleteStockItem(id) {
   }
 }
 
-/* Machinery Catalog Sub-Tab Engine */
+/* Machinery Catalog */
 function renderMachineryList() {
   const c = document.getElementById('machineryListContainer');
   c.innerHTML = '';
@@ -2784,7 +2780,7 @@ function renderChatMessages() {
     
     let fileHtml = '';
     if (msg.file) {
-      if (msg.file.type.startsWith('image/')) {
+      if (msg.file.type && msg.file.type.startsWith('image/')) {
         fileHtml = `<img src="${msg.file.data}" class="bubble-img-preview" alt="image" onclick="window.open(this.src)">`;
       } else {
         fileHtml = `
@@ -2817,7 +2813,6 @@ function sendLiveChatMessage(fileObj = null) {
   const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const newMsg = {
-    id: "msg_" + Date.now(),
     sender: currentUser ? currentUser.name : "Staff",
     role: currentUser ? currentUser.role : "Team",
     text: txt,
@@ -2826,23 +2821,24 @@ function sendLiveChatMessage(fileObj = null) {
     file: fileObj || null
   };
 
-  teamChatData.push(newMsg);
   input.value = '';
   
   if (window.cloudSync && typeof window.cloudSync.setTypingStatus === 'function') {
     window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", false);
   }
 
-  setStored("TEAM_CHATS", teamChatData);
-  renderChatMessages();
+  // Push direct to Firestore real-time collection
+  if (window.cloudSync && typeof window.cloudSync.sendChatMessage === 'function') {
+    window.cloudSync.sendChatMessage(newMsg);
+  }
 }
 
 function handleChatFileUpload(event) {
   const file = event.target.files[0];
   if(!file) return;
 
-  if (file.size > 2 * 1024 * 1024) {
-    alert("Please select files under 2MB for fast live synchronization!");
+  if (file.size > 1.5 * 1024 * 1024) {
+    alert("Please select files under 1.5MB for fast live synchronization!");
     return;
   }
 
@@ -2856,7 +2852,7 @@ function handleChatFileUpload(event) {
 }
 
 /* ================= EXCEL / CSV BULK IMPORT ENGINE ================= */
-let activeImportTarget = null; // 'INVENTORY', 'MACHINES', 'CUSTOMERS'
+let activeImportTarget = null;
 
 function triggerExcelImport(target) {
   activeImportTarget = target;
@@ -3071,7 +3067,7 @@ function triggerPWAInstall() {
   }
 }
 
-// Touch Pull-To-Refresh Detection
+// Touch Pull-To-Refresh
 let touchStartY = 0;
 let isPulling = false;
 
@@ -3098,7 +3094,11 @@ window.addEventListener('touchend', (e) => {
   const banner = document.getElementById('pullToRefreshIndicator');
   if (banner && banner.classList.contains('visible')) {
     setTimeout(() => {
-      refreshAllData();
+      if (window.cloudSync && typeof window.cloudSync.forcePullAll === 'function') {
+        window.cloudSync.forcePullAll();
+      } else {
+        refreshAllData();
+      }
       banner.classList.remove('visible');
     }, 600);
   }
@@ -3122,7 +3122,7 @@ window.onload = function() {
 };
 </script>
 
-<!-- ================= FIREBASE FIRESTORE 100% REALTIME SYNC & CLOUD DELETE ================= -->
+<!-- ================= REAL-TIME CLOUD FIRESTORE ENGINE ================= -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
   import { 
@@ -3130,9 +3130,13 @@ window.onload = function() {
     collection, 
     doc, 
     setDoc, 
+    addDoc,
     deleteDoc, 
-    onSnapshot, 
-    enableIndexedDbPersistence 
+    onSnapshot,
+    getDocs,
+    query,
+    orderBy,
+    limit
   } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -3146,13 +3150,8 @@ window.onload = function() {
   };
 
   const app = initializeApp(firebaseConfig);
+  // Direct remote connection without local indexedDB caching locks
   const db = getFirestore(app);
-
-  try {
-    enableIndexedDbPersistence(db);
-  } catch (err) {
-    console.warn("Offline persistence note:", err.code);
-  }
 
   function updateSyncUI(status, isOnline = true) {
     const textEl = document.getElementById("syncText");
@@ -3171,8 +3170,7 @@ window.onload = function() {
     MACHINERY: { col: "machinery", idField: "id" },
     LEADS: { col: "leads", idField: "id" },
     ORDERS: { col: "orders", idField: "id" },
-    SERVICES: { col: "services", idField: "id" },
-    TEAM_CHATS: { col: "team_chats", idField: "id" }
+    SERVICES: { col: "services", idField: "id" }
   };
 
   window.cloudSync = {
@@ -3204,6 +3202,14 @@ window.onload = function() {
         console.error("Delete error:", err);
       }
     },
+    sendChatMessage: async function(msgObj) {
+      try {
+        await addDoc(collection(db, "team_messages"), msgObj);
+        updateSyncUI("Live Cloud", true);
+      } catch (err) {
+        console.error("Chat send error:", err);
+      }
+    },
     setTypingStatus: async function(userName, isTyping) {
       try {
         await setDoc(doc(db, "chat_status", "typing_tracker"), {
@@ -3214,13 +3220,37 @@ window.onload = function() {
       } catch (e) {
         console.warn(e);
       }
+    },
+    forcePullAll: async function() {
+      updateSyncUI("Syncing...", true);
+      try {
+        for (const [key, cfg] of Object.entries(collectionsMap)) {
+          const snap = await getDocs(collection(db, cfg.col));
+          const list = [];
+          snap.forEach(d => list.push(d.data()));
+          if (list.length > 0 || snap.empty) {
+            localStorage.setItem(window.DB_PREFIX + key, JSON.stringify(list));
+            if(key === 'INVENTORY') window.sampleInventory = list;
+            if(key === 'CUSTOMERS') window.customerDatabase = list;
+            if(key === 'MACHINERY') window.machineryDatabase = list;
+            if(key === 'LEADS') window.leadsData = list;
+            if(key === 'ORDERS') window.ordersData = list;
+            if(key === 'SERVICES') window.serviceCallsData = list;
+          }
+        }
+        window.refreshAllData();
+        updateSyncUI("Live Cloud", true);
+      } catch (e) {
+        console.error(e);
+        updateSyncUI("Offline", false);
+      }
     }
   };
 
   function setupRealtimeListeners() {
     updateSyncUI("Connecting...", true);
 
-    // 1. Leads Real-time Listener (Sync additions, edits AND deletes)
+    // 1. Leads
     onSnapshot(collection(db, "leads"), (snapshot) => {
       const cloudLeads = [];
       snapshot.forEach((d) => cloudLeads.push(d.data()));
@@ -3230,7 +3260,7 @@ window.onload = function() {
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 2. Orders Real-time Listener
+    // 2. Orders
     onSnapshot(collection(db, "orders"), (snapshot) => {
       const cloudOrders = [];
       snapshot.forEach((d) => cloudOrders.push(d.data()));
@@ -3241,7 +3271,7 @@ window.onload = function() {
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 3. Services Real-time Listener
+    // 3. Services
     onSnapshot(collection(db, "services"), (snapshot) => {
       const cloudServices = [];
       snapshot.forEach((d) => cloudServices.push(d.data()));
@@ -3251,7 +3281,7 @@ window.onload = function() {
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 4. Inventory Real-time Listener (Handles cloud deletions immediately)
+    // 4. Inventory Spares
     onSnapshot(collection(db, "inventory"), (snapshot) => {
       const cloudInv = [];
       snapshot.forEach((d) => cloudInv.push(d.data()));
@@ -3262,7 +3292,7 @@ window.onload = function() {
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 5. Machinery Catalog Real-time Listener
+    // 5. Machinery Catalog
     onSnapshot(collection(db, "machinery"), (snapshot) => {
       const cloudMach = [];
       snapshot.forEach((d) => cloudMach.push(d.data()));
@@ -3273,7 +3303,7 @@ window.onload = function() {
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 6. Customers Real-time Listener
+    // 6. Customers
     onSnapshot(collection(db, "customers"), (snapshot) => {
       const cloudCust = [];
       snapshot.forEach((d) => cloudCust.push(d.data()));
@@ -3284,18 +3314,32 @@ window.onload = function() {
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 7. WhatsApp Live Chat Stream
-    onSnapshot(collection(db, "team_chats"), (snapshot) => {
+    // 7. REAL-TIME WHATSAPP CHAT STREAM (Direct Document Stream)
+    const chatQuery = query(collection(db, "team_messages"), orderBy("timestamp", "asc"), limit(200));
+    onSnapshot(chatQuery, (snapshot) => {
       const cloudChats = [];
-      snapshot.forEach((d) => cloudChats.push(d.data()));
-      cloudChats.sort((a,b) => ((a.timestamp || 0) - (b.timestamp || 0)));
+      snapshot.forEach((d) => {
+        const item = d.data();
+        item.id = d.id;
+        cloudChats.push(item);
+      });
       window.teamChatData = cloudChats;
       localStorage.setItem(window.DB_PREFIX + "TEAM_CHATS", JSON.stringify(cloudChats));
       window.renderChatMessages();
       updateSyncUI("Live Cloud", true);
-    }, (err) => updateSyncUI("Offline", false));
+    }, (err) => {
+      console.warn("Chat listener fallback:", err);
+      // Fallback query without index if needed
+      onSnapshot(collection(db, "team_messages"), (s2) => {
+        const fallbackChats = [];
+        s2.forEach(d => fallbackChats.push(d.data()));
+        fallbackChats.sort((a,b) => ((a.timestamp || 0) - (b.timestamp || 0)));
+        window.teamChatData = fallbackChats;
+        window.renderChatMessages();
+      });
+    });
 
-    // 8. Real-time "Typing..." Listener
+    // 8. Real-time "Typing..." Tracker
     onSnapshot(doc(db, "chat_status", "typing_tracker"), (docSnap) => {
       const el = document.getElementById("liveTypingStatus");
       if (!el) return;
@@ -3314,23 +3358,15 @@ window.onload = function() {
     }, (err) => console.warn(err));
   }
 
-  async function seedInitialCloudData() {
-    for (const [key, config] of Object.entries(collectionsMap)) {
-      const localData = window.getStored(key, []);
-      if (localData && localData.length > 0) {
-        for (const item of localData) {
-          const docId = String(item[config.idField]);
-          if (docId) {
-            await setDoc(doc(db, config.col, docId), item, { merge: true });
-          }
-        }
-      }
+  // Periodic fallback to guarantee sync every 3 seconds even if mobile suspends background network
+  setInterval(() => {
+    if (document.visibilityState === 'visible' && window.cloudSync) {
+      // Keep socket alive
+      updateSyncUI("Live Cloud", true);
     }
-  }
+  }, 3000);
 
-  seedInitialCloudData().then(() => {
-    setupRealtimeListeners();
-  });
+  setupRealtimeListeners();
 </script>
 </body>
 </html>
