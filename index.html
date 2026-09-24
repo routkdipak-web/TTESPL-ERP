@@ -163,6 +163,31 @@
   .sub-tab-btn { padding: 5px 12px; font-size: 12px; font-weight: 700; border: none; background: #e2e8f0; border-radius: 6px; cursor: pointer; }
   .sub-tab-btn.active { background: var(--primary); color: white; }
 
+  /* Live Group Chat Box Styles */
+  .chat-container {
+    background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius);
+    display: flex; flex-direction: column; height: calc(100vh - 180px);
+  }
+  .chat-messages {
+    flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;
+    background: #f8fafc;
+  }
+  .chat-msg {
+    max-width: 80%; padding: 8px 12px; border-radius: 10px; font-size: 12.5px; line-height: 1.35;
+    position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  .chat-msg.mine {
+    align-self: flex-end; background: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1;
+  }
+  .chat-msg.theirs {
+    align-self: flex-start; background: #ffffff; border: 1px solid var(--border); color: var(--text);
+  }
+  .chat-sender { font-size: 10.5px; font-weight: 700; color: var(--primary); margin-bottom: 2px; }
+  .chat-time { font-size: 9px; opacity: 0.7; text-align: right; margin-top: 3px; }
+  .chat-input-row {
+    display: flex; gap: 6px; padding: 8px 12px; border-top: 1px solid var(--border); background: #ffffff;
+  }
+
   /* Printable A4 GST Tax Invoice Styles */
   @media print {
     body * { visibility: hidden; }
@@ -287,7 +312,6 @@
       <div style="font-size:10px; opacity:0.85;">TTESPL — Rasulgarh, BBSR</div>
     </div>
     <div style="display:flex; align-items:center; gap:6px;">
-      <!-- PWA Install Prompt Button (Auto-appears on mobile/desktop) -->
       <button class="btn btn-sm btn-accent" id="pwaInstallBtn" style="display:none; padding:3px 8px; font-size:10.5px;" onclick="triggerPWAInstall()">📲 Install App</button>
       
       <div class="sync-badge" id="cloudSyncStatus">
@@ -418,6 +442,27 @@
       <div id="billingListContainer"></div>
     </div>
 
+    <!-- ================= TAB 6: LIVE TEAM GROUP CHAT ================= -->
+    <div id="view-chat" class="view-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <div>
+          <h2 style="font-size:15px;">💬 TTESPL Team Live Chat</h2>
+          <div style="font-size:11px; color:var(--text-muted);">Real-time coordination for tech & store updates</div>
+        </div>
+        <span class="badge badge-info" id="chatCountBadge">0 messages</span>
+      </div>
+
+      <div class="chat-container">
+        <div class="chat-messages" id="chatMessagesContainer">
+          <!-- Messages will stream here dynamically -->
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInputMessage" class="form-control" placeholder="Type team message or service update..." onkeydown="if(event.key==='Enter') sendLiveChatMessage()">
+          <button class="btn btn-primary" onclick="sendLiveChatMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- BOTTOM NAVIGATION -->
@@ -436,11 +481,15 @@
     </div>
     <div class="nav-item" onclick="switchTab('inventory', this)">
       <div class="nav-icon">📊</div>
-      <span>Stock/Clients</span>
+      <span>Stock</span>
     </div>
     <div class="nav-item" onclick="switchTab('billing', this)">
       <div class="nav-icon">📑</div>
       <span>Ledger</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('chat', this)">
+      <div class="nav-icon">💬</div>
+      <span>Chat</span>
     </div>
   </div>
 
@@ -1063,6 +1112,12 @@ let serviceCallsData = getStored("SERVICES", [
 ]);
 window.serviceCallsData = serviceCallsData;
 
+// LIVE GROUP CHAT DATABASE
+let teamChatData = getStored("TEAM_CHATS", [
+  { id: "msg_1", sender: "Dipak Rout", role: "Machinery Lead", text: "Welcome to TTESPL Live Portal. Updates direct yahan share karein.", time: "10:00 AM" }
+]);
+window.teamChatData = teamChatData;
+
 /* ================= AUTHENTICATION LOGIC ================= */
 function checkAuthSession() {
   if(!currentUser) {
@@ -1161,6 +1216,7 @@ function refreshAllData() {
   renderStockList();
   renderCustomerList();
   renderBilling('all');
+  renderChatMessages();
   updateGlobalReminders();
 }
 
@@ -1234,6 +1290,7 @@ function switchTab(tab, el) {
   if(tab === 'services') renderServices();
   if(tab === 'inventory') renderStockList();
   if(tab === 'billing') renderBilling('all');
+  if(tab === 'chat') renderChatMessages();
 }
 
 function switchInventorySubTab(type) {
@@ -1250,6 +1307,51 @@ function switchInventorySubTab(type) {
     document.getElementById('invSubPanelCustomer').style.display = 'block';
     renderCustomerList();
   }
+}
+
+/* ================= LIVE GROUP CHAT ENGINE ================= */
+function renderChatMessages() {
+  const container = document.getElementById('chatMessagesContainer');
+  if(!container) return;
+  container.innerHTML = '';
+  document.getElementById('chatCountBadge').textContent = `${teamChatData.length} messages`;
+
+  teamChatData.forEach(msg => {
+    const isMine = currentUser && msg.sender === currentUser.name;
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `chat-msg ${isMine ? 'mine' : 'theirs'}`;
+    msgDiv.innerHTML = `
+      <div class="chat-sender">${msg.sender} <span style="font-weight:normal; font-size:9.5px; opacity:0.8;">(${msg.role || 'Staff'})</span></div>
+      <div>${msg.text}</div>
+      <div class="chat-time">${msg.time}</div>
+    `;
+    container.appendChild(msgDiv);
+  });
+
+  container.scrollTop = container.scrollHeight;
+}
+window.renderChatMessages = renderChatMessages;
+
+function sendLiveChatMessage() {
+  const input = document.getElementById('chatInputMessage');
+  const txt = input.value.trim();
+  if(!txt) return;
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const newMsg = {
+    id: "msg_" + Date.now(),
+    sender: currentUser ? currentUser.name : "Staff",
+    role: currentUser ? currentUser.role : "Team",
+    text: txt,
+    time: timeStr
+  };
+
+  teamChatData.push(newMsg);
+  input.value = '';
+  setStored("TEAM_CHATS", teamChatData);
+  renderChatMessages();
 }
 
 /* ================= EXCEL / CSV BULK IMPORT & TEMPLATE ENGINE ================= */
@@ -2249,7 +2351,7 @@ function saveServiceAction() {
 }
 
 function openExecuteServiceModal(srvId) {
-  const s = serviceCallsData.find(x => x.id ===生长srvId);
+  const s = serviceCallsData.find(x => x.id === srvId);
   if(s) {
     openServiceCallModal(s);
     document.getElementById('srvStatusSelect').value = "Work Completed";
@@ -2712,7 +2814,8 @@ window.onload = function() {
     INVENTORY: { col: "inventory", idField: "id" },
     LEADS: { col: "leads", idField: "id" },
     ORDERS: { col: "orders", idField: "id" },
-    SERVICES: { col: "services", idField: "id" }
+    SERVICES: { col: "services", idField: "id" },
+    TEAM_CHATS: { col: "team_chats", idField: "id" }
   };
 
   window.cloudSync = {
@@ -2798,6 +2901,19 @@ window.onload = function() {
         localStorage.setItem(window.DB_PREFIX + "CUSTOMERS", JSON.stringify(cloudCust));
         window.renderCustomerList();
         window.populateDropdownsAndDatalists();
+      }
+      updateSyncUI("Live Cloud", true);
+    }, (err) => updateSyncUI("Offline", false));
+
+    // 6. Live Team Group Chat Listener
+    onSnapshot(collection(db, "team_chats"), (snapshot) => {
+      if (!snapshot.empty) {
+        const cloudChats = [];
+        snapshot.forEach((d) => cloudChats.push(d.data()));
+        cloudChats.sort((a,b) => (a.id > b.id ? 1 : -1));
+        window.teamChatData = cloudChats;
+        localStorage.setItem(window.DB_PREFIX + "TEAM_CHATS", JSON.stringify(cloudChats));
+        window.renderChatMessages();
       }
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
