@@ -163,29 +163,46 @@
   .sub-tab-btn { padding: 5px 12px; font-size: 12px; font-weight: 700; border: none; background: #e2e8f0; border-radius: 6px; cursor: pointer; }
   .sub-tab-btn.active { background: var(--primary); color: white; }
 
-  /* Live Group Chat Box Styles */
-  .chat-container {
-    background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius);
-    display: flex; flex-direction: column; height: calc(100vh - 180px);
+  /* WhatsApp Style Live Group Chat Layout */
+  .chat-box-card {
+    background: #ffffff; border: 1px solid var(--border); border-radius: 12px;
+    display: flex; flex-direction: column; height: calc(100vh - 195px); overflow: hidden;
   }
-  .chat-messages {
-    flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;
-    background: #f8fafc;
+  .chat-header-bar {
+    background: #f1f5f9; padding: 8px 12px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
   }
-  .chat-msg {
-    max-width: 80%; padding: 8px 12px; border-radius: 10px; font-size: 12.5px; line-height: 1.35;
-    position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  .typing-indicator-bar {
+    font-size: 11px; color: var(--success); font-weight: 700; height: 16px;
+    display: flex; align-items: center; gap: 4px;
   }
-  .chat-msg.mine {
-    align-self: flex-end; background: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1;
+  .chat-stream {
+    flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+    background: #e2e8f0;
   }
-  .chat-msg.theirs {
-    align-self: flex-start; background: #ffffff; border: 1px solid var(--border); color: var(--text);
+  .bubble {
+    max-width: 82%; padding: 8px 12px; border-radius: 12px; font-size: 12.5px; line-height: 1.35;
+    position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.08); word-break: break-word;
   }
-  .chat-sender { font-size: 10.5px; font-weight: 700; color: var(--primary); margin-bottom: 2px; }
-  .chat-time { font-size: 9px; opacity: 0.7; text-align: right; margin-top: 3px; }
-  .chat-input-row {
-    display: flex; gap: 6px; padding: 8px 12px; border-top: 1px solid var(--border); background: #ffffff;
+  .bubble.me {
+    align-self: flex-end; background: #dcf8c6; border-bottom-right-radius: 2px; color: #064e3b;
+  }
+  .bubble.other {
+    align-self: flex-start; background: #ffffff; border-bottom-left-radius: 2px; color: #1e293b;
+  }
+  .bubble-author { font-size: 10.5px; font-weight: 800; color: var(--primary); margin-bottom: 2px; }
+  .bubble-time { font-size: 9px; opacity: 0.65; text-align: right; margin-top: 4px; }
+  .bubble-file-link {
+    display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.05);
+    padding: 6px 8px; border-radius: 6px; text-decoration: none; color: inherit; font-weight: 600;
+    margin-top: 4px; border: 1px dashed #cbd5e1;
+  }
+  .bubble-img-preview {
+    max-width: 100%; border-radius: 6px; margin-top: 4px; cursor: pointer;
+  }
+  .chat-input-bar {
+    background: #ffffff; border-top: 1px solid var(--border); padding: 8px 10px;
+    display: flex; align-items: center; gap: 6px;
   }
 
   /* Printable A4 GST Tax Invoice Styles */
@@ -204,8 +221,9 @@
 </head>
 <body>
 
-<!-- Hidden File Input for Excel/CSV Import -->
+<!-- Hidden File Inputs -->
 <input type="file" id="bulkExcelFileInput" style="display:none;" accept=".xlsx, .xls, .csv" onchange="processSelectedExcelFile(event)">
+<input type="file" id="chatAttachmentInput" style="display:none;" onchange="handleChatFileUpload(event)">
 
 <!-- ================= AUTH SYSTEM ================= -->
 <div id="authScreen" class="auth-overlay" style="display:none;">
@@ -442,22 +460,25 @@
       <div id="billingListContainer"></div>
     </div>
 
-    <!-- ================= TAB 6: LIVE TEAM GROUP CHAT ================= -->
+    <!-- ================= TAB 6: WHATSAPP-STYLE LIVE TEAM CHAT ================= -->
     <div id="view-chat" class="view-panel">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-        <div>
-          <h2 style="font-size:15px;">💬 TTESPL Team Live Chat</h2>
-          <div style="font-size:11px; color:var(--text-muted);">Real-time coordination for tech & store updates</div>
+      <div class="chat-box-card">
+        <!-- Live Header Bar -->
+        <div class="chat-header-bar">
+          <div>
+            <strong style="color:var(--primary); font-size:13px;">💬 TTESPL Team Live Hub</strong>
+            <div class="typing-indicator-bar" id="liveTypingStatus"></div>
+          </div>
+          <span class="badge badge-delivered" id="chatCountBadge">0 msgs</span>
         </div>
-        <span class="badge badge-info" id="chatCountBadge">0 messages</span>
-      </div>
 
-      <div class="chat-container">
-        <div class="chat-messages" id="chatMessagesContainer">
-          <!-- Messages will stream here dynamically -->
-        </div>
-        <div class="chat-input-row">
-          <input type="text" id="chatInputMessage" class="form-control" placeholder="Type team message or service update..." onkeydown="if(event.key==='Enter') sendLiveChatMessage()">
+        <!-- Chat Stream -->
+        <div class="chat-stream" id="chatMessagesContainer"></div>
+
+        <!-- Chat Input Bar -->
+        <div class="chat-input-bar">
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('chatAttachmentInput').click()" style="padding:6px 9px;" title="Send Picture / File">📎</button>
+          <input type="text" id="chatInputMessage" class="form-control" placeholder="Type message..." oninput="handleTypingEvent()" onkeydown="if(event.key==='Enter') sendLiveChatMessage()">
           <button class="btn btn-primary" onclick="sendLiveChatMessage()">Send</button>
         </div>
       </div>
@@ -1112,9 +1133,9 @@ let serviceCallsData = getStored("SERVICES", [
 ]);
 window.serviceCallsData = serviceCallsData;
 
-// LIVE GROUP CHAT DATABASE
+// WHATSAPP STYLE LIVE GROUP CHAT DATABASE
 let teamChatData = getStored("TEAM_CHATS", [
-  { id: "msg_1", sender: "Dipak Rout", role: "Machinery Lead", text: "Welcome to TTESPL Live Portal. Updates direct yahan share karein.", time: "10:00 AM" }
+  { id: "msg_1", sender: "Dipak Rout", role: "Machinery Lead", text: "Welcome to TTESPL Live Portal. Updates direct yahan share karein.", time: "10:00 AM", file: null }
 ]);
 window.teamChatData = teamChatData;
 
@@ -1290,7 +1311,13 @@ function switchTab(tab, el) {
   if(tab === 'services') renderServices();
   if(tab === 'inventory') renderStockList();
   if(tab === 'billing') renderBilling('all');
-  if(tab === 'chat') renderChatMessages();
+  if(tab === 'chat') {
+    renderChatMessages();
+    setTimeout(() => {
+      const container = document.getElementById('chatMessagesContainer');
+      if(container) container.scrollTop = container.scrollHeight;
+    }, 100);
+  }
 }
 
 function switchInventorySubTab(type) {
@@ -1309,33 +1336,60 @@ function switchInventorySubTab(type) {
   }
 }
 
-/* ================= LIVE GROUP CHAT ENGINE ================= */
+/* ================= WHATSAPP STYLE REAL-TIME CHAT & FILE ATTACHMENTS ================= */
+let typingTimeout = null;
+
+function handleTypingEvent() {
+  if (window.cloudSync && typeof window.cloudSync.setTypingStatus === 'function') {
+    window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", true);
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", false);
+    }, 2000);
+  }
+}
+
 function renderChatMessages() {
   const container = document.getElementById('chatMessagesContainer');
   if(!container) return;
   container.innerHTML = '';
-  document.getElementById('chatCountBadge').textContent = `${teamChatData.length} messages`;
+  document.getElementById('chatCountBadge').textContent = `${teamChatData.length} msgs`;
 
   teamChatData.forEach(msg => {
     const isMine = currentUser && msg.sender === currentUser.name;
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `chat-msg ${isMine ? 'mine' : 'theirs'}`;
-    msgDiv.innerHTML = `
-      <div class="chat-sender">${msg.sender} <span style="font-weight:normal; font-size:9.5px; opacity:0.8;">(${msg.role || 'Staff'})</span></div>
-      <div>${msg.text}</div>
-      <div class="chat-time">${msg.time}</div>
+    const bubble = document.createElement('div');
+    bubble.className = `bubble ${isMine ? 'me' : 'other'}`;
+    
+    let fileHtml = '';
+    if (msg.file) {
+      if (msg.file.type.startsWith('image/')) {
+        fileHtml = `<img src="${msg.file.data}" class="bubble-img-preview" alt="image" onclick="window.open(this.src)">`;
+      } else {
+        fileHtml = `
+          <a href="${msg.file.data}" download="${msg.file.name}" class="bubble-file-link">
+            <span>📄</span> <span>${msg.file.name}</span>
+          </a>
+        `;
+      }
+    }
+
+    bubble.innerHTML = `
+      <div class="bubble-author">${msg.sender} <span style="font-weight:normal; font-size:9.5px; opacity:0.8;">(${msg.role || 'Staff'})</span></div>
+      ${msg.text ? `<div>${msg.text}</div>` : ''}
+      ${fileHtml}
+      <div class="bubble-time">${msg.time}</div>
     `;
-    container.appendChild(msgDiv);
+    container.appendChild(bubble);
   });
 
   container.scrollTop = container.scrollHeight;
 }
 window.renderChatMessages = renderChatMessages;
 
-function sendLiveChatMessage() {
+function sendLiveChatMessage(fileObj = null) {
   const input = document.getElementById('chatInputMessage');
   const txt = input.value.trim();
-  if(!txt) return;
+  if(!txt && !fileObj) return;
 
   const now = new Date();
   const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1345,13 +1399,42 @@ function sendLiveChatMessage() {
     sender: currentUser ? currentUser.name : "Staff",
     role: currentUser ? currentUser.role : "Team",
     text: txt,
-    time: timeStr
+    time: timeStr,
+    timestamp: Date.now(),
+    file: fileObj || null
   };
 
   teamChatData.push(newMsg);
   input.value = '';
+  
+  if (window.cloudSync && typeof window.cloudSync.setTypingStatus === 'function') {
+    window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", false);
+  }
+
   setStored("TEAM_CHATS", teamChatData);
   renderChatMessages();
+}
+
+function handleChatFileUpload(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert("Please select files under 2MB for fast live synchronization!");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const fileObj = {
+      name: file.name,
+      type: file.type,
+      data: e.target.result
+    };
+    sendLiveChatMessage(fileObj);
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
 }
 
 /* ================= EXCEL / CSV BULK IMPORT & TEMPLATE ENGINE ================= */
@@ -2836,6 +2919,17 @@ window.onload = function() {
         console.error("Firestore push error:", err);
         updateSyncUI("Sync Error", false);
       }
+    },
+    setTypingStatus: async function(userName, isTyping) {
+      try {
+        await setDoc(doc(db, "chat_status", "typing_tracker"), {
+          user: userName,
+          isTyping: isTyping,
+          updatedAt: Date.now()
+        }, { merge: true });
+      } catch (e) {
+        console.warn(e);
+      }
     }
   };
 
@@ -2905,18 +2999,38 @@ window.onload = function() {
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 6. Live Team Group Chat Listener
+    // 6. WHATSAPP STYLE REAL-TIME CHAT MESSAGES STREAM
     onSnapshot(collection(db, "team_chats"), (snapshot) => {
       if (!snapshot.empty) {
         const cloudChats = [];
         snapshot.forEach((d) => cloudChats.push(d.data()));
-        cloudChats.sort((a,b) => (a.id > b.id ? 1 : -1));
+        cloudChats.sort((a,b) => ((a.timestamp || 0) - (b.timestamp || 0)));
         window.teamChatData = cloudChats;
         localStorage.setItem(window.DB_PREFIX + "TEAM_CHATS", JSON.stringify(cloudChats));
         window.renderChatMessages();
       }
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
+
+    // 7. REAL-TIME "TYPING..." LISTENER
+    onSnapshot(doc(db, "chat_status", "typing_tracker"), (docSnap) => {
+      const el = document.getElementById("liveTypingStatus");
+      if (!el) return;
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const activeUser = window.currentUser ? window.currentUser.name : "";
+        const isFresh = (Date.now() - (data.updatedAt || 0)) < 3000;
+        if (data.isTyping && data.user !== activeUser && isFresh) {
+          el.innerHTML = `✍️ <em>${data.user} typing...</em>`;
+        } else {
+          el.innerHTML = "";
+        }
+      } else {
+        el.innerHTML = "";
+      }
+    }, (err) => {
+      console.warn("Typing listener notice:", err);
+    });
   }
 
   async function seedInitialCloudData() {
