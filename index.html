@@ -3260,5 +3260,40 @@ window.onload = function() {
 
   setupRealtimeListeners();
 </script>
+  <!-- ===== LIVE SYNC FIX ===== -->
+<script>
+(function () {
+  function link(name, getter, setter) {
+    Object.defineProperty(window, name, {
+      get: getter, set: setter, configurable: true
+    });
+  }
+  link('leadsData', () => leadsData, v => { leadsData = v; });
+  link('ordersData', () => ordersData, v => { ordersData = v; });
+  link('serviceCallsData', () => serviceCallsData, v => { serviceCallsData = v; });
+  link('sampleInventory', () => sampleInventory, v => { sampleInventory = v; });
+  link('machineryDatabase', () => machineryDatabase, v => { machineryDatabase = v; });
+  link('customerDatabase', () => customerDatabase, v => { customerDatabase = v; });
+  link('teamChatData', () => teamChatData, v => { teamChatData = v; });
+  link('currentUser', () => currentUser, v => { currentUser = v; });
+
+  // Chat file limit: Firestore doc max 1MB, so keep files small
+  window.handleChatFileUpload = function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 700 * 1024) {
+      alert("Please select files under 700 KB for live chat!");
+      event.target.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result });
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  };
+})();
+</script>
 </body>
 </html>
