@@ -92,7 +92,7 @@
     display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.25);
   }
 
-  /* Daily Global Reminder Banner */
+  /* Daily Reminder */
   .daily-reminder-banner {
     background: #fffbeb; border-bottom: 1.5px solid #fde68a; padding: 8px 14px; font-size: 11.5px;
     color: #92400e; display: flex; align-items: center; justify-content: space-between; gap: 8px;
@@ -110,13 +110,12 @@
   .nav-item.active { color: var(--accent); }
   .nav-icon { font-size: 16px; }
 
-  /* Containers */
+  /* Containers & Cards */
   .container { max-width: 860px; margin: 0 auto; padding: 12px; }
   .view-panel { display: none; }
   .view-panel.active { display: block; animation: fadeIn 0.15s ease-in; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-  /* Cards */
   .card {
     background: white; border-radius: var(--radius); padding: 14px; margin-bottom: 12px;
     border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.04);
@@ -146,7 +145,6 @@
   .form-control:focus { border-color: var(--primary); }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 
   /* Buttons */
   .btn {
@@ -173,7 +171,7 @@
   .sub-tab-btn { padding: 5px 12px; font-size: 11.5px; font-weight: 700; border: none; background: #e2e8f0; border-radius: 6px; cursor: pointer; white-space: nowrap; }
   .sub-tab-btn.active { background: var(--primary); color: white; }
 
-  /* WhatsApp Style Live Group Chat */
+  /* WhatsApp Style Chat */
   .chat-box-card {
     background: #ffffff; border: 1px solid var(--border); border-radius: 12px;
     display: flex; flex-direction: column; height: calc(100vh - 195px); overflow: hidden;
@@ -193,7 +191,6 @@
   .bubble-img-preview { max-width: 100%; border-radius: 6px; margin-top: 4px; cursor: pointer; }
   .chat-input-bar { background: #ffffff; border-top: 1px solid var(--border); padding: 8px 10px; display: flex; align-items: center; gap: 6px; }
 
-  /* Printable Invoice */
   @media print {
     body * { visibility: hidden; }
     #printableInvoiceArea, #printableInvoiceArea * { visibility: visible; }
@@ -209,16 +206,14 @@
 </head>
 <body>
 
-<!-- Pull to Refresh Banner -->
 <div id="pullToRefreshIndicator">
   <span>🔄</span> <span id="ptrText">Refreshing data from Cloud...</span>
 </div>
 
-<!-- Hidden File Inputs -->
 <input type="file" id="bulkExcelFileInput" style="display:none;" accept=".xlsx, .xls, .csv" onchange="processSelectedExcelFile(event)">
 <input type="file" id="chatAttachmentInput" style="display:none;" onchange="handleChatFileUpload(event)">
 
-<!-- ================= AUTH SYSTEM ================= -->
+<!-- ================= AUTH SCREEN ================= -->
 <div id="authScreen" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="auth-brand">
@@ -226,7 +221,6 @@
       <span>Authorised Detailing & Machinery Portal</span>
     </div>
 
-    <!-- 1. LOGIN FORM -->
     <div id="loginFormSection">
       <div class="form-group">
         <label class="form-label">Registered Mobile Number</label>
@@ -244,7 +238,6 @@
       </div>
     </div>
 
-    <!-- 2. REGISTER FORM -->
     <div id="registerFormSection" style="display:none;">
       <div style="font-size:13.5px; font-weight:700; color:var(--primary); margin-bottom:10px;">Staff Registration</div>
       <div class="form-group">
@@ -280,7 +273,6 @@
       </div>
     </div>
 
-    <!-- 3. FORGOT PASSWORD FORM -->
     <div id="forgotFormSection" style="display:none;">
       <div style="font-size:13.5px; font-weight:700; color:var(--danger); margin-bottom:10px;">Reset Password</div>
       <div class="form-group">
@@ -300,14 +292,12 @@
         <a href="javascript:void(0)" onclick="showAuthMode('login')" style="color:var(--text-muted); text-decoration:none;">Back to Login</a>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- ================= MAIN APP UI ================= -->
+<!-- ================= MAIN APP ================= -->
 <div id="mainAppWrapper">
 
-  <!-- Global Daily Work Reminder Alert -->
   <div class="daily-reminder-banner" id="dailyReminderBanner">
     <div>
       <strong>📅 TODAY'S SCHEDULE:</strong>
@@ -316,7 +306,6 @@
     <button class="btn btn-outline btn-sm" style="padding:2px 6px; font-size:10px;" onclick="document.getElementById('dailyReminderBanner').style.display='none'">✕</button>
   </div>
 
-  <!-- TOP HEADER -->
   <header>
     <div>
       <div class="brand-title">TWIN TOWN EXPRESS SERVICES</div>
@@ -337,7 +326,7 @@
 
   <div class="container">
 
-    <!-- ================= TAB 1: LEADS ================= -->
+    <!-- TAB 1: LEADS -->
     <div id="view-leads" class="view-panel active">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <div>
@@ -346,11 +335,10 @@
         </div>
         <button class="btn btn-accent btn-sm" onclick="openLeadModal()">+ New Lead</button>
       </div>
-
       <div id="leadsListContainer"></div>
     </div>
 
-    <!-- ================= TAB 2: ORDERS ================= -->
+    <!-- TAB 2: ORDERS -->
     <div id="view-orders" class="view-panel">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <div>
@@ -359,11 +347,10 @@
         </div>
         <button class="btn btn-accent btn-sm" onclick="openOrderModal()">+ New Order</button>
       </div>
-
       <div id="ordersListContainer"></div>
     </div>
 
-    <!-- ================= TAB 3: SERVICES ================= -->
+    <!-- TAB 3: SERVICES -->
     <div id="view-services" class="view-panel">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <div>
@@ -372,11 +359,10 @@
         </div>
         <button class="btn btn-accent btn-sm" onclick="openServiceCallModal()">+ New Service Call</button>
       </div>
-
       <div id="serviceListContainer"></div>
     </div>
 
-    <!-- ================= TAB 4: INVENTORY, MACHINES & CUSTOMERS ================= -->
+    <!-- TAB 4: INVENTORY, MACHINES & CUSTOMERS -->
     <div id="view-inventory" class="view-panel">
       <div class="sub-tabs">
         <button class="sub-tab-btn active" id="subTabStockBtn" onclick="switchInventorySubTab('stock')">📦 Spares & Stock</button>
@@ -384,7 +370,7 @@
         <button class="sub-tab-btn" id="subTabCustBtn" onclick="switchInventorySubTab('customer')">👥 Customer Directory</button>
       </div>
 
-      <!-- SUB-TAB 1: STOCK MANAGEMENT -->
+      <!-- Spares -->
       <div id="invSubPanelStock">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
           <span class="badge badge-delivered" id="totalPartsBadge">0 Items</span>
@@ -398,7 +384,7 @@
         <div id="stockListContainer"></div>
       </div>
 
-      <!-- SUB-TAB 2: MACHINERY DIRECTORY -->
+      <!-- Machines -->
       <div id="invSubPanelMachinery" style="display:none;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
           <span class="badge badge-info" id="totalMachBadge">0 Machines</span>
@@ -408,11 +394,11 @@
             <button class="btn btn-primary btn-sm" onclick="openAddMachineModal()">+ Add Machine</button>
           </div>
         </div>
-        <input type="text" id="machFilterInput" class="form-control" placeholder="🔍 Search machine by Model, Pump Type, HP, or Bar..." oninput="filterMachineList(this.value)" style="margin-bottom:10px;">
+        <input type="text" id="machFilterInput" class="form-control" placeholder="🔍 Search machine by Model, Pump, HP, or Bar..." oninput="filterMachineList(this.value)" style="margin-bottom:10px;">
         <div id="machineryListContainer"></div>
       </div>
 
-      <!-- SUB-TAB 3: CUSTOMERS DIRECTORY -->
+      <!-- Customers -->
       <div id="invSubPanelCustomer" style="display:none;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
           <span class="badge badge-info" id="totalCustBadge">Registered Clients</span>
@@ -428,7 +414,7 @@
       </div>
     </div>
 
-    <!-- ================= TAB 5: BILLING & LEDGER ================= -->
+    <!-- TAB 5: BILLING & LEDGER -->
     <div id="view-billing" class="view-panel">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <h2 style="font-size:15px;">📑 Billing & Ledger</h2>
@@ -468,7 +454,7 @@
       <div id="billingListContainer"></div>
     </div>
 
-    <!-- ================= TAB 6: WHATSAPP-STYLE LIVE TEAM CHAT ================= -->
+    <!-- TAB 6: WHATSAPP-STYLE LIVE TEAM CHAT -->
     <div id="view-chat" class="view-panel">
       <div class="chat-box-card">
         <div class="chat-header-bar">
@@ -521,12 +507,13 @@
 
 </div>
 
-<!-- ================= DATALISTS ================= -->
+<!-- DATALISTS -->
 <datalist id="customerDatalist"></datalist>
 <datalist id="productDatalist"></datalist>
 <datalist id="machineDatalist"></datalist>
 
-<!-- 1. LEAD MODAL -->
+<!-- MODALS -->
+<!-- 1. Lead Modal -->
 <div id="leadModal" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="card-header">
@@ -573,7 +560,7 @@
   </div>
 </div>
 
-<!-- 2. INSTALLATION MODAL -->
+<!-- 2. Install Modal -->
 <div id="installationModal" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="card-header">
@@ -609,7 +596,7 @@
   </div>
 </div>
 
-<!-- 3. ATTEND FREE SERVICE MODAL -->
+<!-- 3. Free Service Modal -->
 <div id="attendFreeServiceModal" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="card-header">
@@ -639,7 +626,7 @@
   </div>
 </div>
 
-<!-- 4. ORDER MODAL -->
+<!-- 4. Order Modal -->
 <div id="orderModal" class="auth-overlay" style="display:none;">
   <div class="auth-card" style="max-width:560px;">
     <div class="card-header">
@@ -704,8 +691,8 @@
       <label class="form-label">Payment Mode Collected:</label>
       <select id="ordPayMode" class="form-control">
         <option value="Cash">💵 Cash</option>
-        <option value="UPI / QR Code">📱 UPI / QR Code (GooglePay/PhonePe)</option>
-        <option value="Net Banking / NEFT">🏦 Net Banking / NEFT / RTGS</option>
+        <option value="UPI / QR Code">📱 UPI / QR Code</option>
+        <option value="Net Banking / NEFT">🏦 Net Banking / NEFT</option>
         <option value="Cheque">📜 Cheque</option>
         <option value="Not Paid / Full Due">⏳ Not Paid / Full Due</option>
       </select>
@@ -715,7 +702,7 @@
   </div>
 </div>
 
-<!-- 5. SERVICE CALL MODAL -->
+<!-- 5. Service Call Modal -->
 <div id="serviceModal" class="auth-overlay" style="display:none;">
   <div class="auth-card" style="max-width:520px;">
     <div class="card-header">
@@ -786,7 +773,7 @@
   </div>
 </div>
 
-<!-- 6. STOCK ITEM MODAL -->
+<!-- 6. Stock Part Modal -->
 <div id="stockItemModal" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="card-header">
@@ -827,7 +814,7 @@
   </div>
 </div>
 
-<!-- 7. MACHINE CATALOG MODAL -->
+<!-- 7. Machine Modal -->
 <div id="machineItemModal" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="card-header">
@@ -863,7 +850,7 @@
   </div>
 </div>
 
-<!-- 8. CUSTOMER PROFILE MODAL -->
+<!-- 8. Customer Modal -->
 <div id="customerModal" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="card-header">
@@ -903,7 +890,7 @@
   </div>
 </div>
 
-<!-- 9. DAILY CASH CLOSING MODAL -->
+<!-- 9. Cash Closing Modal -->
 <div id="cashClosingModal" class="auth-overlay" style="display:none;">
   <div class="auth-card" style="max-width:540px;">
     <div class="card-header">
@@ -953,7 +940,7 @@
   </div>
 </div>
 
-<!-- 10. GST TAX INVOICE PREVIEW & PRINT MODAL -->
+<!-- 10. Invoice Preview Modal -->
 <div id="invoicePrintModal" class="auth-overlay" style="display:none; z-index:3000;">
   <div class="auth-card" style="max-width:720px; width:95%;">
     <div class="card-header no-print">
@@ -1058,7 +1045,7 @@
 </div>
 
 <script>
-/* ================= PERSISTENT STATE & CLOUD SYNC ENGINE ================= */
+/* ================= ENGINE LOGIC ================= */
 const DB_PREFIX = "TTESPL_ERP_";
 window.DB_PREFIX = DB_PREFIX;
 
@@ -1087,107 +1074,33 @@ window.registeredEmployees = registeredEmployees;
 let currentUser = getStored("SESSION_USER", null);
 
 let customerDatabase = getStored("CUSTOMERS", [
-  { id: 1, name: "Kalinga Auto Spa", person: "Ranjan Babu", phone: "9861099881", email: "kalinga.autospa@gmail.com", address: "Patia, Bhubaneswar", gst: "21AABCK1234F1Z1" },
-  { id: 2, name: "Capital Car Care", person: "Bijay Mohapatra", phone: "9437012345", email: "capitalcarcare@gmail.com", address: "Saheed Nagar, Bhubaneswar", gst: "21BBDCK5678F1Z8" },
-  { id: 3, name: "Royal Car Wash", person: "Asit Rout", phone: "9853011223", email: "royalwash@gmail.com", address: "Madhupatna, Cuttack", gst: "21CCECK9012F1Z4" },
-  { id: 4, name: "Apex Detailing Hub", person: "Subrat", phone: "9937088112", email: "apexdetail@gmail.com", address: "Talcher, Angul", gst: "Unregistered" }
+  { id: 1, name: "Kalinga Auto Spa", person: "Ranjan Babu", phone: "9861099881", email: "kalinga.autospa@gmail.com", address: "Patia, Bhubaneswar", gst: "21AABCK1234F1Z1" }
 ]);
 window.customerDatabase = customerDatabase;
 
 let sampleInventory = getStored("INVENTORY", [
-  { id: 101, name: "AR Pump Plunger Ceramic 18mm", stock: 65, rate: 1450, code: "AR-PL-18", category: "Pump Spares", hsn: "84139190" },
-  { id: 102, name: "AR Pump Water Seal Kit 18mm", stock: 110, rate: 1850, code: "AR-WS-18", category: "Pump Spares", hsn: "84139190" },
-  { id: 103, name: "AR Heavy Brass Unloader Valve", stock: 32, rate: 3200, code: "AR-V-UNL", category: "Pump Spares", hsn: "84818030" },
-  { id: 104, name: "Car Wash Snow Foam Shampoo (20L)", stock: 85, rate: 2800, code: "CH-FOAM-20", category: "Chemicals", hsn: "34029099" },
-  { id: 105, name: "High Gloss Polish Wax (5L)", stock: 40, rate: 1950, code: "CH-WAX-05", category: "Chemicals", hsn: "34053000" },
-  { id: 106, name: "Industrial Air Compressor 3HP Piston Ring", stock: 150, rate: 750, code: "CP-RG-3HP", category: "Compressor Spares", hsn: "84149090" },
-  { id: 107, name: "Microfiber Towel 800 GSM (Pack of 10)", stock: 120, rate: 1200, code: "AC-MF-800", category: "Accessories", hsn: "63071010" }
+  { id: 101, name: "AR Pump Plunger Ceramic 18mm", stock: 65, rate: 1450, code: "AR-PL-18", category: "Pump Spares", hsn: "84139190" }
 ]);
 window.sampleInventory = sampleInventory;
 
 let machineryDatabase = getStored("MACHINERY", [
-  { id: 201, name: "AR Triplex 200 Bar Commercial Washer", pump: "AR 15.20", motor: "5 HP 3-Phase", bar: 200, price: 85000 },
-  { id: 202, name: "Hawk Triplex 160 Bar Heavy Plunger Washer", pump: "Hawk NMT-1520", motor: "5 HP 3-Phase", bar: 160, price: 82000 },
-  { id: 203, name: "Industrial 3HP Two-Stage Air Compressor", pump: "Cast Iron 2-Cylinder", motor: "3 HP Single-Phase", bar: 12, price: 42000 },
-  { id: 204, name: "Automatic Upholstery Steam Extractor", pump: "Heavy Extraction Vacuum", motor: "2400W Dual", bar: 8, price: 38000 }
+  { id: 201, name: "AR Triplex 200 Bar Commercial Washer", pump: "AR 15.20", motor: "5 HP 3-Phase", bar: 200, price: 85000 }
 ]);
 window.machineryDatabase = machineryDatabase;
 
-let leadsData = getStored("LEADS", [
-  {
-    id: "LEAD-101",
-    customerName: "Kalinga Auto Spa",
-    phone: "9861099881",
-    inquiryDate: "2026-09-12",
-    handledBy: "Dipak Rout",
-    machine: "AR Triplex 200 Bar Commercial Washer",
-    quotedPrice: 85000,
-    status: "Installed",
-    followupDate: "2026-09-24",
-    remarks: "Agreed at ₹85,000 including starter panel.",
-    auditTrail: [{ by: "Dipak Rout", time: "2026-09-12 10:15", note: "Lead registered" }],
-    installation: {
-      isInstalled: true,
-      installDate: "2026-09-20",
-      finalPrice: 85000,
-      machineSerial: "TTESPL-M-2026-081",
-      pumpSerial: "AR-PUMP-9812",
-      invoiceNo: "TTESPL/26-27/092",
-      freeServices: [
-        { num: 1, label: "1st Free Service (30 Days / 50 Hrs)", dueDate: "2026-10-20", attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" },
-        { num: 2, label: "2nd Free Service (4th Month)", dueDate: "2027-01-20", attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" },
-        { num: 3, label: "3rd Free Service (7th Month)", dueDate: "2027-04-20", attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" },
-        { num: 4, label: "4th Free Service (10th Month)", dueDate: "2027-07-20", attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" }
-      ]
-    }
-  }
-]);
+let leadsData = getStored("LEADS", []);
 window.leadsData = leadsData;
 
-let ordersData = getStored("ORDERS", [
-  {
-    id: "ORD-901",
-    customerName: "Capital Car Care",
-    phone: "9437012345",
-    orderDate: "2026-09-24",
-    deliveryDate: "2026-09-24",
-    items: [
-      { id: 104, name: "Car Wash Snow Foam Shampoo (20L)", hsn: "34029099", qty: 2, rate: 2800, total: 5600 }
-    ],
-    totalAmount: 5600,
-    recvAmount: 5600,
-    dueAmount: 0,
-    payMode: "UPI / QR Code",
-    status: "Delivered",
-    bookedBy: "Dipak Rout",
-    auditTrail: [{ by: "Dipak Rout", time: "2026-09-24 11:30", note: "Order entered" }]
-  }
-]);
+let ordersData = getStored("ORDERS", []);
 window.ordersData = ordersData;
 
-let serviceCallsData = getStored("SERVICES", [
-  {
-    id: "SRV-501",
-    customerName: "Apex Detailing Hub",
-    phone: "9937088112",
-    machine: "AR Triplex 200 Bar Commercial Washer",
-    recvDate: "2026-09-20",
-    targetDate: "2026-09-24",
-    status: "Pending / Scheduled",
-    problem: "Pump vibration and pressure falling from 160 to 70 Bar.",
-    attendedBy: "Dipak Rout",
-    doneDate: "",
-    actionDone: "",
-    partUsed: "",
-    auditTrail: [{ by: "Dipak Rout", time: "2026-09-20 09:30", note: "Service logged" }]
-  }
-]);
+let serviceCallsData = getStored("SERVICES", []);
 window.serviceCallsData = serviceCallsData;
 
-let teamChatData = getStored("TEAM_CHATS", []);
+// Empty local array so it takes pure stream from Firestore
+let teamChatData = [];
 window.teamChatData = teamChatData;
 
-/* ================= AUTHENTICATION ================= */
 function checkAuthSession() {
   if(!currentUser) {
     document.getElementById('authScreen').style.display = 'flex';
@@ -1268,7 +1181,6 @@ function performFullLogout() {
   }
 }
 
-/* ================= UTILITY & DATALISTS ================= */
 function getNowStr() {
   const d = new Date();
   return d.toISOString().split('T')[0] + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1579,7 +1491,7 @@ function saveLeadAction() {
   setStored("LEADS", leadsData);
   closeLeadModal();
   renderLeads();
-  alert("Lead saved & synced to all staff phones!");
+  alert("Lead saved & synced!");
 }
 
 function deleteLeadAction(id) {
@@ -2274,7 +2186,7 @@ function editServicePrompt(srvId) {
   if(s) openServiceCallModal(s);
 }
 
-/* ================= TAB 4: INVENTORY, MACHINERY & CUSTOMERS ================= */
+/* ================= TAB 4: INVENTORY ================= */
 function renderStockList() {
   const c = document.getElementById('stockListContainer');
   c.innerHTML = '';
@@ -2636,7 +2548,7 @@ function exportCustomersCSV() {
   downloadFile(csv, "TTESPL_Customers.csv", "text/csv");
 }
 
-/* ================= TAB 5: BILLING & LEDGER ================= */
+/* ================= TAB 5: BILLING ================= */
 function renderBilling(filterType, empFilter = "ALL") {
   let totalBilled = 0;
   let totalRecv = 0;
@@ -2823,6 +2735,10 @@ function sendLiveChatMessage(fileObj = null) {
 
   input.value = '';
   
+  // Instant visual feedback for sender
+  teamChatData.push(newMsg);
+  renderChatMessages();
+
   if (window.cloudSync && typeof window.cloudSync.setTypingStatus === 'function') {
     window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", false);
   }
@@ -3015,8 +2931,7 @@ function importCustomerRows(rows) {
 
 function downloadSampleStockExcel() {
   const sample = [
-    { "Part Name": "AR High Pressure Water Seal Kit 18mm", "Part Code": "AR-WS-18", "Category": "Pump Spares", "Stock": 50, "Rate": 1850, "HSN": "84139190" },
-    { "Part Name": "AR Ceramic Plunger 18mm", "Part Code": "AR-PL-18", "Category": "Pump Spares", "Stock": 30, "Rate": 1450, "HSN": "84139190" }
+    { "Part Name": "AR High Pressure Water Seal Kit 18mm", "Part Code": "AR-WS-18", "Category": "Pump Spares", "Stock": 50, "Rate": 1850, "HSN": "84139190" }
   ];
   const ws = XLSX.utils.json_to_sheet(sample);
   const wb = XLSX.utils.book_new();
@@ -3026,8 +2941,7 @@ function downloadSampleStockExcel() {
 
 function downloadSampleMachExcel() {
   const sample = [
-    { "Machine Model": "AR Triplex 200 Bar Commercial Washer", "Pump": "AR 15.20", "Motor": "5 HP 3-Phase", "Bar": 200, "Price": 85000 },
-    { "Machine Model": "Hawk Triplex 160 Bar Heavy Washer", "Pump": "Hawk NMT-1520", "Motor": "5 HP 3-Phase", "Bar": 160, "Price": 82000 }
+    { "Machine Model": "AR Triplex 200 Bar Commercial Washer", "Pump": "AR 15.20", "Motor": "5 HP 3-Phase", "Bar": 200, "Price": 85000 }
   ];
   const ws = XLSX.utils.json_to_sheet(sample);
   const wb = XLSX.utils.book_new();
@@ -3067,7 +2981,6 @@ function triggerPWAInstall() {
   }
 }
 
-// Touch Pull-To-Refresh
 let touchStartY = 0;
 let isPulling = false;
 
@@ -3104,7 +3017,6 @@ window.addEventListener('touchend', (e) => {
   }
 }, { passive: true });
 
-/* Register In-Memory Blob Service Worker */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     const swCode = `
@@ -3122,7 +3034,7 @@ window.onload = function() {
 };
 </script>
 
-<!-- ================= REAL-TIME CLOUD FIRESTORE ENGINE ================= -->
+<!-- ================= FIREBASE CLOUD STREAM (UNLIMITED & ZERO DELAY) ================= -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
   import { 
@@ -3133,10 +3045,7 @@ window.onload = function() {
     addDoc,
     deleteDoc, 
     onSnapshot,
-    getDocs,
-    query,
-    orderBy,
-    limit
+    getDocs
   } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -3150,7 +3059,6 @@ window.onload = function() {
   };
 
   const app = initializeApp(firebaseConfig);
-  // Direct remote connection without local indexedDB caching locks
   const db = getFirestore(app);
 
   function updateSyncUI(status, isOnline = true) {
@@ -3314,29 +3222,21 @@ window.onload = function() {
       updateSyncUI("Live Cloud", true);
     }, (err) => updateSyncUI("Offline", false));
 
-    // 7. REAL-TIME WHATSAPP CHAT STREAM (Direct Document Stream)
-    const chatQuery = query(collection(db, "team_messages"), orderBy("timestamp", "asc"), limit(200));
-    onSnapshot(chatQuery, (snapshot) => {
-      const cloudChats = [];
-      snapshot.forEach((d) => {
-        const item = d.data();
-        item.id = d.id;
-        cloudChats.push(item);
+    // 7. PURE UNLIMITED LIVE CHAT STREAM (Direct Document Realtime Listener)
+    onSnapshot(collection(db, "team_messages"), (snapshot) => {
+      const msgs = [];
+      snapshot.forEach((docSnap) => {
+        const item = docSnap.data();
+        item.id = docSnap.id;
+        msgs.push(item);
       });
-      window.teamChatData = cloudChats;
-      localStorage.setItem(window.DB_PREFIX + "TEAM_CHATS", JSON.stringify(cloudChats));
+      // Sort in memory by timestamp
+      msgs.sort((a,b) => ((a.timestamp || 0) - (b.timestamp || 0)));
+      window.teamChatData = msgs;
       window.renderChatMessages();
       updateSyncUI("Live Cloud", true);
     }, (err) => {
-      console.warn("Chat listener fallback:", err);
-      // Fallback query without index if needed
-      onSnapshot(collection(db, "team_messages"), (s2) => {
-        const fallbackChats = [];
-        s2.forEach(d => fallbackChats.push(d.data()));
-        fallbackChats.sort((a,b) => ((a.timestamp || 0) - (b.timestamp || 0)));
-        window.teamChatData = fallbackChats;
-        window.renderChatMessages();
-      });
+      console.error("Live chat stream error:", err);
     });
 
     // 8. Real-time "Typing..." Tracker
@@ -3357,14 +3257,6 @@ window.onload = function() {
       }
     }, (err) => console.warn(err));
   }
-
-  // Periodic fallback to guarantee sync every 3 seconds even if mobile suspends background network
-  setInterval(() => {
-    if (document.visibilityState === 'visible' && window.cloudSync) {
-      // Keep socket alive
-      updateSyncUI("Live Cloud", true);
-    }
-  }, 3000);
 
   setupRealtimeListeners();
 </script>
