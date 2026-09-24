@@ -18,13 +18,14 @@
     '.lc-day{align-self:center;background:#fff;color:#64748b;font-size:10.5px;font-weight:700;padding:2px 10px;border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.08)}' +
     '.lc-tick{font-size:10px;margin-left:3px}.lc-tick.sent{color:#2563eb}' +
     '.nav-item{position:relative}' +
+    'button[onclick*="delete"]{display:none!important}' +
     '.lc-badge{position:absolute;top:2px;left:calc(50% + 6px);background:#dc2626;color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;line-height:15px;border-radius:8px;padding:0 3px}' +
     '#lcErrBar{display:none;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:700;padding:5px 10px}';
   document.head.appendChild(st);
 
   var hdr = document.querySelector('.chat-header-bar');
   if (hdr) {
-    var t = hdr.querySelector('strong'); if (t) t.textContent = '💬 TTESPL Team Live Hub · v2';
+    var t = hdr.querySelector('strong'); if (t) t.textContent = '💬 TTESPL Team Live Hub · v3';
     hdr.insertAdjacentHTML('afterend', '<div id="lcErrBar"></div>');
   }
 
@@ -87,6 +88,49 @@
     var saved = sels.map(function (s) { return s.value; });
     origPopulate();
     sels.forEach(function (s, i) { if (saved[i]) s.value = saved[i]; });
+  };
+
+  /* ---------- Stock & Machinery cards: Edit only (no delete), also while searching ---------- */
+  function stockCard(item) {
+    return '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;">' +
+      '<div><strong style="font-size:13.5px;">' + esc(item.name) + '</strong>' +
+      '<div style="font-size:11px;color:var(--text-muted);">' + esc(item.code) + ' | ' + esc(item.category) + ' | HSN: ' + esc(item.hsn || '84139190') + '</div></div>' +
+      '<div style="text-align:right;"><span class="badge ' + (item.stock <= 5 ? 'badge-danger' : 'badge-delivered') + '">' + item.stock + ' in stock</span>' +
+      '<div style="font-size:12px;font-weight:bold;color:var(--primary);">₹' + item.rate + '</div></div></div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;border-top:1px solid #f1f5f9;padding-top:4px;">' +
+      '<button class="btn btn-outline btn-sm" onclick="editStockItemPrompt(' + item.id + ')">✏️ Edit</button></div></div>';
+  }
+  window.renderStockList = function () {
+    var c = $('stockListContainer'); if (!c) return;
+    $('totalPartsBadge').textContent = sampleInventory.length + ' Items Loaded';
+    c.innerHTML = sampleInventory.map(stockCard).join('');
+  };
+  window.filterStockList = function (val) {
+    var q = String(val || '').toLowerCase().trim(), c = $('stockListContainer'); if (!c) return;
+    c.innerHTML = sampleInventory.filter(function (i) {
+      return i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q) || i.category.toLowerCase().includes(q);
+    }).map(stockCard).join('');
+  };
+
+  function machCard(m) {
+    return '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;">' +
+      '<div><strong style="font-size:14px;color:var(--primary);">🚜 ' + esc(m.name) + '</strong>' +
+      '<div style="font-size:11px;color:var(--text-muted);">Pump: ' + esc(m.pump) + ' | Motor: ' + esc(m.motor) + '</div></div>' +
+      '<div style="text-align:right;"><span class="badge badge-info">' + m.bar + ' Bar</span>' +
+      '<div style="font-size:12.5px;font-weight:800;color:var(--primary);">₹' + Number(m.price).toLocaleString('en-IN') + '</div></div></div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;border-top:1px solid #f1f5f9;padding-top:4px;">' +
+      '<button class="btn btn-outline btn-sm" onclick="editMachinePrompt(' + m.id + ')">✏️ Edit</button></div></div>';
+  }
+  window.renderMachineryList = function () {
+    var c = $('machineryListContainer'); if (!c) return;
+    $('totalMachBadge').textContent = machineryDatabase.length + ' Machines';
+    c.innerHTML = machineryDatabase.map(machCard).join('');
+  };
+  window.filterMachineList = function (val) {
+    var q = String(val || '').toLowerCase().trim(), c = $('machineryListContainer'); if (!c) return;
+    c.innerHTML = machineryDatabase.filter(function (m) {
+      return m.name.toLowerCase().includes(q) || m.pump.toLowerCase().includes(q) || m.motor.toLowerCase().includes(q);
+    }).map(machCard).join('');
   };
 
   /* ---------- WhatsApp style chat ---------- */
