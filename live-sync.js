@@ -1,4 +1,9 @@
-/* TTESPL ERP - Live Sync v4 */
+/* TTESPL ERP - Live Sync v4
+   WhatsApp-style realtime chat + realtime data sync on all devices.
+   v4: chat photo uploads are now auto-compressed on-device (canvas resize +
+   JPEG re-encode) before sending, so a large camera photo is shrunk to a
+   small JPEG automatically and never hits the size-limit error.
+   Load with a normal <script src="live-sync.js?v=4"></script> just before </body>. */
 (function () {
   'use strict';
 
@@ -50,40 +55,11 @@
     STAFF: function () { populateDropdownsAndDatalists(); }
   };
 
-  function mergeWithMaster(key, list) {
-    if (!window.MASTER_DATA || !window.MASTER_DATA[key]) return list || [];
-    var master = window.MASTER_DATA[key];
-    if (!list || list.length === 0) return master.slice();
-    var map = {};
-    if (key === 'INVENTORY') {
-      list.forEach(function (i) { if (i && i.name) map[String(i.name).toLowerCase().trim()] = i; });
-      master.forEach(function (m) {
-        var k = (m.name || '').toLowerCase().trim();
-        if (!map[k]) { list.push(m); map[k] = m; }
-      });
-    } else if (key === 'CUSTOMERS') {
-      list.forEach(function (c) { if (c && c.phone) map[String(c.phone).trim()] = c; });
-      master.forEach(function (m) {
-        var p = String(m.phone || '').trim();
-        if (p && !map[p]) { list.push(m); map[p] = m; }
-      });
-    } else if (key === 'MACHINERY') {
-      list.forEach(function (m) { if (m && m.name) map[m.name.toLowerCase().trim()] = m; });
-      master.forEach(function (m) {
-        var k = (m.name || '').toLowerCase().trim();
-        if (!map[k]) { list.push(m); map[k] = m; }
-      });
-    }
-    return list;
-  }
-
   window.applyCloudData = function (key, list) {
-    if (key === 'INVENTORY' || key === 'CUSTOMERS' || key === 'MACHINERY') {
-      list = mergeWithMaster(key, list);
-    }
     switch (key) {
       case 'LEADS':
         leadsData = list;
+        // keep open modals pointing at the fresh objects
         if (activeLeadForInstall) {
           activeLeadForInstall = list.find(function (x) { return x.id === activeLeadForInstall.id; }) || activeLeadForInstall;
         }
@@ -118,94 +94,41 @@
   window.populateDropdownsAndDatalists = function () {
     var sels = Array.prototype.slice.call(document.querySelectorAll('.emp-dropdown'));
     var saved = sels.map(function (s) { return s.value; });
-    if (typeof origPopulate === 'function') origPopulate();
+    origPopulate();
     sels.forEach(function (s, i) { if (saved[i]) s.value = saved[i]; });
   };
 
-  /* ---------- Stock & Machinery cards ---------- */
+  /* ---------- Stock cards: full info (MRP + Dealer price + stock), tap opens detail+sales history ---------- */
+  var STOCK_CAP = 60, STOCK_SEARCH_CAP = 100;
+
   function stockCard(item) {
-    return '<div class="card" style="cursor:pointer;" onclick="showProductSaleReport(\'' + esc(item.name) + '\')"><div style="display:flex;justify-content:space-between;align-items:center;">' +
+    return '<div class="card" style="cursor:pointer;" onclick="openStockDetailModal(' + item.id + ')"><div style="display:flex;justify-content:space-between;align-items:center;">' +
       '<div><strong style="font-size:13.5px;">' + esc(item.name) + '</strong>' +
-      '<div style="font-size:11px;color:var(--text-muted);">' + esc(item.code || '') + ' | ' + esc(item.category || '') + ' | HSN: ' + esc(item.hsn || '84139190') + '</div></div>' +
-      '<div style="text-align:right;"><span class="badge ' + (item.stock <= 5 ? 'badge-danger' : 'badge-delivered') + '">' + (item.stock || 0) + ' in stock</span></div></div>' +
-      '<div class="grid-2" style="margin-top:6px; border-top:1px solid #f1f5f9; padding-top:6px; font-size:12px;">' +
-      '<div>Dealer: <strong style="color:var(--danger);">₹' + (item.dealer_price || 0) + '</strong></div>' +
-      '<div>Customer: <strong style="color:var(--primary);">₹' + (item.rate || 0) + '</strong></div>' +
-      '</div>' +
-      '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;border-top:1px dashed #e2e8f0;padding-top:4px;">' +
-      '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(\'' + esc(item.id) + '\')">✏️ Edit</button></div></div>';
-
+      '<div style="font-size:11px;color:var(--text-muted);">' + esc(item.code) + ' | ' + esc(item.category) + '</div></div>' +
+      '<div style="text-align:right;"><span class="badge ' + (item.stock <= 5 ? 'badge-danger' : 'badge-delivered') + '">' + item.stock + ' in stock</span>' +
+      '<div style="font-size:11px;color:#475569;">Dealer: ₹' + (item.dealerPrice || 0) + '</div>' +
+      '<div style="font-size:12px;font-weight:bold;color:var(--primary);">MRP: ₹' + item.rate + '</div></div></div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;border-top:1px solid #f1f5f9;padding-top:4px;">' +
+      '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();editStockItemPrompt(' + item.id + ')">✏️ Edit</button>' +
+      '<button class="btn btn-danger-sm" onclick="event.stopPropagation();deleteStockItem(' + item.id + ')">🗑️</button></div></div>';
   }
-
-  window.showProductSaleReport = function(productName) {
-    let html = '<div style="font-weight:bold; margin-bottom:10px; font-size:14px; color:var(--primary); border-bottom:2px solid var(--primary); padding-bottom:4px;">Sales Report: ' + esc(productName) + '</div>';
-    let found = false;
-    (window.ordersData || []).forEach(function(o) {
-        (o.items || []).forEach(function(it) {
-            if (it.name === productName || it.name.includes(productName)) {
-                  window.showProductSaleReport = function(productName) {
-    var p = (window.sampleInventory || []).find(function(x) { 
-      return x.name === productName || (x.name && x.name.toLowerCase() === productName.toLowerCase()); 
-    }) || {};
-
-    var html = '<div style="font-weight:800; font-size:15px; color:#0f3d6c; border-bottom:2px solid #0f3d6c; padding-bottom:6px; margin-bottom:8px;">' + esc(productName) + '</div>';
-
-    // 1. Technical & Machine Details
-    html += '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px; margin-bottom:10px; font-size:11.5px; line-height:1.5;">' +
-      '<div>🚜 <strong>Machine Model:</strong> ' + esc(p.machine_model || 'Universal / Standard') + '</div>' +
-      '<div>🏷️ <strong>Part Code / SKU:</strong> ' + esc(p.code || 'N/A') + '</div>' +
-      '<div>📂 <strong>Category:</strong> ' + esc(p.category || 'General') + '</div>' +
-      '<div>💰 <strong>Dealer Price:</strong> <span style="color:#b91c1c; font-weight:700;">₹' + (p.dealer_price || 0) + '</span> | <strong>Customer Rate:</strong> <span style="color:#0f3d6c; font-weight:700;">₹' + (p.rate || 0) + '</span></div>' +
-      (p.description ? '<div style="margin-top:4px;">📝 <strong>Description:</strong> ' + esc(p.description) + '</div>' : '') +
-      (p.specs ? '<div style="margin-top:2px;">⚙️ <strong>Technical Specs:</strong> ' + esc(p.specs) + '</div>' : '') +
-      '</div>';
-
-    // 2. Sales History
-    html += '<div style="font-weight:700; font-size:12.5px; color:#0f3d6c; margin-bottom:6px;">📊 Sales History:</div>';
-    var found = false;
-    (window.ordersData || []).forEach(function(o) {
-      (o.items || []).forEach(function(it) {
-        if (it.name === productName || (it.name && it.name.includes(productName))) {
-          found = true;
-          html += '<div style="border-bottom:1px solid #e2e8f0; padding:6px 0; font-size:11.5px;">' +
-            '<div style="display:flex; justify-content:space-between;"><strong>' + esc(o.customerName) + '</strong><span style="color:#64748b;">' + esc(o.orderDate) + '</span></div>' +
-            '<div>Qty: <strong>' + it.qty + '</strong> | Rate: ₹' + it.rate + ' | <span style="color:#15803d; font-weight:700;">Total: ₹' + it.total + '</span></div>' +
-            '</div>';
-        }
-      });
-    });
-    if (!found) {
-      html += '<div style="font-size:11.5px; color:#64748b; padding:6px 0;">Is product ki abhi tak koi sale record nahi hui hai.</div>';
-    }
-
-    var contentDiv = document.getElementById('saleReportContent');
-    if (contentDiv) {
-      contentDiv.innerHTML = html;
-      var m = document.getElementById('saleReportModal');
-      if (m) m.style.display = 'flex';
-    }
+  function capHint(shown, total, label) {
+    if (total <= shown) return '';
+    return '<div style="text-align:center;font-size:11px;color:var(--text-muted);padding:8px;">Showing ' + shown + ' of ' + total + ' ' + label + '</div>';
+  }
+  window.renderStockList = function () {
+    var c = $('stockListContainer'); if (!c) return;
+    $('totalPartsBadge').textContent = sampleInventory.length + ' Items Loaded';
+    var slice = sampleInventory.slice(0, STOCK_CAP);
+    c.innerHTML = slice.map(stockCard).join('') + capHint(slice.length, sampleInventory.length, '— type in the search box above to find a specific item.');
   };
-
-    var grouped = {};
-    sampleInventory.forEach(function(item) {
-       var cat = item.category || 'Other';
-       if (!grouped[cat]) grouped[cat] = [];
-       grouped[cat].push(item);
-    });
-    
-    var html = '';
-    for (var cat in grouped) {
-        html += '<div style="font-size:13px; font-weight:800; color:#0f3d6c; margin: 12px 0 6px 0; background:#e2e8f0; padding:4px 8px; border-radius:4px;">📂 ' + esc(cat) + ' (' + grouped[cat].length + ')</div>';
-        html += grouped[cat].map(stockCard).join('');
-    }
-    c.innerHTML = html;
-  };
-
   window.filterStockList = function (val) {
     var q = String(val || '').toLowerCase().trim(), c = $('stockListContainer'); if (!c) return;
-    c.innerHTML = sampleInventory.filter(function (i) {
-      return i.name.toLowerCase().includes(q) || (i.code && i.code.toLowerCase().includes(q)) || (i.category && i.category.toLowerCase().includes(q));
-    }).slice(0, 100).map(stockCard).join('');
+    var results = q ? sampleInventory.filter(function (i) {
+      return i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q) || i.category.toLowerCase().includes(q);
+    }) : sampleInventory;
+    var slice = results.slice(0, STOCK_SEARCH_CAP);
+    c.innerHTML = slice.map(stockCard).join('') + capHint(slice.length, results.length, 'matches — refine your search for more.');
   };
 
   function machCard(m) {
@@ -215,7 +138,7 @@
       '<div style="text-align:right;"><span class="badge badge-info">' + m.bar + ' Bar</span>' +
       '<div style="font-size:12.5px;font-weight:800;color:var(--primary);">₹' + Number(m.price).toLocaleString('en-IN') + '</div></div></div>' +
       '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;border-top:1px solid #f1f5f9;padding-top:4px;">' +
-      '<button class="btn btn-outline btn-sm" onclick="editMachinePrompt(\'' + esc(m.id) + '\')">✏️ Edit</button></div></div>';
+      '<button class="btn btn-outline btn-sm" onclick="editMachinePrompt(' + m.id + ')">✏️ Edit</button></div></div>';
   }
   window.renderMachineryList = function () {
     var c = $('machineryListContainer'); if (!c) return;
@@ -274,7 +197,7 @@
   }
   var origSwitch = window.switchTab;
   window.switchTab = function (tab, el) {
-    if (typeof origSwitch === 'function') origSwitch(tab, el);
+    origSwitch(tab, el);
     if (tab === 'chat') { unread = 0; paintBadge(); }
   };
 
@@ -292,8 +215,11 @@
   }
   function onChatError(err) {
     console.error('Chat listener error', err);
+    var bar = $('lcErrBar');
+    if (bar) { bar.style.display = 'block'; bar.textContent = '⚠️ Chat connection problem: ' + (err && (err.code || err.message) || 'unknown') + ' (check Firestore Rules)'; }
   }
 
+  /* typing indicator (one doc per user, so nobody overwrites another) */
   function paintTyping() {
     var el = $('liveTypingStatus'); if (!el) return;
     var names = [];
@@ -337,10 +263,15 @@
     input.focus();
   };
 
-  var MAX_DIM = 1600;
-  var TARGET_BYTES = 550 * 1024;
+  /* ---------- Auto photo compressor ----------
+     Big camera photos (often 3-10 MB, 4000x3000+) are resized on a canvas
+     and re-encoded as JPEG so they always fit under the chat size limit,
+     with zero manual steps for the user. Falls back to the original file
+     only if compression genuinely fails (corrupt image etc). */
+  var MAX_DIM = 1600;          // longest side after resize
+  var TARGET_BYTES = 550 * 1024; // aim to land the final photo under ~550 KB
   var MIN_QUALITY = 0.35;
-  var FLOOR_DIM = 800;
+  var FLOOR_DIM = 800;         // last-resort shrink if still too big
 
   function readFileAsDataURL(file) {
     return new Promise(function (resolve, reject) {
@@ -389,6 +320,7 @@
           out = canvas.toDataURL('image/jpeg', quality);
         }
 
+        // last resort: shrink dimensions further, keep it small & reliable
         if (approxBytes(out) > TARGET_BYTES && Math.max(canvas.width, canvas.height) > FLOOR_DIM) {
           var canvas2 = drawResized(img, FLOOR_DIM);
           out = canvas2.toDataURL('image/jpeg', 0.7);
@@ -402,14 +334,16 @@
     var file = event.target.files[0]; if (!file) return;
 
     if (file.type && file.type.indexOf('image/') === 0) {
+      // Any photo, including a large camera shot, is auto-compressed first
       showCompressing(true);
       window.compressImageFile(file).then(function (dataUrl) {
         showCompressing(false);
         window.sendLiveChatMessage({ name: (file.name || 'photo.jpg').replace(/\.[^.]+$/, '.jpg'), type: 'image/jpeg', data: dataUrl });
       }).catch(function (err) {
         showCompressing(false);
+        console.error('Compression failed, sending original if small enough:', err);
         if (file.size > 700 * 1024) {
-          alert('Photo compress nahi ho payi aur size bada hai.');
+          alert('Photo compress nahi ho payi aur original size bada hai. Dusri photo try karein.');
         } else {
           var r = new FileReader();
           r.onload = function (e) { window.sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result }); };
@@ -425,6 +359,7 @@
     event.target.value = '';
   };
 
+  /* ---------- Firebase (loaded dynamically, works from a classic script) ---------- */
   var CFG = {
     apiKey: "AIzaSyAjsq2wbyXmt8_MjEazM9mAYd5vlZW0dy4",
     authDomain: "ttespl.firebaseapp.com",
@@ -448,6 +383,7 @@
     var app = A.getApps().length ? A.getApp() : A.initializeApp(CFG);
     var db;
     try {
+      // auto long-polling keeps live updates working inside APK / WebView / strict networks
       db = F.initializeFirestore(app, { experimentalAutoDetectLongPolling: true, ignoreUndefinedProperties: true });
     } catch (e) { db = F.getFirestore(app); }
 
@@ -491,6 +427,7 @@
       }
     };
 
+    // realtime listeners for all data
     Object.keys(MAP).forEach(function (key) {
       F.onSnapshot(F.collection(db, MAP[key]), function (snap) {
         if (snap.empty && snap.metadata.fromCache) return;
@@ -501,6 +438,7 @@
       }, function (err) { console.error(key, err); setSync('Offline', false); });
     });
 
+    // realtime chat (latest 150 messages, tick shows pending -> sent)
     var q = F.query(F.collection(db, 'team_messages'), F.orderBy('timestamp', 'desc'), F.limit(150));
     F.onSnapshot(q, { includeMetadataChanges: true }, function (snap) {
       var msgs = [];
@@ -510,6 +448,7 @@
       setSync('Live Cloud', true);
     }, onChatError);
 
+    // typing indicator
     F.onSnapshot(F.collection(db, 'chat_status'), function (snap) {
       var m = {};
       snap.forEach(function (d) { if (d.id.indexOf('typing_') === 0) m[d.id] = d.data(); });
@@ -522,147 +461,4 @@
     setSync('Offline', false);
     onChatError(e);
   });
-
-  /* ---------- Custom Solid Dropdown for Search Inputs (replaces glitchy native datalist on mobile) ---------- */
-  var dropEl = document.createElement('div');
-  dropEl.id = 'appCustomDropdown';
-  dropEl.style.cssText = 'position:fixed;display:none;background:#ffffff;border:1.5px solid #0f3d6c;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.3);max-height:220px;overflow-y:auto;z-index:999999;font-family:sans-serif;width:280px;';
-  document.body.appendChild(dropEl);
-
-  var activeTargetInput = null;
-
-  function closeCustomDropdown() {
-    dropEl.style.display = 'none';
-    activeTargetInput = null;
-  }
-  document.addEventListener('click', function(e) {
-    if (e.target !== activeTargetInput && !dropEl.contains(e.target)) {
-      closeCustomDropdown();
-    }
-  });
-
-  function positionDropdown(input) {
-    var rect = input.getBoundingClientRect();
-    dropEl.style.top = (rect.bottom + 4) + 'px';
-    dropEl.style.left = rect.left + 'px';
-    dropEl.style.width = Math.max(rect.width, 260) + 'px';
-  }
-
-  function showCustomSuggestions(input, type) {
-    activeTargetInput = input;
-    var query = (input.value || '').toLowerCase().trim();
-    var list = [];
-
-    if (type === 'customer') {
-      list = (window.customerDatabase || []).filter(function(c) {
-        return !query || (c.name && c.name.toLowerCase().includes(query)) || (c.phone && String(c.phone).includes(query)) || (c.address && c.address.toLowerCase().includes(query));
-      }).slice(0, 25).map(function(c) {
-        return {
-          val: c.name + ' (' + c.phone + ')',
-          title: c.name,
-          sub: (c.phone ? '📞 ' + c.phone : '') + (c.address ? ' | 📍 ' + c.address : '')
-        };
-      });
-    } else if (type === 'product') {
-      list = (window.sampleInventory || []).filter(function(p) {
-        return !query || (p.name && p.name.toLowerCase().includes(query)) || (p.code && p.code.toLowerCase().includes(query)) || (p.category && p.category.toLowerCase().includes(query));
-      }).slice(0, 25).map(function(p) {
-        return {
-          val: p.name + (p.code ? ' [' + p.code + ']' : ''),
-          title: p.name,
-          sub: (p.code ? '[' + p.code + '] ' : '') + 'Stock: ' + (p.stock || 0) + ' | ₹' + (p.rate || 0) + (p.dealer_price ? ' (Dealer: ₹' + p.dealer_price + ')' : '')
-        };
-      });
-    } else if (type === 'machine') {
-      list = (window.machineryDatabase || []).filter(function(m) {
-        return !query || (m.name && m.name.toLowerCase().includes(query)) || (m.pump && m.pump.toLowerCase().includes(query));
-      }).slice(0, 25).map(function(m) {
-        return {
-          val: m.name,
-          title: m.name,
-          sub: (m.pump ? m.pump + ' | ' : '') + '₹' + (m.price || 0)
-        };
-      });
-    }
-
-    if (list.length === 0) {
-      closeCustomDropdown();
-      return;
-    }
-
-    positionDropdown(input);
-    var html = '';
-    list.forEach(function(item) {
-      html += '<div class="custom-drop-item" style="padding:8px 10px;border-bottom:1px solid #f1f5f9;cursor:pointer;background:#ffffff;color:#111827;">' +
-        '<div style="font-weight:700;font-size:12.5px;color:#0f3d6c;">' + esc(item.title) + '</div>' +
-        '<div style="font-size:10.5px;color:#64748b;margin-top:2px;">' + esc(item.sub) + '</div>' +
-        '</div>';
-    });
-    dropEl.innerHTML = html;
-    dropEl.style.display = 'block';
-
-    var items = dropEl.querySelectorAll('.custom-drop-item');
-    items.forEach(function(el, idx) {
-      el.addEventListener('mouseenter', function() { el.style.background = '#f0f7ff'; });
-      el.addEventListener('mouseleave', function() { el.style.background = '#ffffff'; });
-      el.addEventListener('click', function(e) {
-        e.stopPropagation();
-        input.value = list[idx].val;
-        closeCustomDropdown();
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        input.dispatchEvent(new Event('change', { bubbles: true }));
-        if (input.id === 'leadMachine' && typeof window.onMachineSelect === 'function') {
-          window.onMachineSelect(input.value);
-        }
-      });
-    });
-  }
-
-  function setupSearchInputs() {
-    var custInputs = ['leadCustSearchInput', 'ordCustSearchInput', 'srvCustSearchInput'];
-    custInputs.forEach(function(id) {
-      var el = $(id);
-      if (el) {
-        el.removeAttribute('list');
-        el.setAttribute('autocomplete', 'off');
-        el.onfocus = function() { showCustomSuggestions(el, 'customer'); };
-        el.oninput = function() { showCustomSuggestions(el, 'customer'); };
-      }
-    });
-
-    var machInputs = ['leadMachine', 'srvMachine'];
-    machInputs.forEach(function(id) {
-      var el = $(id);
-      if (el) {
-        el.removeAttribute('list');
-        el.setAttribute('autocomplete', 'off');
-        el.onfocus = function() { showCustomSuggestions(el, 'machine'); };
-        el.oninput = function() { showCustomSuggestions(el, 'machine'); };
-      }
-    });
-
-    var prodInputs = ['srvPartSearchInput'];
-    prodInputs.forEach(function(id) {
-      var el = $(id);
-      if (el) {
-        el.removeAttribute('list');
-        el.setAttribute('autocomplete', 'off');
-        el.onfocus = function() { showCustomSuggestions(el, 'product'); };
-        el.oninput = function() { showCustomSuggestions(el, 'product'); };
-      }
-    });
-
-    document.querySelectorAll('.item-product-input').forEach(function(el) {
-      el.removeAttribute('list');
-      el.setAttribute('autocomplete', 'off');
-      el.onfocus = function() { showCustomSuggestions(el, 'product'); };
-      el.oninput = function() {
-        if (typeof onOrderItemInput === 'function') onOrderItemInput(el);
-        showCustomSuggestions(el, 'product');
-      };
-    });
-  }
-
-  setInterval(setupSearchInputs, 800);
-
 })();
