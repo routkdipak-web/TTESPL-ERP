@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="master_data.js"></script>
-</head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>TWIN TOWN EXPRESS SERVICES PVT LTD - ERP</title>
@@ -13,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TTESPL ERP">
-<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/9422/9422891.png">
+<link rel="apple-touch-icon" href="[https://cdn-icons-png.flaticon.com/512/9422/9422891.png](https://cdn-icons-png.flaticon.com/512/9422/9422891.png)">
 
 <!-- Inline Embedded PWA Web Manifest -->
-<link rel="manifest" href='data:application/manifest+json,{"name":"Twin Town Express Services ERP","short_name":"TTESPL ERP","start_url":".","display":"standalone","background_color":"%230f3d6c","theme_color":"%230f3d6c","orientation":"portrait","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"192x192","type":"image/png"},{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"512x512","type":"image/png"}]}'>
+<link rel="manifest" href='data:application/manifest+json,{"name":"Twin Town Express Services ERP","short_name":"TTESPL ERP","start_url":".","display":"standalone","background_color":"%230f3d6c","theme_color":"%230f3d6c","orientation":"portrait","icons":[{"src":"[https://cdn-icons-png.flaticon.com/512/9422/9422891.png](https://cdn-icons-png.flaticon.com/512/9422/9422891.png)","sizes":"192x192","type":"image/png"},{"src":"[https://cdn-icons-png.flaticon.com/512/9422/9422891.png](https://cdn-icons-png.flaticon.com/512/9422/9422891.png)","sizes":"512x512","type":"image/png"}]}'>
 
 <style>
   :root {
@@ -202,6 +200,7 @@
   .inv-table th, .inv-table td { border: 1px solid #cbd5e1; padding: 6px; text-align: left; }
   .inv-table th { background: #f1f5f9; font-weight: 700; }
 </style>
+<script src="master_data.js"></script>
 </head>
 <body>
 
@@ -1124,8 +1123,9 @@ let machineryDatabase = getInitialData("MACHINERY", [
   { id: 201, name: "AR Triplex 200 Bar Commercial Washer", pump: "AR 15.20", motor: "5 HP 3-Phase", bar: 200, price: 85000 }
 ]);
 window.machineryDatabase = machineryDatabase;
-```[span_7](start_span)[span_7](end_span)
 
+let leadsData = getStored("LEADS", []);
+window.leadsData = leadsData;
 
 let ordersData = getStored("ORDERS", []);
 window.ordersData = ordersData;
@@ -1940,7 +1940,7 @@ function shareOrderWhatsApp(ordId) {
   if(!o) return;
   const itemsText = o.items.map(i => `${i.name} (x${i.qty}) - Rs.${i.total}`).join('%0A');
   const msg = `*TWIN TOWN EXPRESS SERVICES PVT LTD*%0A*Invoice:* ${o.id}%0A*Customer:* ${o.customerName}%0A-----------------------%0A*Items:*%0A${itemsText}%0A-----------------------%0A*Total Bill:* Rs.${o.totalAmount}%0A*Paid:* Rs.${o.recvAmount}%0A*Due Remaining:* Rs.${o.dueAmount}%0A*Status:* ${o.status}%0A%0A_Authorised Partner - Rasulgarh, BBSR_`;
-  const url = o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
+  const url = o.phone ? `[https://wa.me/91$](https://wa.me/91$){o.phone}?text=${msg}` : `[https://wa.me/?text=$](https://wa.me/?text=$){msg}`;
   window.open(url, '_blank');
 }
 
@@ -2043,7 +2043,7 @@ function sendClosingSummaryWhatsApp() {
   const staff = currentUser ? currentUser.name : "Staff";
 
   const msg = `*DAILY CASH & SALES CLOSING REPORT*%0A*Company:* TTESPL Rasulgarh, BBSR%0A*Date:* ${today}%0A*Verified By:* ${staff}%0A------------------------------------%0A*Cash Collected:* ${cash}%0A*UPI / Online:* ${upi}%0A*Bank / Cheque:* ${bank}%0A*Total Drawer Cash Count:* ${physicalCash}%0A------------------------------------%0A_Generated via TTESPL ERP Portal_`;
-  window.open(`https://wa.me/?text=${msg}`, '_blank');
+  window.open(`[https://wa.me/?text=$](https://wa.me/?text=$){msg}`, '_blank');
 }
 
 /* ================= TAB 3: SERVICES & REPAIRS ================= */
@@ -2757,7 +2757,7 @@ function sendDueWhatsApp(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
   const msg = `*PAYMENT REMINDER - TTESPL*%0A*Customer:* ${o.customerName}%0A*Invoice:* ${o.id}%0A*Pending Due Amount:* Rs.${o.dueAmount}%0APlease clear the pending amount at your earliest.%0AThank you, TTESPL Rasulgarh, Bhubaneswar.`;
-  const url = o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
+  const url = o.phone ? `[https://wa.me/91$](https://wa.me/91$){o.phone}?text=${msg}` : `[https://wa.me/?text=$](https://wa.me/?text=$){msg}`;
   window.open(url, '_blank');
 }
 
@@ -3016,6 +3016,7 @@ window.onload = function() {
   checkAuthSession();
 };
 </script>
+
 <script>
 (function () {
   function link(name, getter, setter) {
@@ -3033,7 +3034,6 @@ window.onload = function() {
   link('currentUser', () => currentUser, v => { currentUser = v; });
 })();
 </script>
-<script src="master_data.js"></script>
 <script src="live-sync.js?v=4"></script>
 </body>
 </html>
