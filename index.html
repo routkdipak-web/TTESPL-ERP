@@ -2287,7 +2287,7 @@ function renderStockList() {
           <div>Customer: <strong style="color:var(--primary);">₹${item.rate || 0}</strong></div>
         </div>
         <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:6px; border-top:1px dashed #e2e8f0; padding-top:4px;">
-          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(\'${item.id}\')">✏️ Edit</button>
+          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(${item.id})">✏️ Edit</button>
         </div>
       </div>
     `).join('');
@@ -2446,7 +2446,7 @@ function renderMachineryList() {
         </div>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:6px; border-top:1px solid #f1f5f9; padding-top:4px;">
-        <button class="btn btn-outline btn-sm" onclick="editMachinePrompt(\'${mach.id}\')">✏️ Edit</button>
+        <button class="btn btn-outline btn-sm" onclick="editMachinePrompt(${mach.id})">✏️ Edit</button>
         <button class="btn btn-danger-sm" onclick="deleteMachineAction(${mach.id})">🗑️</button>
       </div>
     `;
