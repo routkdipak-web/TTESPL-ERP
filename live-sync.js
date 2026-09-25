@@ -142,28 +142,49 @@
     (window.ordersData || []).forEach(function(o) {
         (o.items || []).forEach(function(it) {
             if (it.name === productName || it.name.includes(productName)) {
-                found = true;
-                html += '<div style="border-bottom:1px solid #e2e8f0; padding:6px 0; font-size:11.5px;">' +
-                        '<div style="display:flex; justify-content:space-between;"><strong>' + esc(o.customerName) + '</strong><span style="color:var(--text-muted);">' + esc(o.orderDate) + '</span></div>' +
-                        '<div>Qty: ' + it.qty + ' | Rate: ₹' + it.rate + ' | <strong style="color:var(--success);">Total: ₹' + it.total + '</strong></div>' +
-                        '</div>';
-            }
-        });
+                  window.showProductSaleReport = function(productName) {
+    var p = (window.sampleInventory || []).find(function(x) { 
+      return x.name === productName || (x.name && x.name.toLowerCase() === productName.toLowerCase()); 
+    }) || {};
+
+    var html = '<div style="font-weight:800; font-size:15px; color:#0f3d6c; border-bottom:2px solid #0f3d6c; padding-bottom:6px; margin-bottom:8px;">' + esc(productName) + '</div>';
+
+    // 1. Technical & Machine Details
+    html += '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px; margin-bottom:10px; font-size:11.5px; line-height:1.5;">' +
+      '<div>🚜 <strong>Machine Model:</strong> ' + esc(p.machine_model || 'Universal / Standard') + '</div>' +
+      '<div>🏷️ <strong>Part Code / SKU:</strong> ' + esc(p.code || 'N/A') + '</div>' +
+      '<div>📂 <strong>Category:</strong> ' + esc(p.category || 'General') + '</div>' +
+      '<div>💰 <strong>Dealer Price:</strong> <span style="color:#b91c1c; font-weight:700;">₹' + (p.dealer_price || 0) + '</span> | <strong>Customer Rate:</strong> <span style="color:#0f3d6c; font-weight:700;">₹' + (p.rate || 0) + '</span></div>' +
+      (p.description ? '<div style="margin-top:4px;">📝 <strong>Description:</strong> ' + esc(p.description) + '</div>' : '') +
+      (p.specs ? '<div style="margin-top:2px;">⚙️ <strong>Technical Specs:</strong> ' + esc(p.specs) + '</div>' : '') +
+      '</div>';
+
+    // 2. Sales History
+    html += '<div style="font-weight:700; font-size:12.5px; color:#0f3d6c; margin-bottom:6px;">📊 Sales History:</div>';
+    var found = false;
+    (window.ordersData || []).forEach(function(o) {
+      (o.items || []).forEach(function(it) {
+        if (it.name === productName || (it.name && it.name.includes(productName))) {
+          found = true;
+          html += '<div style="border-bottom:1px solid #e2e8f0; padding:6px 0; font-size:11.5px;">' +
+            '<div style="display:flex; justify-content:space-between;"><strong>' + esc(o.customerName) + '</strong><span style="color:#64748b;">' + esc(o.orderDate) + '</span></div>' +
+            '<div>Qty: <strong>' + it.qty + '</strong> | Rate: ₹' + it.rate + ' | <span style="color:#15803d; font-weight:700;">Total: ₹' + it.total + '</span></div>' +
+            '</div>';
+        }
+      });
     });
-    if (!found) html += '<div style="font-size:12px; color:#64748b; padding:10px 0;">No sales history found for this product yet.</div>';
-    
+    if (!found) {
+      html += '<div style="font-size:11.5px; color:#64748b; padding:6px 0;">Is product ki abhi tak koi sale record nahi hui hai.</div>';
+    }
+
     var contentDiv = document.getElementById('saleReportContent');
     if (contentDiv) {
-        contentDiv.innerHTML = html;
-        var m = document.getElementById('saleReportModal');
-        if (m) m.style.display = 'flex';
+      contentDiv.innerHTML = html;
+      var m = document.getElementById('saleReportModal');
+      if (m) m.style.display = 'flex';
     }
   };
 
-  window.renderStockList = function () {
-    var c = $('stockListContainer'); if (!c) return;
-    $('totalPartsBadge').textContent = sampleInventory.length + ' Items Loaded';
-    
     var grouped = {};
     sampleInventory.forEach(function(item) {
        var cat = item.category || 'Other';
