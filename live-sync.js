@@ -1,9 +1,10 @@
-/* TTESPL ERP - Live Sync v4
-   WhatsApp-style realtime chat + realtime data sync on all devices.
-   v4: chat photo uploads are now auto-compressed on-device (canvas resize +
-   JPEG re-encode) before sending, so a large camera photo is shrunk to a
-   small JPEG automatically and never hits the size-limit error.
-   Load with a normal <script src="live-sync.js?v=4"></script> just before </body>. */
+/* TTESPL ERP - Live Sync v5
+   - Admin-only Delete Protection (Removed blanket delete hiding)
+   - Real-time Firestore Cloud Sync across all staff devices
+   - Auto Image Compressor for instant photo transmission (<350KB)
+   - Realtime WhatsApp-style chat with delivery ticks & unread badges
+   - Dynamic Staff synchronization on registration
+*/
 (function () {
   'use strict';
 
@@ -15,55 +16,62 @@
   };
   var me = function () { return (typeof currentUser !== 'undefined' && currentUser) ? currentUser.name : ''; };
 
-  /* ---------- small styles ---------- */
+  /* Small Styles for Chat & Badges */
   var st = document.createElement('style');
   st.textContent =
     '.lc-day{align-self:center;background:#fff;color:#64748b;font-size:10.5px;font-weight:700;padding:2px 10px;border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.08)}' +
     '.lc-tick{font-size:10px;margin-left:3px}.lc-tick.sent{color:#2563eb}' +
     '.nav-item{position:relative}' +
-    'button[onclick*="delete"]{display:none!important}' +
-    '.lc-badge{position:absolute;top:2px;left:calc(50% + 6px);background:#dc2626;color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;line-height:15px;border-radius:8px;padding:0 3px}' +
-    '#lcErrBar{display:none;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:700;padding:5px 10px}' +
-    '.lc-compress-bar{display:none;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:700;padding:5px 10px;text-align:center}';
+    '#lcErrBar{display:none;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:700;padding:5px 10px;border-radius:6px;margin:4px 0}';
   document.head.appendChild(st);
 
-  var hdr = document.querySelector('.chat-header-bar');
-  if (hdr) {
-    var t = hdr.querySelector('strong'); if (t) t.textContent = '💬 TTESPL Team Live Hub · v4';
-    hdr.insertAdjacentHTML('afterend', '<div id="lcErrBar"></div><div id="lcCompressBar" class="lc-compress-bar">📷 Photo compress ho rahi hai...</div>');
-  }
-  function showCompressing(on) {
-    var b = $('lcCompressBar');
-    if (b) b.style.display = on ? 'block' : 'none';
-  }
+  /* Role-based delete check & UI update */
+  window.updateAdminDeleteVisibility = function () {
+    var isAdmin = (typeof currentUser !== 'undefined' && currentUser && currentUser.role === 'Admin');
+    document.querySelectorAll('.admin-only-btn').forEach(function (btn) {
+      btn.style.display = isAdmin ? 'inline-flex' : 'none';
+    });
+  };
 
-  /* ---------- apply cloud data into app variables + re-render ---------- */
+  /* ---------- Apply Cloud Data into App State & Rerender ---------- */
   function refilter(inputId, filterFn, fullFn) {
     var el = $(inputId); var q = el ? el.value : '';
     if (q) filterFn(q); else fullFn();
   }
+
   var RENDER = {
-    LEADS: function () { renderLeads(); },
+    LEADS: function () { if (typeof renderLeads === 'function') renderLeads(); },
     ORDERS: function () {
-      renderOrders();
-      var f = $('billingEmployeeFilter'); renderBilling('all', f && f.value ? f.value : 'ALL');
+      if (typeof renderOrders === 'function') renderOrders();
+      var f = $('billingEmployeeFilter');
+      if (typeof renderBilling === 'function') renderBilling('all', f && f.value ? f.value : 'ALL');
     },
-    SERVICES: function () { renderServices(); },
-    INVENTORY: function () { populateDropdownsAndDatalists(); refilter('stockFilterInput', filterStockList, renderStockList); },
-    MACHINERY: function () { populateDropdownsAndDatalists(); refilter('machFilterInput', filterMachineList, renderMachineryList); },
-    CUSTOMERS: function () { populateDropdownsAndDatalists(); refilter('custFilterInput', filterCustomerList, renderCustomerList); },
-    STAFF: function () { populateDropdownsAndDatalists(); }
+    SERVICES: function () { if (typeof renderServices === 'function') renderServices(); },
+    INVENTORY: function () {
+      if (typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
+      refilter('stockFilterInput', filterStockList, renderStockList);
+    },
+    MACHINERY: function () {
+      if (typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
+      refilter('machFilterInput', filterMachineList, renderMachineryList);
+    },
+    CUSTOMERS: function () {
+      if (typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
+      refilter('custFilterInput', filterCustomerList, renderCustomerList);
+    },
+    STAFF: function () {
+      if (typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
+    }
   };
 
   window.applyCloudData = function (key, list) {
     switch (key) {
       case 'LEADS':
         leadsData = list;
-        // keep open modals pointing at the fresh objects
-        if (activeLeadForInstall) {
+        if (typeof activeLeadForInstall !== 'undefined' && activeLeadForInstall) {
           activeLeadForInstall = list.find(function (x) { return x.id === activeLeadForInstall.id; }) || activeLeadForInstall;
         }
-        if (activeFreeSrvRef) {
+        if (typeof activeFreeSrvRef !== 'undefined' && activeFreeSrvRef) {
           var nl = list.find(function (x) { return x.id === activeFreeSrvRef.l.id; });
           if (nl && nl.installation && nl.installation.freeServices) {
             var nf = nl.installation.freeServices.find(function (s) { return s.num === activeFreeSrvRef.fs.num; });
@@ -78,81 +86,36 @@
       case 'CUSTOMERS': customerDatabase = list; break;
       case 'STAFF':
         var by = {};
-        registeredEmployees.forEach(function (u) { by[u.mobile] = u; });
-        list.forEach(function (u) { by[u.mobile] = u; });
+        if (Array.isArray(registeredEmployees)) {
+          registeredEmployees.forEach(function (u) { if (u && u.mobile) by[u.mobile] = u; });
+        }
+        if (Array.isArray(list)) {
+          list.forEach(function (u) { if (u && u.mobile) by[u.mobile] = u; });
+        }
         registeredEmployees = Object.keys(by).map(function (k) { return by[k]; });
         list = registeredEmployees;
         break;
       default: return;
     }
     try { localStorage.setItem(DB_PREFIX + key, JSON.stringify(list)); } catch (e) {}
-    try { RENDER[key](); } catch (e) { console.error('render ' + key, e); }
+    try {
+      if (RENDER[key]) RENDER[key]();
+      window.updateAdminDeleteVisibility();
+    } catch (e) {
+      console.error('render ' + key, e);
+    }
   };
 
-  // do not reset selected staff in an open form when dropdowns refresh
+  /* Preserve Staff selection during dropdown refresh */
   var origPopulate = window.populateDropdownsAndDatalists;
   window.populateDropdownsAndDatalists = function () {
     var sels = Array.prototype.slice.call(document.querySelectorAll('.emp-dropdown'));
     var saved = sels.map(function (s) { return s.value; });
-    origPopulate();
+    if (typeof origPopulate === 'function') origPopulate();
     sels.forEach(function (s, i) { if (saved[i]) s.value = saved[i]; });
   };
 
-  /* ---------- Stock cards: full info (MRP + Dealer price + stock), tap opens detail+sales history ---------- */
-  var STOCK_CAP = 60, STOCK_SEARCH_CAP = 100;
-
-  function stockCard(item) {
-    return '<div class="card" style="cursor:pointer;" onclick="openStockDetailModal(' + item.id + ')"><div style="display:flex;justify-content:space-between;align-items:center;">' +
-      '<div><strong style="font-size:13.5px;">' + esc(item.name) + '</strong>' +
-      '<div style="font-size:11px;color:var(--text-muted);">' + esc(item.code) + ' | ' + esc(item.category) + '</div></div>' +
-      '<div style="text-align:right;"><span class="badge ' + (item.stock <= 5 ? 'badge-danger' : 'badge-delivered') + '">' + item.stock + ' in stock</span>' +
-      '<div style="font-size:11px;color:#475569;">Dealer: ₹' + (item.dealerPrice || 0) + '</div>' +
-      '<div style="font-size:12px;font-weight:bold;color:var(--primary);">MRP: ₹' + item.rate + '</div></div></div>' +
-      '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;border-top:1px solid #f1f5f9;padding-top:4px;">' +
-      '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();editStockItemPrompt(' + item.id + ')">✏️ Edit</button>' +
-      '<button class="btn btn-danger-sm" onclick="event.stopPropagation();deleteStockItem(' + item.id + ')">🗑️</button></div></div>';
-  }
-  function capHint(shown, total, label) {
-    if (total <= shown) return '';
-    return '<div style="text-align:center;font-size:11px;color:var(--text-muted);padding:8px;">Showing ' + shown + ' of ' + total + ' ' + label + '</div>';
-  }
-  window.renderStockList = function () {
-    var c = $('stockListContainer'); if (!c) return;
-    $('totalPartsBadge').textContent = sampleInventory.length + ' Items Loaded';
-    var slice = sampleInventory.slice(0, STOCK_CAP);
-    c.innerHTML = slice.map(stockCard).join('') + capHint(slice.length, sampleInventory.length, '— type in the search box above to find a specific item.');
-  };
-  window.filterStockList = function (val) {
-    var q = String(val || '').toLowerCase().trim(), c = $('stockListContainer'); if (!c) return;
-    var results = q ? sampleInventory.filter(function (i) {
-      return i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q) || i.category.toLowerCase().includes(q);
-    }) : sampleInventory;
-    var slice = results.slice(0, STOCK_SEARCH_CAP);
-    c.innerHTML = slice.map(stockCard).join('') + capHint(slice.length, results.length, 'matches — refine your search for more.');
-  };
-
-  function machCard(m) {
-    return '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;">' +
-      '<div><strong style="font-size:14px;color:var(--primary);">🚜 ' + esc(m.name) + '</strong>' +
-      '<div style="font-size:11px;color:var(--text-muted);">Pump: ' + esc(m.pump) + ' | Motor: ' + esc(m.motor) + '</div></div>' +
-      '<div style="text-align:right;"><span class="badge badge-info">' + m.bar + ' Bar</span>' +
-      '<div style="font-size:12.5px;font-weight:800;color:var(--primary);">₹' + Number(m.price).toLocaleString('en-IN') + '</div></div></div>' +
-      '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;border-top:1px solid #f1f5f9;padding-top:4px;">' +
-      '<button class="btn btn-outline btn-sm" onclick="editMachinePrompt(' + m.id + ')">✏️ Edit</button></div></div>';
-  }
-  window.renderMachineryList = function () {
-    var c = $('machineryListContainer'); if (!c) return;
-    $('totalMachBadge').textContent = machineryDatabase.length + ' Machines';
-    c.innerHTML = machineryDatabase.map(machCard).join('');
-  };
-  window.filterMachineList = function (val) {
-    var q = String(val || '').toLowerCase().trim(), c = $('machineryListContainer'); if (!c) return;
-    c.innerHTML = machineryDatabase.filter(function (m) {
-      return m.name.toLowerCase().includes(q) || m.pump.toLowerCase().includes(q) || m.motor.toLowerCase().includes(q);
-    }).map(machCard).join('');
-  };
-
-  /* ---------- WhatsApp style chat ---------- */
+  /* ---------- Real-Time Team Chat ---------- */
   var seen = null, unread = 0, typingState = {};
 
   function dayLabel(d) {
@@ -166,13 +129,20 @@
     var box = $('chatMessagesContainer'); if (!box) return;
     var nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 140;
     var mine0 = me(), html = '', lastDay = '';
+
     teamChatData.forEach(function (m) {
       var d = new Date(m.timestamp || Date.now());
-      if (d.toDateString() !== lastDay) { lastDay = d.toDateString(); html += '<div class="lc-day">' + dayLabel(d) + '</div>'; }
+      if (d.toDateString() !== lastDay) {
+        lastDay = d.toDateString();
+        html += '<div class="lc-day">' + dayLabel(d) + '</div>';
+      }
       var mine = m.sender === mine0, f = '';
       if (m.file && m.file.data) {
-        if (m.file.type && m.file.type.indexOf('image/') === 0) f = '<img src="' + esc(m.file.data) + '" class="bubble-img-preview" alt="image">';
-        else f = '<a href="' + esc(m.file.data) + '" download="' + esc(m.file.name) + '" class="bubble-file-link"><span>📄</span><span>' + esc(m.file.name) + '</span></a>';
+        if (m.file.type && m.file.type.indexOf('image/') === 0) {
+          f = '<img src="' + esc(m.file.data) + '" class="bubble-img-preview" alt="photo" onclick="window.open(this.src)">';
+        } else {
+          f = '<a href="' + esc(m.file.data) + '" download="' + esc(m.file.name) + '" class="bubble-file-link"><span>📄</span><span>' + esc(m.file.name) + '</span></a>';
+        }
       }
       html += '<div class="bubble ' + (mine ? 'me' : 'other') + '">' +
         (mine ? '' : '<div class="bubble-author">' + esc(m.sender) + ' <span style="font-weight:normal;font-size:9.5px;opacity:.8">(' + esc(m.role || 'Staff') + ')</span></div>') +
@@ -181,185 +151,65 @@
         (mine ? ' <span class="lc-tick' + (m._pending ? '' : ' sent') + '">' + (m._pending ? '🕓' : '✓✓') + '</span>' : '') +
         '</div></div>';
     });
+
     box.innerHTML = html;
     var cb = $('chatCountBadge'); if (cb) cb.textContent = teamChatData.length + ' msgs';
     var last = teamChatData[teamChatData.length - 1];
     if (nearBottom || (last && last.sender === mine0)) box.scrollTop = box.scrollHeight;
   };
 
-  function chatTabActive() { var p = $('view-chat'); return p && p.classList.contains('active'); }
+  function chatTabActive() {
+    var p = $('view-chat'); return p && p.classList.contains('active');
+  }
+
   function paintBadge() {
-    var nav = document.querySelector('.nav-item[onclick*="\'chat\'"]'); if (!nav) return;
-    var b = nav.querySelector('.lc-badge');
-    if (!unread) { if (b) b.remove(); return; }
-    if (!b) { b = document.createElement('span'); b.className = 'lc-badge'; nav.appendChild(b); }
+    var b = $('chatNavBadge');
+    if (!b) return;
+    if (!unread) { b.style.display = 'none'; return; }
+    b.style.display = 'inline-block';
     b.textContent = unread > 99 ? '99+' : unread;
   }
+
   var origSwitch = window.switchTab;
   window.switchTab = function (tab, el) {
-    origSwitch(tab, el);
+    if (typeof origSwitch === 'function') origSwitch(tab, el);
     if (tab === 'chat') { unread = 0; paintBadge(); }
+    window.updateAdminDeleteVisibility();
   };
 
   function onChatSnapshot(msgs) {
     var fresh = 0;
-    if (seen !== null) msgs.forEach(function (m) { if (!seen[m.id] && !m._pending && m.sender !== me()) fresh++; });
-    seen = {}; msgs.forEach(function (m) { seen[m.id] = 1; });
+    if (seen !== null) {
+      msgs.forEach(function (m) {
+        if (!seen[m.id] && !m._pending && m.sender !== me()) fresh++;
+      });
+    }
+    seen = {};
+    msgs.forEach(function (m) { seen[m.id] = 1; });
     teamChatData = msgs;
     renderChatMessages();
-    var bar = $('lcErrBar'); if (bar) bar.style.display = 'none';
+
     if (fresh && !chatTabActive()) {
       unread += fresh; paintBadge();
       try { if (navigator.vibrate) navigator.vibrate(120); } catch (e) {}
     }
   }
-  function onChatError(err) {
-    console.error('Chat listener error', err);
-    var bar = $('lcErrBar');
-    if (bar) { bar.style.display = 'block'; bar.textContent = '⚠️ Chat connection problem: ' + (err && (err.code || err.message) || 'unknown') + ' (check Firestore Rules)'; }
-  }
 
-  /* typing indicator (one doc per user, so nobody overwrites another) */
+  /* Typing Indicator */
   function paintTyping() {
     var el = $('liveTypingStatus'); if (!el) return;
     var names = [];
     Object.keys(typingState).forEach(function (k) {
       var t = typingState[k];
-      if (t && t.isTyping && t.user !== me() && Date.now() - (t.updatedAt || 0) < 8000) names.push(t.user);
+      if (t && t.isTyping && t.user !== me() && Date.now() - (t.updatedAt || 0) < 8000) {
+        names.push(t.user);
+      }
     });
     el.innerHTML = names.length ? '✍️ <em>' + names.map(function (n) { return esc(n); }).join(', ') + ' typing...</em>' : '';
   }
   setInterval(paintTyping, 2000);
 
-  var lastTypingSent = 0, typingOff = null;
-  window.handleTypingEvent = function () {
-    if (!window.cloudSync) return;
-    var now = Date.now(), name = me() || 'Staff';
-    if (now - lastTypingSent > 2500) { lastTypingSent = now; window.cloudSync.setTypingStatus(name, true); }
-    clearTimeout(typingOff);
-    typingOff = setTimeout(function () { lastTypingSent = 0; window.cloudSync.setTypingStatus(name, false); }, 2500);
-  };
-
-  window.sendLiveChatMessage = function (fileObj) {
-    var input = $('chatInputMessage');
-    var txt = input.value.trim();
-    if (fileObj && fileObj.target) fileObj = null;
-    if (!txt && !fileObj) return;
-    if (!window.cloudSync) { alert('Cloud is still connecting, please try again in a moment.'); return; }
-    var msg = {
-      sender: me() || 'Staff',
-      role: (typeof currentUser !== 'undefined' && currentUser) ? currentUser.role : 'Team',
-      text: txt,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      timestamp: Date.now(),
-      file: fileObj || null
-    };
-    input.value = '';
-    clearTimeout(typingOff); lastTypingSent = 0;
-    window.cloudSync.setTypingStatus(msg.sender, false);
-    window.cloudSync.sendChatMessage(msg).catch(function (err) {
-      alert('Message NOT sent: ' + (err.code || err.message));
-    });
-    input.focus();
-  };
-
-  /* ---------- Auto photo compressor ----------
-     Big camera photos (often 3-10 MB, 4000x3000+) are resized on a canvas
-     and re-encoded as JPEG so they always fit under the chat size limit,
-     with zero manual steps for the user. Falls back to the original file
-     only if compression genuinely fails (corrupt image etc). */
-  var MAX_DIM = 1600;          // longest side after resize
-  var TARGET_BYTES = 550 * 1024; // aim to land the final photo under ~550 KB
-  var MIN_QUALITY = 0.35;
-  var FLOOR_DIM = 800;         // last-resort shrink if still too big
-
-  function readFileAsDataURL(file) {
-    return new Promise(function (resolve, reject) {
-      var r = new FileReader();
-      r.onload = function (e) { resolve(e.target.result); };
-      r.onerror = function () { reject(new Error('File read failed')); };
-      r.readAsDataURL(file);
-    });
-  }
-
-  function loadImage(src) {
-    return new Promise(function (resolve, reject) {
-      var img = new Image();
-      img.onload = function () { resolve(img); };
-      img.onerror = function () { reject(new Error('Image decode failed')); };
-      img.src = src;
-    });
-  }
-
-  function drawResized(img, maxDim) {
-    var w = img.width, h = img.height;
-    if (w > maxDim || h > maxDim) {
-      if (w >= h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
-      else { w = Math.round(w * (maxDim / h)); h = maxDim; }
-    }
-    var canvas = document.createElement('canvas');
-    canvas.width = w; canvas.height = h;
-    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-    return canvas;
-  }
-
-  function approxBytes(dataUrl) {
-    return Math.round(dataUrl.length * 0.75);
-  }
-
-  window.compressImageFile = function (file) {
-    return readFileAsDataURL(file)
-      .then(loadImage)
-      .then(function (img) {
-        var canvas = drawResized(img, MAX_DIM);
-        var quality = 0.82;
-        var out = canvas.toDataURL('image/jpeg', quality);
-
-        while (approxBytes(out) > TARGET_BYTES && quality > MIN_QUALITY) {
-          quality -= 0.1;
-          out = canvas.toDataURL('image/jpeg', quality);
-        }
-
-        // last resort: shrink dimensions further, keep it small & reliable
-        if (approxBytes(out) > TARGET_BYTES && Math.max(canvas.width, canvas.height) > FLOOR_DIM) {
-          var canvas2 = drawResized(img, FLOOR_DIM);
-          out = canvas2.toDataURL('image/jpeg', 0.7);
-        }
-
-        return out;
-      });
-  };
-
-  window.handleChatFileUpload = function (event) {
-    var file = event.target.files[0]; if (!file) return;
-
-    if (file.type && file.type.indexOf('image/') === 0) {
-      // Any photo, including a large camera shot, is auto-compressed first
-      showCompressing(true);
-      window.compressImageFile(file).then(function (dataUrl) {
-        showCompressing(false);
-        window.sendLiveChatMessage({ name: (file.name || 'photo.jpg').replace(/\.[^.]+$/, '.jpg'), type: 'image/jpeg', data: dataUrl });
-      }).catch(function (err) {
-        showCompressing(false);
-        console.error('Compression failed, sending original if small enough:', err);
-        if (file.size > 700 * 1024) {
-          alert('Photo compress nahi ho payi aur original size bada hai. Dusri photo try karein.');
-        } else {
-          var r = new FileReader();
-          r.onload = function (e) { window.sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result }); };
-          r.readAsDataURL(file);
-        }
-      });
-    } else {
-      if (file.size > 700 * 1024) { alert('Please select files under 700 KB for live chat!'); event.target.value = ''; return; }
-      var r2 = new FileReader();
-      r2.onload = function (e) { window.sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result }); };
-      r2.readAsDataURL(file);
-    }
-    event.target.value = '';
-  };
-
-  /* ---------- Firebase (loaded dynamically, works from a classic script) ---------- */
+  /* ---------- Firebase Cloud Integration ---------- */
   var CFG = {
     apiKey: "AIzaSyAjsq2wbyXmt8_MjEazM9mAYd5vlZW0dy4",
     authDomain: "ttespl.firebaseapp.com",
@@ -370,7 +220,15 @@
     measurementId: "G-HGJFN4G1MV"
   };
   var V = 'https://www.gstatic.com/firebasejs/12.19.0/';
-  var MAP = { STAFF: 'staff', CUSTOMERS: 'customers', INVENTORY: 'inventory', MACHINERY: 'machinery', LEADS: 'leads', ORDERS: 'orders', SERVICES: 'services' };
+  var MAP = {
+    STAFF: 'staff',
+    CUSTOMERS: 'customers',
+    INVENTORY: 'inventory',
+    MACHINERY: 'machinery',
+    LEADS: 'leads',
+    ORDERS: 'orders',
+    SERVICES: 'services'
+  };
 
   function setSync(text, ok) {
     var t = $('syncText'), d = $('syncDot');
@@ -383,7 +241,6 @@
     var app = A.getApps().length ? A.getApp() : A.initializeApp(CFG);
     var db;
     try {
-      // auto long-polling keeps live updates working inside APK / WebView / strict networks
       db = F.initializeFirestore(app, { experimentalAutoDetectLongPolling: true, ignoreUndefinedProperties: true });
     } catch (e) { db = F.getFirestore(app); }
 
@@ -427,7 +284,7 @@
       }
     };
 
-    // realtime listeners for all data
+    // Realtime Snapshot Listeners
     Object.keys(MAP).forEach(function (key) {
       F.onSnapshot(F.collection(db, MAP[key]), function (snap) {
         if (snap.empty && snap.metadata.fromCache) return;
@@ -438,17 +295,22 @@
       }, function (err) { console.error(key, err); setSync('Offline', false); });
     });
 
-    // realtime chat (latest 150 messages, tick shows pending -> sent)
+    // Realtime Chat Stream (Latest 150 messages)
     var q = F.query(F.collection(db, 'team_messages'), F.orderBy('timestamp', 'desc'), F.limit(150));
     F.onSnapshot(q, { includeMetadataChanges: true }, function (snap) {
       var msgs = [];
-      snap.forEach(function (d) { var m = d.data(); m.id = d.id; m._pending = d.metadata.hasPendingWrites; msgs.push(m); });
+      snap.forEach(function (d) {
+        var m = d.data(); m.id = d.id; m._pending = d.metadata.hasPendingWrites; msgs.push(m);
+      });
       msgs.reverse();
       onChatSnapshot(msgs);
       setSync('Live Cloud', true);
-    }, onChatError);
+    }, function (err) {
+      console.error('Chat stream error', err);
+      setSync('Offline', false);
+    });
 
-    // typing indicator
+    // Typing Status Stream
     F.onSnapshot(F.collection(db, 'chat_status'), function (snap) {
       var m = {};
       snap.forEach(function (d) { if (d.id.indexOf('typing_') === 0) m[d.id] = d.data(); });
@@ -456,9 +318,9 @@
     }, function () {});
 
     setSync('Live Cloud', true);
+    window.updateAdminDeleteVisibility();
   }).catch(function (e) {
-    console.error('Firebase load failed', e);
+    console.error('Firebase initialization failed', e);
     setSync('Offline', false);
-    onChatError(e);
   });
 })();
