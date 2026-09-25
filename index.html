@@ -3503,6 +3503,508 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 <!-- Live Cloud Synchronization Script with Realtime Firestore -->
 <script src="live-sync.js?v=5"></script>
+<script>
+/* ============================================================
+   TTESPL PREMIUM ONE-CODE UPDATE
+   Paste this ONE block before </body>
+   ============================================================ */
 
+(function () {
+  "use strict";
+
+  /* ---------- PREMIUM DESIGN ---------- */
+
+  const css = document.createElement("style");
+
+  css.textContent = `
+    body{
+      background:
+        radial-gradient(circle at 5% 0%,rgba(0,180,216,.08),transparent 28%),
+        radial-gradient(circle at 95% 5%,rgba(255,107,53,.08),transparent 25%),
+        #eef3f8 !important;
+    }
+
+    header{
+      background:linear-gradient(135deg,#04111f,#0a2949,#14517e) !important;
+      box-shadow:0 8px 28px rgba(2,18,34,.22) !important;
+    }
+
+    .card{
+      border:1px solid rgba(148,163,184,.23) !important;
+      border-radius:18px !important;
+      background:linear-gradient(145deg,#fff,#f8fbff) !important;
+      box-shadow:0 8px 24px rgba(15,23,42,.06) !important;
+    }
+
+    .btn{
+      border-radius:11px !important;
+    }
+
+    .btn-primary{
+      background:linear-gradient(135deg,#08213a,#14517e) !important;
+      box-shadow:0 6px 16px rgba(10,37,64,.18) !important;
+    }
+
+    .btn-accent{
+      background:linear-gradient(135deg,#ff6b35,#ff9d3d) !important;
+    }
+
+    input,select,textarea{
+      border-radius:11px !important;
+      border-color:#d9e2ec !important;
+    }
+
+    input:focus,select:focus,textarea:focus{
+      border-color:#00a6cc !important;
+      box-shadow:0 0 0 4px rgba(0,180,216,.11) !important;
+    }
+
+    .premium-web-panel{
+      margin:12px 0;
+      border:1px solid #dbe5ef;
+      border-radius:16px;
+      overflow:hidden;
+      background:linear-gradient(145deg,#f8fbff,#eef5fb);
+      box-shadow:inset 0 1px rgba(255,255,255,.9);
+    }
+
+    .premium-web-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      padding:10px 12px;
+      background:rgba(255,255,255,.8);
+      border-bottom:1px solid #dbe5ef;
+    }
+
+    .premium-web-title{
+      font-size:12px;
+      font-weight:800;
+      color:#0b2a4a;
+    }
+
+    .premium-web-status{
+      font-size:10px;
+      color:#64748b;
+      margin-top:2px;
+    }
+
+    .premium-web-body{
+      padding:10px;
+    }
+
+    .premium-web-result{
+      display:grid;
+      grid-template-columns:82px 1fr;
+      gap:10px;
+      align-items:start;
+    }
+
+    .premium-web-image{
+      width:82px;
+      height:82px;
+      object-fit:cover;
+      border-radius:12px;
+      background:#e5edf5;
+      border:1px solid #d6e1ec;
+    }
+
+    .premium-web-result h4{
+      font-size:12px;
+      margin:0 0 4px;
+      color:#0b2a4a;
+    }
+
+    .premium-web-result p{
+      font-size:10.5px;
+      line-height:1.45;
+      color:#475569;
+      margin:0;
+    }
+
+    .premium-web-actions{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      margin-top:9px;
+    }
+
+    .premium-web-frame{
+      width:100%;
+      height:270px;
+      border:0;
+      border-radius:10px;
+      background:white;
+      margin-top:9px;
+    }
+
+    @media(max-width:430px){
+      .premium-web-frame{
+        height:230px;
+      }
+    }
+  `;
+
+  document.head.appendChild(css);
+
+
+  /* ---------- REMOVE OLD DEMO EMPLOYEE ---------- */
+
+  try {
+    const prefix =
+      typeof DB_PREFIX !== "undefined"
+        ? DB_PREFIX
+        : "";
+
+    const cleanupKey =
+      prefix + "STAFF_CLEANUP_V2";
+
+    if(localStorage.getItem(cleanupKey) !== "done"){
+
+      localStorage.removeItem(prefix + "STAFF");
+      localStorage.removeItem(prefix + "SESSION_USER");
+
+      localStorage.setItem(
+        cleanupKey,
+        "done"
+      );
+    }
+
+    if(typeof registeredEmployees !== "undefined"){
+      registeredEmployees.length = 0;
+
+      try{
+        registeredEmployees.push(
+          ...(
+            typeof getStored === "function"
+              ? getStored("STAFF", [])
+              : []
+          )
+        );
+      }catch(e){}
+    }
+
+  }catch(e){
+    console.warn("Staff cleanup:",e);
+  }
+
+
+  /* ---------- PRODUCT WEB SEARCH ---------- */
+
+  window.ttProductSearch = function(name){
+
+    const url =
+      "https://www.google.com/search?q=" +
+      encodeURIComponent(name);
+
+    window.open(
+      url,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
+
+
+  window.ttProductImages = function(name){
+
+    const url =
+      "https://www.google.com/search?tbm=isch&q=" +
+      encodeURIComponent(name);
+
+    window.open(
+      url,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
+
+
+  window.ttProductShopping = function(name){
+
+    const url =
+      "https://www.google.com/search?tbm=shop&q=" +
+      encodeURIComponent(name);
+
+    window.open(
+      url,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
+
+
+  /* ---------- FIND CURRENT PRODUCT ---------- */
+
+  function getCurrentProduct(){
+
+    try{
+
+      if(
+        typeof activeStockDetailId !== "undefined" &&
+        typeof sampleInventory !== "undefined"
+      ){
+
+        return sampleInventory.find(
+          x => x.id === activeStockDetailId
+        );
+
+      }
+
+    }catch(e){}
+
+    return null;
+  }
+
+
+  /* ---------- WEB PRODUCT PANEL ---------- */
+
+  window.ttShowProductWeb = async function(item){
+
+    if(!item) return;
+
+    let panel =
+      document.getElementById(
+        "ttPremiumWebPanel"
+      );
+
+    if(!panel){
+
+      panel =
+        document.createElement("div");
+
+      panel.id =
+        "ttPremiumWebPanel";
+
+      panel.className =
+        "premium-web-panel";
+
+      panel.innerHTML = `
+
+        <div class="premium-web-head">
+
+          <div>
+
+            <div class="premium-web-title">
+              🌐 Web Product Explorer
+            </div>
+
+            <div
+              id="ttWebStatus"
+              class="premium-web-status"
+            >
+              Searching web details…
+            </div>
+
+          </div>
+
+          <button
+            class="btn btn-primary btn-sm"
+            id="ttBrowserBtn"
+          >
+            🌐 Browser
+          </button>
+
+        </div>
+
+        <div
+          id="ttWebBody"
+          class="premium-web-body"
+        >
+
+          <div
+            style="
+              text-align:center;
+              padding:12px;
+              color:#64748b;
+              font-size:11px;
+            "
+          >
+            🔎 Searching product information…
+          </div>
+
+        </div>
+      `;
+
+      const modal =
+        document.querySelector(
+          "#stockDetailModal .auth-card"
+        ) ||
+        document.querySelector(
+          "#stockDetailModal"
+        );
+
+      if(modal){
+
+        const buttons =
+          modal.querySelectorAll(
+            "button"
+          );
+
+        let inserted = false;
+
+        for(
+          let i = 0;
+          i < buttons.length;
+          i++
+        ){
+
+          if(
+            buttons[i]
+              .textContent
+              .includes("Edit Item Details")
+          ){
+
+            buttons[i]
+              .parentElement
+              .insertAdjacentElement(
+                "afterend",
+                panel
+              );
+
+            inserted = true;
+            break;
+          }
+        }
+
+        if(!inserted){
+          modal.appendChild(panel);
+        }
+
+      }
+
+    }
+
+
+    panel.style.display =
+      "block";
+
+
+    const query = [
+      item.name,
+      item.code,
+      item.machine
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+
+    const browserBtn =
+      document.getElementById(
+        "ttBrowserBtn"
+      );
+
+    if(browserBtn){
+
+      browserBtn.onclick =
+        function(){
+
+          window.ttProductSearch(
+            query
+          );
+
+        };
+    }
+
+
+    const body =
+      document.getElementById(
+        "ttWebBody"
+      );
+
+    const status =
+      document.getElementById(
+        "ttWebStatus"
+      );
+
+
+    try{
+
+      const title =
+        encodeURIComponent(
+          String(item.name || "")
+            .replace(/\s+/g,"_")
+        );
+
+
+      const response =
+        await fetch(
+          "https://en.wikipedia.org/api/rest_v1/page/summary/" +
+          title
+        );
+
+
+      if(response.ok){
+
+        const data =
+          await response.json();
+
+
+        if(
+          data &&
+          data.title &&
+          data.type !==
+          "disambiguation"
+        ){
+
+          const image =
+            data.thumbnail &&
+            data.thumbnail.source
+              ? `
+                <img
+                  class="premium-web-image"
+                  src="${data.thumbnail.source}"
+                  alt=""
+                >
+              `
+              : `
+                <div
+                  class="premium-web-image"
+                  style="
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-size:25px;
+                  "
+                >
+                  📦
+                </div>
+              `;
+
+
+          body.innerHTML = `
+
+            <div class="premium-web-result">
+
+              ${image}
+
+              <div>
+
+                <h4>
+                  ${data.title}
+                </h4>
+
+                <p>
+                  ${
+                    data.extract ||
+                    "Public product information found."
+                  }
+                </p>
+
+                <div
+                  class="premium-web-actions"
+                >
+
+                  <button
+                    class="btn btn-primary btn-sm"
+                    onclick="
+                      ttProductSearch(
+                        '${String(query)
+                          .replace(/'/g,"\\\\'")}'
+                      )
+                    "
+                  >
+                    🔎 Web Search
+                  </button
 </body>
 </html>
