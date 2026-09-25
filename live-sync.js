@@ -1,9 +1,4 @@
-/* TTESPL ERP - Live Sync v4
-   WhatsApp-style realtime chat + realtime data sync on all devices.
-   v4: chat photo uploads are now auto-compressed on-device (canvas resize +
-   JPEG re-encode) before sending, so a large camera photo is shrunk to a
-   small JPEG automatically and never hits the size-limit error.
-   Load with a normal <script src="live-sync.js?v=4"></script> just before </body>. */
+/* TTESPL ERP - Live Sync v4 */
 (function () {
   'use strict';
 
@@ -15,7 +10,6 @@
   };
   var me = function () { return (typeof currentUser !== 'undefined' && currentUser) ? currentUser.name : ''; };
 
-  /* ---------- small styles ---------- */
   var st = document.createElement('style');
   st.textContent =
     '.lc-day{align-self:center;background:#fff;color:#64748b;font-size:10.5px;font-weight:700;padding:2px 10px;border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.08)}' +
@@ -37,7 +31,6 @@
     if (b) b.style.display = on ? 'block' : 'none';
   }
 
-  /* ---------- apply cloud data into app variables + re-render ---------- */
   function refilter(inputId, filterFn, fullFn) {
     var el = $(inputId); var q = el ? el.value : '';
     if (q) filterFn(q); else fullFn();
@@ -55,11 +48,40 @@
     STAFF: function () { populateDropdownsAndDatalists(); }
   };
 
+  function mergeWithMaster(key, list) {
+    if (!window.MASTER_DATA || !window.MASTER_DATA[key]) return list || [];
+    var master = window.MASTER_DATA[key];
+    if (!list || list.length === 0) return master.slice();
+    var map = {};
+    if (key === 'INVENTORY') {
+      list.forEach(function (i) { if (i && i.name) map[String(i.name).toLowerCase().trim()] = i; });
+      master.forEach(function (m) {
+        var k = (m.name || '').toLowerCase().trim();
+        if (!map[k]) { list.push(m); map[k] = m; }
+      });
+    } else if (key === 'CUSTOMERS') {
+      list.forEach(function (c) { if (c && c.phone) map[String(c.phone).trim()] = c; });
+      master.forEach(function (m) {
+        var p = String(m.phone || '').trim();
+        if (p && !map[p]) { list.push(m); map[p] = m; }
+      });
+    } else if (key === 'MACHINERY') {
+      list.forEach(function (m) { if (m && m.name) map[m.name.toLowerCase().trim()] = m; });
+      master.forEach(function (m) {
+        var k = (m.name || '').toLowerCase().trim();
+        if (!map[k]) { list.push(m); map[k] = m; }
+      });
+    }
+    return list;
+  }
+
   window.applyCloudData = function (key, list) {
+    if (key === 'INVENTORY' || key === 'CUSTOMERS' || key === 'MACHINERY') {
+      list = mergeWithMaster(key, list);
+    }
     switch (key) {
       case 'LEADS':
         leadsData = list;
-        // keep open modals pointing at the fresh objects
         if (activeLeadForInstall) {
           activeLeadForInstall = list.find(function (x) { return x.id === activeLeadForInstall.id; }) || activeLeadForInstall;
         }
@@ -89,17 +111,14 @@
     try { RENDER[key](); } catch (e) { console.error('render ' + key, e); }
   };
 
-  // do not reset selected staff in an open form when dropdowns refresh
   var origPopulate = window.populateDropdownsAndDatalists;
   window.populateDropdownsAndDatalists = function () {
     var sels = Array.prototype.slice.call(document.querySelectorAll('.emp-dropdown'));
     var saved = sels.map(function (s) { return s.value; });
-    origPopulate();
+    if (typeof origPopulate === 'function') origPopulate();
     sels.forEach(function (s, i) { if (saved[i]) s.value = saved[i]; });
   };
 
-  /* ---------- Stock & Machinery cards: Edit only (no delete), also while searching ---------- */
-  
   function stockCard(item) {
     return '<div class="card" style="cursor:pointer;" onclick="showProductSaleReport(\'' + esc(item.name) + '\')"><div style="display:flex;justify-content:space-between;align-items:center;">' +
       '<div><strong style="font-size:13.5px;">' + esc(item.name) + '</strong>' +
@@ -117,7 +136,7 @@
     let html = '<div style="font-weight:bold; margin-bottom:10px; font-size:14px; color:var(--primary); border-bottom:2px solid var(--primary); padding-bottom:4px;">Sales Report: ' + esc(productName) + '</div>';
     let found = false;
     (window.ordersData || []).forEach(function(o) {
-        o.items.forEach(function(it) {
+        (o.items || []).forEach(function(it) {
             if (it.name === productName || it.name.includes(productName)) {
                 found = true;
                 html += '<div style="border-bottom:1px solid #e2e8f0; padding:6px 0; font-size:11.5px;">' +
@@ -132,16 +151,15 @@
     var contentDiv = document.getElementById('saleReportContent');
     if (contentDiv) {
         contentDiv.innerHTML = html;
-        document.getElementById('saleReportModal').style.display = 'flex';
+        var m = document.getElementById('saleReportModal');
+        if (m) m.style.display = 'flex';
     }
   };
 
-  
   window.renderStockList = function () {
     var c = $('stockListContainer'); if (!c) return;
     $('totalPartsBadge').textContent = sampleInventory.length + ' Items Loaded';
     
-    // Group by category
     var grouped = {};
     sampleInventory.forEach(function(item) {
        var cat = item.category || 'Other';
@@ -156,10 +174,9 @@
     }
     c.innerHTML = html;
     
-    // Update datalist for dropdown
     var dl = $('allProductSearchList');
     if (dl) {
-        dl.innerHTML = sampleInventory.map(function(i) {
+        dl.innerHTML = sampleInventory.slice(0, 300).map(function(i) {
             return '<option value="' + esc(i.name) + '">Dealer: ₹' + (i.dealer_price || 0) + ' | Cust: ₹' + (i.rate || 0) + '</option>';
         }).join('');
     }
@@ -168,8 +185,8 @@
   window.filterStockList = function (val) {
     var q = String(val || '').toLowerCase().trim(), c = $('stockListContainer'); if (!c) return;
     c.innerHTML = sampleInventory.filter(function (i) {
-      return i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q) || i.category.toLowerCase().includes(q);
-    }).map(stockCard).join('');
+      return i.name.toLowerCase().includes(q) || (i.code && i.code.toLowerCase().includes(q)) || (i.category && i.category.toLowerCase().includes(q));
+    }).slice(0, 100).map(stockCard).join('');
   };
 
   function machCard(m) {
@@ -193,7 +210,6 @@
     }).map(machCard).join('');
   };
 
-  /* ---------- WhatsApp style chat ---------- */
   var seen = null, unread = 0, typingState = {};
 
   function dayLabel(d) {
@@ -238,7 +254,7 @@
   }
   var origSwitch = window.switchTab;
   window.switchTab = function (tab, el) {
-    origSwitch(tab, el);
+    if (typeof origSwitch === 'function') origSwitch(tab, el);
     if (tab === 'chat') { unread = 0; paintBadge(); }
   };
 
@@ -256,11 +272,8 @@
   }
   function onChatError(err) {
     console.error('Chat listener error', err);
-    var bar = $('lcErrBar');
-    if (bar) { bar.style.display = 'block'; bar.textContent = '⚠️ Chat connection problem: ' + (err && (err.code || err.message) || 'unknown') + ' (check Firestore Rules)'; }
   }
 
-  /* typing indicator (one doc per user, so nobody overwrites another) */
   function paintTyping() {
     var el = $('liveTypingStatus'); if (!el) return;
     var names = [];
@@ -304,15 +317,10 @@
     input.focus();
   };
 
-  /* ---------- Auto photo compressor ----------
-     Big camera photos (often 3-10 MB, 4000x3000+) are resized on a canvas
-     and re-encoded as JPEG so they always fit under the chat size limit,
-     with zero manual steps for the user. Falls back to the original file
-     only if compression genuinely fails (corrupt image etc). */
-  var MAX_DIM = 1600;          // longest side after resize
-  var TARGET_BYTES = 550 * 1024; // aim to land the final photo under ~550 KB
+  var MAX_DIM = 1600;
+  var TARGET_BYTES = 550 * 1024;
   var MIN_QUALITY = 0.35;
-  var FLOOR_DIM = 800;         // last-resort shrink if still too big
+  var FLOOR_DIM = 800;
 
   function readFileAsDataURL(file) {
     return new Promise(function (resolve, reject) {
@@ -361,7 +369,6 @@
           out = canvas.toDataURL('image/jpeg', quality);
         }
 
-        // last resort: shrink dimensions further, keep it small & reliable
         if (approxBytes(out) > TARGET_BYTES && Math.max(canvas.width, canvas.height) > FLOOR_DIM) {
           var canvas2 = drawResized(img, FLOOR_DIM);
           out = canvas2.toDataURL('image/jpeg', 0.7);
@@ -375,16 +382,14 @@
     var file = event.target.files[0]; if (!file) return;
 
     if (file.type && file.type.indexOf('image/') === 0) {
-      // Any photo, including a large camera shot, is auto-compressed first
       showCompressing(true);
       window.compressImageFile(file).then(function (dataUrl) {
         showCompressing(false);
         window.sendLiveChatMessage({ name: (file.name || 'photo.jpg').replace(/\.[^.]+$/, '.jpg'), type: 'image/jpeg', data: dataUrl });
       }).catch(function (err) {
         showCompressing(false);
-        console.error('Compression failed, sending original if small enough:', err);
         if (file.size > 700 * 1024) {
-          alert('Photo compress nahi ho payi aur original size bada hai. Dusri photo try karein.');
+          alert('Photo compress nahi ho payi aur size bada hai.');
         } else {
           var r = new FileReader();
           r.onload = function (e) { window.sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result }); };
@@ -400,7 +405,6 @@
     event.target.value = '';
   };
 
-  /* ---------- Firebase (loaded dynamically, works from a classic script) ---------- */
   var CFG = {
     apiKey: "AIzaSyAjsq2wbyXmt8_MjEazM9mAYd5vlZW0dy4",
     authDomain: "ttespl.firebaseapp.com",
@@ -411,7 +415,7 @@
     measurementId: "G-HGJFN4G1MV"
   };
   var V = 'https://www.gstatic.com/firebasejs/12.19.0/';
-  var MAP = { STAFF: 'staff', CUSTOMERS: 'customers', INVENTORY: 'inventory', MACHINERY: 'machinery', LEADS: 'leads', ORDERS: 'orders', SERVICES: 'services' };
+  var MAP = { STAFF: 'staff', CUSTOMERS: 'customers', INVENTORY: 'inventory', MACHINERY: 'machinery', LEADS: 'lead', ORDERS: 'orders', SERVICES: 'services' };
 
   function setSync(text, ok) {
     var t = $('syncText'), d = $('syncDot');
@@ -424,7 +428,6 @@
     var app = A.getApps().length ? A.getApp() : A.initializeApp(CFG);
     var db;
     try {
-      // auto long-polling keeps live updates working inside APK / WebView / strict networks
       db = F.initializeFirestore(app, { experimentalAutoDetectLongPolling: true, ignoreUndefinedProperties: true });
     } catch (e) { db = F.getFirestore(app); }
 
@@ -468,7 +471,6 @@
       }
     };
 
-    // realtime listeners for all data
     Object.keys(MAP).forEach(function (key) {
       F.onSnapshot(F.collection(db, MAP[key]), function (snap) {
         if (snap.empty && snap.metadata.fromCache) return;
@@ -479,7 +481,6 @@
       }, function (err) { console.error(key, err); setSync('Offline', false); });
     });
 
-    // realtime chat (latest 150 messages, tick shows pending -> sent)
     var q = F.query(F.collection(db, 'team_messages'), F.orderBy('timestamp', 'desc'), F.limit(150));
     F.onSnapshot(q, { includeMetadataChanges: true }, function (snap) {
       var msgs = [];
@@ -489,7 +490,6 @@
       setSync('Live Cloud', true);
     }, onChatError);
 
-    // typing indicator
     F.onSnapshot(F.collection(db, 'chat_status'), function (snap) {
       var m = {};
       snap.forEach(function (d) { if (d.id.indexOf('typing_') === 0) m[d.id] = d.data(); });
