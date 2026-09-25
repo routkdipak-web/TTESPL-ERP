@@ -1084,23 +1084,48 @@ window.registeredEmployees = registeredEmployees;
 
 let currentUser = getStored("SESSION_USER", null);
 
-let customerDatabase = getStored("CUSTOMERS", [
+function getInitialData(key, fallback) {
+  let stored = getStored(key, null);
+  let master = (window.MASTER_DATA && window.MASTER_DATA[key]) ? window.MASTER_DATA[key] : fallback;
+  if (!stored || stored.length === 0) return master;
+  if (key === 'INVENTORY') {
+    let map = new Set(stored.map(i => (i.name||'').toLowerCase().trim()));
+    master.forEach(m => {
+      let k = (m.name||'').toLowerCase().trim();
+      if (!map.has(k)) { stored.push(m); map.add(k); }
+    });
+  } else if (key === 'CUSTOMERS') {
+    let map = new Set(stored.map(c => String(c.phone||'').trim()));
+    master.forEach(m => {
+      let p = String(m.phone||'').trim();
+      if (p && !map.has(p)) { stored.push(m); map.add(p); }
+    });
+  } else if (key === 'MACHINERY') {
+    let map = new Set(stored.map(m => (m.name||'').toLowerCase().trim()));
+    master.forEach(m => {
+      let k = (m.name||'').toLowerCase().trim();
+      if (!map.has(k)) { stored.push(m); map.add(k); }
+    });
+  }
+  return stored;
+}
+
+let customerDatabase = getInitialData("CUSTOMERS", [
   { id: 1, name: "Kalinga Auto Spa", person: "Ranjan Babu", phone: "9861099881", email: "kalinga.autospa@gmail.com", address: "Patia, Bhubaneswar", gst: "21AABCK1234F1Z1" }
 ]);
 window.customerDatabase = customerDatabase;
 
-let sampleInventory = getStored("INVENTORY", [
+let sampleInventory = getInitialData("INVENTORY", [
   { id: 101, name: "AR Pump Plunger Ceramic 18mm", stock: 65, rate: 1450, dealer_price: 1100, code: "AR-PL-18", category: "Machines Spare Parts", hsn: "84139190" }
 ]);
 window.sampleInventory = sampleInventory;
 
-let machineryDatabase = getStored("MACHINERY", [
+let machineryDatabase = getInitialData("MACHINERY", [
   { id: 201, name: "AR Triplex 200 Bar Commercial Washer", pump: "AR 15.20", motor: "5 HP 3-Phase", bar: 200, price: 85000 }
 ]);
 window.machineryDatabase = machineryDatabase;
+```[span_7](start_span)[span_7](end_span)
 
-let leadsData = getStored("LEADS", []);
-window.leadsData = leadsData;
 
 let ordersData = getStored("ORDERS", []);
 window.ordersData = ordersData;
