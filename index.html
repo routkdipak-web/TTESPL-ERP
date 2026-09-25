@@ -295,6 +295,10 @@
 </head>
 <body>
 
+<div id="pullToRefreshIndicator">
+  <span>🔄</span> <span id="ptrText">Refreshing data from Cloud...</span>
+</div>
+
 <input type="file" id="chatAttachmentInput" style="display:none;" accept="image/*,.pdf,.doc,.docx" onchange="handleChatFileUpload(event)">
 
 <!-- ================= AUTH SCREEN ================= -->
@@ -1706,7 +1710,470 @@ function exportInventoryCSV() {
   downloadFile(csv, "TTESPL_Inventory.csv", "text/csv");
 }
 
-/* ================= TAB 5: BILLING & LEDGER ================= */
+function customerCardHtml(cust) {
+  return `
+    <div class="card-header">
+      <div>
+        <strong style="font-size:14px; color:var(--primary);">${cust.name}</strong>
+        <div style="font-size:11px; color:var(--text-muted);">${cust.person && cust.person !== cust.name ? cust.person + ' • ' : ''}Ph: <strong>${cust.phone}</strong></div>
+      </div>
+    </div>
+    <div class="grid-2" style="font-size:11.5px; color:#475569;">
+      <div>📍 ${cust.address || 'Odisha'}</div>
+      <div>GST: <strong>${cust.gst || 'Unregistered'}</strong></div>
+    </div>
+  `;
+}
+
+/* ================= TAB 1: LEADS ================= */
+function renderLeads() {
+  const c = document.getElementById('leadsListContainer');
+  c.innerHTML = '';
+
+  leadsData.forEach(lead => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    let installHtml = '';
+    if(lead.installation && lead.installation.isInstalled) {
+      const ins = lead.installation;
+      let freeSrvHtml = (ins.freeServices || []).map(fs => {
+        let tag = fs.attended
+          ? `<span class="badge badge-delivered">✓ Attended on ${fs.attendedDate} by ${fs.attendedStaff}</span>`
+          : `<button class="btn btn-primary btn-sm" onclick="openAttendModal('${lead.id}', ${fs.num})">🛠️ Attend & Record</button>`;
+        return `
+          <div style="background:white; border:1px solid #cbd5e1; border-radius:8px; padding:7px 10px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong>#${fs.num}: ${fs.label}</strong>
+              <div style="font-size:10.5px; color:#64748b;">Scheduled: <strong>${fs.dueDate}</strong></div>
+            </div>
+            <div>${tag}</div>
+          </div>
+        `;
+      }).join('');
+
+      installHtml = `
+        <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:10px; padding:10px; margin-top:8px;">
+          <strong style="font-size:12px; color:var(--primary); display:block; margin-bottom:6px;">🚀 MACHINE INSTALLED (WARRANTY ACTIVE)</strong>
+          <div class="grid-3" style="font-size:11px; margin-bottom:8px; background:white; padding:6px; border-radius:6px;">
+            <div>SN: <strong>${ins.machineSerial}</strong></div>
+            <div>Pump: <strong>${ins.pumpSerial}</strong></div>
+            <div>Inv: <strong>${ins.invoiceNo}</strong></div>
+          </div>
+          ${freeSrvHtml}
+        </div>
+      `;
+    }
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <strong style="font-size:14.5px; color:var(--primary);">${lead.customerName}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">Inquiry: ${lead.inquiryDate} | Lead: <strong>${lead.handledBy}</strong></div>
+        </div>
+        <span class="badge ${lead.status === 'Installed' ? 'badge-delivered' : 'badge-pending'}">${lead.status}</span>
+      </div>
+      <div class="grid-2" style="font-size:12px; margin-bottom:8px;">
+        <div>Machine: <strong>${lead.machine}</strong></div>
+        <div>Quoted: <strong>₹${Number(lead.quotedPrice || 0).toLocaleString('en-IN')}</strong></div>
+      </div>
+      <div style="background:#f8fafc; padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
+        💬 <strong>Remarks:</strong> ${lead.remarks} | <span style="color:var(--danger); font-weight:800;">Followup: ${lead.followupDate}</span>
+        ${(!lead.installation || !lead.installation.isInstalled) ? `
+          <button class="btn btn-accent btn-sm" style="margin-top:8px; display:block;" onclick="openInstallModal('${lead.id}')">✓ Confirm Installation & Schedule Warranty</button>
+        ` : ''}
+      </div>
+      ${installHtml}
+    `;
+    c.appendChild(card);
+  });
+  updateGlobalReminders();
+}
+window.renderLeads = renderLeads;
+
+function openLeadModal() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('editLeadId').value = "";
+  document.getElementById('leadCustSearchInput').value = "";
+  document.getElementById('leadInqDate').value = today;
+  document.getElementById('leadFollowupDate').value = today;
+  document.getElementById('leadMachine').value = "";
+  document.getElementById('leadPrice').value = "";
+  document.getElementById('leadRemarks').value = "";
+  document.getElementById('leadModal').style.display = 'flex';
+}
+function closeLeadModal() { document.getElementById('leadModal').style.display = 'none'; }
+
+function saveLeadAction() {
+  const custSearch = document.getElementById('leadCustSearchInput').value.trim();
+  const cust = resolveCustomerFromSearch(custSearch);
+  const inqDate = document.getElementById('leadInqDate').value;
+  const staff = document.getElementById('leadStaffSelect').value;
+  const mach = document.getElementById('leadMachine').value.trim();
+  const price = parseFloat(document.getElementById('leadPrice').value) || 0;
+  const followup = document.getElementById('leadFollowupDate').value;
+  const rem = document.getElementById('leadRemarks').value.trim();
+
+  if(!custSearch || !mach) { alert("Please select a Customer and Machine Model!"); return; }
+
+  leadsData.unshift({
+    id: "LEAD-" + Math.floor(100 + Math.random() * 900),
+    customerName: cust ? cust.name : custSearch.split('(')[0].trim(),
+    phone: cust ? cust.phone : "",
+    inquiryDate: inqDate,
+    handledBy: staff,
+    machine: mach,
+    quotedPrice: price,
+    status: "Active Inquiry",
+    followupDate: followup,
+    remarks: rem || "Lead registered",
+    installation: { isInstalled: false }
+  });
+
+  setStored("LEADS", leadsData);
+  closeLeadModal();
+  renderLeads();
+  alert("Lead saved!");
+}
+
+let activeLeadForInstall = null;
+function openInstallModal(leadId) {
+  const l = leadsData.find(x => x.id === leadId);
+  if(!l) return;
+  activeLeadForInstall = l;
+  document.getElementById('insCustHeading').textContent = `Customer: ${l.customerName} | Machine: ${l.machine}`;
+  document.getElementById('insDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('insFinalPrice').value = l.quotedPrice;
+  document.getElementById('installationModal').style.display = 'flex';
+}
+function closeInstallModal() { document.getElementById('installationModal').style.display = 'none'; }
+
+function saveInstallationAction() {
+  if(!activeLeadForInstall) return;
+  const date = document.getElementById('insDate').value;
+  const price = parseFloat(document.getElementById('insFinalPrice').value) || 0;
+  const machSN = document.getElementById('insMachSN').value.trim();
+  const pumpSN = document.getElementById('insPumpSN').value.trim();
+  const inv = document.getElementById('insInvNo').value.trim();
+
+  if(!machSN || !pumpSN) { alert("Please enter Machine Serial No & Pump Serial No!"); return; }
+
+  activeLeadForInstall.status = "Installed";
+  activeLeadForInstall.installation = {
+    isInstalled: true,
+    installDate: date,
+    finalPrice: price,
+    machineSerial: machSN,
+    pumpSerial: pumpSN,
+    invoiceNo: inv || "TTESPL/INV/" + Math.floor(100+Math.random()*900),
+    freeServices: [
+      { num: 1, label: "1st Free Service (30 Days)", dueDate: addMonths(date, 1), attended: false },
+      { num: 2, label: "2nd Free Service (4th Month)", dueDate: addMonths(date, 4), attended: false },
+      { num: 3, label: "3rd Free Service (7th Month)", dueDate: addMonths(date, 7), attended: false },
+      { num: 4, label: "4th Free Service (10th Month)", dueDate: addMonths(date, 10), attended: false }
+    ]
+  };
+
+  setStored("LEADS", leadsData);
+  closeInstallModal();
+  renderLeads();
+  alert("Installation saved & 4 Free Services scheduled!");
+}
+
+let activeFreeSrvRef = null;
+function openAttendModal(leadId, num) {
+  const l = leadsData.find(x => x.id === leadId);
+  if(!l) return;
+  const fs = l.installation.freeServices.find(s => s.num === num);
+  if(!fs) return;
+  activeFreeSrvRef = { l, fs };
+  document.getElementById('freeSrvHeading').textContent = `${l.customerName} — #${fs.num}: ${fs.label}`;
+  document.getElementById('freeSrvActDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('attendFreeServiceModal').style.display = 'flex';
+}
+function closeAttendModal() { document.getElementById('attendFreeServiceModal').style.display = 'none'; }
+
+function saveFreeServiceAction() {
+  if(!activeFreeSrvRef) return;
+  const { fs } = activeFreeSrvRef;
+  fs.attended = true;
+  fs.attendedDate = document.getElementById('freeSrvActDate').value;
+  fs.attendedStaff = document.getElementById('freeSrvStaff').value;
+  fs.actionDone = document.getElementById('freeSrvAction').value.trim() || "Service executed";
+
+  setStored("LEADS", leadsData);
+  closeAttendModal();
+  renderLeads();
+  alert("Free Service recorded!");
+}
+
+/* ================= TAB 2: ORDERS ================= */
+function renderOrders() {
+  const c = document.getElementById('ordersListContainer');
+  c.innerHTML = '';
+
+  ordersData.forEach(o => {
+    let itemsHtml = o.items.map(i => `<div>• ${i.name} (Qty: <strong>${i.qty}</strong> @ ₹${i.rate}) = ₹${i.total}</div>`).join('');
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <strong style="font-size:14.5px; color:var(--primary);">${o.customerName}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">Invoice: ${o.id} | Date: ${o.orderDate} | Staff: <strong>${o.bookedBy}</strong></div>
+        </div>
+        <span class="badge ${o.status === 'Delivered' ? 'badge-delivered' : 'badge-pending'}">${o.status}</span>
+      </div>
+      <div style="background:#f8fafc; padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
+        ${itemsHtml}
+        <div style="border-top:1px dashed #cbd5e1; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:800;">
+          <span>Total: ₹${Number(o.totalAmount || 0).toLocaleString('en-IN')}</span>
+          <span style="color:${o.dueAmount > 0 ? 'var(--danger)' : 'var(--success)'};">Due: ₹${Number(o.dueAmount || 0).toLocaleString('en-IN')}</span>
+        </div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-wa btn-sm" style="flex:1;" onclick="shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
+        ${o.status !== 'Delivered' ? `<button class="btn btn-primary btn-sm" style="flex:1;" onclick="markOrderDelivered('${o.id}')">✓ Mark Delivered</button>` : ''}
+      </div>
+    `;
+    c.appendChild(card);
+  });
+  updateGlobalReminders();
+}
+window.renderOrders = renderOrders;
+
+function openOrderModal() {
+  const tbody = document.getElementById('orderItemsTbody');
+  tbody.innerHTML = '';
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('editOrderId').value = "";
+  document.getElementById('ordCustSearchInput').value = "";
+  document.getElementById('ordDate').value = today;
+  document.getElementById('ordDelDate').value = today;
+  document.getElementById('ordRecvAmt').value = "0";
+  document.getElementById('ordPayMode').value = "Cash";
+  addOrderItemRow();
+  calcOrderTotals();
+  document.getElementById('orderModal').style.display = 'flex';
+}
+function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
+
+function addOrderItemRow(itemName = "", qty = 1, rate = 0) {
+  const tbody = document.getElementById('orderItemsTbody');
+  const tr = document.createElement('tr');
+
+  tr.innerHTML = `
+    <td class="autocomplete-wrapper">
+      <input type="text" class="item-product-input" value="${itemName}" placeholder="Type item name..." oninput="handleOrderItemInput(this)">
+      <div class="solid-suggestion-box"></div>
+    </td>
+    <td><input type="number" class="item-qty" value="${qty}" min="1" oninput="calcOrderTotals()"></td>
+    <td><input type="number" class="item-rate" value="${rate}" oninput="calcOrderTotals()"></td>
+    <td class="item-row-total" style="font-weight:bold; font-size:11.5px;">₹0</td>
+    <td><button class="btn btn-danger-sm" onclick="this.closest('tr').remove(); calcOrderTotals();">✕</button></td>
+  `;
+
+  tbody.appendChild(tr);
+  calcOrderTotals();
+}
+
+function handleOrderItemInput(inputEl) {
+  const val = inputEl.value.toLowerCase().trim();
+  const row = inputEl.closest('tr');
+  const box = row.querySelector('.solid-suggestion-box');
+  if(!box) return;
+  if(!val || val.length < 2) { box.style.display = 'none'; return; }
+
+  const matches = sampleInventory.filter(p =>
+    p.name.toLowerCase().includes(val) || (p.code && p.code.toLowerCase().includes(val))
+  ).slice(0, 8);
+
+  if(matches.length === 0) { box.style.display = 'none'; return; }
+
+  box.innerHTML = matches.map(p => `
+    <div class="suggestion-item" onclick="selectOrderItemSuggestion(this, '${encodeURIComponent(p.name)}', '${p.code}', ${p.rate})">
+      <div><strong>${p.name}</strong><div class="suggestion-sub">Code: ${p.code} | Stock: ${p.stock}</div></div>
+      <strong style="color:var(--accent);">₹${p.rate}</strong>
+    </div>
+  `).join('');
+  box.style.display = 'block';
+}
+
+function selectOrderItemSuggestion(el, encName, code, rate) {
+  const name = decodeURIComponent(encName);
+  const row = el.closest('tr');
+  row.querySelector('.item-product-input').value = `${name} [${code}]`;
+  row.querySelector('.item-rate').value = rate;
+  row.querySelector('.solid-suggestion-box').style.display = 'none';
+  calcOrderTotals();
+}
+
+function calcOrderTotals() {
+  let total = 0;
+  document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
+    const q = parseFloat(r.querySelector('.item-qty').value) || 0;
+    const rate = parseFloat(r.querySelector('.item-rate').value) || 0;
+    const sub = q * rate;
+    r.querySelector('.item-row-total').textContent = '₹' + sub.toLocaleString('en-IN');
+    total += sub;
+  });
+  document.getElementById('ordTotalAmt').value = total;
+  calcOrderBalance();
+}
+
+function calcOrderBalance() {
+  const total = parseFloat(document.getElementById('ordTotalAmt').value) || 0;
+  const recv = parseFloat(document.getElementById('ordRecvAmt').value) || 0;
+  document.getElementById('ordDueAmt').value = Math.max(0, total - recv);
+}
+
+function saveOrderAction() {
+  const custSearch = document.getElementById('ordCustSearchInput').value.trim();
+  const cust = resolveCustomerFromSearch(custSearch);
+  const staff = document.getElementById('ordStaffSelect').value;
+  const total = parseFloat(document.getElementById('ordTotalAmt').value) || 0;
+  const recv = parseFloat(document.getElementById('ordRecvAmt').value) || 0;
+  const due = parseFloat(document.getElementById('ordDueAmt').value) || 0;
+
+  let items = [];
+  document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
+    const pName = r.querySelector('.item-product-input').value.trim();
+    const qty = parseInt(r.querySelector('.item-qty').value) || 0;
+    const rate = parseFloat(r.querySelector('.item-rate').value) || 0;
+    const part = resolvePartFromSearch(pName);
+    if(pName && qty > 0) {
+      items.push({
+        id: part ? part.id : Date.now(),
+        name: part ? part.name : pName,
+        qty, rate, total: qty * rate
+      });
+    }
+  });
+
+  if(!custSearch || items.length === 0) { alert("Select Customer and at least one item!"); return; }
+
+  ordersData.unshift({
+    id: "ORD-" + Math.floor(100 + Math.random() * 900),
+    customerName: cust ? cust.name : custSearch.split('(')[0].trim(),
+    phone: cust ? cust.phone : "",
+    orderDate: document.getElementById('ordDate').value,
+    deliveryDate: document.getElementById('ordDelDate').value,
+    items, totalAmount: total, recvAmount: recv, dueAmount: due,
+    payMode: document.getElementById('ordPayMode').value,
+    status: "Pending", bookedBy: staff
+  });
+
+  setStored("ORDERS", ordersData);
+  closeOrderModal();
+  renderOrders();
+  renderBilling('all');
+  alert("Order created!");
+}
+
+function markOrderDelivered(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(!o) return;
+  o.items.forEach(it => {
+    const p = sampleInventory.find(x => x.id === it.id || x.name === it.name);
+    if(p) p.stock = Math.max(0, p.stock - it.qty);
+  });
+  o.status = "Delivered";
+  setStored("ORDERS", ordersData);
+  setStored("INVENTORY", sampleInventory);
+  alert(`Order ${ordId} Marked Delivered! Stock deducted.`);
+  renderOrders();
+  renderStockList();
+}
+
+function shareOrderWhatsApp(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(!o) return;
+  const itemsText = o.items.map(i => `${i.name} (x${i.qty}) - Rs.${i.total}`).join('%0A');
+  const msg = `*TWIN TOWN EXPRESS SERVICES PVT LTD*%0A*Invoice:* ${o.id}%0A*Customer:* ${o.customerName}%0A-----------------------%0A*Items:*%0A${itemsText}%0A-----------------------%0A*Total Bill:* Rs.${o.totalAmount}%0A*Due Remaining:* Rs.${o.dueAmount}%0A*Status:* ${o.status}`;
+  window.open(`https://wa.me/${o.phone ? '91'+o.phone : ''}?text=${msg}`, '_blank');
+}
+
+/* ================= TAB 3: SERVICES ================= */
+function renderServices() {
+  const c = document.getElementById('serviceListContainer');
+  c.innerHTML = '';
+
+  serviceCallsData.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <strong style="font-size:14.5px; color:var(--primary);">${s.customerName}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">Call: ${s.recvDate} | Tech: <strong>${s.attendedBy}</strong></div>
+        </div>
+        <span class="badge ${s.status === 'Work Completed' ? 'badge-delivered' : 'badge-pending'}">${s.status}</span>
+      </div>
+      <div style="font-size:12px; margin-bottom:4px;"><strong>Machine:</strong> ${s.machine}</div>
+      <div style="font-size:11.5px; margin-bottom:8px;"><strong>Issue:</strong> ${s.problem}</div>
+      ${s.status !== 'Work Completed' ? `
+        <button class="btn btn-primary btn-sm btn-block" onclick="markServiceDone('${s.id}')">🛠️ Mark Work Completed</button>
+      ` : `<div style="font-size:11px; color:var(--success); font-weight:bold;">✓ Completed on ${s.doneDate}</div>`}
+    `;
+    c.appendChild(card);
+  });
+  updateGlobalReminders();
+}
+window.renderServices = renderServices;
+
+function openServiceCallModal() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('editServiceId').value = "";
+  document.getElementById('srvCustSearchInput').value = "";
+  document.getElementById('srvRecvDate').value = today;
+  document.getElementById('srvTargetDate').value = today;
+  document.getElementById('srvMachine').value = "";
+  document.getElementById('srvProblem').value = "";
+  document.getElementById('srvStatusSelect').value = "Pending / Scheduled";
+  toggleServiceCompletionFields("Pending / Scheduled");
+  document.getElementById('serviceModal').style.display = 'flex';
+}
+function closeServiceModal() { document.getElementById('serviceModal').style.display = 'none'; }
+
+function toggleServiceCompletionFields(val) {
+  document.getElementById('srvCompletedFields').style.display = val === 'Work Completed' ? 'block' : 'none';
+  if(val === 'Work Completed') document.getElementById('srvDoneDate').value = new Date().toISOString().split('T')[0];
+}
+
+function saveServiceAction() {
+  const custSearch = document.getElementById('srvCustSearchInput').value.trim();
+  const cust = resolveCustomerFromSearch(custSearch);
+  const status = document.getElementById('srvStatusSelect').value;
+
+  serviceCallsData.unshift({
+    id: "SRV-" + Math.floor(100 + Math.random() * 900),
+    customerName: cust ? cust.name : custSearch.split('(')[0].trim(),
+    phone: cust ? cust.phone : "",
+    machine: document.getElementById('srvMachine').value.trim() || "HPW Pump",
+    recvDate: document.getElementById('srvRecvDate').value,
+    targetDate: document.getElementById('srvTargetDate').value,
+    status: status,
+    problem: document.getElementById('srvProblem').value.trim(),
+    attendedBy: document.getElementById('srvStaffSelect').value,
+    doneDate: status === 'Work Completed' ? document.getElementById('srvDoneDate').value : ""
+  });
+
+  setStored("SERVICES", serviceCallsData);
+  closeServiceModal();
+  renderServices();
+  alert("Service call saved!");
+}
+
+function markServiceDone(id) {
+  const s = serviceCallsData.find(x => x.id === id);
+  if(!s) return;
+  s.status = "Work Completed";
+  s.doneDate = new Date().toISOString().split('T')[0];
+  setStored("SERVICES", serviceCallsData);
+  renderServices();
+}
+
+/* ================= TAB 5: BILLING ================= */
 function renderBilling(filterType) {
   let totalBilled = 0, totalRecv = 0, totalDue = 0;
   ordersData.forEach(o => {
