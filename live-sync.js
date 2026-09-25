@@ -1,6 +1,9 @@
-/* TTESPL ERP - Live Sync v2
+/* TTESPL ERP - Live Sync v4
    WhatsApp-style realtime chat + realtime data sync on all devices.
-   Load with a normal <script src="live-sync.js?v=2"></script> just before </body>. */
+   v4: chat photo uploads are now auto-compressed on-device (canvas resize +
+   JPEG re-encode) before sending, so a large camera photo is shrunk to a
+   small JPEG automatically and never hits the size-limit error.
+   Load with a normal <script src="live-sync.js?v=4"></script> just before </body>. */
 (function () {
   'use strict';
 
@@ -20,13 +23,18 @@
     '.nav-item{position:relative}' +
     'button[onclick*="delete"]{display:none!important}' +
     '.lc-badge{position:absolute;top:2px;left:calc(50% + 6px);background:#dc2626;color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;line-height:15px;border-radius:8px;padding:0 3px}' +
-    '#lcErrBar{display:none;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:700;padding:5px 10px}';
+    '#lcErrBar{display:none;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:700;padding:5px 10px}' +
+    '.lc-compress-bar{display:none;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:700;padding:5px 10px;text-align:center}';
   document.head.appendChild(st);
 
   var hdr = document.querySelector('.chat-header-bar');
   if (hdr) {
-    var t = hdr.querySelector('strong'); if (t) t.textContent = '💬 TTESPL Team Live Hub · v3';
-    hdr.insertAdjacentHTML('afterend', '<div id="lcErrBar"></div>');
+    var t = hdr.querySelector('strong'); if (t) t.textContent = '💬 TTESPL Team Live Hub · v4';
+    hdr.insertAdjacentHTML('afterend', '<div id="lcErrBar"></div><div id="lcCompressBar" class="lc-compress-bar">📷 Photo compress ho rahi hai...</div>');
+  }
+  function showCompressing(on) {
+    var b = $('lcCompressBar');
+    if (b) b.style.display = on ? 'block' : 'none';
   }
 
   /* ---------- apply cloud data into app variables + re-render ---------- */
@@ -91,20 +99,72 @@
   };
 
   /* ---------- Stock & Machinery cards: Edit only (no delete), also while searching ---------- */
+  
   function stockCard(item) {
-    return '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;">' +
+    return '<div class="card" style="cursor:pointer;" onclick="showProductSaleReport(\'' + esc(item.name) + '\')"><div style="display:flex;justify-content:space-between;align-items:center;">' +
       '<div><strong style="font-size:13.5px;">' + esc(item.name) + '</strong>' +
-      '<div style="font-size:11px;color:var(--text-muted);">' + esc(item.code) + ' | ' + esc(item.category) + ' | HSN: ' + esc(item.hsn || '84139190') + '</div></div>' +
-      '<div style="text-align:right;"><span class="badge ' + (item.stock <= 5 ? 'badge-danger' : 'badge-delivered') + '">' + item.stock + ' in stock</span>' +
-      '<div style="font-size:12px;font-weight:bold;color:var(--primary);">₹' + item.rate + '</div></div></div>' +
-      '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;border-top:1px solid #f1f5f9;padding-top:4px;">' +
-      '<button class="btn btn-outline btn-sm" onclick="editStockItemPrompt(' + item.id + ')">✏️ Edit</button></div></div>';
+      '<div style="font-size:11px;color:var(--text-muted);">' + esc(item.code || '') + ' | ' + esc(item.category || '') + ' | HSN: ' + esc(item.hsn || '84139190') + '</div></div>' +
+      '<div style="text-align:right;"><span class="badge ' + (item.stock <= 5 ? 'badge-danger' : 'badge-delivered') + '">' + (item.stock || 0) + ' in stock</span></div></div>' +
+      '<div class="grid-2" style="margin-top:6px; border-top:1px solid #f1f5f9; padding-top:6px; font-size:12px;">' +
+      '<div>Dealer: <strong style="color:var(--danger);">₹' + (item.dealer_price || 0) + '</strong></div>' +
+      '<div>Customer: <strong style="color:var(--primary);">₹' + (item.rate || 0) + '</strong></div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;border-top:1px dashed #e2e8f0;padding-top:4px;">' +
+      '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(' + item.id + ')">✏️ Edit</button></div></div>';
   }
+
+  window.showProductSaleReport = function(productName) {
+    let html = '<div style="font-weight:bold; margin-bottom:10px; font-size:14px; color:var(--primary); border-bottom:2px solid var(--primary); padding-bottom:4px;">Sales Report: ' + esc(productName) + '</div>';
+    let found = false;
+    (window.ordersData || []).forEach(function(o) {
+        o.items.forEach(function(it) {
+            if (it.name === productName || it.name.includes(productName)) {
+                found = true;
+                html += '<div style="border-bottom:1px solid #e2e8f0; padding:6px 0; font-size:11.5px;">' +
+                        '<div style="display:flex; justify-content:space-between;"><strong>' + esc(o.customerName) + '</strong><span style="color:var(--text-muted);">' + esc(o.orderDate) + '</span></div>' +
+                        '<div>Qty: ' + it.qty + ' | Rate: ₹' + it.rate + ' | <strong style="color:var(--success);">Total: ₹' + it.total + '</strong></div>' +
+                        '</div>';
+            }
+        });
+    });
+    if (!found) html += '<div style="font-size:12px; color:#64748b; padding:10px 0;">No sales history found for this product yet.</div>';
+    
+    var contentDiv = document.getElementById('saleReportContent');
+    if (contentDiv) {
+        contentDiv.innerHTML = html;
+        document.getElementById('saleReportModal').style.display = 'flex';
+    }
+  };
+
+  
   window.renderStockList = function () {
     var c = $('stockListContainer'); if (!c) return;
     $('totalPartsBadge').textContent = sampleInventory.length + ' Items Loaded';
-    c.innerHTML = sampleInventory.map(stockCard).join('');
+    
+    // Group by category
+    var grouped = {};
+    sampleInventory.forEach(function(item) {
+       var cat = item.category || 'Other';
+       if (!grouped[cat]) grouped[cat] = [];
+       grouped[cat].push(item);
+    });
+    
+    var html = '';
+    for (var cat in grouped) {
+        html += '<div style="font-size:13px; font-weight:800; color:#0f3d6c; margin: 12px 0 6px 0; background:#e2e8f0; padding:4px 8px; border-radius:4px;">📂 ' + esc(cat) + ' (' + grouped[cat].length + ')</div>';
+        html += grouped[cat].map(stockCard).join('');
+    }
+    c.innerHTML = html;
+    
+    // Update datalist for dropdown
+    var dl = $('allProductSearchList');
+    if (dl) {
+        dl.innerHTML = sampleInventory.map(function(i) {
+            return '<option value="' + esc(i.name) + '">Dealer: ₹' + (i.dealer_price || 0) + ' | Cust: ₹' + (i.rate || 0) + '</option>';
+        }).join('');
+    }
   };
+
   window.filterStockList = function (val) {
     var q = String(val || '').toLowerCase().trim(), c = $('stockListContainer'); if (!c) return;
     c.innerHTML = sampleInventory.filter(function (i) {
@@ -244,12 +304,99 @@
     input.focus();
   };
 
+  /* ---------- Auto photo compressor ----------
+     Big camera photos (often 3-10 MB, 4000x3000+) are resized on a canvas
+     and re-encoded as JPEG so they always fit under the chat size limit,
+     with zero manual steps for the user. Falls back to the original file
+     only if compression genuinely fails (corrupt image etc). */
+  var MAX_DIM = 1600;          // longest side after resize
+  var TARGET_BYTES = 550 * 1024; // aim to land the final photo under ~550 KB
+  var MIN_QUALITY = 0.35;
+  var FLOOR_DIM = 800;         // last-resort shrink if still too big
+
+  function readFileAsDataURL(file) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onload = function (e) { resolve(e.target.result); };
+      r.onerror = function () { reject(new Error('File read failed')); };
+      r.readAsDataURL(file);
+    });
+  }
+
+  function loadImage(src) {
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.onload = function () { resolve(img); };
+      img.onerror = function () { reject(new Error('Image decode failed')); };
+      img.src = src;
+    });
+  }
+
+  function drawResized(img, maxDim) {
+    var w = img.width, h = img.height;
+    if (w > maxDim || h > maxDim) {
+      if (w >= h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+      else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+    }
+    var canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    return canvas;
+  }
+
+  function approxBytes(dataUrl) {
+    return Math.round(dataUrl.length * 0.75);
+  }
+
+  window.compressImageFile = function (file) {
+    return readFileAsDataURL(file)
+      .then(loadImage)
+      .then(function (img) {
+        var canvas = drawResized(img, MAX_DIM);
+        var quality = 0.82;
+        var out = canvas.toDataURL('image/jpeg', quality);
+
+        while (approxBytes(out) > TARGET_BYTES && quality > MIN_QUALITY) {
+          quality -= 0.1;
+          out = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        // last resort: shrink dimensions further, keep it small & reliable
+        if (approxBytes(out) > TARGET_BYTES && Math.max(canvas.width, canvas.height) > FLOOR_DIM) {
+          var canvas2 = drawResized(img, FLOOR_DIM);
+          out = canvas2.toDataURL('image/jpeg', 0.7);
+        }
+
+        return out;
+      });
+  };
+
   window.handleChatFileUpload = function (event) {
     var file = event.target.files[0]; if (!file) return;
-    if (file.size > 700 * 1024) { alert('Please select files under 700 KB for live chat!'); event.target.value = ''; return; }
-    var r = new FileReader();
-    r.onload = function (e) { window.sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result }); };
-    r.readAsDataURL(file);
+
+    if (file.type && file.type.indexOf('image/') === 0) {
+      // Any photo, including a large camera shot, is auto-compressed first
+      showCompressing(true);
+      window.compressImageFile(file).then(function (dataUrl) {
+        showCompressing(false);
+        window.sendLiveChatMessage({ name: (file.name || 'photo.jpg').replace(/\.[^.]+$/, '.jpg'), type: 'image/jpeg', data: dataUrl });
+      }).catch(function (err) {
+        showCompressing(false);
+        console.error('Compression failed, sending original if small enough:', err);
+        if (file.size > 700 * 1024) {
+          alert('Photo compress nahi ho payi aur original size bada hai. Dusri photo try karein.');
+        } else {
+          var r = new FileReader();
+          r.onload = function (e) { window.sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result }); };
+          r.readAsDataURL(file);
+        }
+      });
+    } else {
+      if (file.size > 700 * 1024) { alert('Please select files under 700 KB for live chat!'); event.target.value = ''; return; }
+      var r2 = new FileReader();
+      r2.onload = function (e) { window.sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result }); };
+      r2.readAsDataURL(file);
+    }
     event.target.value = '';
   };
 
