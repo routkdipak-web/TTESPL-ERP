@@ -10,6 +10,7 @@
   };
   var me = function () { return (typeof currentUser !== 'undefined' && currentUser) ? currentUser.name : ''; };
 
+  /* ---------- small styles ---------- */
   var st = document.createElement('style');
   st.textContent =
     '.lc-day{align-self:center;background:#fff;color:#64748b;font-size:10.5px;font-weight:700;padding:2px 10px;border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.08)}' +
@@ -31,6 +32,7 @@
     if (b) b.style.display = on ? 'block' : 'none';
   }
 
+  /* ---------- apply cloud data into app variables + re-render ---------- */
   function refilter(inputId, filterFn, fullFn) {
     var el = $(inputId); var q = el ? el.value : '';
     if (q) filterFn(q); else fullFn();
@@ -111,6 +113,7 @@
     try { RENDER[key](); } catch (e) { console.error('render ' + key, e); }
   };
 
+  // do not reset selected staff in an open form when dropdowns refresh
   var origPopulate = window.populateDropdownsAndDatalists;
   window.populateDropdownsAndDatalists = function () {
     var sels = Array.prototype.slice.call(document.querySelectorAll('.emp-dropdown'));
@@ -119,6 +122,7 @@
     sels.forEach(function (s, i) { if (saved[i]) s.value = saved[i]; });
   };
 
+  /* ---------- Stock & Machinery cards ---------- */
   function stockCard(item) {
     return '<div class="card" style="cursor:pointer;" onclick="showProductSaleReport(\'' + esc(item.name) + '\')"><div style="display:flex;justify-content:space-between;align-items:center;">' +
       '<div><strong style="font-size:13.5px;">' + esc(item.name) + '</strong>' +
@@ -173,13 +177,6 @@
         html += grouped[cat].map(stockCard).join('');
     }
     c.innerHTML = html;
-    
-    var dl = $('allProductSearchList');
-    if (dl) {
-        dl.innerHTML = sampleInventory.slice(0, 300).map(function(i) {
-            return '<option value="' + esc(i.name) + '">Dealer: ₹' + (i.dealer_price || 0) + ' | Cust: ₹' + (i.rate || 0) + '</option>';
-        }).join('');
-    }
   };
 
   window.filterStockList = function (val) {
@@ -210,6 +207,7 @@
     }).map(machCard).join('');
   };
 
+  /* ---------- WhatsApp style chat ---------- */
   var seen = null, unread = 0, typingState = {};
 
   function dayLabel(d) {
@@ -415,7 +413,7 @@
     measurementId: "G-HGJFN4G1MV"
   };
   var V = 'https://www.gstatic.com/firebasejs/12.19.0/';
-  var MAP = { STAFF: 'staff', CUSTOMERS: 'customers', INVENTORY: 'inventory', MACHINERY: 'machinery', LEADS: 'lead', ORDERS: 'orders', SERVICES: 'services' };
+  var MAP = { STAFF: 'staff', CUSTOMERS: 'customers', INVENTORY: 'inventory', MACHINERY: 'machinery', LEADS: 'leads', ORDERS: 'orders', SERVICES: 'services' };
 
   function setSync(text, ok) {
     var t = $('syncText'), d = $('syncDot');
@@ -502,4 +500,147 @@
     setSync('Offline', false);
     onChatError(e);
   });
+
+  /* ---------- Custom Solid Dropdown for Search Inputs (replaces glitchy native datalist on mobile) ---------- */
+  var dropEl = document.createElement('div');
+  dropEl.id = 'appCustomDropdown';
+  dropEl.style.cssText = 'position:fixed;display:none;background:#ffffff;border:1.5px solid #0f3d6c;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.3);max-height:220px;overflow-y:auto;z-index:999999;font-family:sans-serif;width:280px;';
+  document.body.appendChild(dropEl);
+
+  var activeTargetInput = null;
+
+  function closeCustomDropdown() {
+    dropEl.style.display = 'none';
+    activeTargetInput = null;
+  }
+  document.addEventListener('click', function(e) {
+    if (e.target !== activeTargetInput && !dropEl.contains(e.target)) {
+      closeCustomDropdown();
+    }
+  });
+
+  function positionDropdown(input) {
+    var rect = input.getBoundingClientRect();
+    dropEl.style.top = (rect.bottom + 4) + 'px';
+    dropEl.style.left = rect.left + 'px';
+    dropEl.style.width = Math.max(rect.width, 260) + 'px';
+  }
+
+  function showCustomSuggestions(input, type) {
+    activeTargetInput = input;
+    var query = (input.value || '').toLowerCase().trim();
+    var list = [];
+
+    if (type === 'customer') {
+      list = (window.customerDatabase || []).filter(function(c) {
+        return !query || (c.name && c.name.toLowerCase().includes(query)) || (c.phone && String(c.phone).includes(query)) || (c.address && c.address.toLowerCase().includes(query));
+      }).slice(0, 25).map(function(c) {
+        return {
+          val: c.name + ' (' + c.phone + ')',
+          title: c.name,
+          sub: (c.phone ? '📞 ' + c.phone : '') + (c.address ? ' | 📍 ' + c.address : '')
+        };
+      });
+    } else if (type === 'product') {
+      list = (window.sampleInventory || []).filter(function(p) {
+        return !query || (p.name && p.name.toLowerCase().includes(query)) || (p.code && p.code.toLowerCase().includes(query)) || (p.category && p.category.toLowerCase().includes(query));
+      }).slice(0, 25).map(function(p) {
+        return {
+          val: p.name + (p.code ? ' [' + p.code + ']' : ''),
+          title: p.name,
+          sub: (p.code ? '[' + p.code + '] ' : '') + 'Stock: ' + (p.stock || 0) + ' | ₹' + (p.rate || 0) + (p.dealer_price ? ' (Dealer: ₹' + p.dealer_price + ')' : '')
+        };
+      });
+    } else if (type === 'machine') {
+      list = (window.machineryDatabase || []).filter(function(m) {
+        return !query || (m.name && m.name.toLowerCase().includes(query)) || (m.pump && m.pump.toLowerCase().includes(query));
+      }).slice(0, 25).map(function(m) {
+        return {
+          val: m.name,
+          title: m.name,
+          sub: (m.pump ? m.pump + ' | ' : '') + '₹' + (m.price || 0)
+        };
+      });
+    }
+
+    if (list.length === 0) {
+      closeCustomDropdown();
+      return;
+    }
+
+    positionDropdown(input);
+    var html = '';
+    list.forEach(function(item) {
+      html += '<div class="custom-drop-item" style="padding:8px 10px;border-bottom:1px solid #f1f5f9;cursor:pointer;background:#ffffff;color:#111827;">' +
+        '<div style="font-weight:700;font-size:12.5px;color:#0f3d6c;">' + esc(item.title) + '</div>' +
+        '<div style="font-size:10.5px;color:#64748b;margin-top:2px;">' + esc(item.sub) + '</div>' +
+        '</div>';
+    });
+    dropEl.innerHTML = html;
+    dropEl.style.display = 'block';
+
+    var items = dropEl.querySelectorAll('.custom-drop-item');
+    items.forEach(function(el, idx) {
+      el.addEventListener('mouseenter', function() { el.style.background = '#f0f7ff'; });
+      el.addEventListener('mouseleave', function() { el.style.background = '#ffffff'; });
+      el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        input.value = list[idx].val;
+        closeCustomDropdown();
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        if (input.id === 'leadMachine' && typeof window.onMachineSelect === 'function') {
+          window.onMachineSelect(input.value);
+        }
+      });
+    });
+  }
+
+  function setupSearchInputs() {
+    var custInputs = ['leadCustSearchInput', 'ordCustSearchInput', 'srvCustSearchInput'];
+    custInputs.forEach(function(id) {
+      var el = $(id);
+      if (el) {
+        el.removeAttribute('list');
+        el.setAttribute('autocomplete', 'off');
+        el.onfocus = function() { showCustomSuggestions(el, 'customer'); };
+        el.oninput = function() { showCustomSuggestions(el, 'customer'); };
+      }
+    });
+
+    var machInputs = ['leadMachine', 'srvMachine'];
+    machInputs.forEach(function(id) {
+      var el = $(id);
+      if (el) {
+        el.removeAttribute('list');
+        el.setAttribute('autocomplete', 'off');
+        el.onfocus = function() { showCustomSuggestions(el, 'machine'); };
+        el.oninput = function() { showCustomSuggestions(el, 'machine'); };
+      }
+    });
+
+    var prodInputs = ['srvPartSearchInput'];
+    prodInputs.forEach(function(id) {
+      var el = $(id);
+      if (el) {
+        el.removeAttribute('list');
+        el.setAttribute('autocomplete', 'off');
+        el.onfocus = function() { showCustomSuggestions(el, 'product'); };
+        el.oninput = function() { showCustomSuggestions(el, 'product'); };
+      }
+    });
+
+    document.querySelectorAll('.item-product-input').forEach(function(el) {
+      el.removeAttribute('list');
+      el.setAttribute('autocomplete', 'off');
+      el.onfocus = function() { showCustomSuggestions(el, 'product'); };
+      el.oninput = function() {
+        if (typeof onOrderItemInput === 'function') onOrderItemInput(el);
+        showCustomSuggestions(el, 'product');
+      };
+    });
+  }
+
+  setInterval(setupSearchInputs, 800);
+
 })();
