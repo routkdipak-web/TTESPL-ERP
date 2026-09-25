@@ -6,69 +6,69 @@
 <title>TWIN TOWN EXPRESS SERVICES PVT LTD - ERP</title>
 
 <!-- PWA & Mobile App Metadata -->
-<meta name="theme-color" content="#06121e">
+<meta name="theme-color" content="#0a192f">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TTESPL ERP">
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/9422/9422891.png">
-<link rel="manifest" href='data:application/manifest+json,{"name":"Twin Town Express Services ERP","short_name":"TTESPL ERP","start_url":".","display":"standalone","background_color":"%2306121e","theme_color":"%2306121e","orientation":"portrait","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"192x192","type":"image/png"},{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"512x512","type":"image/png"}]}'>
+<link rel="manifest" href='data:application/manifest+json,{"name":"Twin Town Express Services ERP","short_name":"TTESPL ERP","start_url":".","display":"standalone","background_color":"%230a192f","theme_color":"%230a192f","orientation":"portrait","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"192x192","type":"image/png"},{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"512x512","type":"image/png"}]}'>
 
-<!-- Google Fonts: Inter & Plus Jakarta Sans -->
+<!-- Google Fonts: Inter -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
   :root {
-    --primary: #0a1e34;
-    --primary-light: #122d4d;
-    --primary-dark: #050e18;
+    --primary: #0a2540;
+    --primary-light: #13395e;
+    --primary-dark: #061526;
     --accent: #ff6b35;
-    --accent-hover: #e85924;
-    --cyan: #0ea5e9;
-    --bg: #f8fafc;
-    --surface: #ffffff;
+    --accent-hover: #e85a24;
+    --cyan: #00b4d8;
+    --bg: #f3f6fa;
     --card: #ffffff;
     --text-main: #0f172a;
     --text-muted: #64748b;
     --border: #e2e8f0;
-    --border-subtle: #f1f5f9;
-    --border-focus: #0ea5e9;
+    --border-focus: #00b4d8;
     --success: #10b981;
     --success-bg: #ecfdf5;
     --warning: #f59e0b;
     --warning-bg: #fffbeb;
     --danger: #ef4444;
     --danger-bg: #fef2f2;
+    --wa-color: #25d366;
     --radius-sm: 8px;
-    --radius-md: 14px;
-    --radius-lg: 20px;
-    --shadow-sm: 0 1px 3px rgba(15,23,42,0.06);
-    --shadow-md: 0 6px 18px rgba(15,23,42,0.06), 0 1px 3px rgba(15,23,42,0.04);
-    --shadow-lg: 0 20px 35px rgba(15,23,42,0.12);
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 28px rgba(0,0,0,0.12);
   }
 
   html { color-scheme: light; }
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-  body { background: var(--bg); color: var(--text-main); padding-bottom: 84px; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  body { background: var(--bg); color: var(--text-main); padding-bottom: 78px; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
-  /* Premium Inputs */
+  /* Input & Autocomplete Solid Rendering */
   input, select, textarea {
     color-scheme: light !important;
     background-color: #ffffff !important;
     color: #0f172a !important;
     border: 1.5px solid var(--border) !important;
+    opacity: 1 !important;
     border-radius: var(--radius-sm);
     font-size: 13px;
-    padding: 10px 13px;
+    padding: 9px 12px;
     width: 100%;
     outline: none;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s ease;
   }
   input:focus, select:focus, textarea:focus {
     border-color: var(--cyan) !important;
-    box-shadow: 0 0 0 3px rgba(14,165,233,0.18) !important;
+    box-shadow: 0 0 0 3px rgba(0,180,216,0.18) !important;
   }
   input::placeholder, textarea::placeholder { color: #94a3b8 !important; }
 
@@ -77,21 +77,21 @@
   .solid-suggestion-box {
     position: absolute; top: calc(100% + 4px); left: 0; right: 0;
     background: #ffffff !important;
-    border: 1.5px solid var(--cyan) !important;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg) !important;
-    max-height: 230px; overflow-y: auto; z-index: 100000;
+    border: 1.5px solid #0284c7 !important;
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22) !important;
+    max-height: 220px; overflow-y: auto; z-index: 100000;
     display: none; animation: popIn 0.15s ease-out;
   }
   @keyframes popIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
   .suggestion-item {
-    padding: 9px 13px; border-bottom: 1px solid var(--border-subtle); cursor: pointer;
+    padding: 8px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer;
     font-size: 12px; color: #0f172a; background: #ffffff !important;
     display: flex; justify-content: space-between; align-items: center;
   }
   .suggestion-item:last-child { border-bottom: none; }
   .suggestion-item:hover, .suggestion-item.active { background: #f0f9ff !important; color: #0369a1; }
-  .suggestion-sub { font-size: 10.5px; color: #64748b; margin-top: 1px; }
+  .suggestion-sub { font-size: 10px; color: #64748b; }
 
   /* Pull to Refresh Bar */
   #pullToRefreshIndicator {
@@ -104,92 +104,88 @@
   }
   #pullToRefreshIndicator.visible { transform: translateY(0); }
 
-  /* Header Bar */
+  /* Header */
   header {
-    background: linear-gradient(135deg, #050e18 0%, #0a1e34 50%, #122d4d 100%);
-    color: white; padding: 13px 18px; position: sticky; top: 0; z-index: 100;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.18); display: flex; justify-content: space-between; align-items: center;
+    background: linear-gradient(135deg, #061526 0%, #0a2540 60%, #11365c 100%);
+    color: white; padding: 12px 16px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18); display: flex; justify-content: space-between; align-items: center;
   }
-  .brand-area { display: flex; align-items: center; gap: 12px; }
+  .brand-area { display: flex; align-items: center; gap: 10px; }
   .brand-logo-badge {
-    width: 38px; height: 38px; border-radius: 11px;
-    background: linear-gradient(135deg, #ff6b35, #f59e0b);
-    display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900;
-    color: white; box-shadow: 0 4px 12px rgba(255,107,53,0.35);
+    width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #ff6b35, #f59e0b);
+    display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 900;
+    color: white; box-shadow: 0 2px 6px rgba(255,107,53,0.4);
   }
-  .brand-title { font-size: 14.5px; font-weight: 800; letter-spacing: 0.2px; line-height: 1.15; color: #ffffff; }
-  .brand-sub { font-size: 10.5px; color: #94a3b8; font-weight: 600; margin-top: 1px; }
+  .brand-title { font-size: 14.5px; font-weight: 800; letter-spacing: 0.3px; line-height: 1.15; color: #ffffff; }
+  .brand-sub { font-size: 10px; color: #94a3b8; font-weight: 600; }
 
-  .header-actions { display: flex; align-items: center; gap: 8px; }
+  .header-actions { display: flex; align-items: center; gap: 6px; }
   .sync-badge {
-    font-size: 10px; padding: 4px 9px; border-radius: 20px; font-weight: 700;
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); color: #fff;
+    font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff;
   }
-  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; }
-  .sync-dot.offline { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; }
+  .sync-dot.offline { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
 
   .user-badge {
-    background: rgba(255,255,255,0.12); font-size: 11.5px; padding: 5px 11px; border-radius: 20px;
-    display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.15); font-size: 11px; padding: 4px 9px; border-radius: 20px;
+    display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.25);
   }
   .user-role-tag {
-    font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 8px;
+    font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 8px;
     background: #ff6b35; color: white; text-transform: uppercase;
   }
-  .user-role-tag.admin { background: #0ea5e9; }
+  .user-role-tag.admin { background: #00b4d8; }
 
   /* Schedule Banner */
   .daily-reminder-banner {
     background: linear-gradient(90deg, #fffbeb, #fef3c7);
-    border-bottom: 1.5px solid #fde68a; padding: 9px 16px; font-size: 11.5px;
-    color: #92400e; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    border-bottom: 1.5px solid #fde68a; padding: 8px 14px; font-size: 11.5px;
+    color: #92400e; display: flex; align-items: center; justify-content: space-between; gap: 8px;
     font-weight: 600;
   }
 
   /* Navigation Bar */
   .nav-bar {
-    position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(14px);
-    display: flex; border-top: 1px solid var(--border); z-index: 100;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.05); height: 64px;
+    position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff;
+    display: flex; border-top: 1px solid #e2e8f0; z-index: 100;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.06); height: 60px;
   }
   .nav-item {
-    flex: 1; padding: 8px 4px; text-align: center; font-size: 10.5px; color: #64748b;
+    flex: 1; padding: 8px 2px; text-align: center; font-size: 10.5px; color: #64748b;
     cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 3px; font-weight: 700; transition: all 0.2s ease; position: relative;
   }
   .nav-item.active { color: var(--accent); }
   .nav-item.active .nav-icon { transform: translateY(-2px); }
-  .nav-icon { font-size: 18px; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+  .nav-icon { font-size: 17px; transition: transform 0.2s ease; }
   .nav-badge {
-    position: absolute; top: 5px; right: calc(50% - 17px);
+    position: absolute; top: 4px; right: calc(50% - 16px);
     background: var(--danger); color: white; font-size: 9px; font-weight: 800;
     border-radius: 10px; padding: 1px 5px; min-width: 15px; height: 15px; line-height: 13px;
   }
 
   /* Layout Containers & Panels */
-  .container { max-width: 920px; margin: 0 auto; padding: 16px; }
+  .container { max-width: 900px; margin: 0 auto; padding: 14px; }
   .view-panel { display: none; }
-  .view-panel.active { display: block; animation: panelFade 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
+  .view-panel.active { display: block; animation: panelFade 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
   @keyframes panelFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
   /* Premium Cards */
   .card {
-    background: var(--card); border-radius: var(--radius-md); padding: 15px; margin-bottom: 12px;
-    border: 1px solid var(--border); box-shadow: var(--shadow-sm);
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    background: var(--card); border-radius: var(--radius-md); padding: 14px; margin-bottom: 12px;
+    border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
-  .card:hover { box-shadow: var(--shadow-md); border-color: #cbd5e1; }
+  .card:hover { box-shadow: var(--shadow-md); }
   .card-header {
     display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
-    border-bottom: 1px solid var(--border-subtle); padding-bottom: 9px;
+    border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;
   }
   .card-title { font-size: 14.5px; font-weight: 800; color: var(--primary); }
 
   /* Badges */
-  .badge { padding: 3px 9px; border-radius: 7px; font-size: 10.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+  .badge { padding: 3px 9px; border-radius: 6px; font-size: 10.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
   .badge-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid #fde68a; }
   .badge-delivered { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
   .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
@@ -209,19 +205,18 @@
     border: none; cursor: pointer; text-decoration: none; transition: all 0.15s ease;
   }
   .btn:active { transform: scale(0.98); }
-  .btn-primary { background: linear-gradient(135deg, #0a1e34, #122d4d); color: white; box-shadow: 0 3px 10px rgba(10,30,52,0.22); }
-  .btn-primary:hover { background: #050e18; }
-  .btn-accent { background: linear-gradient(135deg, #ff6b35, #f59e0b); color: white; box-shadow: 0 3px 10px rgba(255,107,53,0.28); }
-  .btn-accent:hover { background: #e85924; }
-  .btn-web { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; }
-  .btn-web:hover { background: #075985; }
-  .btn-wa { background: #16a34a; color: white; }
+  .btn-primary { background: linear-gradient(135deg, #0a2540, #13395e); color: white; box-shadow: 0 2px 6px rgba(10,37,64,0.25); }
+  .btn-primary:hover { background: #061526; }
+  .btn-accent { background: linear-gradient(135deg, #ff6b35, #f59e0b); color: white; box-shadow: 0 2px 8px rgba(255,107,53,0.3); }
+  .btn-accent:hover { background: #e85a24; }
+  .btn-wa { background: #25d366; color: white; }
   .btn-excel { background: #107c41; color: white; }
   .btn-print { background: #334155; color: white; }
-  .btn-sm { padding: 5px 11px; font-size: 11px; border-radius: 7px; }
+  .btn-sm { padding: 4px 10px; font-size: 11px; border-radius: 6px; }
   .btn-outline { background: white; border: 1.5px solid var(--border); color: #475569; }
   .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
-  .btn-danger-sm { background: var(--danger-bg); color: var(--danger); padding: 4px 8px; border: 1px solid #fecaca; border-radius: 7px; }
+  .btn-danger-sm { background: var(--danger-bg); color: var(--danger); padding: 4px 8px; border: 1px solid #fecaca; border-radius: 6px; }
+  .btn-danger-sm:hover { background: #fee2e2; }
   .btn-block { width: 100%; }
 
   /* Sub Tabs */
@@ -230,7 +225,7 @@
     padding: 6px 14px; font-size: 12px; font-weight: 700; border: none; background: #e2e8f0;
     border-radius: 8px; cursor: pointer; white-space: nowrap; color: #475569; transition: all 0.2s ease;
   }
-  .sub-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 8px rgba(10,30,52,0.25); }
+  .sub-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 6px rgba(10,37,64,0.2); }
 
   /* Chat Box */
   .chat-box-card {
@@ -238,29 +233,31 @@
     display: flex; flex-direction: column; height: calc(100vh - 195px); overflow: hidden; box-shadow: var(--shadow-sm);
   }
   .chat-header-bar {
-    background: #f8fafc; padding: 11px 16px; border-bottom: 1px solid var(--border);
+    background: #f8fafc; padding: 10px 14px; border-bottom: 1px solid var(--border);
     display: flex; justify-content: space-between; align-items: center;
   }
   .chat-stream { flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f1f5f9; }
-  .bubble { max-width: 82%; padding: 9px 13px; border-radius: 14px; font-size: 12.5px; line-height: 1.4; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.05); word-break: break-word; }
+  .bubble { max-width: 82%; padding: 9px 13px; border-radius: 14px; font-size: 12.5px; line-height: 1.4; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.06); word-break: break-word; }
   .bubble.me { align-self: flex-end; background: #dcfce7; border-bottom-right-radius: 3px; color: #064e3b; }
   .bubble.other { align-self: flex-start; background: #ffffff; border-bottom-left-radius: 3px; color: #1e293b; }
   .bubble-author { font-size: 10.5px; font-weight: 800; color: var(--primary); margin-bottom: 2px; }
-  .bubble-time { font-size: 9.5px; opacity: 0.65; text-align: right; margin-top: 4px; }
+  .bubble-time { font-size: 9.5px; opacity: 0.65; text-align: right; margin-top: 4px; display: flex; justify-content: flex-end; align-items: center; gap: 3px; }
+  .bubble-file-link { display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.05); padding: 6px 10px; border-radius: 6px; text-decoration: none; color: inherit; font-weight: 600; margin-top: 5px; }
+  .bubble-img-preview { max-width: 100%; max-height: 240px; border-radius: 8px; margin-top: 4px; cursor: pointer; object-fit: cover; }
   .chat-input-bar { background: #ffffff; border-top: 1px solid var(--border); padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
 
-  /* Modals Overlay */
+  /* Modals Overlay with Blur */
   .auth-overlay {
-    position: fixed; inset: 0; background: rgba(5, 14, 24, 0.78); backdrop-filter: blur(6px);
+    position: fixed; inset: 0; background: rgba(6, 21, 38, 0.82); backdrop-filter: blur(5px);
     display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 14px;
   }
   .auth-card {
-    background: white; border-radius: var(--radius-lg); width: 100%; max-width: 540px; padding: 22px;
-    box-shadow: var(--shadow-lg); max-height: 94vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.25);
+    background: white; border-radius: var(--radius-lg); width: 100%; max-width: 480px; padding: 22px;
+    box-shadow: var(--shadow-lg); max-height: 94vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.2);
   }
 
   .items-table { width: 100%; border-collapse: collapse; margin: 8px 0; }
-  .items-table th { background: #f8fafc; padding: 8px 6px; font-size: 11px; text-align: left; color: #475569; font-weight: 700; }
+  .items-table th { background: #f8fafc; padding: 7px 6px; font-size: 11px; text-align: left; color: #475569; font-weight: 700; }
   .items-table td { padding: 6px 4px; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
 
   .audit-log-box {
@@ -269,16 +266,7 @@
   }
   .audit-item { margin-bottom: 2px; }
 
-  /* Web Preview Container */
-  .web-intel-box {
-    background: #f8fafc; border: 1.5px solid #e0f2fe; border-radius: var(--radius-md);
-    padding: 12px; margin-top: 10px; display: none;
-  }
-  .web-intel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .web-intel-title { font-size: 12px; font-weight: 800; color: #0369a1; display: flex; align-items: center; gap: 6px; }
-  .web-intel-gallery { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px; }
-  .web-intel-img { width: 90px; height: 90px; border-radius: 8px; object-fit: cover; border: 1px solid #cbd5e1; flex-shrink: 0; background: white; }
-  .web-intel-snippet { font-size: 11.5px; color: #334155; line-height: 1.45; background: white; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; }
+  .admin-only-btn { display: inline-flex; }
 
   @media print {
     body * { visibility: hidden; }
@@ -286,8 +274,8 @@
     #printableInvoiceArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; }
     .no-print { display: none !important; }
   }
-  .invoice-box { border: 1.5px solid #0a1e34; padding: 20px; border-radius: 8px; background: white; color: #111827; font-size: 12px; }
-  .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0a1e34; padding-bottom: 10px; }
+  .invoice-box { border: 1.5px solid #0a2540; padding: 20px; border-radius: 8px; background: white; color: #111827; font-size: 12px; }
+  .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0a2540; padding-bottom: 10px; }
   .inv-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 11.5px; }
   .inv-table th, .inv-table td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; }
   .inv-table th { background: #f1f5f9; font-weight: 700; }
@@ -305,9 +293,9 @@
 <div id="authScreen" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div style="text-align:center; margin-bottom:18px;">
-      <div style="width:52px; height:52px; margin:0 auto 10px; border-radius:14px; background:linear-gradient(135deg, #0a1e34, #ff6b35); display:flex; align-items:center; justify-content:center; color:white; font-size:24px; font-weight:900; box-shadow:var(--shadow-md);">TT</div>
-      <h2 style="font-size:17px; color:var(--primary); font-weight:800;">TWIN TOWN EXPRESS SERVICES</h2>
-      <span style="font-size:11px; color:var(--text-muted); font-weight:600;">Authorised Detailing & Machinery ERP</span>
+      <div style="width:48px; height:48px; margin:0 auto 10px; border-radius:12px; background:linear-gradient(135deg, #0a2540, #ff6b35); display:flex; align-items:center; justify-content:center; color:white; font-size:24px; font-weight:900;">TT</div>
+      <h2 style="font-size:16.5px; color:var(--primary); font-weight:800;">TWIN TOWN EXPRESS SERVICES</h2>
+      <span style="font-size:11px; color:var(--text-muted); font-weight:600;">Authorised Detailing & Machinery Portal</span>
     </div>
 
     <div id="loginFormSection">
@@ -319,11 +307,11 @@
         <label class="form-label">Password</label>
         <input type="password" id="loginPass" placeholder="••••••••">
       </div>
-      <button class="btn btn-primary btn-block" onclick="processLogin()" style="margin-top:10px; padding:11px;">🔐 Secure Login</button>
+      <button class="btn btn-primary btn-block" onclick="processLogin()" style="margin-top:10px; padding:10px;">🔐 Secure Login</button>
       
       <div style="display:flex; justify-content:space-between; margin-top:16px; font-size:12px;">
         <a href="javascript:void(0)" onclick="showAuthMode('forgot')" style="color:var(--danger); text-decoration:none; font-weight:700;">Forgot Password?</a>
-        <a href="javascript:void(0)" onclick="showAuthMode('register')" style="color:var(--cyan); text-decoration:none; font-weight:700;">+ New Staff Account</a>
+        <a href="javascript:void(0)" onclick="showAuthMode('register')" style="color:var(--cyan); text-decoration:none; font-weight:700;">+ Create New Account</a>
       </div>
     </div>
 
@@ -331,7 +319,7 @@
       <div style="font-size:14px; font-weight:800; color:var(--primary); margin-bottom:12px;">Staff Registration</div>
       <div class="form-group">
         <label class="form-label">Full Name</label>
-        <input type="text" id="regName" placeholder="Staff Name">
+        <input type="text" id="regName" placeholder="e.g. Ramesh Kumar">
       </div>
       <div class="grid-2">
         <div class="form-group">
@@ -341,7 +329,7 @@
         <div class="form-group">
           <label class="form-label">Role</label>
           <select id="regRole">
-            <option value="Machinery Specialist">Machinery Specialist</option>
+            <option value="Machinery Specialist">Machinery Lead</option>
             <option value="Field Technician">Field Technician</option>
             <option value="Sales & Support">Sales & Support</option>
             <option value="Store Manager">Store / Inventory</option>
@@ -354,8 +342,8 @@
         <input type="password" id="regPass" placeholder="Min 4 characters">
       </div>
       <div class="form-group">
-        <label class="form-label">Security PIN</label>
-        <input type="password" id="regPin" placeholder="4-digit PIN" maxlength="4">
+        <label class="form-label">Security PIN (For Password Reset)</label>
+        <input type="password" id="regPin" placeholder="4-digit PIN (e.g. 1234)" maxlength="4">
       </div>
       <button class="btn btn-accent btn-block" onclick="processRegister()" style="padding:10px;">✓ Register Account</button>
       <div style="text-align:center; margin-top:14px; font-size:12px;">
@@ -367,7 +355,7 @@
       <div style="font-size:14px; font-weight:800; color:var(--danger); margin-bottom:12px;">Reset Password</div>
       <div class="form-group">
         <label class="form-label">Mobile Number</label>
-        <input type="tel" id="recPhone" placeholder="Registered mobile">
+        <input type="tel" id="recPhone" placeholder="Registered 10-digit mobile">
       </div>
       <div class="form-group">
         <label class="form-label">Security PIN</label>
@@ -375,7 +363,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">New Password</label>
-        <input type="password" id="recNewPass" placeholder="New Password">
+        <input type="password" id="recNewPass" placeholder="Enter New Password">
       </div>
       <button class="btn btn-primary btn-block" onclick="processPasswordReset()" style="padding:10px;">Update Password</button>
       <div style="text-align:center; margin-top:14px; font-size:12px;">
@@ -385,7 +373,7 @@
   </div>
 </div>
 
-<!-- ================= MAIN APP ================= -->
+<!-- ================= MAIN APP WRAPPER ================= -->
 <div id="mainAppWrapper">
 
   <div class="daily-reminder-banner" id="dailyReminderBanner">
@@ -412,7 +400,7 @@
         <span>👤</span> <strong id="activeStaffDisplay">Dipak Rout</strong>
         <span class="user-role-tag admin" id="activeStaffRoleTag">ADMIN</span>
       </div>
-      <button class="btn btn-outline btn-sm" style="color:white; border-color:rgba(255,255,255,0.3); padding:4px 9px;" onclick="performFullLogout()">Logout</button>
+      <button class="btn btn-outline btn-sm" style="color:white; border-color:rgba(255,255,255,0.3); padding:4px 8px;" onclick="performFullLogout()">Logout</button>
     </div>
   </header>
 
@@ -420,10 +408,10 @@
 
     <!-- TAB 1: LEADS -->
     <div id="view-leads" class="view-panel active">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div>
-          <h2 style="font-size:16.5px; font-weight:800; color:var(--primary);">🎯 Machine Leads & Installations</h2>
-          <div style="font-size:11px; color:var(--text-muted);">Inquiries, follow-ups & 4 free warranty services</div>
+          <h2 style="font-size:16px; font-weight:800; color:var(--primary);">🎯 Machine Leads & Installations</h2>
+          <div style="font-size:11px; color:var(--text-muted);">Inquiry, Follow-up & 4 Free Service Schedules</div>
         </div>
         <button class="btn btn-accent btn-sm" onclick="openLeadModal()">+ New Lead</button>
       </div>
@@ -432,10 +420,10 @@
 
     <!-- TAB 2: ORDERS -->
     <div id="view-orders" class="view-panel">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div>
-          <h2 style="font-size:16.5px; font-weight:800; color:var(--primary);">📦 Product & Chemical Orders</h2>
-          <div style="font-size:11px; color:var(--text-muted);">Stock validation, multi-item invoicing & WhatsApp slip</div>
+          <h2 style="font-size:16px; font-weight:800; color:var(--primary);">📦 Product & Chemical Orders</h2>
+          <div style="font-size:11px; color:var(--text-muted);">Stock validation, invoices & WhatsApp slips</div>
         </div>
         <button class="btn btn-accent btn-sm" onclick="openOrderModal()">+ New Order</button>
       </div>
@@ -444,9 +432,9 @@
 
     <!-- TAB 3: SERVICES -->
     <div id="view-services" class="view-panel">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div>
-          <h2 style="font-size:16.5px; font-weight:800; color:var(--primary);">🛠️ Machine Service & Repairs</h2>
+          <h2 style="font-size:16px; font-weight:800; color:var(--primary);">🛠️ Machine Service & Repairs</h2>
           <div style="font-size:11px; color:var(--text-muted);">Service logs, delay monitoring & auto stock debit</div>
         </div>
         <button class="btn btn-accent btn-sm" onclick="openServiceCallModal()">+ New Service Call</button>
@@ -454,10 +442,11 @@
       <div id="serviceListContainer"></div>
     </div>
 
-    <!-- TAB 4: INVENTORY -->
+    <!-- TAB 4: INVENTORY, MACHINES, CHEMICALS & SPARES -->
     <div id="view-inventory" class="view-panel">
+      <!-- Master Search Bar -->
       <div style="margin-bottom:10px;">
-        <input type="text" id="stockFilterInput" placeholder="🔍 Master Search: Type ANY product, machine, chemical, spare, polisher, code..." oninput="filterStockList(this.value)" style="font-size:13.5px; padding:12px 14px; border-width:2px; box-shadow:var(--shadow-sm);">
+        <input type="text" id="stockFilterInput" placeholder="🔍 Master Search: Type ANY product, machine, chemical, spare, polisher, code..." oninput="filterStockList(this.value)" style="font-size:13.5px; padding:11px 14px; border-width:2px; box-shadow:var(--shadow-sm);">
       </div>
 
       <!-- Category Filter Pills -->
@@ -474,6 +463,7 @@
         <button class="sub-tab-btn" onclick="selectInventoryCategory('CUSTOMERS', this)">👥 Customers (<span id="catCountCust">0</span>)</button>
       </div>
 
+      <!-- Action & Counter Header -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
         <div>
           <span class="badge badge-delivered" id="totalPartsBadge" style="font-size:11.5px; padding:5px 10px;">0 Items</span>
@@ -486,13 +476,14 @@
         </div>
       </div>
 
+      <!-- Dynamic Product / Customer List Container -->
       <div id="stockListContainer"></div>
     </div>
 
-    <!-- TAB 5: BILLING -->
+    <!-- TAB 5: BILLING & LEDGER -->
     <div id="view-billing" class="view-panel">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h2 style="font-size:16.5px; font-weight:800; color:var(--primary);">📑 Billing & Financial Ledger</h2>
+        <h2 style="font-size:16px; font-weight:800; color:var(--primary);">📑 Billing & Financial Ledger</h2>
         <div style="display:flex; gap:6px;">
           <button class="btn btn-accent btn-sm" onclick="openDailyCashClosingModal()">💰 Cash Closing</button>
           <button class="btn btn-outline btn-sm" onclick="exportLedgerCSV()">📥 CSV</button>
@@ -500,15 +491,15 @@
       </div>
 
       <div class="grid-3" style="margin-bottom:12px;">
-        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:11px; border-top:3.5px solid var(--primary);" onclick="filterBilling('all')">
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:10px; border-top:3.5px solid var(--primary);" onclick="filterBilling('all')">
           <div style="font-size:10px; color:var(--text-muted); font-weight:800;">TOTAL BILLED</div>
           <div style="font-size:16px; font-weight:800; color:var(--primary);" id="metricTotalBilled">₹0</div>
         </div>
-        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:11px; border-top:3.5px solid var(--success);" onclick="filterBilling('received')">
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:10px; border-top:3.5px solid var(--success);" onclick="filterBilling('received')">
           <div style="font-size:10px; color:var(--text-muted); font-weight:800;">RECEIVED</div>
           <div style="font-size:16px; font-weight:800; color:var(--success);" id="metricTotalRecv">₹0</div>
         </div>
-        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:11px; border-top:3.5px solid var(--danger); background:#fffafb;" onclick="filterBilling('due')">
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:10px; border-top:3.5px solid var(--danger); background:#fffafb;" onclick="filterBilling('due')">
           <div style="font-size:10px; color:var(--danger); font-weight:800;">DUE REMAINING</div>
           <div style="font-size:16px; font-weight:800; color:var(--danger);" id="metricTotalDue">₹0</div>
         </div>
@@ -523,11 +514,13 @@
         </div>
       </div>
 
-      <div id="billingFilterTitle" style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--primary);">Showing Invoices</div>
+      <div id="billingFilterTitle" style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--primary);">
+        Showing Invoices
+      </div>
       <div id="billingListContainer"></div>
     </div>
 
-    <!-- TAB 6: CHAT -->
+    <!-- TAB 6: REAL-TIME TEAM CHAT -->
     <div id="view-chat" class="view-panel">
       <div class="chat-box-card">
         <div class="chat-header-bar">
@@ -536,6 +529,10 @@
             <div id="liveTypingStatus" style="font-size:11px; color:var(--success); font-weight:700; height:16px;"></div>
           </div>
           <span class="badge badge-delivered" id="chatCountBadge">0 msgs</span>
+        </div>
+
+        <div id="chatCompressBar" style="display:none; background:#eff6ff; color:#1d4ed8; font-size:11.5px; font-weight:700; padding:6px 12px; text-align:center;">
+          📷 Photo compress ho rahi hai...
         </div>
 
         <div class="chat-stream" id="chatMessagesContainer"></div>
@@ -550,7 +547,7 @@
 
   </div>
 
-  <!-- NAVIGATION BAR -->
+  <!-- BOTTOM NAVIGATION -->
   <div class="nav-bar">
     <div class="nav-item active" onclick="switchTab('leads', this)">
       <div class="nav-icon">🎯</div>
@@ -583,16 +580,15 @@
 
 <!-- ================= MODALS ================= -->
 
-<!-- 1. Stock Detail Modal (With In-App Web Intel & Photo Discovery) -->
+<!-- 1. Stock Detail Modal (Full Technical Info + Sales History) -->
 <div id="stockDetailModal" class="auth-overlay" style="display:none; z-index:2500;">
-  <div class="auth-card" style="max-width:620px;">
+  <div class="auth-card" style="max-width:580px;">
     <div class="card-header">
-      <div>
-        <strong class="card-title" id="detName" style="font-size:15px; color:var(--primary);">Item Specifications</strong>
-        <div style="font-size:11px; color:var(--text-muted); margin-top:2px;" id="detMeta"></div>
-      </div>
+      <strong class="card-title" id="detName" style="font-size:15px;">Item Specifications</strong>
       <button class="btn btn-outline btn-sm" onclick="closeStockDetailModal()">✕</button>
     </div>
+
+    <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;" id="detMeta"></div>
 
     <div class="grid-3" style="background:#f8fafc; padding:10px; border-radius:10px; margin-bottom:12px; text-align:center; border:1px solid #e2e8f0;">
       <div>
@@ -609,33 +605,17 @@
       </div>
     </div>
 
-    <div id="detDescWrap" style="background:#f0fdf4; border:1.5px solid #bbf7d0; padding:11px; border-radius:10px; margin-bottom:12px; font-size:12px;">
-      <strong style="color:#15803d; display:block; margin-bottom:4px;">🛠️ Technical Data / Specifications:</strong>
-      <div id="detDesc" style="color:#0f172a; line-height:1.5; white-space:pre-line;"></div>
+    <div id="detDescWrap" style="background:#f0f9ff; border:1.5px solid #bae6fd; padding:10px; border-radius:10px; margin-bottom:12px; font-size:12px;">
+      <strong style="color:#0369a1; display:block; margin-bottom:4px;">🛠️ Technical Data / Specifications:</strong>
+      <div id="detDesc" style="color:#0f172a; line-height:1.45;"></div>
     </div>
 
-    <!-- Web Search Integration Buttons -->
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
-      <button class="btn btn-web btn-sm" onclick="triggerWebIntelligence()"><span id="webSearchBtnText">🌐 Search Web Specs & Photos</span></button>
-      <button class="btn btn-outline btn-sm" onclick="openDirectGoogleSearch()">🔎 Open Google Search</button>
-    </div>
-
-    <!-- Dynamic Web Intelligence Box -->
-    <div id="webIntelBox" class="web-intel-box">
-      <div class="web-intel-header">
-        <span class="web-intel-title"><span>🌐</span> Live Web Discovery Result:</span>
-        <button class="btn btn-outline btn-sm" style="padding:1px 6px; font-size:10px;" onclick="document.getElementById('webIntelBox').style.display='none'">✕</button>
-      </div>
-      <div id="webIntelGallery" class="web-intel-gallery"></div>
-      <div id="webIntelSnippet" class="web-intel-snippet">Searching online databases...</div>
-    </div>
-
-    <div style="display:flex; gap:8px; margin:12px 0 10px 0;">
+    <div style="display:flex; gap:8px; margin-bottom:12px;">
       <button class="btn btn-outline btn-sm btn-block" onclick="editFromDetailModal()">✏️ Edit Item Details</button>
     </div>
 
     <div style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:8px;">📋 Sales History (Sold To Customers):</div>
-    <div id="detSalesHistory" style="max-height:220px; overflow-y:auto; border:1px solid #f1f5f9; border-radius:8px; padding:4px;"></div>
+    <div id="detSalesHistory" style="max-height:240px; overflow-y:auto; border:1px solid #f1f5f9; border-radius:8px; padding:4px;"></div>
   </div>
 </div>
 
@@ -786,7 +766,7 @@
       </div>
     </div>
 
-    <label class="form-label">Order Items:</label>
+    <label class="form-label">Order Items (Search Direct from Stock):</label>
     <table class="items-table">
       <thead>
         <tr>
@@ -897,7 +877,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">Action Taken & Root Cause</label>
-        <input type="text" id="srvActionDone" placeholder="Action done...">
+        <input type="text" id="srvActionDone" placeholder="Replaced ceramic plunger & valve seals">
       </div>
     </div>
 
@@ -905,7 +885,7 @@
   </div>
 </div>
 
-<!-- 7. Inventory Add/Edit Modal -->
+<!-- 7. Inventory Item Add/Edit Modal -->
 <div id="stockItemModal" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="card-header">
@@ -924,7 +904,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">Category</label>
-        <input type="text" id="stkCategory" placeholder="e.g. Machine Spares">
+        <input type="text" id="stkCategory" placeholder="e.g. Spares - HRC">
       </div>
     </div>
     <div class="grid-2">
@@ -953,13 +933,89 @@
     </div>
     <div class="form-group">
       <label class="form-label">Technical Specs & Notes</label>
-      <textarea id="stkDesc" rows="2" placeholder="Specifications..."></textarea>
+      <textarea id="stkDesc" rows="2" placeholder="Specifications, specs, machine match..."></textarea>
     </div>
     <button class="btn btn-accent btn-block" onclick="saveStockItemAction()">💾 Save Item</button>
   </div>
 </div>
 
-<!-- 8. Cash Closing Modal -->
+<!-- 8. Machinery Modal -->
+<div id="machineItemModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title" id="machModalTitle">Machinery Catalog Item</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeMachineModal()">✕</button>
+    </div>
+    <input type="hidden" id="editMachId">
+    <div class="form-group">
+      <label class="form-label">Machine Model Name</label>
+      <input type="text" id="mName" placeholder="e.g. AR Triplex 200 Bar Commercial Washer">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Pump Model</label>
+        <input type="text" id="mPump" placeholder="AR 15.20 / Hawk">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Motor Specs</label>
+        <input type="text" id="mMotor" placeholder="5 HP 3-Phase 1440 RPM">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Pressure (Bar)</label>
+        <input type="number" id="mBar" placeholder="200">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Standard Price (₹)</label>
+        <input type="number" id="mPrice" placeholder="85000">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveMachineAction()">💾 Save Machine</button>
+  </div>
+</div>
+
+<!-- 9. Customer Profile Modal -->
+<div id="customerModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title" id="custModalTitle">Customer Profile</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeCustomerModal()">✕</button>
+    </div>
+    <input type="hidden" id="editCustId">
+    <div class="form-group">
+      <label class="form-label">Workshop / Business Name</label>
+      <input type="text" id="cName" placeholder="e.g. Sambit Autocare Private Limited">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" id="cPhone" placeholder="10-digit number" maxlength="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email ID</label>
+        <input type="email" id="cEmail" placeholder="client@gmail.com">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Workshop Address & Landmark</label>
+      <input type="text" id="cAddress" placeholder="Plot No, Street, City, District">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">GSTIN / Reg No.</label>
+        <input type="text" id="cGst" placeholder="21AAAAA0000A1Z5">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contact Person Name</label>
+        <input type="text" id="cPerson" placeholder="Owner / Manager">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveCustomerAction()">💾 Save Customer Profile</button>
+  </div>
+</div>
+
+<!-- 10. Cash Closing Modal -->
 <div id="cashClosingModal" class="auth-overlay" style="display:none;">
   <div class="auth-card" style="max-width:540px;">
     <div class="card-header">
@@ -986,6 +1042,22 @@
       </div>
     </div>
 
+    <div style="background:#f8fafc; border:1.2px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:12px;">
+      <div style="font-size:12px; font-weight:800; color:var(--primary); margin-bottom:8px;">💵 Cash Drawer Denomination Count:</div>
+      <div class="grid-3" style="font-size:11.5px; row-gap:8px;">
+        <div>₹500 x <input type="number" id="note500" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹200 x <input type="number" id="note200" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹100 x <input type="number" id="note100" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹50 &nbsp;x <input type="number" id="note50" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹20 &nbsp;x <input type="number" id="note20" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹10 &nbsp;x <input type="number" id="note10" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+      </div>
+      <div style="margin-top:10px; display:flex; justify-content:space-between; font-weight:800; font-size:12.5px; border-top:1px dashed #cbd5e1; padding-top:6px;">
+        <span>Total Counted Physical Cash:</span>
+        <span id="denomTotalDisplay" style="color:var(--primary);">₹0</span>
+      </div>
+    </div>
+
     <div style="display:flex; gap:8px;">
       <button class="btn btn-wa btn-block" onclick="sendClosingSummaryWhatsApp()">💬 Send Report to WhatsApp</button>
       <button class="btn btn-outline btn-sm" onclick="closeDailyCashClosingModal()">Close</button>
@@ -993,13 +1065,13 @@
   </div>
 </div>
 
-<!-- 9. Invoice Print Modal -->
+<!-- 11. Invoice Print Modal -->
 <div id="invoicePrintModal" class="auth-overlay" style="display:none; z-index:3000;">
   <div class="auth-card" style="max-width:740px; width:95%;">
     <div class="card-header no-print">
       <strong class="card-title">🖨️ GST Tax Invoice Preview</strong>
       <div style="display:flex; gap:6px;">
-        <button class="btn btn-print btn-sm" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button class="btn btn-print btn-sm" onclick="window.print()">🖨️ Print / Save as PDF</button>
         <button class="btn btn-outline btn-sm" onclick="closeInvoicePrintModal()">✕ Close</button>
       </div>
     </div>
@@ -1008,16 +1080,32 @@
       <div class="invoice-box">
         <div class="invoice-header">
           <div>
-            <h2 style="color:#0a1e34; font-size:16px; font-weight:900;">TWIN TOWN EXPRESS SERVICES PVT LTD</h2>
+            <h2 style="color:#0a2540; font-size:16px; font-weight:900;">TWIN TOWN EXPRESS SERVICES PVT LTD</h2>
             <div style="font-size:10.5px; color:#475569; line-height:1.4; margin-top:3px;">
               Plot No: 148, Rasulgarh Industrial Estate, Bhubaneswar, Odisha - 751010<br>
-              <strong>GSTIN:</strong> 21AAACT9812K1Z9 | <strong>Email:</strong> accounts@twintownexpress.com
+              <strong>GSTIN:</strong> 21AAACT9812K1Z9 | <strong>Email:</strong> accounts@twintownexpress.com<br>
+              <strong>Ph:</strong> +91 8917465040 / 0674-2580123
             </div>
           </div>
           <div style="text-align:right;">
             <div style="font-size:14px; font-weight:800; color:#ff6b35;">TAX INVOICE</div>
             <div style="font-size:11px;">Invoice: <strong id="invPrintId">ORD-901</strong></div>
-            <div style="font-size:11px;">Date: <strong id="invPrintDate">2026-09-25</strong></div>
+            <div style="font-size:11px;">Date: <strong id="invPrintDate">2026-09-24</strong></div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; border-bottom:1px solid #cbd5e1; padding-bottom:8px;">
+          <div>
+            <strong style="color:#0a2540; font-size:11.5px;">BILLED TO / CUSTOMER:</strong>
+            <div style="font-size:12px; font-weight:700;" id="invPrintCustName">Client Name</div>
+            <div style="font-size:11px;" id="invPrintCustAddress">Address</div>
+            <div style="font-size:11px;">Mobile: <span id="invPrintCustPhone">-</span></div>
+            <div style="font-size:11px;">GSTIN: <strong id="invPrintCustGst">Unregistered</strong></div>
+          </div>
+          <div style="text-align:right; font-size:11px;">
+            <div>Payment Mode: <strong id="invPrintPayMode">Cash</strong></div>
+            <div>Place of Supply: <strong>21-Odisha</strong></div>
+            <div>Billed By: <strong id="invPrintStaff">Staff</strong></div>
           </div>
         </div>
 
@@ -1025,11 +1113,11 @@
           <thead>
             <tr>
               <th style="width:30px;">#</th>
-              <th>Description of Goods</th>
-              <th style="width:65px;">HSN</th>
+              <th>Description of Goods / Spares</th>
+              <th style="width:65px;">HSN/SAC</th>
               <th style="width:40px;">Qty</th>
               <th style="width:70px;">Rate (₹)</th>
-              <th style="width:75px;">Amount (₹)</th>
+              <th style="width:75px;">Taxable (₹)</th>
             </tr>
           </thead>
           <tbody id="invPrintItemsTbody"></tbody>
@@ -1037,9 +1125,43 @@
 
         <div style="display:flex; justify-content:flex-end; margin-top:6px;">
           <div style="width:260px; font-size:11.5px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>Grand Total:</span><strong id="invPrintGrandTotal">₹0</strong></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>Received:</span><span id="invPrintRecv">₹0</span></div>
-            <div style="display:flex; justify-content:space-between; color:#b91c1c; font-weight:700;"><span>Balance Due:</span><span id="invPrintDue">₹0</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
+              <span>Total Taxable Amount:</span>
+              <strong id="invPrintTaxable">₹0</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
+              <span>CGST (9%):</span>
+              <span id="invPrintCgst">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
+              <span>SGST (9%):</span>
+              <span id="invPrintSgst">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-top:1.5px solid #0a2540; padding-top:4px; font-size:13px; font-weight:800; color:#0a2540;">
+              <span>Grand Total:</span>
+              <span id="invPrintGrandTotal">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:2px;">
+              <span>Amount Received:</span>
+              <span id="invPrintRecv">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; color:#b91c1c; font-weight:700;">
+              <span>Balance Due:</span>
+              <span id="invPrintDue">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px; border-top:1px solid #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:flex-end;">
+          <div style="font-size:9.5px; color:#64748b; line-height:1.4;">
+            <strong>Declaration & Terms:</strong><br>
+            1. Goods once sold will not be taken back without original warranty seal.<br>
+            2. High-pressure machinery requires 3-phase stable voltage.
+          </div>
+          <div style="text-align:center; font-size:11px;">
+            <div style="font-weight:700; color:#0a2540;">For TWIN TOWN EXPRESS SERVICES PVT LTD</div>
+            <div style="height:35px;"></div>
+            <div>Authorised Signatory</div>
           </div>
         </div>
       </div>
@@ -1047,11 +1169,11 @@
   </div>
 </div>
 
-<!-- Master Data JS -->
+<!-- Load Embedded Master Data JS with cache buster -->
 <script src="master-data.js?v=2"></script>
 
 <script>
-/* ================= ENGINE LOGIC & CLEAN STATE ================= */
+/* ================= ENGINE LOGIC & STATE ================= */
 const DB_PREFIX = "TTESPL_ERP_";
 window.DB_PREFIX = DB_PREFIX;
 
@@ -1059,7 +1181,9 @@ function getStored(key, defaultVal) {
   try {
     const val = localStorage.getItem(DB_PREFIX + key);
     return val ? JSON.parse(val) : defaultVal;
-  } catch(e) { return defaultVal; }
+  } catch(e) {
+    return defaultVal;
+  }
 }
 window.getStored = getStored;
 
@@ -1069,11 +1193,13 @@ function setStored(key, val) {
     if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') {
       window.cloudSync.pushKey(key, val);
     }
-  } catch(e) { console.error("Storage error:", e); }
+  } catch(e) {
+    console.error("Storage error:", e);
+  }
 }
 window.setStored = setStored;
 
-/* Clean Staff Database: Only real authorized staff */
+/* Clean Staff Database: Only real registered staff */
 let registeredEmployees = getStored("STAFF", [
   { id: 1, name: "Dipak Rout", role: "Admin", mobile: "8917465040", pass: "1234", pin: "0000" }
 ]);
@@ -1083,26 +1209,39 @@ let currentUser = getStored("SESSION_USER", null);
 
 /* Master Customer Database */
 let customerDatabase = getStored("CUSTOMERS", (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.customers) || [
-  { id: 1, name: "Trinity Techno Solution", person: "Trinity Techno Solution", phone: "6371256123", email: "", address: "Bomikhal, Khordha", gst: "21DDTPM0058K1ZC" }
+  { id: 1, name: "Trinity Techno Solution", person: "Trinity Techno Solution", phone: "6371256123", email: "", address: "Plot No-1159/2782, Behind Debaki Tower, Bomikhal, Khordha", gst: "21DDTPM0058K1ZC" }
 ]);
 window.customerDatabase = customerDatabase;
 
 /* Master Inventory Database */
 let sampleInventory = getStored("INVENTORY", (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.inventory) || [
-  { id: 1001, name: "valve kit -A,", code: "2186", category: "Machine Spares", machine: "HRC", stock: 0, dealerPrice: 1205.96, rate: 1608.34, hsn: "84139190", desc: "Spare part for HRC", specs: "Model: HRC" }
+  { id: 1001, name: "valve kit -A,", code: "2186", category: "Machine Spares", machine: "HRC", stock: 0, dealerPrice: 1205.96, rate: 1608.34, hsn: "84139190", desc: "Spare part for HRC. Code: 2186", specs: "Machine Model: HRC | Part Code: 2186" }
 ]);
 window.sampleInventory = sampleInventory;
 
+/* Machinery Catalog */
 let machineryDatabase = getStored("MACHINERY", [
   { id: 201, name: "AR Triplex 200 Bar Commercial Washer", pump: "AR 15.20", motor: "5 HP 3-Phase", bar: 200, price: 85000 },
-  { id: 202, name: "AR 680 (1Φ) Compact Washer", pump: "AR Triplex", motor: "3 HP Single-Phase", bar: 150, price: 64834 }
+  { id: 202, name: "AR 680 (1Φ) Compact Washer", pump: "AR Triplex", motor: "3 HP Single-Phase", bar: 150, price: 64834 },
+  { id: 203, name: "HRC PRO 11.11 ET (1Φ)", pump: "AR Commercial", motor: "4 HP Single-Phase", bar: 110, price: 114263 },
+  { id: 204, name: "HRR Pro Three-Phase Washer", pump: "AR 1450 RPM", motor: "5.5 HP 3-Phase", bar: 140, price: 132660 },
+  { id: 205, name: "HRG Pro High-Flow LCV/HCV", pump: "AR Heavy Flow", motor: "7.5 HP 3-Phase", bar: 150, price: 150754 },
+  { id: 206, name: "FX-1D Single Hose Steamjet", pump: "Kyong Dong Burner DC", motor: "CPU 200W + Burner", bar: 9, price: 509110 },
+  { id: 207, name: "EXCEL M 77/2 Double Motor Vacuum", pump: "Dual By-pass Motor", motor: "2600W (2x 1300W)", bar: 0, price: 55213 }
 ]);
 window.machineryDatabase = machineryDatabase;
 
 let leadsData = getStored("LEADS", []);
+window.leadsData = leadsData;
+
 let ordersData = getStored("ORDERS", []);
+window.ordersData = ordersData;
+
 let serviceCallsData = getStored("SERVICES", []);
+window.serviceCallsData = serviceCallsData;
+
 let teamChatData = [];
+window.teamChatData = teamChatData;
 
 /* ---------- AUTH & SESSION ---------- */
 function checkAuthSession() {
@@ -1119,9 +1258,18 @@ function checkAuthSession() {
       if (currentUser.role === 'Admin') roleTag.classList.add('admin');
       else roleTag.classList.remove('admin');
     }
+    updateAdminDeleteVisibility();
     refreshAllData();
   }
 }
+
+function updateAdminDeleteVisibility() {
+  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  document.querySelectorAll('.admin-only-btn').forEach(btn => {
+    btn.style.display = isAdmin ? 'inline-flex' : 'none';
+  });
+}
+window.updateAdminDeleteVisibility = updateAdminDeleteVisibility;
 
 function showAuthMode(mode) {
   document.getElementById('loginFormSection').style.display = mode === 'login' ? 'block' : 'none';
@@ -1202,9 +1350,12 @@ function refreshAllData() {
   renderOrders();
   renderServices();
   renderStockList();
+  renderMachineryList();
+  renderCustomerList();
   renderBilling('all');
   renderChatMessages();
   updateGlobalReminders();
+  updateAdminDeleteVisibility();
 }
 window.refreshAllData = refreshAllData;
 
@@ -1214,10 +1365,17 @@ function populateDropdownsAndDatalists() {
     sel.innerHTML = registeredEmployees.map(e => `<option value="${e.name}">${e.name} (${e.role})</option>`).join('');
     if(curVal) sel.value = curVal;
   });
+
+  const bFilter = document.getElementById('billingEmployeeFilter');
+  if(bFilter) {
+    const curB = bFilter.value;
+    bFilter.innerHTML = `<option value="ALL">All Staff Combined</option>` + registeredEmployees.map(e => `<option value="${e.name}">${e.name} (${e.role})</option>`).join('');
+    if(curB) bFilter.value = curB;
+  }
 }
 window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
 
-/* ================= AUTOCOMPLETE ENGINE ================= */
+/* ================= SOLID SEARCHABLE AUTOCOMPLETE ENGINE ================= */
 function handleCustomerAutocomplete(inputEl, targetInputId) {
   const val = inputEl.value.toLowerCase().trim();
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
@@ -1225,14 +1383,22 @@ function handleCustomerAutocomplete(inputEl, targetInputId) {
   if (!val || val.length < 2) { box.style.display = 'none'; return; }
 
   const matches = customerDatabase.filter(c =>
-    c.name.toLowerCase().includes(val) || (c.phone && c.phone.includes(val))
+    c.name.toLowerCase().includes(val) ||
+    (c.phone && c.phone.includes(val)) ||
+    (c.person && c.person.toLowerCase().includes(val))
   ).slice(0, 10);
 
-  if (matches.length === 0) { box.style.display = 'none'; return; }
+  if (matches.length === 0) {
+    box.style.display = 'none';
+    return;
+  }
 
   box.innerHTML = matches.map(c => `
     <div class="suggestion-item" onclick="selectCustomerSuggestion('${targetInputId}', '${encodeURIComponent(c.name)}', '${c.phone}')">
-      <div><strong>${c.name}</strong><div class="suggestion-sub">📍 ${c.address || ''}</div></div>
+      <div>
+        <strong>${c.name}</strong>
+        <div class="suggestion-sub">${c.person !== c.name ? c.person + ' | ' : ''}📍 ${c.address || ''}</div>
+      </div>
       <span class="badge badge-info" style="font-size:9.5px;">${c.phone}</span>
     </div>
   `).join('');
@@ -1255,13 +1421,21 @@ function handleMachineAutocomplete(inputEl, targetInputId) {
   if (!box) return;
   if (!val) { box.style.display = 'none'; return; }
 
-  const matches = machineryDatabase.filter(m => m.name.toLowerCase().includes(val)).slice(0, 8);
+  const matches = machineryDatabase.filter(m =>
+    m.name.toLowerCase().includes(val) ||
+    m.pump.toLowerCase().includes(val) ||
+    m.motor.toLowerCase().includes(val)
+  ).slice(0, 8);
+
   if (matches.length === 0) { box.style.display = 'none'; return; }
 
   box.innerHTML = matches.map(m => `
     <div class="suggestion-item" onclick="selectMachineSuggestion('${targetInputId}', '${encodeURIComponent(m.name)}', ${m.price})">
-      <div><strong>🚜 ${m.name}</strong><div class="suggestion-sub">${m.pump} | ${m.bar} Bar</div></div>
-      <strong style="color:var(--primary);">₹${m.price.toLocaleString('en-IN')}</strong>
+      <div>
+        <strong>🚜 ${m.name}</strong>
+        <div class="suggestion-sub">${m.pump} | ${m.motor} | ${m.bar} Bar</div>
+      </div>
+      <strong style="color:var(--primary); font-size:11.5px;">₹${m.price.toLocaleString('en-IN')}</strong>
     </div>
   `).join('');
   box.style.display = 'block';
@@ -1285,13 +1459,21 @@ function handlePartAutocomplete(inputEl, targetInputId) {
   if (!box) return;
   if (!val || val.length < 2) { box.style.display = 'none'; return; }
 
-  const matches = sampleInventory.filter(p => p.name.toLowerCase().includes(val) || (p.code && p.code.toLowerCase().includes(val))).slice(0, 10);
+  const matches = sampleInventory.filter(p =>
+    p.name.toLowerCase().includes(val) ||
+    (p.code && p.code.toLowerCase().includes(val)) ||
+    (p.category && p.category.toLowerCase().includes(val))
+  ).slice(0, 10);
+
   if (matches.length === 0) { box.style.display = 'none'; return; }
 
   box.innerHTML = matches.map(p => `
     <div class="suggestion-item" onclick="selectPartSuggestion('${targetInputId}', '${encodeURIComponent(p.name)}', '${p.code}')">
-      <div><strong>${p.name}</strong><div class="suggestion-sub">Code: ${p.code} | Stock: ${p.stock}</div></div>
-      <strong style="color:var(--accent);">₹${p.rate}</strong>
+      <div>
+        <strong>${p.name}</strong>
+        <div class="suggestion-sub">Code: ${p.code} | Stock: ${p.stock} Pcs</div>
+      </div>
+      <strong style="color:var(--accent); font-size:11.5px;">₹${p.rate}</strong>
     </div>
   `).join('');
   box.style.display = 'block';
@@ -1316,7 +1498,10 @@ document.addEventListener('click', function(e) {
 function resolveCustomerFromSearch(text) {
   if(!text) return null;
   const match = text.match(/\((\d{10})\)/);
-  if(match) return customerDatabase.find(c => c.phone === match[1]);
+  if(match) {
+    const phone = match[1];
+    return customerDatabase.find(c => c.phone === phone);
+  }
   const t = text.toLowerCase().trim();
   return customerDatabase.find(c => c.name.toLowerCase() === t || (c.phone && c.phone === t) || text.includes(c.name));
 }
@@ -1324,411 +1509,84 @@ function resolveCustomerFromSearch(text) {
 function resolvePartFromSearch(text) {
   if(!text) return null;
   const match = text.match(/\[(.*?)\]/);
-  if(match) return sampleInventory.find(p => p.code === match[1]);
+  if(match) {
+    const code = match[1];
+    return sampleInventory.find(p => p.code === code);
+  }
   const t = text.toLowerCase().trim();
   return sampleInventory.find(p => p.name.toLowerCase().includes(t) || (p.code && p.code.toLowerCase().includes(t)));
 }
 
-/* ================= INVENTORY & CATEGORY ENGINE ================= */
-let activeInventoryCategory = 'ALL';
-const STOCK_RENDER_CAP = 60;
-
-const CAT_COLORS = {
-  'Machines & Equipment': { bg: '#e0f2fe', color: '#0369a1', border: '#bae6fd' },
-  'Catalog Equipment': { bg: '#ecfeff', color: '#0e7490', border: '#a5f3fc' },
-  'Ma-Fra Chemicals': { bg: '#f0fdf4', color: '#15803d', border: '#bbf7d0' },
-  'Mafra Detailing': { bg: '#fffbeb', color: '#b45309', border: '#fde68a' },
-  'Maniac Line': { bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
-  'Maxshine Gear & Tools': { bg: '#faf5ff', color: '#7e22ce', border: '#e9d5ff' },
-  'Vista Car Care': { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
-  'Machine Spares': { bg: '#f8fafc', color: '#475569', border: '#cbd5e1' }
-};
-
-function getCatBadge(cat) {
-  const c = CAT_COLORS[cat] || { bg: '#f1f5f9', color: '#334155', border: '#e2e8f0' };
-  return `<span class="badge" style="background:${c.bg}; color:${c.color}; border:1px solid ${c.border}; font-size:10px;">${cat}</span>`;
-}
-
-function updateCategoryCounts() {
-  const byCat = {};
-  sampleInventory.forEach(i => { byCat[i.category] = (byCat[i.category] || 0) + 1; });
-
-  const setEl = (id, count) => {
-    const el = document.getElementById(id);
-    if(el) el.textContent = count.toLocaleString('en-IN');
-  };
-
-  setEl('catCountAll', sampleInventory.length);
-  setEl('catCountMach', byCat['Machines & Equipment'] || 0);
-  setEl('catCountCat', byCat['Catalog Equipment'] || 0);
-  setEl('catCountMafraChem', byCat['Ma-Fra Chemicals'] || 0);
-  setEl('catCountMafraDet', byCat['Mafra Detailing'] || 0);
-  setEl('catCountManiac', byCat['Maniac Line'] || 0);
-  setEl('catCountMaxshine', byCat['Maxshine Gear & Tools'] || 0);
-  setEl('catCountVista', byCat['Vista Car Care'] || 0);
-  setEl('catCountSpares', byCat['Machine Spares'] || 0);
-  setEl('catCountCust', customerDatabase.length);
-}
-
-function selectInventoryCategory(categoryName, btnEl) {
-  activeInventoryCategory = categoryName;
-  document.querySelectorAll('#inventoryCategoryTabs .sub-tab-btn').forEach(b => b.classList.remove('active'));
-  if (btnEl) btnEl.classList.add('active');
-
-  const titleEl = document.getElementById('currentCategoryTitle');
-  if (titleEl) titleEl.textContent = categoryName === 'ALL' ? '• All Categories' : `• ${categoryName}`;
-
-  const sInput = document.getElementById('stockFilterInput');
-  const q = sInput ? sInput.value : '';
-  if (q) filterStockList(q);
-  else renderStockList();
-}
-
-function stockCardHtml(item) {
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
-  const badgeHtml = getCatBadge(item.category);
-  const subMeta = item.subCategory && item.subCategory !== item.category ? ` • ${item.subCategory}` : '';
-
-  return `
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
-      <div style="flex:1;">
-        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px;">
-          ${badgeHtml}
-          <span style="font-size:11px; font-weight:700; color:#0284c7;">${item.code || ''}</span>
-        </div>
-        <strong style="font-size:14px; color:var(--primary); line-height:1.25;">${item.name}</strong>
-        <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
-          ${item.hsn ? 'HSN: ' + item.hsn : ''}${subMeta}
-        </div>
-      </div>
-      <div style="text-align:right; min-width:115px;">
-        <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}" style="margin-bottom:3px;">${item.stock} in stock</span>
-        <div style="font-size:11px; color:#475569;">Dealer: ₹${Number(item.dealerPrice || 0).toLocaleString('en-IN')}</div>
-        <div style="font-size:13.5px; font-weight:800; color:var(--primary);">MRP: ₹${Number(item.rate || 0).toLocaleString('en-IN')}</div>
-      </div>
-    </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid #f1f5f9; padding-top:6px;">
-      <span style="font-size:10.5px; color:var(--cyan); font-weight:700;">🔍 Tap to view details & web specs</span>
-      <div style="display:flex; gap:6px;">
-        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(${item.id})">✏️ Edit</button>
-        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="event.stopPropagation(); deleteStockItem(${item.id})">🗑️</button>` : ''}
-      </div>
-    </div>
-  `;
-}
-
-function renderStockList() {
-  const c = document.getElementById('stockListContainer');
-  if(!c) return;
-  c.innerHTML = '';
-  updateCategoryCounts();
-
-  if (activeInventoryCategory === 'CUSTOMERS') {
-    document.getElementById('totalPartsBadge').textContent = `${customerDatabase.length} Clients`;
-    customerDatabase.slice(0, STOCK_RENDER_CAP).forEach(cust => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = customerCardHtml(cust);
-      c.appendChild(card);
-    });
-    return;
+/* ================= RELOAD MASTER DATA ACTIONS (DUAL FALLBACK) ================= */
+async function getMasterDataPayload() {
+  if (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.inventory && window.TTESPL_MASTER_DATA.inventory.length > 0) {
+    return window.TTESPL_MASTER_DATA;
   }
-
-  let list = sampleInventory;
-  if (activeInventoryCategory !== 'ALL') {
-    list = list.filter(i => i.category === activeInventoryCategory);
-  }
-
-  document.getElementById('totalPartsBadge').textContent = `${list.length} Items`;
-
-  list.slice(0, STOCK_RENDER_CAP).forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.style.cursor = 'pointer';
-    card.onclick = () => openStockDetailModal(item.id);
-    card.innerHTML = stockCardHtml(item);
-    c.appendChild(card);
-  });
-}
-window.renderStockList = renderStockList;
-
-function filterStockList(val) {
-  const q = String(val || '').toLowerCase().trim();
-  const c = document.getElementById('stockListContainer');
-  if(!c) return;
-  c.innerHTML = '';
-
-  if (activeInventoryCategory === 'CUSTOMERS') {
-    const res = q ? customerDatabase.filter(cust =>
-      cust.name.toLowerCase().includes(q) || (cust.phone && cust.phone.includes(q))
-    ) : customerDatabase;
-
-    document.getElementById('totalPartsBadge').textContent = `${res.length} Matches`;
-    res.slice(0, 80).forEach(cust => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = customerCardHtml(cust);
-      c.appendChild(card);
-    });
-    return;
-  }
-
-  let baseList = sampleInventory;
-  if (activeInventoryCategory !== 'ALL') {
-    baseList = baseList.filter(i => i.category === activeInventoryCategory);
-  }
-
-  const results = q ? baseList.filter(i =>
-    i.name.toLowerCase().includes(q) || (i.code && i.code.toLowerCase().includes(q)) || (i.desc && i.desc.toLowerCase().includes(q))
-  ) : baseList;
-
-  document.getElementById('totalPartsBadge').textContent = `${results.length} Matches`;
-
-  results.slice(0, 80).forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.style.cursor = 'pointer';
-    card.onclick = () => openStockDetailModal(item.id);
-    card.innerHTML = stockCardHtml(item);
-    c.appendChild(card);
-  });
-}
-window.filterStockList = filterStockList;
-
-/* ================= WEB DISCOVERY & PHOTO SPEC INTELLIGENCE ================= */
-let activeStockDetailId = null;
-
-function openStockDetailModal(id) {
-  const item = sampleInventory.find(x => x.id === id);
-  if (!item) return;
-  activeStockDetailId = id;
-
-  document.getElementById('detName').textContent = item.name;
-  let meta = `${item.category}`;
-  if (item.subCategory && item.subCategory !== item.category) meta += ` • ${item.subCategory}`;
-  if (item.code) meta += ` • Code: ${item.code}`;
-  if (item.hsn) meta += ` • HSN: ${item.hsn}`;
-  document.getElementById('detMeta').textContent = meta;
-
-  document.getElementById('detDealer').textContent = '₹' + Number(item.dealerPrice || 0).toLocaleString('en-IN');
-  document.getElementById('detMrp').textContent = '₹' + Number(item.rate || 0).toLocaleString('en-IN');
-  document.getElementById('detStock').textContent = item.stock;
-
-  const descWrap = document.getElementById('detDescWrap');
-  const detailsText = item.specs ? `${item.specs}\n${item.desc || ''}` : (item.desc || 'Authorised high-pressure machinery / chemical specification.');
-  if (detailsText) {
-    descWrap.style.display = 'block';
-    document.getElementById('detDesc').innerText = detailsText;
-  } else {
-    descWrap.style.display = 'none';
-  }
-
-  const intelBox = document.getElementById('webIntelBox');
-  if (intelBox) intelBox.style.display = 'none';
-  document.getElementById('webSearchBtnText').textContent = "🌐 Search Web Specs & Photos";
-
-  const rows = [];
-  ordersData.forEach(o => {
-    (o.items || []).forEach(it => {
-      if (it.id === item.id || (it.name && it.name.toLowerCase() === item.name.toLowerCase())) {
-        rows.push({
-          customerName: o.customerName, qty: it.qty, rate: it.rate,
-          total: it.total, date: o.orderDate, status: o.status
-        });
-      }
-    });
-  });
-
-  const histBox = document.getElementById('detSalesHistory');
-  if (rows.length === 0) {
-    histBox.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:12px;">No sales records registered for this item yet.</div>`;
-  } else {
-    histBox.innerHTML = rows.map(r => `
-      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:7px 10px; margin-bottom:5px; font-size:11.5px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <strong>${r.customerName}</strong>
-          <span class="badge ${r.status === 'Delivered' ? 'badge-delivered' : 'badge-pending'}" style="font-size:9.5px;">${r.status}</span>
-        </div>
-        <div style="color:var(--text-muted); margin-top:2px;">Qty: <strong>${r.qty}</strong> @ ₹${r.rate} = <strong>₹${r.total}</strong> | Date: ${r.date}</div>
-      </div>
-    `).join('');
-  }
-
-  document.getElementById('stockDetailModal').style.display = 'flex';
-}
-window.openStockDetailModal = openStockDetailModal;
-function closeStockDetailModal() { document.getElementById('stockDetailModal').style.display = 'none'; }
-
-function openDirectGoogleSearch() {
-  const item = sampleInventory.find(x => x.id === activeStockDetailId);
-  if (!item) return;
-  const q = encodeURIComponent(`${item.name} ${item.code || ''} ${item.category || ''}`);
-  window.open(`https://www.google.com/search?q=${q}&tbm=isch`, '_blank');
-}
-
-async function triggerWebIntelligence() {
-  const item = sampleInventory.find(x => x.id === activeStockDetailId);
-  if (!item) return;
-
-  const btnText = document.getElementById('webSearchBtnText');
-  btnText.textContent = "⏳ Searching Web...";
-  const intelBox = document.getElementById('webIntelBox');
-  const gallery = document.getElementById('webIntelGallery');
-  const snippet = document.getElementById('webIntelSnippet');
-
-  intelBox.style.display = 'block';
-  gallery.innerHTML = '';
-  snippet.textContent = `Connecting to web database for "${item.name}"...`;
-
+  // Auto-fallback: Direct fetch from ttespl_master_data.json
   try {
-    let cleanQuery = item.name.replace(/[^a-zA-Z0-9\s]/g, ' ').split(/\s+/).slice(0, 4).join(' ');
-    const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=extracts|pageimages&exintro=1&explaintext=1&piprop=thumbnail&pithumbsize=300&generator=search&gsrsearch=${encodeURIComponent(cleanQuery)}&gsrlimit=3`;
-    
-    const res = await fetch(wikiUrl);
-    const data = await res.json();
-
-    if (data && data.query && data.query.pages) {
-      const pages = Object.values(data.query.pages);
-      pages.forEach(p => {
-        if (p.thumbnail && p.thumbnail.source) {
-          const img = document.createElement('img');
-          img.className = 'web-intel-img';
-          img.src = p.thumbnail.source;
-          img.title = p.title;
-          img.onclick = () => window.open(p.thumbnail.source, '_blank');
-          gallery.appendChild(img);
-        }
-      });
-      const firstPage = pages[0];
-      snippet.innerHTML = `<strong>${firstPage.title}:</strong> ${firstPage.extract ? firstPage.extract.slice(0, 220) + '...' : 'Technical specification found.'}
-        <div style="margin-top:6px;"><a href="https://www.google.com/search?q=${encodeURIComponent(item.name + ' specification sheet')}" target="_blank" style="color:var(--cyan); font-weight:700; text-decoration:none;">📄 View Full Technical PDF / Web Datasheet ↗</a></div>`;
-    } else {
-      snippet.innerHTML = `No direct Wikipedia entry for exact SKU.<br><a href="https://www.google.com/search?q=${encodeURIComponent(item.name)}&tbm=isch" target="_blank" style="color:var(--cyan); font-weight:700; text-decoration:none;">🔎 Search Verified High-Res Photos on Google Images ↗</a>`;
+    const res = await fetch('ttespl_master_data.json?v=' + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      window.TTESPL_MASTER_DATA = data;
+      return data;
     }
   } catch (err) {
-    snippet.innerHTML = `<a href="https://www.google.com/search?q=${encodeURIComponent(item.name)}" target="_blank" style="color:var(--cyan); font-weight:700; text-decoration:none;">🌐 Open Technical Web Specs & Datasheet ↗</a>`;
+    console.error("Fetch JSON error:", err);
+  }
+  return null;
+}
+
+async function loadMasterCatalogAction() {
+  const btn = event ? event.target : null;
+  const oldText = btn ? btn.innerText : "";
+  if (btn) btn.innerText = "⏳ Loading...";
+
+  try {
+    const payload = await getMasterDataPayload();
+    if (payload && payload.inventory && payload.inventory.length > 0) {
+      if (confirm(`Master catalog se sabhi ${payload.inventory.length} items load karein?`)) {
+        sampleInventory = payload.inventory;
+        setStored("INVENTORY", sampleInventory);
+        renderStockList();
+        populateDropdownsAndDatalists();
+        alert(`Success: ${sampleInventory.length} items inventory me load ho gaye!`);
+      }
+    } else {
+      alert("Error: Master catalog file load nahi ho saki. 1 minute baad dobara try karein.");
+    }
   } finally {
-    btnText.textContent = "🔄 Refresh Web Data";
+    if (btn) btn.innerText = oldText || "📦 Reload Master Data";
   }
 }
 
-function editFromDetailModal() {
-  const item = sampleInventory.find(x => x.id === activeStockDetailId);
-  closeStockDetailModal();
-  if (item) openAddPartModal(item);
-}
+async function loadMasterCustomersAction() {
+  const btn = event ? event.target : null;
+  const oldText = btn ? btn.innerText : "";
+  if (btn) btn.innerText = "⏳ Loading...";
 
-function loadMasterCatalogAction() {
-  if (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.inventory) {
-    if (confirm(`Reload all ${window.TTESPL_MASTER_DATA.inventory.length} items from master catalog?`)) {
-      sampleInventory = window.TTESPL_MASTER_DATA.inventory;
-      setStored("INVENTORY", sampleInventory);
-      renderStockList();
-      alert("Master catalog refreshed successfully!");
+  try {
+    const payload = await getMasterDataPayload();
+    if (payload && payload.customers && payload.customers.length > 0) {
+      if (confirm(`Directory se sabhi ${payload.customers.length} registered clients load karein?`)) {
+        customerDatabase = payload.customers;
+        setStored("CUSTOMERS", customerDatabase);
+        renderCustomerList();
+        populateDropdownsAndDatalists();
+        alert(`Success: ${customerDatabase.length} registered customers load ho gaye!`);
+      }
+    } else {
+      alert("Error: Master customer data load nahi ho saki. 1 minute baad dobara try karein.");
     }
+  } finally {
+    if (btn) btn.innerText = oldText || "📦 Reload Full Customers";
   }
-}
-
-function openAddPartModal(partObj = null) {
-  const title = document.getElementById('stockModalTitle');
-  const editId = document.getElementById('editStockId');
-  if(partObj) {
-    title.textContent = "Edit Inventory Item";
-    editId.value = partObj.id;
-    document.getElementById('stkName').value = partObj.name;
-    document.getElementById('stkCode').value = partObj.code;
-    document.getElementById('stkCategory').value = partObj.category || "";
-    document.getElementById('stkMachine').value = partObj.machine || "";
-    document.getElementById('stkHsn').value = partObj.hsn || "";
-    document.getElementById('stkQty').value = partObj.stock;
-    document.getElementById('stkDealerRate').value = partObj.dealerPrice || 0;
-    document.getElementById('stkRate').value = partObj.rate;
-    document.getElementById('stkDesc').value = partObj.desc || partObj.specs || "";
-  } else {
-    title.textContent = "Add New Item to Inventory";
-    editId.value = "";
-    document.getElementById('stkName').value = "";
-    document.getElementById('stkCode').value = "";
-    document.getElementById('stkCategory').value = "Machine Spares";
-    document.getElementById('stkMachine').value = "";
-    document.getElementById('stkHsn').value = "84139190";
-    document.getElementById('stkQty').value = "0";
-    document.getElementById('stkDealerRate').value = "";
-    document.getElementById('stkRate').value = "";
-    document.getElementById('stkDesc').value = "";
-  }
-  document.getElementById('stockItemModal').style.display = 'flex';
-}
-function closeStockModal() { document.getElementById('stockItemModal').style.display = 'none'; }
-
-function saveStockItemAction() {
-  const editId = document.getElementById('editStockId').value;
-  const name = document.getElementById('stkName').value.trim();
-  const code = document.getElementById('stkCode').value.trim();
-  const cat = document.getElementById('stkCategory').value.trim() || "Uncategorised";
-  const stock = parseInt(document.getElementById('stkQty').value) || 0;
-  const dealerPrice = parseFloat(document.getElementById('stkDealerRate').value) || 0;
-  const rate = parseFloat(document.getElementById('stkRate').value) || 0;
-
-  if(!name || !code) { alert("Please enter product name and item code!"); return; }
-
-  if(editId) {
-    const item = sampleInventory.find(x => x.id === parseInt(editId));
-    if(item) {
-      item.name = name; item.code = code; item.category = cat;
-      item.stock = stock; item.dealerPrice = dealerPrice; item.rate = rate;
-    }
-  } else {
-    sampleInventory.unshift({ id: Date.now(), name, code, category: cat, stock, dealerPrice, rate, hsn: "84139190" });
-  }
-
-  setStored("INVENTORY", sampleInventory);
-  closeStockModal();
-  renderStockList();
-  alert("Item saved successfully!");
-}
-
-function editStockItemPrompt(id) {
-  const it = sampleInventory.find(x => x.id === id);
-  if(it) openAddPartModal(it);
-}
-
-function deleteStockItem(id) {
-  if (!currentUser || currentUser.role !== 'Admin') { alert("Only Admin can delete items."); return; }
-  if(confirm("Confirm DELETE this item?")) {
-    sampleInventory = sampleInventory.filter(x => x.id !== id);
-    setStored("INVENTORY", sampleInventory);
-    renderStockList();
-  }
-}
-
-function exportInventoryCSV() {
-  let csv = "ID,Name,Code,Category,DealerPrice,MRP,Stock,HSN\n";
-  sampleInventory.forEach(i => {
-    csv += `"${i.id}","${(i.name||'').replace(/"/g, '""')}","${i.code||''}","${i.category||''}","${i.dealerPrice||0}","${i.rate||0}","${i.stock||0}","${i.hsn||''}"\n`;
-  });
-  downloadFile(csv, "TTESPL_Inventory.csv", "text/csv");
-}
-
-function customerCardHtml(cust) {
-  return `
-    <div class="card-header">
-      <div>
-        <strong style="font-size:14px; color:var(--primary);">${cust.name}</strong>
-        <div style="font-size:11px; color:var(--text-muted);">${cust.person && cust.person !== cust.name ? cust.person + ' • ' : ''}Ph: <strong>${cust.phone}</strong></div>
-      </div>
-    </div>
-    <div class="grid-2" style="font-size:11.5px; color:#475569;">
-      <div>📍 ${cust.address || 'Odisha'}</div>
-      <div>GST: <strong>${cust.gst || 'Unregistered'}</strong></div>
-    </div>
-  `;
 }
 
 /* ================= TAB 1: LEADS ================= */
 function renderLeads() {
   const c = document.getElementById('leadsListContainer');
   c.innerHTML = '';
+  const isAdmin = currentUser && (currentUser.role === 'Admin');
 
   leadsData.forEach(lead => {
     const card = document.createElement('div');
@@ -1738,52 +1596,82 @@ function renderLeads() {
     if(lead.installation && lead.installation.isInstalled) {
       const ins = lead.installation;
       let freeSrvHtml = (ins.freeServices || []).map(fs => {
-        let tag = fs.attended
-          ? `<span class="badge badge-delivered">✓ Attended on ${fs.attendedDate} by ${fs.attendedStaff}</span>`
-          : `<button class="btn btn-primary btn-sm" onclick="openAttendModal('${lead.id}', ${fs.num})">🛠️ Attend & Record</button>`;
+        let tag = '';
+        let btn = '';
+        if(fs.attended) {
+          tag = `<span class="badge badge-delivered">✓ Attended on ${fs.attendedDate} by ${fs.attendedStaff}</span>`;
+        } else {
+          const st = checkDueStatus(fs.dueDate);
+          tag = `<span class="badge ${st.badgeClass}">${st.text}</span>`;
+          btn = `<button class="btn btn-primary btn-sm" onclick="openAttendModal('${lead.id}', ${fs.num})">🛠️ Attend & Record</button>`;
+        }
         return `
-          <div style="background:white; border:1px solid #cbd5e1; border-radius:8px; padding:7px 10px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <strong>#${fs.num}: ${fs.label}</strong>
-              <div style="font-size:10.5px; color:#64748b;">Scheduled: <strong>${fs.dueDate}</strong></div>
+          <div style="background:white; border:1px solid #cbd5e1; border-radius:8px; padding:7px 10px; margin-bottom:5px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <strong>#${fs.num}: ${fs.label}</strong>
+                <div style="font-size:10.5px; color:#64748b;">Scheduled Due Date: <strong>${fs.dueDate}</strong></div>
+              </div>
+              <div>${tag}</div>
             </div>
-            <div>${tag}</div>
+            ${fs.attended ? `
+              <div style="font-size:10.5px; color:#1e3a8a; margin-top:4px; background:#f8fafc; padding:4px 8px; border-radius:6px;">
+                📝 <strong>Done:</strong> ${fs.actionDone} | <strong>Parts:</strong> ${fs.partsReplaced}
+              </div>
+            ` : `<div style="margin-top:5px; text-align:right;">${btn}</div>`}
           </div>
         `;
       }).join('');
 
       installHtml = `
         <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:10px; padding:10px; margin-top:8px;">
-          <strong style="font-size:12px; color:var(--primary); display:block; margin-bottom:6px;">🚀 MACHINE INSTALLED (WARRANTY ACTIVE)</strong>
-          <div class="grid-3" style="font-size:11px; margin-bottom:8px; background:white; padding:6px; border-radius:6px;">
-            <div>SN: <strong>${ins.machineSerial}</strong></div>
-            <div>Pump: <strong>${ins.pumpSerial}</strong></div>
-            <div>Inv: <strong>${ins.invoiceNo}</strong></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="font-size:12.5px; color:var(--primary);">🚀 MACHINE INSTALLED & WARRANTY RECORD</strong>
+            <span class="badge badge-delivered">Installed: ${ins.installDate}</span>
           </div>
+          <div class="grid-3" style="font-size:11px; margin-bottom:8px; background:white; padding:6px; border-radius:6px;">
+            <div>Machine SN: <strong>${ins.machineSerial}</strong></div>
+            <div>Pump SN: <strong>${ins.pumpSerial}</strong></div>
+            <div>Invoice: <strong>${ins.invoiceNo}</strong></div>
+          </div>
+          <div style="font-size:11.5px; font-weight:800; color:#1e40af; margin-bottom:6px;">🛡️ 4 FREE SERVICES SCHEDULE:</div>
           ${freeSrvHtml}
         </div>
       `;
     }
 
+    let auditHtml = (lead.auditTrail || []).map(a => `<div class="audit-item">• By <strong>${a.by}</strong> at ${a.time} (${a.note})</div>`).join('');
+
     card.innerHTML = `
       <div class="card-header">
         <div>
           <strong style="font-size:14.5px; color:var(--primary);">${lead.customerName}</strong>
-          <div style="font-size:11px; color:var(--text-muted);">Inquiry: ${lead.inquiryDate} | Lead: <strong>${lead.handledBy}</strong></div>
+          <div style="font-size:11px; color:var(--text-muted);">Inquiry: ${lead.inquiryDate} | Lead Eng: <strong>${lead.handledBy}</strong></div>
         </div>
-        <span class="badge ${lead.status === 'Installed' ? 'badge-delivered' : 'badge-pending'}">${lead.status}</span>
+        <div style="display:flex; gap:5px; align-items:center;">
+          <span class="badge ${lead.status === 'Installed' ? 'badge-delivered' : 'badge-pending'}">${lead.status}</span>
+          <button class="btn btn-outline btn-sm" onclick="editLeadPrompt('${lead.id}')">✏️ Edit</button>
+          ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteLeadAction('${lead.id}')">🗑️</button>` : ''}
+        </div>
       </div>
+
       <div class="grid-2" style="font-size:12px; margin-bottom:8px;">
         <div>Machine: <strong>${lead.machine}</strong></div>
         <div>Quoted: <strong>₹${Number(lead.quotedPrice || 0).toLocaleString('en-IN')}</strong></div>
       </div>
+
       <div style="background:#f8fafc; padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
-        💬 <strong>Remarks:</strong> ${lead.remarks} | <span style="color:var(--danger); font-weight:800;">Followup: ${lead.followupDate}</span>
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;">
+          <span>💬 <strong>Remarks:</strong> ${lead.remarks}</span>
+          <span style="color:var(--danger); font-weight:800;">Next Followup: ${lead.followupDate}</span>
+        </div>
         ${(!lead.installation || !lead.installation.isInstalled) ? `
-          <button class="btn btn-accent btn-sm" style="margin-top:8px; display:block;" onclick="openInstallModal('${lead.id}')">✓ Confirm Installation & Schedule Warranty</button>
+          <button class="btn btn-accent btn-sm" style="margin-top:8px;" onclick="openInstallModal('${lead.id}')">✓ Confirm Installation & Schedule Warranty</button>
         ` : ''}
       </div>
+
       ${installHtml}
+      <div class="audit-log-box">${auditHtml}</div>
     `;
     c.appendChild(card);
   });
@@ -1791,22 +1679,40 @@ function renderLeads() {
 }
 window.renderLeads = renderLeads;
 
-function openLeadModal() {
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('editLeadId').value = "";
-  document.getElementById('leadCustSearchInput').value = "";
-  document.getElementById('leadInqDate').value = today;
-  document.getElementById('leadFollowupDate').value = today;
-  document.getElementById('leadMachine').value = "";
-  document.getElementById('leadPrice').value = "";
-  document.getElementById('leadRemarks').value = "";
+function openLeadModal(leadObj = null) {
+  const title = document.getElementById('leadModalTitle');
+  const editId = document.getElementById('editLeadId');
+
+  if(leadObj) {
+    title.textContent = "Edit Machine Lead & Followup";
+    editId.value = leadObj.id;
+    document.getElementById('leadCustSearchInput').value = `${leadObj.customerName} (${leadObj.phone || ''})`;
+    document.getElementById('leadInqDate').value = leadObj.inquiryDate;
+    document.getElementById('leadStaffSelect').value = leadObj.handledBy;
+    document.getElementById('leadMachine').value = leadObj.machine;
+    document.getElementById('leadPrice').value = leadObj.quotedPrice;
+    document.getElementById('leadFollowupDate').value = leadObj.followupDate;
+    document.getElementById('leadRemarks').value = leadObj.remarks;
+  } else {
+    title.textContent = "New Machine Inquiry Entry";
+    editId.value = "";
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('leadCustSearchInput').value = "";
+    document.getElementById('leadInqDate').value = today;
+    document.getElementById('leadFollowupDate').value = today;
+    document.getElementById('leadMachine').value = "";
+    document.getElementById('leadPrice').value = "";
+    document.getElementById('leadRemarks').value = "";
+  }
   document.getElementById('leadModal').style.display = 'flex';
 }
 function closeLeadModal() { document.getElementById('leadModal').style.display = 'none'; }
 
 function saveLeadAction() {
+  const editId = document.getElementById('editLeadId').value;
   const custSearch = document.getElementById('leadCustSearchInput').value.trim();
   const cust = resolveCustomerFromSearch(custSearch);
+
   const inqDate = document.getElementById('leadInqDate').value;
   const staff = document.getElementById('leadStaffSelect').value;
   const mach = document.getElementById('leadMachine').value.trim();
@@ -1816,24 +1722,63 @@ function saveLeadAction() {
 
   if(!custSearch || !mach) { alert("Please select a Customer and Machine Model!"); return; }
 
-  leadsData.unshift({
-    id: "LEAD-" + Math.floor(100 + Math.random() * 900),
-    customerName: cust ? cust.name : custSearch.split('(')[0].trim(),
-    phone: cust ? cust.phone : "",
-    inquiryDate: inqDate,
-    handledBy: staff,
-    machine: mach,
-    quotedPrice: price,
-    status: "Active Inquiry",
-    followupDate: followup,
-    remarks: rem || "Lead registered",
-    installation: { isInstalled: false }
-  });
+  const custName = cust ? cust.name : custSearch.split('(')[0].trim();
+  const phone = cust ? cust.phone : "";
+
+  if(editId) {
+    const l = leadsData.find(x => x.id === editId);
+    if(l) {
+      l.customerName = custName;
+      l.phone = phone;
+      l.inquiryDate = inqDate;
+      l.handledBy = staff;
+      l.machine = mach;
+      l.quotedPrice = price;
+      l.followupDate = followup;
+      l.remarks = rem;
+      l.auditTrail = l.auditTrail || [];
+      l.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Updated details" });
+    }
+  } else {
+    leadsData.unshift({
+      id: "LEAD-" + Math.floor(100 + Math.random() * 900),
+      customerName: custName,
+      phone: phone,
+      inquiryDate: inqDate,
+      handledBy: staff,
+      machine: mach,
+      quotedPrice: price,
+      status: "Active Inquiry",
+      followupDate: followup,
+      remarks: rem || "Lead registered",
+      auditTrail: [{ by: currentUser.name, time: getNowStr(), note: "Created inquiry" }],
+      installation: { isInstalled: false }
+    });
+  }
 
   setStored("LEADS", leadsData);
   closeLeadModal();
   renderLeads();
-  alert("Lead saved!");
+  alert("Lead saved & synced!");
+}
+
+/* Admin Only Delete Guard */
+function deleteLeadAction(id) {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Sirf Admin hi Lead delete kar sakte hain!");
+    return;
+  }
+  if(confirm("Confirm DELETE this Lead permanently?")) {
+    leadsData = leadsData.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("LEADS", id);
+    setStored("LEADS", leadsData);
+    renderLeads();
+  }
+}
+
+function editLeadPrompt(leadId) {
+  const l = leadsData.find(x => x.id === leadId);
+  if(l) openLeadModal(l);
 }
 
 let activeLeadForInstall = null;
@@ -1856,7 +1801,7 @@ function saveInstallationAction() {
   const pumpSN = document.getElementById('insPumpSN').value.trim();
   const inv = document.getElementById('insInvNo').value.trim();
 
-  if(!machSN || !pumpSN) { alert("Please enter Machine Serial No & Pump Serial No!"); return; }
+  if(!machSN || !pumpSN) { alert("Please enter both Machine Serial No & Pump Serial No!"); return; }
 
   activeLeadForInstall.status = "Installed";
   activeLeadForInstall.installation = {
@@ -1867,12 +1812,14 @@ function saveInstallationAction() {
     pumpSerial: pumpSN,
     invoiceNo: inv || "TTESPL/INV/" + Math.floor(100+Math.random()*900),
     freeServices: [
-      { num: 1, label: "1st Free Service (30 Days)", dueDate: addMonths(date, 1), attended: false },
-      { num: 2, label: "2nd Free Service (4th Month)", dueDate: addMonths(date, 4), attended: false },
-      { num: 3, label: "3rd Free Service (7th Month)", dueDate: addMonths(date, 7), attended: false },
-      { num: 4, label: "4th Free Service (10th Month)", dueDate: addMonths(date, 10), attended: false }
+      { num: 1, label: "1st Free Service (30 Days / 50 Hrs)", dueDate: addMonths(date, 1), attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" },
+      { num: 2, label: "2nd Free Service (4th Month)", dueDate: addMonths(date, 4), attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" },
+      { num: 3, label: "3rd Free Service (7th Month)", dueDate: addMonths(date, 7), attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" },
+      { num: 4, label: "4th Free Service (10th Month)", dueDate: addMonths(date, 10), attended: false, attendedDate: "", attendedStaff: "", actionDone: "", partsReplaced: "" }
     ]
   };
+  activeLeadForInstall.auditTrail = activeLeadForInstall.auditTrail || [];
+  activeLeadForInstall.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: `Installed machine (SN: ${machSN})` });
 
   setStored("LEADS", leadsData);
   closeInstallModal();
@@ -1886,34 +1833,77 @@ function openAttendModal(leadId, num) {
   if(!l) return;
   const fs = l.installation.freeServices.find(s => s.num === num);
   if(!fs) return;
+
   activeFreeSrvRef = { l, fs };
-  document.getElementById('freeSrvHeading').textContent = `${l.customerName} — #${fs.num}: ${fs.label}`;
+  document.getElementById('freeSrvHeading').textContent = `${l.customerName} — #${fs.num}: ${fs.label} (Due: ${fs.dueDate})`;
   document.getElementById('freeSrvActDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('freeSrvAction').value = "";
+  document.getElementById('freeSrvParts').value = "";
   document.getElementById('attendFreeServiceModal').style.display = 'flex';
 }
 function closeAttendModal() { document.getElementById('attendFreeServiceModal').style.display = 'none'; }
 
 function saveFreeServiceAction() {
   if(!activeFreeSrvRef) return;
-  const { fs } = activeFreeSrvRef;
+  const { l, fs } = activeFreeSrvRef;
+  const actDate = document.getElementById('freeSrvActDate').value;
+  const staff = document.getElementById('freeSrvStaff').value;
+  const action = document.getElementById('freeSrvAction').value.trim();
+  const parts = document.getElementById('freeSrvParts').value.trim();
+
   fs.attended = true;
-  fs.attendedDate = document.getElementById('freeSrvActDate').value;
-  fs.attendedStaff = document.getElementById('freeSrvStaff').value;
-  fs.actionDone = document.getElementById('freeSrvAction').value.trim() || "Service executed";
+  fs.attendedDate = actDate;
+  fs.attendedStaff = staff;
+  fs.actionDone = action || "Free service maintenance completed";
+  fs.partsReplaced = parts || "None";
+
+  l.auditTrail = l.auditTrail || [];
+  l.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: `Attended Free Service #${fs.num}` });
 
   setStored("LEADS", leadsData);
   closeAttendModal();
   renderLeads();
-  alert("Free Service recorded!");
+  alert("Free Service recorded successfully!");
+}
+
+function checkDueStatus(dueDateStr) {
+  const today = new Date().toISOString().split('T')[0];
+  if(dueDateStr === today) return { text: "🔔 TODAY", badgeClass: "badge-today" };
+  const d1 = new Date(today);
+  const d2 = new Date(dueDateStr);
+  const diffDays = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+  if(diffDays === 1) return { text: "⚠️ TOMORROW", badgeClass: "badge-pending" };
+  if(diffDays > 1) return { text: `Due in ${diffDays}d`, badgeClass: "badge-info" };
+  return { text: `⚠️ Delayed by ${Math.abs(diffDays)}d`, badgeClass: "badge-danger" };
+}
+
+function addMonths(dateStr, m) {
+  const d = new Date(dateStr || new Date());
+  d.setMonth(d.getMonth() + m);
+  return d.toISOString().split('T')[0];
 }
 
 /* ================= TAB 2: ORDERS ================= */
 function renderOrders() {
   const c = document.getElementById('ordersListContainer');
   c.innerHTML = '';
+  const today = new Date().toISOString().split('T')[0];
+  const isAdmin = currentUser && (currentUser.role === 'Admin');
 
   ordersData.forEach(o => {
+    let statusBadge = 'badge-pending';
+    let statusText = o.status;
+    if(o.status === 'Pending' && o.deliveryDate < today) {
+      statusBadge = 'badge-danger';
+      statusText = '⚠️ Delayed (' + o.deliveryDate + ')';
+    } else if(o.status === 'Delivered') {
+      statusBadge = 'badge-delivered';
+      statusText = '✓ Delivered';
+    }
+
     let itemsHtml = o.items.map(i => `<div>• ${i.name} (Qty: <strong>${i.qty}</strong> @ ₹${i.rate}) = ₹${i.total}</div>`).join('');
+    let auditHtml = (o.auditTrail || []).map(a => `<div class="audit-item">• By <strong>${a.by}</strong> at ${a.time} (${a.note})</div>`).join('');
+
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
@@ -1922,8 +1912,13 @@ function renderOrders() {
           <strong style="font-size:14.5px; color:var(--primary);">${o.customerName}</strong>
           <div style="font-size:11px; color:var(--text-muted);">Invoice: ${o.id} | Date: ${o.orderDate} | Staff: <strong>${o.bookedBy}</strong></div>
         </div>
-        <span class="badge ${o.status === 'Delivered' ? 'badge-delivered' : 'badge-pending'}">${o.status}</span>
+        <div style="display:flex; gap:5px; align-items:center;">
+          <span class="badge ${statusBadge}">${statusText}</span>
+          <button class="btn btn-outline btn-sm" onclick="editOrderPrompt('${o.id}')">✏️ Edit</button>
+          ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteOrderAction('${o.id}')">🗑️</button>` : ''}
+        </div>
       </div>
+
       <div style="background:#f8fafc; padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
         ${itemsHtml}
         <div style="border-top:1px dashed #cbd5e1; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:800;">
@@ -1931,10 +1926,21 @@ function renderOrders() {
           <span style="color:${o.dueAmount > 0 ? 'var(--danger)' : 'var(--success)'};">Due: ₹${Number(o.dueAmount || 0).toLocaleString('en-IN')}</span>
         </div>
       </div>
-      <div style="display:flex; gap:6px;">
-        <button class="btn btn-wa btn-sm" style="flex:1;" onclick="shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
-        ${o.status !== 'Delivered' ? `<button class="btn btn-primary btn-sm" style="flex:1;" onclick="markOrderDelivered('${o.id}')">✓ Mark Delivered</button>` : ''}
+
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; color:#475569; margin-bottom:8px;">
+        <div>Pay Mode: <strong>${o.payMode}</strong></div>
+        <div>Delivery: <strong>${o.deliveryDate}</strong></div>
       </div>
+
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button class="btn btn-print btn-sm" style="flex:1;" onclick="openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice PDF</button>
+        <button class="btn btn-wa btn-sm" style="flex:1;" onclick="shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
+        ${o.status !== 'Delivered' ? `
+          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="markOrderDelivered('${o.id}')">✓ Mark Delivered</button>
+        ` : ''}
+      </div>
+
+      <div class="audit-log-box">${auditHtml}</div>
     `;
     c.appendChild(card);
   });
@@ -1942,17 +1948,34 @@ function renderOrders() {
 }
 window.renderOrders = renderOrders;
 
-function openOrderModal() {
+function openOrderModal(orderObj = null) {
   const tbody = document.getElementById('orderItemsTbody');
   tbody.innerHTML = '';
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('editOrderId').value = "";
-  document.getElementById('ordCustSearchInput').value = "";
-  document.getElementById('ordDate').value = today;
-  document.getElementById('ordDelDate').value = today;
-  document.getElementById('ordRecvAmt').value = "0";
-  document.getElementById('ordPayMode').value = "Cash";
-  addOrderItemRow();
+  const title = document.getElementById('orderModalTitle');
+  const editId = document.getElementById('editOrderId');
+
+  if(orderObj) {
+    title.textContent = "Edit Order & Items";
+    editId.value = orderObj.id;
+    document.getElementById('ordCustSearchInput').value = `${orderObj.customerName} (${orderObj.phone || ''})`;
+    document.getElementById('ordStaffSelect').value = orderObj.bookedBy;
+    document.getElementById('ordDate').value = orderObj.orderDate;
+    document.getElementById('ordDelDate').value = orderObj.deliveryDate;
+    document.getElementById('ordRecvAmt').value = orderObj.recvAmount;
+    document.getElementById('ordPayMode').value = orderObj.payMode;
+    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.rate));
+  } else {
+    title.textContent = "New Multi-Item Product Order";
+    editId.value = "";
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('ordCustSearchInput').value = "";
+    document.getElementById('ordDate').value = today;
+    document.getElementById('ordDelDate').value = today;
+    document.getElementById('ordRecvAmt').value = "0";
+    document.getElementById('ordPayMode').value = "Cash";
+    addOrderItemRow();
+  }
+
   calcOrderTotals();
   document.getElementById('orderModal').style.display = 'flex';
 }
@@ -1966,6 +1989,7 @@ function addOrderItemRow(itemName = "", qty = 1, rate = 0) {
     <td class="autocomplete-wrapper">
       <input type="text" class="item-product-input" value="${itemName}" placeholder="Type item name..." oninput="handleOrderItemInput(this)">
       <div class="solid-suggestion-box"></div>
+      <div class="item-stock-warning" style="font-size:10px; color:var(--text-muted); margin-top:2px;"></div>
     </td>
     <td><input type="number" class="item-qty" value="${qty}" min="1" oninput="calcOrderTotals()"></td>
     <td><input type="number" class="item-rate" value="${rate}" oninput="calcOrderTotals()"></td>
@@ -1974,6 +1998,13 @@ function addOrderItemRow(itemName = "", qty = 1, rate = 0) {
   `;
 
   tbody.appendChild(tr);
+  if(itemName) {
+    const p = resolvePartFromSearch(itemName);
+    if(p) {
+      tr.querySelector('.item-rate').value = rate || p.rate;
+      tr.querySelector('.item-stock-warning').innerHTML = `<span style="color:${p.stock > 0 ? 'var(--success)' : 'var(--danger)'}">Stock: ${p.stock} Pcs</span>`;
+    }
+  }
   calcOrderTotals();
 }
 
@@ -1982,28 +2013,36 @@ function handleOrderItemInput(inputEl) {
   const row = inputEl.closest('tr');
   const box = row.querySelector('.solid-suggestion-box');
   if(!box) return;
+
   if(!val || val.length < 2) { box.style.display = 'none'; return; }
 
   const matches = sampleInventory.filter(p =>
-    p.name.toLowerCase().includes(val) || (p.code && p.code.toLowerCase().includes(val))
+    p.name.toLowerCase().includes(val) ||
+    (p.code && p.code.toLowerCase().includes(val)) ||
+    (p.category && p.category.toLowerCase().includes(val))
   ).slice(0, 8);
 
   if(matches.length === 0) { box.style.display = 'none'; return; }
 
   box.innerHTML = matches.map(p => `
-    <div class="suggestion-item" onclick="selectOrderItemSuggestion(this, '${encodeURIComponent(p.name)}', '${p.code}', ${p.rate})">
-      <div><strong>${p.name}</strong><div class="suggestion-sub">Code: ${p.code} | Stock: ${p.stock}</div></div>
+    <div class="suggestion-item" onclick="selectOrderItemSuggestion(this, '${encodeURIComponent(p.name)}', '${p.code}', ${p.rate}, ${p.stock})">
+      <div>
+        <strong>${p.name}</strong>
+        <div class="suggestion-sub">Code: ${p.code} | Stock: ${p.stock}</div>
+      </div>
       <strong style="color:var(--accent);">₹${p.rate}</strong>
     </div>
   `).join('');
   box.style.display = 'block';
 }
 
-function selectOrderItemSuggestion(el, encName, code, rate) {
+function selectOrderItemSuggestion(el, encName, code, rate, stock) {
   const name = decodeURIComponent(encName);
   const row = el.closest('tr');
-  row.querySelector('.item-product-input').value = `${name} [${code}]`;
+  const input = row.querySelector('.item-product-input');
+  input.value = `${name} [${code}]`;
   row.querySelector('.item-rate').value = rate;
+  row.querySelector('.item-stock-warning').innerHTML = `<span style="color:${stock > 0 ? 'var(--success)' : 'var(--danger)'}">Stock: ${stock} Pcs</span>`;
   row.querySelector('.solid-suggestion-box').style.display = 'none';
   calcOrderTotals();
 }
@@ -2028,12 +2067,16 @@ function calcOrderBalance() {
 }
 
 function saveOrderAction() {
+  const editId = document.getElementById('editOrderId').value;
   const custSearch = document.getElementById('ordCustSearchInput').value.trim();
   const cust = resolveCustomerFromSearch(custSearch);
   const staff = document.getElementById('ordStaffSelect').value;
+  const ordDate = document.getElementById('ordDate').value;
+  const delDate = document.getElementById('ordDelDate').value;
   const total = parseFloat(document.getElementById('ordTotalAmt').value) || 0;
   const recv = parseFloat(document.getElementById('ordRecvAmt').value) || 0;
   const due = parseFloat(document.getElementById('ordDueAmt').value) || 0;
+  const payMode = document.getElementById('ordPayMode').value;
 
   let items = [];
   document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
@@ -2041,46 +2084,100 @@ function saveOrderAction() {
     const qty = parseInt(r.querySelector('.item-qty').value) || 0;
     const rate = parseFloat(r.querySelector('.item-rate').value) || 0;
     const part = resolvePartFromSearch(pName);
+
     if(pName && qty > 0) {
       items.push({
         id: part ? part.id : Date.now(),
         name: part ? part.name : pName,
-        qty, rate, total: qty * rate
+        hsn: part ? (part.hsn || "84139190") : "84139190",
+        qty,
+        rate,
+        total: qty * rate
       });
     }
   });
 
-  if(!custSearch || items.length === 0) { alert("Select Customer and at least one item!"); return; }
+  if(!custSearch || items.length === 0) { alert("Please select a Customer and add at least one item!"); return; }
 
-  ordersData.unshift({
-    id: "ORD-" + Math.floor(100 + Math.random() * 900),
-    customerName: cust ? cust.name : custSearch.split('(')[0].trim(),
-    phone: cust ? cust.phone : "",
-    orderDate: document.getElementById('ordDate').value,
-    deliveryDate: document.getElementById('ordDelDate').value,
-    items, totalAmount: total, recvAmount: recv, dueAmount: due,
-    payMode: document.getElementById('ordPayMode').value,
-    status: "Pending", bookedBy: staff
-  });
+  const custName = cust ? cust.name : custSearch.split('(')[0].trim();
+  const phone = cust ? cust.phone : "";
+
+  if(editId) {
+    const o = ordersData.find(x => x.id === editId);
+    if(o) {
+      o.customerName = custName;
+      o.phone = phone;
+      o.bookedBy = staff;
+      o.orderDate = ordDate;
+      o.deliveryDate = delDate;
+      o.items = items;
+      o.totalAmount = total;
+      o.recvAmount = recv;
+      o.dueAmount = due;
+      o.payMode = payMode;
+      o.auditTrail = o.auditTrail || [];
+      o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Edited order" });
+    }
+  } else {
+    ordersData.unshift({
+      id: "ORD-" + Math.floor(100 + Math.random() * 900),
+      customerName: custName,
+      phone: phone,
+      orderDate: ordDate,
+      deliveryDate: delDate,
+      items: items,
+      totalAmount: total,
+      recvAmount: recv,
+      dueAmount: due,
+      payMode: payMode,
+      status: "Pending",
+      bookedBy: staff,
+      auditTrail: [{ by: currentUser.name, time: getNowStr(), note: "Created order" }]
+    });
+  }
 
   setStored("ORDERS", ordersData);
   closeOrderModal();
   renderOrders();
   renderBilling('all');
-  alert("Order created!");
+  alert("Order saved & synced to cloud!");
+}
+
+/* Admin Only Delete Guard */
+function deleteOrderAction(id) {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Sirf Admin hi Order delete kar sakte hain!");
+    return;
+  }
+  if(confirm("Confirm DELETE this Order permanently?")) {
+    ordersData = ordersData.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("ORDERS", id);
+    setStored("ORDERS", ordersData);
+    renderOrders();
+    renderBilling('all');
+  }
+}
+
+function editOrderPrompt(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(o) openOrderModal(o);
 }
 
 function markOrderDelivered(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
+
   o.items.forEach(it => {
     const p = sampleInventory.find(x => x.id === it.id || x.name === it.name);
     if(p) p.stock = Math.max(0, p.stock - it.qty);
   });
+
   o.status = "Delivered";
+  o.auditTrail = o.auditTrail || [];
+  o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Delivered & stock reduced" });
   setStored("ORDERS", ordersData);
   setStored("INVENTORY", sampleInventory);
-  alert(`Order ${ordId} Marked Delivered! Stock deducted.`);
+  alert(`Order ${ordId} Marked Delivered! Stock automatically deducted.`);
   renderOrders();
   renderStockList();
 }
@@ -2089,16 +2186,143 @@ function shareOrderWhatsApp(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
   const itemsText = o.items.map(i => `${i.name} (x${i.qty}) - Rs.${i.total}`).join('%0A');
-  const msg = `*TWIN TOWN EXPRESS SERVICES PVT LTD*%0A*Invoice:* ${o.id}%0A*Customer:* ${o.customerName}%0A-----------------------%0A*Items:*%0A${itemsText}%0A-----------------------%0A*Total Bill:* Rs.${o.totalAmount}%0A*Due Remaining:* Rs.${o.dueAmount}%0A*Status:* ${o.status}`;
-  window.open(`https://wa.me/${o.phone ? '91'+o.phone : ''}?text=${msg}`, '_blank');
+  const msg = `*TWIN TOWN EXPRESS SERVICES PVT LTD*%0A*Invoice:* ${o.id}%0A*Customer:* ${o.customerName}%0A-----------------------%0A*Items:*%0A${itemsText}%0A-----------------------%0A*Total Bill:* Rs.${o.totalAmount}%0A*Paid:* Rs.${o.recvAmount}%0A*Due Remaining:* Rs.${o.dueAmount}%0A*Status:* ${o.status}%0A%0A_Authorised Partner - Rasulgarh, BBSR_`;
+  const url = o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
+  window.open(url, '_blank');
 }
 
-/* ================= TAB 3: SERVICES ================= */
+/* ================= GST INVOICE PRINT ================= */
+function openInvoicePrintModal(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(!o) return;
+
+  const cust = customerDatabase.find(c => c.phone === o.phone || c.name === o.customerName);
+
+  document.getElementById('invPrintId').textContent = o.id;
+  document.getElementById('invPrintDate').textContent = o.orderDate;
+  document.getElementById('invPrintCustName').textContent = o.customerName;
+  document.getElementById('invPrintCustPhone').textContent = o.phone || 'N/A';
+  document.getElementById('invPrintCustAddress').textContent = cust ? cust.address : 'Bhubaneswar, Odisha';
+  document.getElementById('invPrintCustGst').textContent = cust ? (cust.gst || 'Unregistered') : 'Unregistered';
+  document.getElementById('invPrintPayMode').textContent = o.payMode;
+  document.getElementById('invPrintStaff').textContent = o.bookedBy;
+
+  const taxable = Math.round((o.totalAmount / 1.18) * 100) / 100;
+  const tax = Math.round((o.totalAmount - taxable) * 100) / 100;
+  const halfTax = Math.round((tax / 2) * 100) / 100;
+
+  const tbody = document.getElementById('invPrintItemsTbody');
+  tbody.innerHTML = o.items.map((it, idx) => {
+    const itTaxable = Math.round((it.total / 1.18) * 100) / 100;
+    return `
+      <tr>
+        <td>${idx + 1}</td>
+        <td><strong>${it.name}</strong></td>
+        <td>${it.hsn || '84139190'}</td>
+        <td>${it.qty}</td>
+        <td>₹${it.rate}</td>
+        <td>₹${itTaxable.toFixed(2)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  document.getElementById('invPrintTaxable').textContent = '₹' + taxable.toFixed(2);
+  document.getElementById('invPrintCgst').textContent = '₹' + halfTax.toFixed(2);
+  document.getElementById('invPrintSgst').textContent = '₹' + halfTax.toFixed(2);
+  document.getElementById('invPrintGrandTotal').textContent = '₹' + Number(o.totalAmount).toLocaleString('en-IN');
+  document.getElementById('invPrintRecv').textContent = '₹' + Number(o.recvAmount).toLocaleString('en-IN');
+  document.getElementById('invPrintDue').textContent = '₹' + Number(o.dueAmount).toLocaleString('en-IN');
+
+  document.getElementById('invoicePrintModal').style.display = 'flex';
+}
+function closeInvoicePrintModal() {
+  document.getElementById('invoicePrintModal').style.display = 'none';
+}
+
+/* ================= DAILY CASH CLOSING ================= */
+function openDailyCashClosingModal() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('closeSummaryDate').textContent = today;
+  document.getElementById('closeSummaryStaff').textContent = currentUser ? currentUser.name : "Staff";
+
+  let cashTotal = 0;
+  let upiTotal = 0;
+  let bankTotal = 0;
+
+  ordersData.forEach(o => {
+    if(o.orderDate === today && o.recvAmount > 0) {
+      if(o.payMode === 'Cash') cashTotal += o.recvAmount;
+      else if(o.payMode.includes('UPI')) upiTotal += o.recvAmount;
+      else bankTotal += o.recvAmount;
+    }
+  });
+
+  document.getElementById('closeCashAmt').textContent = '₹' + cashTotal.toLocaleString('en-IN');
+  document.getElementById('closeUpiAmt').textContent = '₹' + upiTotal.toLocaleString('en-IN');
+  document.getElementById('closeBankAmt').textContent = '₹' + bankTotal.toLocaleString('en-IN');
+
+  ['500','200','100','50','20','10'].forEach(id => {
+    const el = document.getElementById('note' + id);
+    if(el) el.value = "0";
+  });
+  document.getElementById('denomTotalDisplay').textContent = '₹0';
+  document.getElementById('cashClosingModal').style.display = 'flex';
+}
+function closeDailyCashClosingModal() { document.getElementById('cashClosingModal').style.display = 'none'; }
+
+function calcCashDenominations() {
+  const n500 = parseInt(document.getElementById('note500').value) || 0;
+  const n200 = parseInt(document.getElementById('note200').value) || 0;
+  const n100 = parseInt(document.getElementById('note100').value) || 0;
+  const n50 = parseInt(document.getElementById('note50').value) || 0;
+  const n20 = parseInt(document.getElementById('note20').value) || 0;
+  const n10 = parseInt(document.getElementById('note10').value) || 0;
+  const total = (n500 * 500) + (n200 * 200) + (n100 * 100) + (n50 * 50) + (n20 * 20) + (n10 * 10);
+  document.getElementById('denomTotalDisplay').textContent = '₹' + total.toLocaleString('en-IN');
+}
+
+function sendClosingSummaryWhatsApp() {
+  const today = new Date().toISOString().split('T')[0];
+  const cash = document.getElementById('closeCashAmt').textContent;
+  const upi = document.getElementById('closeUpiAmt').textContent;
+  const bank = document.getElementById('closeBankAmt').textContent;
+  const physicalCash = document.getElementById('denomTotalDisplay').textContent;
+  const staff = currentUser ? currentUser.name : "Staff";
+
+  const msg = `*DAILY CASH & SALES CLOSING REPORT*%0A*Company:* TTESPL Rasulgarh, BBSR%0A*Date:* ${today}%0A*Verified By:* ${staff}%0A------------------------------------%0A*Cash Collected:* ${cash}%0A*UPI / Online:* ${upi}%0A*Bank / Cheque:* ${bank}%0A*Total Drawer Cash Count:* ${physicalCash}%0A------------------------------------%0A_Generated via TTESPL ERP Portal_`;
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+}
+
+/* ================= TAB 3: SERVICES & REPAIRS ================= */
 function renderServices() {
   const c = document.getElementById('serviceListContainer');
   c.innerHTML = '';
+  const today = new Date().toISOString().split('T')[0];
+  const isAdmin = currentUser && (currentUser.role === 'Admin');
 
   serviceCallsData.forEach(s => {
+    let statusBadge = 'badge-pending';
+    let statusText = s.status;
+
+    if(s.status !== 'Work Completed') {
+      if(s.targetDate === today) {
+        statusBadge = 'badge-today';
+        statusText = '🔔 DUE TODAY';
+      } else if(s.targetDate < today) {
+        const diff = Math.round((new Date(today) - new Date(s.targetDate)) / (1000 * 60 * 60 * 24));
+        statusBadge = 'badge-danger';
+        statusText = `⚠️ Delay (${diff}d)`;
+      } else {
+        statusBadge = 'badge-info';
+        statusText = `Target: ${s.targetDate}`;
+      }
+    } else {
+      statusBadge = 'badge-delivered';
+      statusText = `✓ Completed (${s.doneDate})`;
+    }
+
+    let auditHtml = (s.auditTrail || []).map(a => `<div class="audit-item">• By <strong>${a.by}</strong> at ${a.time} (${a.note})</div>`).join('');
+
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
@@ -2107,13 +2331,26 @@ function renderServices() {
           <strong style="font-size:14.5px; color:var(--primary);">${s.customerName}</strong>
           <div style="font-size:11px; color:var(--text-muted);">Call: ${s.recvDate} | Tech: <strong>${s.attendedBy}</strong></div>
         </div>
-        <span class="badge ${s.status === 'Work Completed' ? 'badge-delivered' : 'badge-pending'}">${s.status}</span>
+        <div style="display:flex; gap:5px; align-items:center;">
+          <span class="badge ${statusBadge}">${statusText}</span>
+          <button class="btn btn-outline btn-sm" onclick="editServicePrompt('${s.id}')">✏️ Edit</button>
+          ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteServiceAction('${s.id}')">🗑️</button>` : ''}
+        </div>
       </div>
+
       <div style="font-size:12px; margin-bottom:4px;"><strong>Machine:</strong> ${s.machine}</div>
-      <div style="font-size:11.5px; margin-bottom:8px;"><strong>Issue:</strong> ${s.problem}</div>
-      ${s.status !== 'Work Completed' ? `
-        <button class="btn btn-primary btn-sm btn-block" onclick="markServiceDone('${s.id}')">🛠️ Mark Work Completed</button>
-      ` : `<div style="font-size:11px; color:var(--success); font-weight:bold;">✓ Completed on ${s.doneDate}</div>`}
+      <div style="font-size:11.5px; margin-bottom:8px;"><strong>Reported Issue:</strong> ${s.problem}</div>
+
+      ${s.status === 'Work Completed' ? `
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
+          <div>✅ <strong>Action Done:</strong> ${s.actionDone}</div>
+          <div>⚙️ <strong>Part Deducted:</strong> ${s.partUsed || 'None'}</div>
+        </div>
+      ` : `
+        <button class="btn btn-primary btn-sm btn-block" onclick="openExecuteServiceModal('${s.id}')">🛠️ Attend & Mark Completed</button>
+      `}
+
+      <div class="audit-log-box">${auditHtml}</div>
     `;
     c.appendChild(card);
   });
@@ -2121,61 +2358,816 @@ function renderServices() {
 }
 window.renderServices = renderServices;
 
-function openServiceCallModal() {
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('editServiceId').value = "";
-  document.getElementById('srvCustSearchInput').value = "";
-  document.getElementById('srvRecvDate').value = today;
-  document.getElementById('srvTargetDate').value = today;
-  document.getElementById('srvMachine').value = "";
-  document.getElementById('srvProblem').value = "";
-  document.getElementById('srvStatusSelect').value = "Pending / Scheduled";
-  toggleServiceCompletionFields("Pending / Scheduled");
+function openServiceCallModal(srvObj = null) {
+  const title = document.getElementById('serviceModalTitle');
+  const editId = document.getElementById('editServiceId');
+
+  if(srvObj) {
+    title.textContent = "Edit Service Call";
+    editId.value = srvObj.id;
+    document.getElementById('srvCustSearchInput').value = `${srvObj.customerName} (${srvObj.phone || ''})`;
+    document.getElementById('srvStaffSelect').value = srvObj.attendedBy;
+    document.getElementById('srvMachine').value = srvObj.machine;
+    document.getElementById('srvRecvDate').value = srvObj.recvDate;
+    document.getElementById('srvTargetDate').value = srvObj.targetDate;
+    document.getElementById('srvStatusSelect').value = srvObj.status;
+    document.getElementById('srvProblem').value = srvObj.problem;
+    toggleServiceCompletionFields(srvObj.status);
+    if(srvObj.status === 'Work Completed') {
+      document.getElementById('srvDoneDate').value = srvObj.doneDate;
+      document.getElementById('srvActionDone').value = srvObj.actionDone;
+      document.getElementById('srvPartSearchInput').value = srvObj.partUsed;
+    }
+  } else {
+    title.textContent = "New Service / Repair Call";
+    editId.value = "";
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('srvCustSearchInput').value = "";
+    document.getElementById('srvRecvDate').value = today;
+    document.getElementById('srvTargetDate').value = today;
+    document.getElementById('srvMachine').value = "";
+    document.getElementById('srvProblem').value = "";
+    document.getElementById('srvStatusSelect').value = "Pending / Scheduled";
+    toggleServiceCompletionFields("Pending / Scheduled");
+  }
+
   document.getElementById('serviceModal').style.display = 'flex';
 }
 function closeServiceModal() { document.getElementById('serviceModal').style.display = 'none'; }
 
-function toggleServiceCompletionFields(val) {
-  document.getElementById('srvCompletedFields').style.display = val === 'Work Completed' ? 'block' : 'none';
-  if(val === 'Work Completed') document.getElementById('srvDoneDate').value = new Date().toISOString().split('T')[0];
+function toggleServiceCompletionFields(statusVal) {
+  const f = document.getElementById('srvCompletedFields');
+  f.style.display = (statusVal === 'Work Completed') ? 'block' : 'none';
+  if(f.style.display === 'block') {
+    document.getElementById('srvDoneDate').value = new Date().toISOString().split('T')[0];
+  }
 }
 
 function saveServiceAction() {
+  const editId = document.getElementById('editServiceId').value;
   const custSearch = document.getElementById('srvCustSearchInput').value.trim();
   const cust = resolveCustomerFromSearch(custSearch);
+  const staff = document.getElementById('srvStaffSelect').value;
+  const mach = document.getElementById('srvMachine').value.trim();
+  const rDate = document.getElementById('srvRecvDate').value;
+  const tDate = document.getElementById('srvTargetDate').value;
   const status = document.getElementById('srvStatusSelect').value;
+  const prob = document.getElementById('srvProblem').value.trim();
 
-  serviceCallsData.unshift({
-    id: "SRV-" + Math.floor(100 + Math.random() * 900),
-    customerName: cust ? cust.name : custSearch.split('(')[0].trim(),
-    phone: cust ? cust.phone : "",
-    machine: document.getElementById('srvMachine').value.trim() || "HPW Pump",
-    recvDate: document.getElementById('srvRecvDate').value,
-    targetDate: document.getElementById('srvTargetDate').value,
-    status: status,
-    problem: document.getElementById('srvProblem').value.trim(),
-    attendedBy: document.getElementById('srvStaffSelect').value,
-    doneDate: status === 'Work Completed' ? document.getElementById('srvDoneDate').value : ""
-  });
+  let doneDate = "";
+  let actDone = "";
+  let partUsedName = "";
+
+  if(status === 'Work Completed') {
+    doneDate = document.getElementById('srvDoneDate').value;
+    actDone = document.getElementById('srvActionDone').value.trim();
+    const partSearch = document.getElementById('srvPartSearchInput').value.trim();
+    const part = resolvePartFromSearch(partSearch);
+    if(part) {
+      partUsedName = `${part.name} [${part.code}]`;
+      part.stock = Math.max(0, part.stock - 1);
+      setStored("INVENTORY", sampleInventory);
+    } else {
+      partUsedName = partSearch;
+    }
+  }
+
+  const custName = cust ? cust.name : custSearch.split('(')[0].trim();
+  const phone = cust ? cust.phone : "";
+
+  if(editId) {
+    const s = serviceCallsData.find(x => x.id === editId);
+    if(s) {
+      s.customerName = custName;
+      s.phone = phone;
+      s.attendedBy = staff;
+      s.machine = mach;
+      s.recvDate = rDate;
+      s.targetDate = tDate;
+      s.status = status;
+      s.problem = prob;
+      if(status === 'Work Completed') {
+        s.doneDate = doneDate;
+        s.actionDone = actDone;
+        s.partUsed = partUsedName;
+      }
+      s.auditTrail = s.auditTrail || [];
+      s.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Updated status" });
+    }
+  } else {
+    serviceCallsData.unshift({
+      id: "SRV-" + Math.floor(100 + Math.random() * 900),
+      customerName: custName,
+      phone: phone,
+      machine: mach || "HPW Plunger Pump",
+      recvDate: rDate,
+      targetDate: tDate,
+      status: status,
+      problem: prob,
+      attendedBy: staff,
+      doneDate: doneDate,
+      actionDone: actDone,
+      partUsed: partUsedName,
+      auditTrail: [{ by: currentUser.name, time: getNowStr(), note: "Service logged" }]
+    });
+  }
 
   setStored("SERVICES", serviceCallsData);
   closeServiceModal();
   renderServices();
-  alert("Service call saved!");
+  renderStockList();
+  alert("Service record saved & synced to cloud!");
 }
 
-function markServiceDone(id) {
-  const s = serviceCallsData.find(x => x.id === id);
-  if(!s) return;
-  s.status = "Work Completed";
-  s.doneDate = new Date().toISOString().split('T')[0];
-  setStored("SERVICES", serviceCallsData);
-  renderServices();
+/* Admin Only Delete Guard */
+function deleteServiceAction(id) {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Sirf Admin hi Service record delete kar sakte hain!");
+    return;
+  }
+  if(confirm("Confirm DELETE this Service call permanently?")) {
+    serviceCallsData = serviceCallsData.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("SERVICES", id);
+    setStored("SERVICES", serviceCallsData);
+    renderServices();
+  }
+}
+
+function openExecuteServiceModal(srvId) {
+  const s = serviceCallsData.find(x => x.id === srvId);
+  if(s) {
+    openServiceCallModal(s);
+    document.getElementById('srvStatusSelect').value = "Work Completed";
+    toggleServiceCompletionFields("Work Completed");
+  }
+}
+function editServicePrompt(srvId) {
+  const s = serviceCallsData.find(x => x.id === srvId);
+  if(s) openServiceCallModal(s);
+}
+
+/* ================= TAB 4: UNIFIED INVENTORY & CATEGORY FILTER ENGINE ================= */
+let activeInventoryCategory = 'ALL';
+const STOCK_RENDER_CAP = 60;
+
+const CAT_COLORS = {
+  'Machines & Equipment': { bg: '#e0f2fe', color: '#0369a1', border: '#bae6fd' },
+  'Catalog Equipment': { bg: '#ecfeff', color: '#0e7490', border: '#a5f3fc' },
+  'Ma-Fra Chemicals': { bg: '#f0fdf4', color: '#15803d', border: '#bbf7d0' },
+  'Mafra Detailing': { bg: '#fffbeb', color: '#b45309', border: '#fde68a' },
+  'Maniac Line': { bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
+  'Maxshine Gear & Tools': { bg: '#faf5ff', color: '#7e22ce', border: '#e9d5ff' },
+  'Vista Car Care': { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+  'Machine Spares': { bg: '#f8fafc', color: '#475569', border: '#cbd5e1' }
+};
+
+function getCatBadge(cat) {
+  const c = CAT_COLORS[cat] || { bg: '#f1f5f9', color: '#334155', border: '#e2e8f0' };
+  return `<span class="badge" style="background:${c.bg}; color:${c.color}; border:1px solid ${c.border}; font-size:10px;">${cat}</span>`;
+}
+
+function updateCategoryCounts() {
+  const byCat = {};
+  sampleInventory.forEach(i => {
+    byCat[i.category] = (byCat[i.category] || 0) + 1;
+  });
+
+  const setEl = (id, count) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = count.toLocaleString('en-IN');
+  };
+
+  setEl('catCountAll', sampleInventory.length);
+  setEl('catCountMach', byCat['Machines & Equipment'] || 0);
+  setEl('catCountCat', byCat['Catalog Equipment'] || 0);
+  setEl('catCountMafraChem', byCat['Ma-Fra Chemicals'] || 0);
+  setEl('catCountMafraDet', byCat['Mafra Detailing'] || 0);
+  setEl('catCountManiac', byCat['Maniac Line'] || 0);
+  setEl('catCountMaxshine', byCat['Maxshine Gear & Tools'] || 0);
+  setEl('catCountVista', byCat['Vista Car Care'] || 0);
+  setEl('catCountSpares', byCat['Machine Spares'] || 0);
+  setEl('catCountCust', customerDatabase.length);
+}
+
+function selectInventoryCategory(categoryName, btnEl) {
+  activeInventoryCategory = categoryName;
+  document.querySelectorAll('#inventoryCategoryTabs .sub-tab-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+
+  const titleEl = document.getElementById('currentCategoryTitle');
+  if (titleEl) {
+    titleEl.textContent = categoryName === 'ALL' ? '• All Categories Combined' : `• Category: ${categoryName}`;
+  }
+
+  const sInput = document.getElementById('stockFilterInput');
+  const q = sInput ? sInput.value : '';
+  if (q) filterStockList(q);
+  else renderStockList();
+}
+
+function stockCardHtml(item) {
+  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const badgeHtml = getCatBadge(item.category);
+  const subMeta = item.subCategory && item.subCategory !== item.category ? ` • ${item.subCategory}` : '';
+  const machMeta = item.machine && !item.name.toLowerCase().includes(item.machine.toLowerCase()) ? ` • Model: ${item.machine}` : '';
+
+  return `
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+      <div style="flex:1;">
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px;">
+          ${badgeHtml}
+          <span style="font-size:11px; font-weight:700; color:#0284c7;">${item.code || ''}</span>
+        </div>
+        <strong style="font-size:13.5px; color:var(--primary); line-height:1.25;">${item.name}</strong>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+          ${item.hsn ? 'HSN: ' + item.hsn : ''}${machMeta}${subMeta}
+        </div>
+      </div>
+      <div style="text-align:right; min-width:115px;">
+        <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}" style="margin-bottom:3px;">${item.stock} in stock</span>
+        <div style="font-size:11px; color:#475569;">Dealer: ₹${Number(item.dealerPrice || 0).toLocaleString('en-IN')}</div>
+        <div style="font-size:13px; font-weight:800; color:var(--primary);">MRP: ₹${Number(item.rate || 0).toLocaleString('en-IN')}</div>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid #f1f5f9; padding-top:6px;">
+      <span style="font-size:10.5px; color:var(--cyan); font-weight:700;">🔍 Tap to view specs & sales</span>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(${item.id})">✏️ Edit</button>
+        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="event.stopPropagation(); deleteStockItem(${item.id})">🗑️</button>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderStockList() {
+  const c = document.getElementById('stockListContainer');
+  if(!c) return;
+  c.innerHTML = '';
+  updateCategoryCounts();
+
+  // Special Category: Customer Directory
+  if (activeInventoryCategory === 'CUSTOMERS') {
+    document.getElementById('totalPartsBadge').textContent = `${customerDatabase.length} Clients`;
+    customerDatabase.slice(0, STOCK_RENDER_CAP).forEach(cust => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = customerCardHtml(cust);
+      c.appendChild(card);
+    });
+    if (customerDatabase.length > STOCK_RENDER_CAP) {
+      const hint = document.createElement('div');
+      hint.style.cssText = 'text-align:center; font-size:11.5px; color:var(--text-muted); padding:10px; font-weight:600;';
+      hint.textContent = `Showing ${STOCK_RENDER_CAP} of ${customerDatabase.length} clients — use the search bar above to find any customer.`;
+      c.appendChild(hint);
+    }
+    return;
+  }
+
+  // Filter by active category
+  let list = sampleInventory;
+  if (activeInventoryCategory !== 'ALL') {
+    list = list.filter(i => i.category === activeInventoryCategory);
+  }
+
+  document.getElementById('totalPartsBadge').textContent = `${list.length} Items`;
+
+  const slice = list.slice(0, STOCK_RENDER_CAP);
+  slice.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.cursor = 'pointer';
+    card.onclick = () => openStockDetailModal(item.id);
+    card.innerHTML = stockCardHtml(item);
+    c.appendChild(card);
+  });
+
+  if (list.length > STOCK_RENDER_CAP) {
+    const hint = document.createElement('div');
+    hint.style.cssText = 'text-align:center; font-size:11.5px; color:var(--text-muted); padding:10px; font-weight:600;';
+    hint.textContent = `Showing ${STOCK_RENDER_CAP} of ${list.length} items — type in the search bar above to filter instant matches.`;
+    c.appendChild(hint);
+  }
+}
+window.renderStockList = renderStockList;
+
+function filterStockList(val) {
+  const q = String(val || '').toLowerCase().trim();
+  const c = document.getElementById('stockListContainer');
+  if(!c) return;
+  c.innerHTML = '';
+
+  // If in CUSTOMERS category, search customer list
+  if (activeInventoryCategory === 'CUSTOMERS') {
+    const res = q ? customerDatabase.filter(cust =>
+      cust.name.toLowerCase().includes(q) ||
+      (cust.phone && cust.phone.includes(q)) ||
+      (cust.person && cust.person.toLowerCase().includes(q)) ||
+      (cust.address && cust.address.toLowerCase().includes(q)) ||
+      (cust.gst && cust.gst.toLowerCase().includes(q))
+    ) : customerDatabase;
+
+    document.getElementById('totalPartsBadge').textContent = `${res.length} Matches`;
+    res.slice(0, 80).forEach(cust => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = customerCardHtml(cust);
+      c.appendChild(card);
+    });
+    return;
+  }
+
+  // Filter across inventory items
+  let baseList = sampleInventory;
+  if (activeInventoryCategory !== 'ALL') {
+    baseList = baseList.filter(i => i.category === activeInventoryCategory);
+  }
+
+  const results = q ? baseList.filter(i =>
+    i.name.toLowerCase().includes(q) ||
+    (i.code && i.code.toLowerCase().includes(q)) ||
+    (i.category && i.category.toLowerCase().includes(q)) ||
+    (i.subCategory && i.subCategory.toLowerCase().includes(q)) ||
+    (i.machine && i.machine.toLowerCase().includes(q)) ||
+    (i.hsn && i.hsn.toLowerCase().includes(q)) ||
+    (i.desc && i.desc.toLowerCase().includes(q)) ||
+    (i.specs && i.specs.toLowerCase().includes(q))
+  ) : baseList;
+
+  document.getElementById('totalPartsBadge').textContent = `${results.length} Matches`;
+
+  results.slice(0, 80).forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.cursor = 'pointer';
+    card.onclick = () => openStockDetailModal(item.id);
+    card.innerHTML = stockCardHtml(item);
+    c.appendChild(card);
+  });
+
+  if (results.length > 80) {
+    const hint = document.createElement('div');
+    hint.style.cssText = 'text-align:center; font-size:11.5px; color:var(--text-muted); padding:10px; font-weight:600;';
+    hint.textContent = `${results.length} items found — showing top 80 matches. Type more characters to refine search.`;
+    c.appendChild(hint);
+  }
+}
+window.filterStockList = filterStockList;
+
+/* Full Item Technical Details & Sales History Modal */
+let activeStockDetailId = null;
+function openStockDetailModal(id) {
+  const item = sampleInventory.find(x => x.id === id);
+  if (!item) return;
+  activeStockDetailId = id;
+
+  document.getElementById('detName').textContent = item.name;
+  let meta = `${item.category}`;
+  if (item.subCategory && item.subCategory !== item.category) meta += ` • ${item.subCategory}`;
+  if (item.machine) meta += ` • Machine: ${item.machine}`;
+  if (item.code) meta += ` • Code: ${item.code}`;
+  if (item.hsn) meta += ` • HSN: ${item.hsn}`;
+  document.getElementById('detMeta').textContent = meta;
+
+  document.getElementById('detDealer').textContent = '₹' + Number(item.dealerPrice || 0).toLocaleString('en-IN');
+  document.getElementById('detMrp').textContent = '₹' + Number(item.rate || 0).toLocaleString('en-IN');
+  document.getElementById('detStock').textContent = item.stock;
+
+  const descWrap = document.getElementById('detDescWrap');
+  const detailsText = item.specs ? `${item.specs}\n${item.desc || ''}` : (item.desc || 'Standard commercial machinery / care product.');
+  if (detailsText) {
+    descWrap.style.display = 'block';
+    document.getElementById('detDesc').innerText = detailsText;
+  } else {
+    descWrap.style.display = 'none';
+  }
+
+  // Sales History from all orders
+  const rows = [];
+  ordersData.forEach(o => {
+    (o.items || []).forEach(it => {
+      if (it.id === item.id || (it.name && it.name.toLowerCase() === item.name.toLowerCase())) {
+        rows.push({
+          customerName: o.customerName, phone: o.phone, qty: it.qty, rate: it.rate,
+          total: it.total, date: o.orderDate, orderId: o.id, status: o.status
+        });
+      }
+    });
+  });
+  rows.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  const histBox = document.getElementById('detSalesHistory');
+  if (rows.length === 0) {
+    histBox.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:14px;">Abhi tak koi sale nahi hui hai is item ki.</div>`;
+  } else {
+    histBox.innerHTML = rows.map(r => `
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:7px 10px; margin-bottom:5px; font-size:11.5px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong>${r.customerName}</strong>
+          <span class="badge ${r.status === 'Delivered' ? 'badge-delivered' : 'badge-pending'}" style="font-size:9.5px;">${r.status}</span>
+        </div>
+        <div style="color:var(--text-muted); margin-top:2px;">Qty: <strong>${r.qty}</strong> @ ₹${r.rate} = <strong>₹${r.total}</strong> | Date: ${r.date} | Invoice: ${r.orderId}</div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('stockDetailModal').style.display = 'flex';
+}
+window.openStockDetailModal = openStockDetailModal;
+function closeStockDetailModal() { document.getElementById('stockDetailModal').style.display = 'none'; }
+window.closeStockDetailModal = closeStockDetailModal;
+
+function editFromDetailModal() {
+  const item = sampleInventory.find(x => x.id === activeStockDetailId);
+  closeStockDetailModal();
+  if (item) openAddPartModal(item);
+}
+window.editFromDetailModal = editFromDetailModal;
+
+function openAddPartModal(partObj = null) {
+  const title = document.getElementById('stockModalTitle');
+  const editId = document.getElementById('editStockId');
+  if(partObj) {
+    title.textContent = "Edit Inventory Item";
+    editId.value = partObj.id;
+    document.getElementById('stkName').value = partObj.name;
+    document.getElementById('stkCode').value = partObj.code;
+    document.getElementById('stkCategory').value = partObj.category || "";
+    document.getElementById('stkMachine').value = partObj.machine || "";
+    document.getElementById('stkHsn').value = partObj.hsn || "";
+    document.getElementById('stkQty').value = partObj.stock;
+    document.getElementById('stkDealerRate').value = partObj.dealerPrice || 0;
+    document.getElementById('stkRate').value = partObj.rate;
+    document.getElementById('stkDesc').value = partObj.desc || partObj.specs || "";
+  } else {
+    title.textContent = "Add New Item to Inventory";
+    editId.value = "";
+    document.getElementById('stkName').value = "";
+    document.getElementById('stkCode').value = "";
+    document.getElementById('stkCategory').value = activeInventoryCategory !== 'ALL' && activeInventoryCategory !== 'CUSTOMERS' ? activeInventoryCategory : "Machines & Equipment";
+    document.getElementById('stkMachine').value = "";
+    document.getElementById('stkHsn').value = "84139190";
+    document.getElementById('stkQty').value = "0";
+    document.getElementById('stkDealerRate').value = "";
+    document.getElementById('stkRate').value = "";
+    document.getElementById('stkDesc').value = "";
+  }
+  document.getElementById('stockItemModal').style.display = 'flex';
+}
+function closeStockModal() { document.getElementById('stockItemModal').style.display = 'none'; }
+
+function saveStockItemAction() {
+  const editId = document.getElementById('editStockId').value;
+  const name = document.getElementById('stkName').value.trim();
+  const code = document.getElementById('stkCode').value.trim();
+  const cat = document.getElementById('stkCategory').value.trim() || "Uncategorised";
+  const mach = document.getElementById('stkMachine').value.trim();
+  const hsn = document.getElementById('stkHsn').value.trim();
+  const stock = parseInt(document.getElementById('stkQty').value) || 0;
+  const dealerPrice = parseFloat(document.getElementById('stkDealerRate').value) || 0;
+  const rate = parseFloat(document.getElementById('stkRate').value) || 0;
+  const desc = document.getElementById('stkDesc').value.trim();
+
+  if(!name || !code) { alert("Please enter product name and item code!"); return; }
+
+  if(editId) {
+    const item = sampleInventory.find(x => x.id === parseInt(editId));
+    if(item) {
+      item.name = name; item.code = code; item.category = cat; item.machine = mach; item.hsn = hsn;
+      item.stock = stock; item.dealerPrice = dealerPrice; item.rate = rate; item.desc = desc;
+    }
+  } else {
+    sampleInventory.unshift({ id: Date.now(), name, code, category: cat, machine: mach, stock, dealerPrice, rate, hsn, desc });
+  }
+
+  setStored("INVENTORY", sampleInventory);
+  closeStockModal();
+  renderStockList();
+  populateDropdownsAndDatalists();
+  alert("Item saved in inventory & synced to cloud!");
+}
+
+function editStockItemPrompt(id) {
+  const it = sampleInventory.find(x => x.id === id);
+  if(it) openAddPartModal(it);
+}
+
+function deleteStockItem(id) {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Sirf Admin hi inventory item delete kar sakte hain!");
+    return;
+  }
+  if(confirm("Confirm DELETE this item completely from inventory?")) {
+    sampleInventory = sampleInventory.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("INVENTORY", id);
+    setStored("INVENTORY", sampleInventory);
+    renderStockList();
+    populateDropdownsAndDatalists();
+  }
+}
+
+function exportInventoryCSV() {
+  let csv = "ID,Name,Code,Category,SubCategory,Machine,DealerPrice,MRP,Stock,HSN\n";
+  sampleInventory.forEach(i => {
+    csv += `"${i.id}","${(i.name||'').replace(/"/g, '""')}","${i.code||''}","${i.category||''}","${i.subCategory||''}","${i.machine||''}","${i.dealerPrice||0}","${i.rate||0}","${i.stock||0}","${i.hsn||''}"\n`;
+  });
+  downloadFile(csv, "TTESPL_Master_Inventory.csv", "text/csv");
+}
+window.exportInventoryCSV = exportInventoryCSV;
+
+/* Customer card rendering inside Inventory when Customers pill is active */
+function customerCardHtml(cust) {
+  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  return `
+    <div class="card-header">
+      <div>
+        <strong style="font-size:14.5px; color:var(--primary);">${cust.name}</strong>
+        <div style="font-size:11px; color:var(--text-muted);">${cust.person && cust.person !== cust.name ? cust.person + ' • ' : ''}Ph: <strong>${cust.phone}</strong></div>
+      </div>
+      <div style="display:flex; gap:5px;">
+        <button class="btn btn-outline btn-sm" onclick="editCustomerPrompt(${cust.id})">✏️ Edit</button>
+        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteCustomer(${cust.id})">🗑️</button>` : ''}
+      </div>
+    </div>
+    <div class="grid-2" style="font-size:11.5px; color:#475569;">
+      <div>📍 ${cust.address || 'Odisha'}</div>
+      <div>📧 ${cust.email || 'N/A'}</div>
+    </div>
+    <div style="font-size:11px; color:#64748b; margin-top:5px;">GSTIN: <strong>${cust.gst || 'Unregistered'}</strong></div>
+  `;
+}
+
+function editCustomerPrompt(id) {
+  const c = customerDatabase.find(x => x.id === id);
+  if(c) openAddCustomerModal(c);
+}
+
+function deleteCustomer(id) {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Sirf Admin hi Customer delete kar sakte hain!");
+    return;
+  }
+  if(confirm("Confirm DELETE customer from directory?")) {
+    customerDatabase = customerDatabase.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("CUSTOMERS", id);
+    setStored("CUSTOMERS", customerDatabase);
+    renderStockList();
+    populateDropdownsAndDatalists();
+  }
+}
+
+/* Machinery Catalog */
+function renderMachineryList() {
+  const c = document.getElementById('machineryListContainer');
+  if(!c) return;
+  c.innerHTML = '';
+  document.getElementById('totalMachBadge').textContent = `${machineryDatabase.length} Machines`;
+  const isAdmin = currentUser && (currentUser.role === 'Admin');
+
+  machineryDatabase.forEach(mach => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong style="font-size:14.5px; color:var(--primary);">🚜 ${mach.name}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">Pump: ${mach.pump} | Motor: ${mach.motor}</div>
+        </div>
+        <div style="text-align:right;">
+          <span class="badge badge-info">${mach.bar} Bar</span>
+          <div style="font-size:13px; font-weight:800; color:var(--primary);">₹${Number(mach.price || 0).toLocaleString('en-IN')}</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px; border-top:1px solid #f1f5f9; padding-top:6px;">
+        <button class="btn btn-outline btn-sm" onclick="editMachinePrompt(${mach.id})">✏️ Edit</button>
+        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteMachineAction(${mach.id})">🗑️</button>` : ''}
+      </div>
+    `;
+    c.appendChild(card);
+  });
+}
+window.renderMachineryList = renderMachineryList;
+
+function filterMachineList(val) {
+  const q = val.toLowerCase().trim();
+  const c = document.getElementById('machineryListContainer');
+  if(!c) return;
+  c.innerHTML = '';
+  const isAdmin = currentUser && (currentUser.role === 'Admin');
+
+  machineryDatabase.filter(m => m.name.toLowerCase().includes(q) || m.pump.toLowerCase().includes(q) || m.motor.toLowerCase().includes(q)).forEach(mach => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong style="font-size:14.5px; color:var(--primary);">🚜 ${mach.name}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">${mach.pump} | ${mach.motor}</div>
+        </div>
+        <div style="text-align:right;">
+          <span class="badge badge-info">${mach.bar} Bar</span>
+          <div style="font-size:13px; font-weight:800;">₹${Number(mach.price || 0).toLocaleString('en-IN')}</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px; border-top:1px solid #f1f5f9; padding-top:6px;">
+        <button class="btn btn-outline btn-sm" onclick="editMachinePrompt(${mach.id})">✏️ Edit</button>
+        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteMachineAction(${mach.id})">🗑️</button>` : ''}
+      </div>
+    `;
+    c.appendChild(card);
+  });
+}
+
+function openAddMachineModal(mObj = null) {
+  const title = document.getElementById('machModalTitle');
+  const editId = document.getElementById('editMachId');
+  if(mObj) {
+    title.textContent = "Edit Machinery Details";
+    editId.value = mObj.id;
+    document.getElementById('mName').value = mObj.name;
+    document.getElementById('mPump').value = mObj.pump;
+    document.getElementById('mMotor').value = mObj.motor;
+    document.getElementById('mBar').value = mObj.bar;
+    document.getElementById('mPrice').value = mObj.price;
+  } else {
+    title.textContent = "Add Machine to Catalog";
+    editId.value = "";
+    document.getElementById('mName').value = "";
+    document.getElementById('mPump').value = "AR Triplex Pump";
+    document.getElementById('mMotor').value = "5 HP 3-Phase";
+    document.getElementById('mBar').value = "200";
+    document.getElementById('mPrice').value = "85000";
+  }
+  document.getElementById('machineItemModal').style.display = 'flex';
+}
+function closeMachineModal() { document.getElementById('machineItemModal').style.display = 'none'; }
+
+function saveMachineAction() {
+  const editId = document.getElementById('editMachId').value;
+  const name = document.getElementById('mName').value.trim();
+  const pump = document.getElementById('mPump').value.trim();
+  const motor = document.getElementById('mMotor').value.trim();
+  const bar = parseInt(document.getElementById('mBar').value) || 0;
+  const price = parseFloat(document.getElementById('mPrice').value) || 0;
+
+  if(!name) { alert("Please enter machine model name!"); return; }
+
+  if(editId) {
+    const item = machineryDatabase.find(x => x.id === parseInt(editId));
+    if(item) { item.name = name; item.pump = pump; item.motor = motor; item.bar = bar; item.price = price; }
+  } else {
+    machineryDatabase.unshift({ id: Date.now(), name, pump, motor, bar, price });
+  }
+
+  setStored("MACHINERY", machineryDatabase);
+  closeMachineModal();
+  renderMachineryList();
+  populateDropdownsAndDatalists();
+  alert("Machinery catalog updated!");
+}
+
+function editMachinePrompt(id) {
+  const it = machineryDatabase.find(x => x.id === id);
+  if(it) openAddMachineModal(it);
+}
+
+function deleteMachineAction(id) {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Sirf Admin hi Machine delete kar sakte hain!");
+    return;
+  }
+  if(confirm("Delete this machine from catalog?")) {
+    machineryDatabase = machineryDatabase.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("MACHINERY", id);
+    setStored("MACHINERY", machineryDatabase);
+    renderMachineryList();
+    populateDropdownsAndDatalists();
+  }
+}
+
+/* Customer Directory */
+const CUST_RENDER_CAP = 50;
+
+function renderCustomerList() {
+  const c = document.getElementById('customerListContainer');
+  if(!c) return;
+  c.innerHTML = '';
+  document.getElementById('totalCustBadge').textContent = `${customerDatabase.length} Registered Clients`;
+
+  customerDatabase.slice(0, CUST_RENDER_CAP).forEach(cust => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = customerCardHtml(cust);
+    c.appendChild(card);
+  });
+
+  if (customerDatabase.length > CUST_RENDER_CAP) {
+    const hint = document.createElement('div');
+    hint.style.cssText = 'text-align:center; font-size:11.5px; color:var(--text-muted); padding:10px; font-weight:600;';
+    hint.textContent = `Showing 50 of ${customerDatabase.length} clients — use the search bar above to find any customer instantly.`;
+    c.appendChild(hint);
+  }
+}
+window.renderCustomerList = renderCustomerList;
+
+function filterCustomerList(val) {
+  const q = String(val || '').toLowerCase().trim();
+  const c = document.getElementById('customerListContainer');
+  if(!c) return;
+  c.innerHTML = '';
+
+  const results = q ? customerDatabase.filter(cust =>
+    cust.name.toLowerCase().includes(q) ||
+    (cust.phone && cust.phone.includes(q)) ||
+    (cust.person && cust.person.toLowerCase().includes(q)) ||
+    (cust.address && cust.address.toLowerCase().includes(q)) ||
+    (cust.gst && cust.gst.toLowerCase().includes(q))
+  ) : customerDatabase;
+
+  results.slice(0, 60).forEach(cust => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = customerCardHtml(cust);
+    c.appendChild(card);
+  });
+
+  if (results.length > 60) {
+    const hint = document.createElement('div');
+    hint.style.cssText = 'text-align:center; font-size:11.5px; color:var(--text-muted); padding:10px; font-weight:600;';
+    hint.textContent = `${results.length} clients match — refine search for more.`;
+    c.appendChild(hint);
+  }
+}
+window.filterCustomerList = filterCustomerList;
+
+function openAddCustomerModal(cObj = null) {
+  const title = document.getElementById('custModalTitle');
+  const editId = document.getElementById('editCustId');
+  if(cObj) {
+    title.textContent = "Edit Customer Profile";
+    editId.value = cObj.id;
+    document.getElementById('cName').value = cObj.name;
+    document.getElementById('cPhone').value = cObj.phone;
+    document.getElementById('cEmail').value = cObj.email;
+    document.getElementById('cAddress').value = cObj.address;
+    document.getElementById('cGst').value = cObj.gst;
+    document.getElementById('cPerson').value = cObj.person;
+  } else {
+    title.textContent = "Register Client";
+    editId.value = "";
+    document.getElementById('cName').value = "";
+    document.getElementById('cPhone').value = "";
+    document.getElementById('cEmail').value = "";
+    document.getElementById('cAddress').value = "";
+    document.getElementById('cGst').value = "";
+    document.getElementById('cPerson').value = "";
+  }
+  document.getElementById('customerModal').style.display = 'flex';
+}
+function closeCustomerModal() { document.getElementById('customerModal').style.display = 'none'; }
+
+function saveCustomerAction() {
+  const editId = document.getElementById('editCustId').value;
+  const name = document.getElementById('cName').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  const email = document.getElementById('cEmail').value.trim();
+  const addr = document.getElementById('cAddress').value.trim();
+  const gst = document.getElementById('cGst').value.trim();
+  const person = document.getElementById('cPerson').value.trim();
+
+  if(!name || !phone) { alert("Please enter Customer Name and Phone Number!"); return; }
+
+  if(editId) {
+    const cust = customerDatabase.find(x => x.id === parseInt(editId));
+    if(cust) {
+      cust.name = name; cust.phone = phone; cust.email = email; cust.address = addr; cust.gst = gst; cust.person = person;
+    }
+  } else {
+    customerDatabase.unshift({
+      id: Date.now(), name, phone, email, address: addr, gst: gst || "Unregistered", person: person || name
+    });
+  }
+
+  setStored("CUSTOMERS", customerDatabase);
+  closeCustomerModal();
+  renderCustomerList();
+  populateDropdownsAndDatalists();
+  alert("Customer saved & synced to cloud!");
+}
+
+function exportCustomersCSV() {
+  let csv = "Name,Phone,Email,Address,GST,Contact Person\n";
+  customerDatabase.forEach(c => {
+    csv += `"${c.name}","${c.phone}","${c.email}","${c.address}","${c.gst}","${c.person}"\n`;
+  });
+  downloadFile(csv, "TTESPL_Customers.csv", "text/csv");
 }
 
 /* ================= TAB 5: BILLING ================= */
-function renderBilling(filterType) {
-  let totalBilled = 0, totalRecv = 0, totalDue = 0;
+function renderBilling(filterType, empFilter = "ALL") {
+  let totalBilled = 0;
+  let totalRecv = 0;
+  let totalDue = 0;
+
   ordersData.forEach(o => {
     totalBilled += o.totalAmount;
     totalRecv += o.recvAmount;
@@ -2190,8 +3182,17 @@ function renderBilling(filterType) {
   container.innerHTML = '';
 
   let list = ordersData;
-  if(filterType === 'due') list = list.filter(o => o.dueAmount > 0);
-  else if(filterType === 'received') list = list.filter(o => o.dueAmount === 0);
+  if(empFilter !== "ALL") list = list.filter(o => o.bookedBy === empFilter);
+
+  if(filterType === 'due') {
+    list = list.filter(o => o.dueAmount > 0);
+    document.getElementById('billingFilterTitle').innerHTML = `🔴 Filtered: <span style="color:var(--danger);">DUE CUSTOMERS ONLY (${list.length})</span>`;
+  } else if(filterType === 'received') {
+    list = list.filter(o => o.dueAmount === 0);
+    document.getElementById('billingFilterTitle').innerHTML = `🟢 Filtered: <span style="color:var(--success);">FULLY PAID (${list.length})</span>`;
+  } else {
+    document.getElementById('billingFilterTitle').textContent = `Showing Invoices (${list.length})`;
+  }
 
   list.forEach(o => {
     const card = document.createElement('div');
@@ -2209,70 +3210,89 @@ function renderBilling(filterType) {
         <div>Recv: ₹${Number(o.recvAmount || 0).toLocaleString('en-IN')}</div>
         <div>Due: <strong style="color:var(--danger);">₹${Number(o.dueAmount || 0).toLocaleString('en-IN')}</strong></div>
       </div>
-      <button class="btn btn-print btn-sm btn-block" onclick="openInvoicePrintModal('${o.id}')">🖨️ View Tax Invoice</button>
+      <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+        <button class="btn btn-print btn-sm" style="flex:1;" onclick="openInvoicePrintModal('${o.id}')">🖨️ View Tax Invoice</button>
+        ${o.dueAmount > 0 ? `
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="collectDuePayment('${o.id}')">💵 Collect Due</button>
+          <button class="btn btn-wa btn-sm" style="flex:1;" onclick="sendDueWhatsApp('${o.id}')">💬 Due Reminder</button>
+        ` : `<div style="font-size:11px; color:var(--success); font-weight:bold; flex:1; text-align:center;">✓ Cleared</div>`}
+      </div>
     `;
     container.appendChild(card);
   });
 }
 window.renderBilling = renderBilling;
 
-function filterBilling(type) { renderBilling(type); }
+function filterBilling(type) {
+  const emp = document.getElementById('billingEmployeeFilter').value;
+  renderBilling(type, emp);
+}
+function filterBillingByEmployee(empName) {
+  renderBilling('due', empName);
+}
 
-function openInvoicePrintModal(ordId) {
+function collectDuePayment(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
-  document.getElementById('invPrintId').textContent = o.id;
-  document.getElementById('invPrintDate').textContent = o.orderDate;
-  document.getElementById('invPrintGrandTotal').textContent = '₹' + Number(o.totalAmount).toLocaleString('en-IN');
-  document.getElementById('invPrintRecv').textContent = '₹' + Number(o.recvAmount).toLocaleString('en-IN');
-  document.getElementById('invPrintDue').textContent = '₹' + Number(o.dueAmount).toLocaleString('en-IN');
-
-  const tbody = document.getElementById('invPrintItemsTbody');
-  tbody.innerHTML = o.items.map((it, idx) => `
-    <tr>
-      <td>${idx + 1}</td>
-      <td><strong>${it.name}</strong></td>
-      <td>84139190</td>
-      <td>${it.qty}</td>
-      <td>₹${it.rate}</td>
-      <td>₹${it.total}</td>
-    </tr>
-  `).join('');
-  document.getElementById('invoicePrintModal').style.display = 'flex';
+  const amt = prompt(`Collect payment for ${o.customerName} (Due: ₹${o.dueAmount}):`, o.dueAmount);
+  if(amt && !isNaN(amt) && parseFloat(amt) > 0) {
+    const p = parseFloat(amt);
+    const mode = prompt("Payment Mode (Cash / UPI / Bank):", "UPI");
+    o.recvAmount += p;
+    o.dueAmount = Math.max(0, o.totalAmount - o.recvAmount);
+    o.payMode = mode || o.payMode;
+    o.auditTrail = o.auditTrail || [];
+    o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: `Collected ₹${p} via ${mode}` });
+    setStored("ORDERS", ordersData);
+    renderBilling('due', document.getElementById('billingEmployeeFilter').value);
+  }
 }
-function closeInvoicePrintModal() { document.getElementById('invoicePrintModal').style.display = 'none'; }
 
-function openDailyCashClosingModal() {
-  let cashTotal = 0, upiTotal = 0, bankTotal = 0;
-  const today = new Date().toISOString().split('T')[0];
-  ordersData.forEach(o => {
-    if(o.orderDate === today && o.recvAmount > 0) {
-      if(o.payMode === 'Cash') cashTotal += o.recvAmount;
-      else if(o.payMode.includes('UPI')) upiTotal += o.recvAmount;
-      else bankTotal += o.recvAmount;
-    }
-  });
-  document.getElementById('closeSummaryDate').textContent = today;
-  document.getElementById('closeCashAmt').textContent = '₹' + cashTotal.toLocaleString('en-IN');
-  document.getElementById('closeUpiAmt').textContent = '₹' + upiTotal.toLocaleString('en-IN');
-  document.getElementById('closeBankAmt').textContent = '₹' + bankTotal.toLocaleString('en-IN');
-  document.getElementById('cashClosingModal').style.display = 'flex';
-}
-function closeDailyCashClosingModal() { document.getElementById('cashClosingModal').style.display = 'none'; }
-
-function sendClosingSummaryWhatsApp() {
-  const today = new Date().toISOString().split('T')[0];
-  const msg = `*DAILY SALES CLOSING*%0A*Date:* ${today}%0A*Cash:* ${document.getElementById('closeCashAmt').textContent}%0A*UPI:* ${document.getElementById('closeUpiAmt').textContent}`;
-  window.open(`https://wa.me/?text=${msg}`, '_blank');
+function sendDueWhatsApp(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(!o) return;
+  const msg = `*PAYMENT REMINDER - TTESPL*%0A*Customer:* ${o.customerName}%0A*Invoice:* ${o.id}%0A*Pending Due Amount:* Rs.${o.dueAmount}%0APlease clear the pending amount at your earliest.%0AThank you, TTESPL Rasulgarh, Bhubaneswar.`;
+  const url = o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
+  window.open(url, '_blank');
 }
 
 function exportLedgerCSV() {
-  let csv = "Invoice,Customer,Total,Received,Due,Mode,Staff,Date\n";
-  ordersData.forEach(o => { csv += `"${o.id}","${o.customerName}","${o.totalAmount}","${o.recvAmount}","${o.dueAmount}","${o.payMode}","${o.bookedBy}","${o.orderDate}"\n`; });
+  let csv = "Invoice,Customer,Phone,Total,Received,Due,Mode,Staff,Date\n";
+  ordersData.forEach(o => {
+    csv += `"${o.id}","${o.customerName}","${o.phone}","${o.totalAmount}","${o.recvAmount}","${o.dueAmount}","${o.payMode}","${o.bookedBy}","${o.orderDate}"\n`;
+  });
   downloadFile(csv, "TTESPL_Ledger.csv", "text/csv");
 }
 
-/* ================= TAB 6: CHAT ================= */
+function downloadFile(content, fileName, mimeType) {
+  const a = document.createElement('a');
+  mimeType = mimeType || 'application/octet-stream';
+  if (navigator.msSaveBlob) {
+    navigator.msSaveBlob(new Blob([content], { type: mimeType }), fileName);
+  } else if (URL && 'download' in a) {
+    a.href = URL.createObjectURL(new Blob([content], { type: mimeType }));
+    a.setAttribute('download', fileName);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } else {
+    location.href = 'data:application/octet-stream,' + encodeURIComponent(content);
+  }
+}
+
+/* ================= CHAT LOGIC ================= */
+let typingTimeout = null;
+
+function handleTypingEvent() {
+  if (window.cloudSync && typeof window.cloudSync.setTypingStatus === 'function') {
+    window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", true);
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", false);
+    }, 2000);
+  }
+}
+
 function renderChatMessages() {
   const container = document.getElementById('chatMessagesContainer');
   if(!container) return;
@@ -2283,35 +3303,141 @@ function renderChatMessages() {
     const isMine = currentUser && msg.sender === currentUser.name;
     const bubble = document.createElement('div');
     bubble.className = `bubble ${isMine ? 'me' : 'other'}`;
+    
+    let fileHtml = '';
+    if (msg.file) {
+      if (msg.file.type && msg.file.type.startsWith('image/')) {
+        fileHtml = `<img src="${msg.file.data}" class="bubble-img-preview" alt="photo" onclick="window.open(this.src)">`;
+      } else {
+        fileHtml = `
+          <a href="${msg.file.data}" download="${msg.file.name}" class="bubble-file-link">
+            <span>📄</span> <span>${msg.file.name}</span>
+          </a>
+        `;
+      }
+    }
+
     bubble.innerHTML = `
-      <div class="bubble-author">${msg.sender}</div>
+      <div class="bubble-author">${msg.sender} <span style="font-weight:normal; font-size:9.5px; opacity:0.8;">(${msg.role || 'Staff'})</span></div>
       ${msg.text ? `<div>${msg.text}</div>` : ''}
+      ${fileHtml}
       <div class="bubble-time">${msg.time}</div>
     `;
     container.appendChild(bubble);
   });
+
   container.scrollTop = container.scrollHeight;
 }
 window.renderChatMessages = renderChatMessages;
 
-function sendLiveChatMessage() {
+function sendLiveChatMessage(fileObj = null) {
   const input = document.getElementById('chatInputMessage');
   const txt = input.value.trim();
-  if(!txt) return;
-  teamChatData.push({
+  if(!txt && !fileObj) return;
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const newMsg = {
     sender: currentUser ? currentUser.name : "Staff",
+    role: currentUser ? currentUser.role : "Team",
     text: txt,
-    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    timestamp: Date.now()
-  });
+    time: timeStr,
+    timestamp: Date.now(),
+    file: fileObj || null
+  };
+
   input.value = '';
+  teamChatData.push(newMsg);
   renderChatMessages();
+
+  if (window.cloudSync && typeof window.cloudSync.setTypingStatus === 'function') {
+    window.cloudSync.setTypingStatus(currentUser ? currentUser.name : "Staff", false);
+  }
+
+  if (window.cloudSync && typeof window.cloudSync.sendChatMessage === 'function') {
+    window.cloudSync.sendChatMessage(newMsg);
+  }
 }
+
+/* ================= ULTRA FAST CLIENT-SIDE IMAGE COMPRESSOR ================= */
+function compressImageFile(file, maxDim = 1280, targetBytes = 350 * 1024) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("File read error"));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("Image decode error"));
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width >= height) {
+            height = Math.round(height * (maxDim / width));
+            width = maxDim;
+          } else {
+            width = Math.round(width * (maxDim / height));
+            height = maxDim;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        let quality = 0.8;
+        let dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+        while (dataUrl.length * 0.75 > targetBytes && quality > 0.3) {
+          quality -= 0.1;
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        if (dataUrl.length * 0.75 > targetBytes && (width > 800 || height > 800)) {
+          const scale = 800 / Math.max(width, height);
+          const c2 = document.createElement('canvas');
+          c2.width = Math.round(width * scale);
+          c2.height = Math.round(height * scale);
+          c2.getContext('2d').drawImage(canvas, 0, 0, c2.width, c2.height);
+          dataUrl = c2.toDataURL('image/jpeg', 0.65);
+        }
+
+        resolve(dataUrl);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+window.compressImageFile = compressImageFile;
 
 function handleChatFileUpload(event) {
   const file = event.target.files[0];
   if(!file) return;
-  alert("File attached: " + file.name);
+
+  const compressBar = document.getElementById('chatCompressBar');
+
+  if (file.type && file.type.startsWith('image/')) {
+    if (compressBar) compressBar.style.display = 'block';
+    compressImageFile(file).then(dataUrl => {
+      if (compressBar) compressBar.style.display = 'none';
+      sendLiveChatMessage({ name: (file.name || 'photo.jpg').replace(/\.[^.]+$/, '.jpg'), type: 'image/jpeg', data: dataUrl });
+    }).catch(err => {
+      if (compressBar) compressBar.style.display = 'none';
+      console.error("Compression failed:", err);
+      alert("Photo compress nahi ho payi, dobara try karein.");
+    });
+  } else {
+    if (file.size > 800 * 1024) {
+      alert("Please select documents under 800KB for real-time live chat!");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result });
+    };
+    reader.readAsDataURL(file);
+  }
   event.target.value = '';
 }
 
@@ -2319,7 +3445,15 @@ function updateGlobalReminders() {
   const today = new Date().toISOString().split('T')[0];
   let delDue = ordersData.filter(o => o.status === 'Pending' && o.deliveryDate <= today).length;
   let srvDue = serviceCallsData.filter(s => s.status !== 'Work Completed' && s.targetDate <= today).length;
-  document.getElementById('dailyReminderText').textContent = `${delDue} Orders Due | ${srvDue} Repairs Due`;
+  let freeSrvDue = 0;
+  leadsData.forEach(l => {
+    if(l.installation && l.installation.freeServices) {
+      freeSrvDue += l.installation.freeServices.filter(fs => !fs.attended && fs.dueDate <= today).length;
+    }
+  });
+
+  const banner = document.getElementById('dailyReminderText');
+  banner.textContent = `${delDue} Product Orders Due | ${srvDue} Machine Repairs Due | ${freeSrvDue} Free Services Due`;
 }
 
 function switchTab(tab, el) {
@@ -2333,18 +3467,22 @@ function switchTab(tab, el) {
   if(tab === 'services') renderServices();
   if(tab === 'inventory') renderStockList();
   if(tab === 'billing') renderBilling('all');
-  if(tab === 'chat') renderChatMessages();
+  if(tab === 'chat') {
+    renderChatMessages();
+    const navB = document.getElementById('chatNavBadge');
+    if (navB) navB.style.display = 'none';
+    setTimeout(() => {
+      const container = document.getElementById('chatMessagesContainer');
+      if(container) container.scrollTop = container.scrollHeight;
+    }, 100);
+  }
 }
 
-function downloadFile(content, fileName, mimeType) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([content], { type: mimeType || 'application/octet-stream' }));
-  a.setAttribute('download', fileName);
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+function switchInventorySubTab(type) {
+  selectInventoryCategory(type === 'machines' ? 'Machines & Equipment' : (type === 'customer' ? 'CUSTOMERS' : 'ALL'), null);
 }
 
+// Auto-load master data on startup if local inventory has only 1 sample item
 document.addEventListener('DOMContentLoaded', async () => {
   checkAuthSession();
   if (sampleInventory.length <= 1) {
@@ -2357,11 +3495,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         setStored("CUSTOMERS", customerDatabase);
       }
       renderStockList();
+      populateDropdownsAndDatalists();
     }
   }
 });
 </script>
 
+<!-- Live Cloud Synchronization Script with Realtime Firestore -->
 <script src="live-sync.js?v=5"></script>
 
 </body>
