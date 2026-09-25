@@ -133,7 +133,8 @@
       '<div>Customer: <strong style="color:var(--primary);">₹' + (item.rate || 0) + '</strong></div>' +
       '</div>' +
       '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;border-top:1px dashed #e2e8f0;padding-top:4px;">' +
-      '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(' + item.id + ')">✏️ Edit</button></div></div>';
+      '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(\'' + esc(item.id) + '\')">✏️ Edit</button></div></div>';
+
   }
 
   window.showProductSaleReport = function(productName) {
@@ -214,7 +215,7 @@
       '<div style="text-align:right;"><span class="badge badge-info">' + m.bar + ' Bar</span>' +
       '<div style="font-size:12.5px;font-weight:800;color:var(--primary);">₹' + Number(m.price).toLocaleString('en-IN') + '</div></div></div>' +
       '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;border-top:1px solid #f1f5f9;padding-top:4px;">' +
-      '<button class="btn btn-outline btn-sm" onclick="editMachinePrompt(' + m.id + ')">✏️ Edit</button></div></div>';
+      '<button class="btn btn-outline btn-sm" onclick="editMachinePrompt(\'' + esc(m.id) + '\')">✏️ Edit</button></div></div>';
   }
   window.renderMachineryList = function () {
     var c = $('machineryListContainer'); if (!c) return;
