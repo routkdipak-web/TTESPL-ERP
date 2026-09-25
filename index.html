@@ -1177,8 +1177,8 @@
   </div>
 </div>
 
-<!-- Load Embedded Master Data JS -->
-<script src="master-data.js"></script>
+<!-- Load Embedded Master Data JS with cache buster -->
+<script src="master-data.js?v=2"></script>
 
 <script>
 /* ================= ENGINE LOGIC & STATE ================= */
@@ -1525,32 +1525,68 @@ function resolvePartFromSearch(text) {
   return sampleInventory.find(p => p.name.toLowerCase().includes(t) || (p.code && p.code.toLowerCase().includes(t)));
 }
 
-/* ================= RELOAD MASTER DATA ACTIONS ================= */
-function loadMasterCatalogAction() {
-  if (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.inventory) {
-    if (confirm(`Load all ${window.TTESPL_MASTER_DATA.inventory.length} master items from catalog? This will refresh your inventory list.`)) {
-      sampleInventory = window.TTESPL_MASTER_DATA.inventory;
-      setStored("INVENTORY", sampleInventory);
-      renderStockList();
-      populateDropdownsAndDatalists();
-      alert(`Successfully loaded ${sampleInventory.length} items into inventory!`);
+/* ================= RELOAD MASTER DATA ACTIONS (DUAL FALLBACK) ================= */
+async function getMasterDataPayload() {
+  if (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.inventory && window.TTESPL_MASTER_DATA.inventory.length > 0) {
+    return window.TTESPL_MASTER_DATA;
+  }
+  // Auto-fallback: Direct fetch from ttespl_master_data.json
+  try {
+    const res = await fetch('ttespl_master_data.json?v=' + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      window.TTESPL_MASTER_DATA = data;
+      return data;
     }
-  } else {
-    alert("Master catalog file not found.");
+  } catch (err) {
+    console.error("Fetch JSON error:", err);
+  }
+  return null;
+}
+
+async function loadMasterCatalogAction() {
+  const btn = event ? event.target : null;
+  const oldText = btn ? btn.innerText : "";
+  if (btn) btn.innerText = "⏳ Loading...";
+
+  try {
+    const payload = await getMasterDataPayload();
+    if (payload && payload.inventory && payload.inventory.length > 0) {
+      if (confirm(`Master catalog se sabhi ${payload.inventory.length} items load karein?`)) {
+        sampleInventory = payload.inventory;
+        setStored("INVENTORY", sampleInventory);
+        renderStockList();
+        populateDropdownsAndDatalists();
+        alert(`Success: ${sampleInventory.length} items inventory me load ho gaye!`);
+      }
+    } else {
+      alert("Error: Master catalog file load nahi ho saki. 1 minute baad dobara try karein.");
+    }
+  } finally {
+    if (btn) btn.innerText = oldText || "📦 Reload Master Catalog";
   }
 }
 
-function loadMasterCustomersAction() {
-  if (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.customers) {
-    if (confirm(`Load all ${window.TTESPL_MASTER_DATA.customers.length} master clients from directory?`)) {
-      customerDatabase = window.TTESPL_MASTER_DATA.customers;
-      setStored("CUSTOMERS", customerDatabase);
-      renderCustomerList();
-      populateDropdownsAndDatalists();
-      alert(`Successfully loaded ${customerDatabase.length} registered customers!`);
+async function loadMasterCustomersAction() {
+  const btn = event ? event.target : null;
+  const oldText = btn ? btn.innerText : "";
+  if (btn) btn.innerText = "⏳ Loading...";
+
+  try {
+    const payload = await getMasterDataPayload();
+    if (payload && payload.customers && payload.customers.length > 0) {
+      if (confirm(`Directory se sabhi ${payload.customers.length} registered clients load karein?`)) {
+        customerDatabase = payload.customers;
+        setStored("CUSTOMERS", customerDatabase);
+        renderCustomerList();
+        populateDropdownsAndDatalists();
+        alert(`Success: ${customerDatabase.length} registered customers load ho gaye!`);
+      }
+    } else {
+      alert("Error: Master customer data load nahi ho saki. 1 minute baad dobara try karein.");
     }
-  } else {
-    alert("Master customer data not found.");
+  } finally {
+    if (btn) btn.innerText = oldText || "📦 Reload Full Customers";
   }
 }
 
