@@ -807,7 +807,7 @@
       </select>
     </div>
 
-    <button class="btn btn-primary btn-block" onclick="saveOrderAction()">💾 Save Order & Generate Invoice</button>
+    <button class="btn btn-primary btn-block" onclick="saveOrderAction()">💾 Save Order (Invoice after Delivery)</button>
   </div>
 </div>
 
@@ -1522,7 +1522,6 @@ async function getMasterDataPayload() {
   if (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.inventory && window.TTESPL_MASTER_DATA.inventory.length > 0) {
     return window.TTESPL_MASTER_DATA;
   }
-  // Auto-fallback: Direct fetch from ttespl_master_data.json
   try {
     const res = await fetch('ttespl_master_data.json?v=' + Date.now());
     if (res.ok) {
@@ -1904,13 +1903,18 @@ function renderOrders() {
     let itemsHtml = o.items.map(i => `<div>• ${i.name} (Qty: <strong>${i.qty}</strong> @ ₹${i.rate}) = ₹${i.total}</div>`).join('');
     let auditHtml = (o.auditTrail || []).map(a => `<div class="audit-item">• By <strong>${a.by}</strong> at ${a.time} (${a.note})</div>`).join('');
 
+    // Invoice button is only enabled/shown after delivery
+    let invoiceActionHtml = o.status === 'Delivered' 
+      ? `<button class="btn btn-print btn-sm" style="flex:1;" onclick="openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice PDF</button>` 
+      : `<span class="badge badge-pending" style="flex:1; text-align:center; padding:6px; font-weight:700;">Invoice (Delivery ke baad)</span>`;
+
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
       <div class="card-header">
         <div>
           <strong style="font-size:14.5px; color:var(--primary);">${o.customerName}</strong>
-          <div style="font-size:11px; color:var(--text-muted);">Invoice: ${o.id} | Date: ${o.orderDate} | Staff: <strong>${o.bookedBy}</strong></div>
+          <div style="font-size:11px; color:var(--text-muted);">Invoice Ref: ${o.id} | Date: ${o.orderDate} | Staff: <strong>${o.bookedBy}</strong></div>
         </div>
         <div style="display:flex; gap:5px; align-items:center;">
           <span class="badge ${statusBadge}">${statusText}</span>
@@ -1933,7 +1937,7 @@ function renderOrders() {
       </div>
 
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <button class="btn btn-print btn-sm" style="flex:1;" onclick="openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice PDF</button>
+        ${invoiceActionHtml}
         <button class="btn btn-wa btn-sm" style="flex:1;" onclick="shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
         ${o.status !== 'Delivered' ? `
           <button class="btn btn-primary btn-sm" style="flex:1;" onclick="markOrderDelivered('${o.id}')">✓ Mark Delivered</button>
@@ -1991,8 +1995,8 @@ function addOrderItemRow(itemName = "", qty = 1, rate = 0) {
       <div class="solid-suggestion-box"></div>
       <div class="item-stock-warning" style="font-size:10px; color:var(--text-muted); margin-top:2px;"></div>
     </td>
-    <td><input type="number" class="item-qty" value="${qty}" min="1" oninput="calcOrderTotals()"></td>
-    <td><input type="number" class="item-rate" value="${rate}" oninput="calcOrderTotals()"></td>
+    <td><input type="number" class="item-qty" value="${qty}" min="1" style="background:#ffffff !important; color:#0f172a !important;" oninput="calcOrderTotals()"></td>
+    <td><input type="number" class="item-rate" value="${rate}" style="background:#ffffff !important; color:#0f172a !important;" oninput="calcOrderTotals()"></td>
     <td class="item-row-total" style="font-weight:bold; font-size:11.5px;">₹0</td>
     <td><button class="btn btn-danger-sm" onclick="this.closest('tr').remove(); calcOrderTotals();">✕</button></td>
   `;
@@ -2140,7 +2144,7 @@ function saveOrderAction() {
   closeOrderModal();
   renderOrders();
   renderBilling('all');
-  alert("Order saved & synced to cloud!");
+  alert("Order saved successfully! Invoice will be available after delivery.");
 }
 
 /* Admin Only Delete Guard */
@@ -2177,7 +2181,7 @@ function markOrderDelivered(ordId) {
   o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Delivered & stock reduced" });
   setStored("ORDERS", ordersData);
   setStored("INVENTORY", sampleInventory);
-  alert(`Order ${ordId} Marked Delivered! Stock automatically deducted.`);
+  alert(`Order ${ordId} Marked Delivered! Stock automatically deducted & Tax Invoice generated.`);
   renderOrders();
   renderStockList();
 }
@@ -2605,7 +2609,6 @@ function renderStockList() {
   c.innerHTML = '';
   updateCategoryCounts();
 
-  // Special Category: Customer Directory
   if (activeInventoryCategory === 'CUSTOMERS') {
     document.getElementById('totalPartsBadge').textContent = `${customerDatabase.length} Clients`;
     customerDatabase.slice(0, STOCK_RENDER_CAP).forEach(cust => {
@@ -2623,7 +2626,6 @@ function renderStockList() {
     return;
   }
 
-  // Filter by active category
   let list = sampleInventory;
   if (activeInventoryCategory !== 'ALL') {
     list = list.filter(i => i.category === activeInventoryCategory);
@@ -2656,7 +2658,6 @@ function filterStockList(val) {
   if(!c) return;
   c.innerHTML = '';
 
-  // If in CUSTOMERS category, search customer list
   if (activeInventoryCategory === 'CUSTOMERS') {
     const res = q ? customerDatabase.filter(cust =>
       cust.name.toLowerCase().includes(q) ||
@@ -2676,7 +2677,6 @@ function filterStockList(val) {
     return;
   }
 
-  // Filter across inventory items
   let baseList = sampleInventory;
   if (activeInventoryCategory !== 'ALL') {
     baseList = baseList.filter(i => i.category === activeInventoryCategory);
@@ -2741,7 +2741,6 @@ function openStockDetailModal(id) {
     descWrap.style.display = 'none';
   }
 
-  // Sales History from all orders
   const rows = [];
   ordersData.forEach(o => {
     (o.items || []).forEach(it => {
@@ -2874,7 +2873,6 @@ function exportInventoryCSV() {
 }
 window.exportInventoryCSV = exportInventoryCSV;
 
-/* Customer card rendering inside Inventory when Customers pill is active */
 function customerCardHtml(cust) {
   const isAdmin = currentUser && (currentUser.role === 'Admin');
   return `
@@ -2952,7 +2950,6 @@ function filterMachineList(val) {
   const c = document.getElementById('machineryListContainer');
   if(!c) return;
   c.innerHTML = '';
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
 
   machineryDatabase.filter(m => m.name.toLowerCase().includes(q) || m.pump.toLowerCase().includes(q) || m.motor.toLowerCase().includes(q)).forEach(mach => {
     const card = document.createElement('div');
@@ -2970,7 +2967,7 @@ function filterMachineList(val) {
       </div>
       <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px; border-top:1px solid #f1f5f9; padding-top:6px;">
         <button class="btn btn-outline btn-sm" onclick="editMachinePrompt(${mach.id})">✏️ Edit</button>
-        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteMachineAction(${mach.id})">🗑️</button>` : ''}
+        ${currentUser && currentUser.role === 'Admin' ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteMachineAction(${mach.id})">🗑️</button>` : ''}
       </div>
     `;
     c.appendChild(card);
@@ -3154,14 +3151,6 @@ function saveCustomerAction() {
   alert("Customer saved & synced to cloud!");
 }
 
-function exportCustomersCSV() {
-  let csv = "Name,Phone,Email,Address,GST,Contact Person\n";
-  customerDatabase.forEach(c => {
-    csv += `"${c.name}","${c.phone}","${c.email}","${c.address}","${c.gst}","${c.person}"\n`;
-  });
-  downloadFile(csv, "TTESPL_Customers.csv", "text/csv");
-}
-
 /* ================= TAB 5: BILLING ================= */
 function renderBilling(filterType, empFilter = "ALL") {
   let totalBilled = 0;
@@ -3211,7 +3200,7 @@ function renderBilling(filterType, empFilter = "ALL") {
         <div>Due: <strong style="color:var(--danger);">₹${Number(o.dueAmount || 0).toLocaleString('en-IN')}</strong></div>
       </div>
       <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-        <button class="btn btn-print btn-sm" style="flex:1;" onclick="openInvoicePrintModal('${o.id}')">🖨️ View Tax Invoice</button>
+        ${o.status === 'Delivered' ? `<button class="btn btn-print btn-sm" style="flex:1;" onclick="openInvoicePrintModal('${o.id}')">🖨️ View Tax Invoice</button>` : `<span class="badge badge-pending" style="flex:1; text-align:center; padding:6px;">Invoice (Delivery ke baad)</span>`}
         ${o.dueAmount > 0 ? `
           <button class="btn btn-outline btn-sm" style="flex:1;" onclick="collectDuePayment('${o.id}')">💵 Collect Due</button>
           <button class="btn btn-wa btn-sm" style="flex:1;" onclick="sendDueWhatsApp('${o.id}')">💬 Due Reminder</button>
@@ -3482,7 +3471,6 @@ function switchInventorySubTab(type) {
   selectInventoryCategory(type === 'machines' ? 'Machines & Equipment' : (type === 'customer' ? 'CUSTOMERS' : 'ALL'), null);
 }
 
-// Auto-load master data on startup if local inventory has only 1 sample item
 document.addEventListener('DOMContentLoaded', async () => {
   checkAuthSession();
   if (sampleInventory.length <= 1) {
@@ -3501,510 +3489,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 </script>
 
-<!-- Live Cloud Synchronization Script with Realtime Firestore -->
 <script src="live-sync.js?v=5"></script>
-<script>
-/* ============================================================
-   TTESPL PREMIUM ONE-CODE UPDATE
-   Paste this ONE block before </body>
-   ============================================================ */
-
-(function () {
-  "use strict";
-
-  /* ---------- PREMIUM DESIGN ---------- */
-
-  const css = document.createElement("style");
-
-  css.textContent = `
-    body{
-      background:
-        radial-gradient(circle at 5% 0%,rgba(0,180,216,.08),transparent 28%),
-        radial-gradient(circle at 95% 5%,rgba(255,107,53,.08),transparent 25%),
-        #eef3f8 !important;
-    }
-
-    header{
-      background:linear-gradient(135deg,#04111f,#0a2949,#14517e) !important;
-      box-shadow:0 8px 28px rgba(2,18,34,.22) !important;
-    }
-
-    .card{
-      border:1px solid rgba(148,163,184,.23) !important;
-      border-radius:18px !important;
-      background:linear-gradient(145deg,#fff,#f8fbff) !important;
-      box-shadow:0 8px 24px rgba(15,23,42,.06) !important;
-    }
-
-    .btn{
-      border-radius:11px !important;
-    }
-
-    .btn-primary{
-      background:linear-gradient(135deg,#08213a,#14517e) !important;
-      box-shadow:0 6px 16px rgba(10,37,64,.18) !important;
-    }
-
-    .btn-accent{
-      background:linear-gradient(135deg,#ff6b35,#ff9d3d) !important;
-    }
-
-    input,select,textarea{
-      border-radius:11px !important;
-      border-color:#d9e2ec !important;
-    }
-
-    input:focus,select:focus,textarea:focus{
-      border-color:#00a6cc !important;
-      box-shadow:0 0 0 4px rgba(0,180,216,.11) !important;
-    }
-
-    .premium-web-panel{
-      margin:12px 0;
-      border:1px solid #dbe5ef;
-      border-radius:16px;
-      overflow:hidden;
-      background:linear-gradient(145deg,#f8fbff,#eef5fb);
-      box-shadow:inset 0 1px rgba(255,255,255,.9);
-    }
-
-    .premium-web-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-      padding:10px 12px;
-      background:rgba(255,255,255,.8);
-      border-bottom:1px solid #dbe5ef;
-    }
-
-    .premium-web-title{
-      font-size:12px;
-      font-weight:800;
-      color:#0b2a4a;
-    }
-
-    .premium-web-status{
-      font-size:10px;
-      color:#64748b;
-      margin-top:2px;
-    }
-
-    .premium-web-body{
-      padding:10px;
-    }
-
-    .premium-web-result{
-      display:grid;
-      grid-template-columns:82px 1fr;
-      gap:10px;
-      align-items:start;
-    }
-
-    .premium-web-image{
-      width:82px;
-      height:82px;
-      object-fit:cover;
-      border-radius:12px;
-      background:#e5edf5;
-      border:1px solid #d6e1ec;
-    }
-
-    .premium-web-result h4{
-      font-size:12px;
-      margin:0 0 4px;
-      color:#0b2a4a;
-    }
-
-    .premium-web-result p{
-      font-size:10.5px;
-      line-height:1.45;
-      color:#475569;
-      margin:0;
-    }
-
-    .premium-web-actions{
-      display:flex;
-      gap:6px;
-      flex-wrap:wrap;
-      margin-top:9px;
-    }
-
-    .premium-web-frame{
-      width:100%;
-      height:270px;
-      border:0;
-      border-radius:10px;
-      background:white;
-      margin-top:9px;
-    }
-
-    @media(max-width:430px){
-      .premium-web-frame{
-        height:230px;
-      }
-    }
-  `;
-
-  document.head.appendChild(css);
-
-
-  /* ---------- REMOVE OLD DEMO EMPLOYEE ---------- */
-
-  try {
-    const prefix =
-      typeof DB_PREFIX !== "undefined"
-        ? DB_PREFIX
-        : "";
-
-    const cleanupKey =
-      prefix + "STAFF_CLEANUP_V2";
-
-    if(localStorage.getItem(cleanupKey) !== "done"){
-
-      localStorage.removeItem(prefix + "STAFF");
-      localStorage.removeItem(prefix + "SESSION_USER");
-
-      localStorage.setItem(
-        cleanupKey,
-        "done"
-      );
-    }
-
-    if(typeof registeredEmployees !== "undefined"){
-      registeredEmployees.length = 0;
-
-      try{
-        registeredEmployees.push(
-          ...(
-            typeof getStored === "function"
-              ? getStored("STAFF", [])
-              : []
-          )
-        );
-      }catch(e){}
-    }
-
-  }catch(e){
-    console.warn("Staff cleanup:",e);
-  }
-
-
-  /* ---------- PRODUCT WEB SEARCH ---------- */
-
-  window.ttProductSearch = function(name){
-
-    const url =
-      "https://www.google.com/search?q=" +
-      encodeURIComponent(name);
-
-    window.open(
-      url,
-      "_blank",
-      "noopener,noreferrer"
-    );
-  };
-
-
-  window.ttProductImages = function(name){
-
-    const url =
-      "https://www.google.com/search?tbm=isch&q=" +
-      encodeURIComponent(name);
-
-    window.open(
-      url,
-      "_blank",
-      "noopener,noreferrer"
-    );
-  };
-
-
-  window.ttProductShopping = function(name){
-
-    const url =
-      "https://www.google.com/search?tbm=shop&q=" +
-      encodeURIComponent(name);
-
-    window.open(
-      url,
-      "_blank",
-      "noopener,noreferrer"
-    );
-  };
-
-
-  /* ---------- FIND CURRENT PRODUCT ---------- */
-
-  function getCurrentProduct(){
-
-    try{
-
-      if(
-        typeof activeStockDetailId !== "undefined" &&
-        typeof sampleInventory !== "undefined"
-      ){
-
-        return sampleInventory.find(
-          x => x.id === activeStockDetailId
-        );
-
-      }
-
-    }catch(e){}
-
-    return null;
-  }
-
-
-  /* ---------- WEB PRODUCT PANEL ---------- */
-
-  window.ttShowProductWeb = async function(item){
-
-    if(!item) return;
-
-    let panel =
-      document.getElementById(
-        "ttPremiumWebPanel"
-      );
-
-    if(!panel){
-
-      panel =
-        document.createElement("div");
-
-      panel.id =
-        "ttPremiumWebPanel";
-
-      panel.className =
-        "premium-web-panel";
-
-      panel.innerHTML = `
-
-        <div class="premium-web-head">
-
-          <div>
-
-            <div class="premium-web-title">
-              🌐 Web Product Explorer
-            </div>
-
-            <div
-              id="ttWebStatus"
-              class="premium-web-status"
-            >
-              Searching web details…
-            </div>
-
-          </div>
-
-          <button
-            class="btn btn-primary btn-sm"
-            id="ttBrowserBtn"
-          >
-            🌐 Browser
-          </button>
-
-        </div>
-
-        <div
-          id="ttWebBody"
-          class="premium-web-body"
-        >
-
-          <div
-            style="
-              text-align:center;
-              padding:12px;
-              color:#64748b;
-              font-size:11px;
-            "
-          >
-            🔎 Searching product information…
-          </div>
-
-        </div>
-      `;
-
-      const modal =
-        document.querySelector(
-          "#stockDetailModal .auth-card"
-        ) ||
-        document.querySelector(
-          "#stockDetailModal"
-        );
-
-      if(modal){
-
-        const buttons =
-          modal.querySelectorAll(
-            "button"
-          );
-
-        let inserted = false;
-
-        for(
-          let i = 0;
-          i < buttons.length;
-          i++
-        ){
-
-          if(
-            buttons[i]
-              .textContent
-              .includes("Edit Item Details")
-          ){
-
-            buttons[i]
-              .parentElement
-              .insertAdjacentElement(
-                "afterend",
-                panel
-              );
-
-            inserted = true;
-            break;
-          }
-        }
-
-        if(!inserted){
-          modal.appendChild(panel);
-        }
-
-      }
-
-    }
-
-
-    panel.style.display =
-      "block";
-
-
-    const query = [
-      item.name,
-      item.code,
-      item.machine
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-
-    const browserBtn =
-      document.getElementById(
-        "ttBrowserBtn"
-      );
-
-    if(browserBtn){
-
-      browserBtn.onclick =
-        function(){
-
-          window.ttProductSearch(
-            query
-          );
-
-        };
-    }
-
-
-    const body =
-      document.getElementById(
-        "ttWebBody"
-      );
-
-    const status =
-      document.getElementById(
-        "ttWebStatus"
-      );
-
-
-    try{
-
-      const title =
-        encodeURIComponent(
-          String(item.name || "")
-            .replace(/\s+/g,"_")
-        );
-
-
-      const response =
-        await fetch(
-          "https://en.wikipedia.org/api/rest_v1/page/summary/" +
-          title
-        );
-
-
-      if(response.ok){
-
-        const data =
-          await response.json();
-
-
-        if(
-          data &&
-          data.title &&
-          data.type !==
-          "disambiguation"
-        ){
-
-          const image =
-            data.thumbnail &&
-            data.thumbnail.source
-              ? `
-                <img
-                  class="premium-web-image"
-                  src="${data.thumbnail.source}"
-                  alt=""
-                >
-              `
-              : `
-                <div
-                  class="premium-web-image"
-                  style="
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    font-size:25px;
-                  "
-                >
-                  📦
-                </div>
-              `;
-
-
-          body.innerHTML = `
-
-            <div class="premium-web-result">
-
-              ${image}
-
-              <div>
-
-                <h4>
-                  ${data.title}
-                </h4>
-
-                <p>
-                  ${
-                    data.extract ||
-                    "Public product information found."
-                  }
-                </p>
-
-                <div
-                  class="premium-web-actions"
-                >
-
-                  <button
-                    class="btn btn-primary btn-sm"
-                    onclick="
-                      ttProductSearch(
-                        '${String(query)
-                          .replace(/'/g,"\\\\'")}'
-                      )
-                    "
-                  >
-                    🔎 Web Search
-                  </button
 </body>
 </html>
