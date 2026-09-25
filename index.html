@@ -442,50 +442,42 @@
       <div id="serviceListContainer"></div>
     </div>
 
-    <!-- TAB 4: INVENTORY, MACHINES & CUSTOMERS -->
+    <!-- TAB 4: INVENTORY, MACHINES, CHEMICALS & SPARES -->
     <div id="view-inventory" class="view-panel">
-      <div class="sub-tabs">
-        <button class="sub-tab-btn active" id="subTabStockBtn" onclick="switchInventorySubTab('stock')">📦 Spares & Inventory</button>
-        <button class="sub-tab-btn" id="subTabMachBtn" onclick="switchInventorySubTab('machines')">🚜 Machinery Catalog</button>
-        <button class="sub-tab-btn" id="subTabCustBtn" onclick="switchInventorySubTab('customer')">👥 Customer Directory</button>
+      <!-- Master Search Bar -->
+      <div style="margin-bottom:10px;">
+        <input type="text" id="stockFilterInput" placeholder="🔍 Master Search: Type ANY product, machine, chemical, spare, polisher, code..." oninput="filterStockList(this.value)" style="font-size:13.5px; padding:11px 14px; border-width:2px; box-shadow:var(--shadow-sm);">
       </div>
 
-      <!-- Spares & Items -->
-      <div id="invSubPanelStock">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-          <span class="badge badge-delivered" id="totalPartsBadge">0 Items</span>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-primary btn-sm" onclick="loadMasterCatalogAction()">📦 Reload Master Catalog</button>
-            <button class="btn btn-accent btn-sm" onclick="openAddPartModal()">+ Add Item</button>
-          </div>
-        </div>
-        <input type="text" id="stockFilterInput" placeholder="🔍 Search ANY item — name, part code, machine or category..." oninput="filterStockList(this.value)" style="margin-bottom:10px;">
-        <div id="stockListContainer"></div>
+      <!-- Category Filter Pills -->
+      <div class="sub-tabs" id="inventoryCategoryTabs" style="padding-bottom:10px; margin-bottom:12px; gap:6px;">
+        <button class="sub-tab-btn active" onclick="selectInventoryCategory('ALL', this)">🌟 All Items (<span id="catCountAll">0</span>)</button>
+        <button class="sub-tab-btn" onclick="selectInventoryCategory('Machines & Equipment', this)">🚜 Machines (<span id="catCountMach">0</span>)</button>
+        <button class="sub-tab-btn" onclick="selectInventoryCategory('Catalog Equipment', this)">📖 Catalog Gear (<span id="catCountCat">0</span>)</button>
+        <button class="sub-tab-btn" onclick="selectInventoryCategory('Ma-Fra Chemicals', this)">🧼 Ma-Fra Chemicals (<span id="catCountMafraChem">0</span>)</button>
+        <button class="sub-tab-btn" onclick="selectInventoryCategory('Mafra Detailing', this)">✨ Mafra Detailing (<span id="catCountMafraDet">0</span>)</button>
+        <button class="sub-tab-btn" onclick="selectInventoryCategory('Maniac Line', this)">⚡ Maniac Line (<span id="catCountManiac">0</span>)</button>
+        <button class="sub-tab-btn" onclick="selectInventoryCategory('Maxshine Gear & Tools', this)">🛠️ Maxshine (<span id="catCountMaxshine">0</span>)</button>
+        <button class="sub-tab-btn" onclick="selectInventoryCategory('Vista Car Care', this)">🚗 Vista (<span id="catCountVista">0</span>)</button>
+        <button class="sub-tab-btn" onclick="selectInventoryCategory('Machine Spares', this)">⚙️ Spares (<span id="catCountSpares">0</span>)</button>
+        <button class="sub-tab-btn" onclick="selectInventoryCategory('CUSTOMERS', this)">👥 Customers (<span id="catCountCust">0</span>)</button>
       </div>
 
-      <!-- Machinery Catalog -->
-      <div id="invSubPanelMachinery" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-          <span class="badge badge-info" id="totalMachBadge">0 Machines</span>
-          <button class="btn btn-primary btn-sm" onclick="openAddMachineModal()">+ Add Machine</button>
+      <!-- Action & Counter Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+        <div>
+          <span class="badge badge-delivered" id="totalPartsBadge" style="font-size:11.5px; padding:5px 10px;">0 Items</span>
+          <span id="currentCategoryTitle" style="font-size:11.5px; font-weight:700; color:var(--primary); margin-left:6px;"></span>
         </div>
-        <input type="text" id="machFilterInput" placeholder="🔍 Search machine by Model, Pump, HP, or Bar..." oninput="filterMachineList(this.value)" style="margin-bottom:10px;">
-        <div id="machineryListContainer"></div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-primary btn-sm" onclick="loadMasterCatalogAction()">📦 Reload Master Data</button>
+          <button class="btn btn-accent btn-sm" onclick="openAddPartModal()">+ Add Item</button>
+          <button class="btn btn-outline btn-sm" onclick="exportInventoryCSV()">📥 CSV</button>
+        </div>
       </div>
 
-      <!-- Customers -->
-      <div id="invSubPanelCustomer" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-          <span class="badge badge-info" id="totalCustBadge">Registered Clients</span>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-primary btn-sm" onclick="loadMasterCustomersAction()">📦 Reload Full Customers</button>
-            <button class="btn btn-outline btn-sm" onclick="exportCustomersCSV()">📥 CSV</button>
-            <button class="btn btn-accent btn-sm" onclick="openAddCustomerModal()">+ Register Client</button>
-          </div>
-        </div>
-        <input type="text" id="custFilterInput" placeholder="🔍 Search customers by Name, Phone, District, GST..." oninput="filterCustomerList(this.value)" style="margin-bottom:10px;">
-        <div id="customerListContainer"></div>
-      </div>
+      <!-- Dynamic Product / Customer List Container -->
+      <div id="stockListContainer"></div>
     </div>
 
     <!-- TAB 5: BILLING & LEDGER -->
@@ -1223,7 +1215,7 @@ window.customerDatabase = customerDatabase;
 
 /* Master Inventory Database */
 let sampleInventory = getStored("INVENTORY", (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.inventory) || [
-  { id: 1001, name: "valve kit -A,", code: "2186", category: "Spares - HRC", machine: "HRC", stock: 0, dealerPrice: 1205.96, rate: 1608.34, hsn: "84139190", desc: "Spare part for HRC. Code: 2186", specs: "Machine Model: HRC | Part Code: 2186" }
+  { id: 1001, name: "valve kit -A,", code: "2186", category: "Machine Spares", machine: "HRC", stock: 0, dealerPrice: 1205.96, rate: 1608.34, hsn: "84139190", desc: "Spare part for HRC. Code: 2186", specs: "Machine Model: HRC | Part Code: 2186" }
 ]);
 window.sampleInventory = sampleInventory;
 
@@ -1563,7 +1555,7 @@ async function loadMasterCatalogAction() {
       alert("Error: Master catalog file load nahi ho saki. 1 minute baad dobara try karein.");
     }
   } finally {
-    if (btn) btn.innerText = oldText || "📦 Reload Master Catalog";
+    if (btn) btn.innerText = oldText || "📦 Reload Master Data";
   }
 }
 
@@ -2514,26 +2506,95 @@ function editServicePrompt(srvId) {
   if(s) openServiceCallModal(s);
 }
 
-/* ================= TAB 4: INVENTORY ================= */
-const STOCK_RENDER_CAP = 50;
+/* ================= TAB 4: UNIFIED INVENTORY & CATEGORY FILTER ENGINE ================= */
+let activeInventoryCategory = 'ALL';
+const STOCK_RENDER_CAP = 60;
+
+const CAT_COLORS = {
+  'Machines & Equipment': { bg: '#e0f2fe', color: '#0369a1', border: '#bae6fd' },
+  'Catalog Equipment': { bg: '#ecfeff', color: '#0e7490', border: '#a5f3fc' },
+  'Ma-Fra Chemicals': { bg: '#f0fdf4', color: '#15803d', border: '#bbf7d0' },
+  'Mafra Detailing': { bg: '#fffbeb', color: '#b45309', border: '#fde68a' },
+  'Maniac Line': { bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
+  'Maxshine Gear & Tools': { bg: '#faf5ff', color: '#7e22ce', border: '#e9d5ff' },
+  'Vista Car Care': { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+  'Machine Spares': { bg: '#f8fafc', color: '#475569', border: '#cbd5e1' }
+};
+
+function getCatBadge(cat) {
+  const c = CAT_COLORS[cat] || { bg: '#f1f5f9', color: '#334155', border: '#e2e8f0' };
+  return `<span class="badge" style="background:${c.bg}; color:${c.color}; border:1px solid ${c.border}; font-size:10px;">${cat}</span>`;
+}
+
+function updateCategoryCounts() {
+  const byCat = {};
+  sampleInventory.forEach(i => {
+    byCat[i.category] = (byCat[i.category] || 0) + 1;
+  });
+
+  const setEl = (id, count) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = count.toLocaleString('en-IN');
+  };
+
+  setEl('catCountAll', sampleInventory.length);
+  setEl('catCountMach', byCat['Machines & Equipment'] || 0);
+  setEl('catCountCat', byCat['Catalog Equipment'] || 0);
+  setEl('catCountMafraChem', byCat['Ma-Fra Chemicals'] || 0);
+  setEl('catCountMafraDet', byCat['Mafra Detailing'] || 0);
+  setEl('catCountManiac', byCat['Maniac Line'] || 0);
+  setEl('catCountMaxshine', byCat['Maxshine Gear & Tools'] || 0);
+  setEl('catCountVista', byCat['Vista Car Care'] || 0);
+  setEl('catCountSpares', byCat['Machine Spares'] || 0);
+  setEl('catCountCust', customerDatabase.length);
+}
+
+function selectInventoryCategory(categoryName, btnEl) {
+  activeInventoryCategory = categoryName;
+  document.querySelectorAll('#inventoryCategoryTabs .sub-tab-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+
+  const titleEl = document.getElementById('currentCategoryTitle');
+  if (titleEl) {
+    titleEl.textContent = categoryName === 'ALL' ? '• All Categories Combined' : `• Category: ${categoryName}`;
+  }
+
+  const sInput = document.getElementById('stockFilterInput');
+  const q = sInput ? sInput.value : '';
+  if (q) filterStockList(q);
+  else renderStockList();
+}
 
 function stockCardHtml(item) {
   const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const badgeHtml = getCatBadge(item.category);
+  const subMeta = item.subCategory && item.subCategory !== item.category ? ` • ${item.subCategory}` : '';
+  const machMeta = item.machine && !item.name.toLowerCase().includes(item.machine.toLowerCase()) ? ` • Model: ${item.machine}` : '';
+
   return `
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div>
-        <strong style="font-size:13.5px; color:var(--primary);">${item.name}</strong>
-        <div style="font-size:11px; color:var(--text-muted);">${item.code} | ${item.category} ${item.machine ? ' (' + item.machine + ')' : ''}</div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+      <div style="flex:1;">
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px;">
+          ${badgeHtml}
+          <span style="font-size:11px; font-weight:700; color:#0284c7;">${item.code || ''}</span>
+        </div>
+        <strong style="font-size:13.5px; color:var(--primary); line-height:1.25;">${item.name}</strong>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+          ${item.hsn ? 'HSN: ' + item.hsn : ''}${machMeta}${subMeta}
+        </div>
       </div>
-      <div style="text-align:right;">
-        <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}">${item.stock} in stock</span>
+      <div style="text-align:right; min-width:115px;">
+        <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}" style="margin-bottom:3px;">${item.stock} in stock</span>
         <div style="font-size:11px; color:#475569;">Dealer: ₹${Number(item.dealerPrice || 0).toLocaleString('en-IN')}</div>
-        <div style="font-size:12.5px; font-weight:800; color:var(--primary);">MRP: ₹${Number(item.rate || 0).toLocaleString('en-IN')}</div>
+        <div style="font-size:13px; font-weight:800; color:var(--primary);">MRP: ₹${Number(item.rate || 0).toLocaleString('en-IN')}</div>
       </div>
     </div>
-    <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px; border-top:1px solid #f1f5f9; padding-top:6px;">
-      <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(${item.id})">✏️ Edit</button>
-      ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="event.stopPropagation(); deleteStockItem(${item.id})">🗑️</button>` : ''}
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid #f1f5f9; padding-top:6px;">
+      <span style="font-size:10.5px; color:var(--cyan); font-weight:700;">🔍 Tap to view specs & sales</span>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(${item.id})">✏️ Edit</button>
+        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="event.stopPropagation(); deleteStockItem(${item.id})">🗑️</button>` : ''}
+      </div>
     </div>
   `;
 }
@@ -2542,9 +2603,35 @@ function renderStockList() {
   const c = document.getElementById('stockListContainer');
   if(!c) return;
   c.innerHTML = '';
-  document.getElementById('totalPartsBadge').textContent = `${sampleInventory.length} Items Loaded`;
+  updateCategoryCounts();
 
-  const slice = sampleInventory.slice(0, STOCK_RENDER_CAP);
+  // Special Category: Customer Directory
+  if (activeInventoryCategory === 'CUSTOMERS') {
+    document.getElementById('totalPartsBadge').textContent = `${customerDatabase.length} Clients`;
+    customerDatabase.slice(0, STOCK_RENDER_CAP).forEach(cust => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = customerCardHtml(cust);
+      c.appendChild(card);
+    });
+    if (customerDatabase.length > STOCK_RENDER_CAP) {
+      const hint = document.createElement('div');
+      hint.style.cssText = 'text-align:center; font-size:11.5px; color:var(--text-muted); padding:10px; font-weight:600;';
+      hint.textContent = `Showing ${STOCK_RENDER_CAP} of ${customerDatabase.length} clients — use the search bar above to find any customer.`;
+      c.appendChild(hint);
+    }
+    return;
+  }
+
+  // Filter by active category
+  let list = sampleInventory;
+  if (activeInventoryCategory !== 'ALL') {
+    list = list.filter(i => i.category === activeInventoryCategory);
+  }
+
+  document.getElementById('totalPartsBadge').textContent = `${list.length} Items`;
+
+  const slice = list.slice(0, STOCK_RENDER_CAP);
   slice.forEach(item => {
     const card = document.createElement('div');
     card.className = 'card';
@@ -2553,10 +2640,11 @@ function renderStockList() {
     card.innerHTML = stockCardHtml(item);
     c.appendChild(card);
   });
-  if (sampleInventory.length > STOCK_RENDER_CAP) {
+
+  if (list.length > STOCK_RENDER_CAP) {
     const hint = document.createElement('div');
     hint.style.cssText = 'text-align:center; font-size:11.5px; color:var(--text-muted); padding:10px; font-weight:600;';
-    hint.textContent = `Showing 50 of ${sampleInventory.length} items — type in the search box to find any specific product/spare.`;
+    hint.textContent = `Showing ${STOCK_RENDER_CAP} of ${list.length} items — type in the search bar above to filter instant matches.`;
     c.appendChild(hint);
   }
 }
@@ -2568,13 +2656,44 @@ function filterStockList(val) {
   if(!c) return;
   c.innerHTML = '';
 
-  const results = q ? sampleInventory.filter(i =>
+  // If in CUSTOMERS category, search customer list
+  if (activeInventoryCategory === 'CUSTOMERS') {
+    const res = q ? customerDatabase.filter(cust =>
+      cust.name.toLowerCase().includes(q) ||
+      (cust.phone && cust.phone.includes(q)) ||
+      (cust.person && cust.person.toLowerCase().includes(q)) ||
+      (cust.address && cust.address.toLowerCase().includes(q)) ||
+      (cust.gst && cust.gst.toLowerCase().includes(q))
+    ) : customerDatabase;
+
+    document.getElementById('totalPartsBadge').textContent = `${res.length} Matches`;
+    res.slice(0, 80).forEach(cust => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = customerCardHtml(cust);
+      c.appendChild(card);
+    });
+    return;
+  }
+
+  // Filter across inventory items
+  let baseList = sampleInventory;
+  if (activeInventoryCategory !== 'ALL') {
+    baseList = baseList.filter(i => i.category === activeInventoryCategory);
+  }
+
+  const results = q ? baseList.filter(i =>
     i.name.toLowerCase().includes(q) ||
     (i.code && i.code.toLowerCase().includes(q)) ||
     (i.category && i.category.toLowerCase().includes(q)) ||
+    (i.subCategory && i.subCategory.toLowerCase().includes(q)) ||
     (i.machine && i.machine.toLowerCase().includes(q)) ||
-    (i.hsn && i.hsn.toLowerCase().includes(q))
-  ) : sampleInventory;
+    (i.hsn && i.hsn.toLowerCase().includes(q)) ||
+    (i.desc && i.desc.toLowerCase().includes(q)) ||
+    (i.specs && i.specs.toLowerCase().includes(q))
+  ) : baseList;
+
+  document.getElementById('totalPartsBadge').textContent = `${results.length} Matches`;
 
   results.slice(0, 80).forEach(item => {
     const card = document.createElement('div');
@@ -2588,7 +2707,7 @@ function filterStockList(val) {
   if (results.length > 80) {
     const hint = document.createElement('div');
     hint.style.cssText = 'text-align:center; font-size:11.5px; color:var(--text-muted); padding:10px; font-weight:600;';
-    hint.textContent = `${results.length} matches found — showing top 80. Refine search for more.`;
+    hint.textContent = `${results.length} items found — showing top 80 matches. Type more characters to refine search.`;
     c.appendChild(hint);
   }
 }
@@ -2602,10 +2721,11 @@ function openStockDetailModal(id) {
   activeStockDetailId = id;
 
   document.getElementById('detName').textContent = item.name;
-  let meta = `${item.category || 'Spares'}`;
-  if (item.machine) meta += ` | Machine: ${item.machine}`;
-  if (item.code) meta += ` | Part Code: ${item.code}`;
-  if (item.hsn) meta += ` | HSN: ${item.hsn}`;
+  let meta = `${item.category}`;
+  if (item.subCategory && item.subCategory !== item.category) meta += ` • ${item.subCategory}`;
+  if (item.machine) meta += ` • Machine: ${item.machine}`;
+  if (item.code) meta += ` • Code: ${item.code}`;
+  if (item.hsn) meta += ` • HSN: ${item.hsn}`;
   document.getElementById('detMeta').textContent = meta;
 
   document.getElementById('detDealer').textContent = '₹' + Number(item.dealerPrice || 0).toLocaleString('en-IN');
@@ -2613,7 +2733,7 @@ function openStockDetailModal(id) {
   document.getElementById('detStock').textContent = item.stock;
 
   const descWrap = document.getElementById('detDescWrap');
-  const detailsText = item.specs ? `${item.specs}\n${item.desc || ''}` : (item.desc || 'Standard machine spare part.');
+  const detailsText = item.specs ? `${item.specs}\n${item.desc || ''}` : (item.desc || 'Standard commercial machinery / care product.');
   if (detailsText) {
     descWrap.style.display = 'block';
     document.getElementById('detDesc').innerText = detailsText;
@@ -2621,7 +2741,7 @@ function openStockDetailModal(id) {
     descWrap.style.display = 'none';
   }
 
-  // Scan Sales History from all orders
+  // Sales History from all orders
   const rows = [];
   ordersData.forEach(o => {
     (o.items || []).forEach(it => {
@@ -2683,7 +2803,7 @@ function openAddPartModal(partObj = null) {
     editId.value = "";
     document.getElementById('stkName').value = "";
     document.getElementById('stkCode').value = "";
-    document.getElementById('stkCategory').value = "";
+    document.getElementById('stkCategory').value = activeInventoryCategory !== 'ALL' && activeInventoryCategory !== 'CUSTOMERS' ? activeInventoryCategory : "Machines & Equipment";
     document.getElementById('stkMachine').value = "";
     document.getElementById('stkHsn').value = "84139190";
     document.getElementById('stkQty').value = "0";
@@ -2707,7 +2827,7 @@ function saveStockItemAction() {
   const rate = parseFloat(document.getElementById('stkRate').value) || 0;
   const desc = document.getElementById('stkDesc').value.trim();
 
-  if(!name || !code) { alert("Please enter part name and code!"); return; }
+  if(!name || !code) { alert("Please enter product name and item code!"); return; }
 
   if(editId) {
     const item = sampleInventory.find(x => x.id === parseInt(editId));
@@ -2731,7 +2851,6 @@ function editStockItemPrompt(id) {
   if(it) openAddPartModal(it);
 }
 
-/* Admin Only Delete Guard */
 function deleteStockItem(id) {
   if (!currentUser || currentUser.role !== 'Admin') {
     alert("Permission Denied: Sirf Admin hi inventory item delete kar sakte hain!");
@@ -2741,6 +2860,56 @@ function deleteStockItem(id) {
     sampleInventory = sampleInventory.filter(x => x.id !== id);
     if(window.cloudSync) window.cloudSync.deleteItem("INVENTORY", id);
     setStored("INVENTORY", sampleInventory);
+    renderStockList();
+    populateDropdownsAndDatalists();
+  }
+}
+
+function exportInventoryCSV() {
+  let csv = "ID,Name,Code,Category,SubCategory,Machine,DealerPrice,MRP,Stock,HSN\n";
+  sampleInventory.forEach(i => {
+    csv += `"${i.id}","${(i.name||'').replace(/"/g, '""')}","${i.code||''}","${i.category||''}","${i.subCategory||''}","${i.machine||''}","${i.dealerPrice||0}","${i.rate||0}","${i.stock||0}","${i.hsn||''}"\n`;
+  });
+  downloadFile(csv, "TTESPL_Master_Inventory.csv", "text/csv");
+}
+window.exportInventoryCSV = exportInventoryCSV;
+
+/* Customer card rendering inside Inventory when Customers pill is active */
+function customerCardHtml(cust) {
+  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  return `
+    <div class="card-header">
+      <div>
+        <strong style="font-size:14.5px; color:var(--primary);">${cust.name}</strong>
+        <div style="font-size:11px; color:var(--text-muted);">${cust.person && cust.person !== cust.name ? cust.person + ' • ' : ''}Ph: <strong>${cust.phone}</strong></div>
+      </div>
+      <div style="display:flex; gap:5px;">
+        <button class="btn btn-outline btn-sm" onclick="editCustomerPrompt(${cust.id})">✏️ Edit</button>
+        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteCustomer(${cust.id})">🗑️</button>` : ''}
+      </div>
+    </div>
+    <div class="grid-2" style="font-size:11.5px; color:#475569;">
+      <div>📍 ${cust.address || 'Odisha'}</div>
+      <div>📧 ${cust.email || 'N/A'}</div>
+    </div>
+    <div style="font-size:11px; color:#64748b; margin-top:5px;">GSTIN: <strong>${cust.gst || 'Unregistered'}</strong></div>
+  `;
+}
+
+function editCustomerPrompt(id) {
+  const c = customerDatabase.find(x => x.id === id);
+  if(c) openAddCustomerModal(c);
+}
+
+function deleteCustomer(id) {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Sirf Admin hi Customer delete kar sakte hain!");
+    return;
+  }
+  if(confirm("Confirm DELETE customer from directory?")) {
+    customerDatabase = customerDatabase.filter(x => x.id !== id);
+    if(window.cloudSync) window.cloudSync.deleteItem("CUSTOMERS", id);
+    setStored("CUSTOMERS", customerDatabase);
     renderStockList();
     populateDropdownsAndDatalists();
   }
@@ -2861,7 +3030,6 @@ function editMachinePrompt(id) {
   if(it) openAddMachineModal(it);
 }
 
-/* Admin Only Delete Guard */
 function deleteMachineAction(id) {
   if (!currentUser || currentUser.role !== 'Admin') {
     alert("Permission Denied: Sirf Admin hi Machine delete kar sakte hain!");
@@ -2878,27 +3046,6 @@ function deleteMachineAction(id) {
 
 /* Customer Directory */
 const CUST_RENDER_CAP = 50;
-
-function customerCardHtml(cust) {
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
-  return `
-    <div class="card-header">
-      <div>
-        <strong style="font-size:14.5px; color:var(--primary);">${cust.name}</strong>
-        <div style="font-size:11px; color:var(--text-muted);">${cust.person && cust.person !== cust.name ? cust.person + ' | ' : ''}Ph: <strong>${cust.phone}</strong></div>
-      </div>
-      <div style="display:flex; gap:5px;">
-        <button class="btn btn-outline btn-sm" onclick="editCustomerPrompt(${cust.id})">✏️ Edit</button>
-        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteCustomer(${cust.id})">🗑️</button>` : ''}
-      </div>
-    </div>
-    <div class="grid-2" style="font-size:11.5px; color:#475569;">
-      <div>📍 ${cust.address || 'Odisha'}</div>
-      <div>📧 ${cust.email || 'N/A'}</div>
-    </div>
-    <div style="font-size:11px; color:#64748b; margin-top:5px;">GSTIN: <strong>${cust.gst || 'Unregistered'}</strong></div>
-  `;
-}
 
 function renderCustomerList() {
   const c = document.getElementById('customerListContainer');
@@ -3005,26 +3152,6 @@ function saveCustomerAction() {
   renderCustomerList();
   populateDropdownsAndDatalists();
   alert("Customer saved & synced to cloud!");
-}
-
-function editCustomerPrompt(id) {
-  const c = customerDatabase.find(x => x.id === id);
-  if(c) openAddCustomerModal(c);
-}
-
-/* Admin Only Delete Guard */
-function deleteCustomer(id) {
-  if (!currentUser || currentUser.role !== 'Admin') {
-    alert("Permission Denied: Sirf Admin hi Customer delete kar sakte hain!");
-    return;
-  }
-  if(confirm("Confirm DELETE customer from directory?")) {
-    customerDatabase = customerDatabase.filter(x => x.id !== id);
-    if(window.cloudSync) window.cloudSync.deleteItem("CUSTOMERS", id);
-    setStored("CUSTOMERS", customerDatabase);
-    renderCustomerList();
-    populateDropdownsAndDatalists();
-  }
 }
 
 function exportCustomersCSV() {
@@ -3352,30 +3479,25 @@ function switchTab(tab, el) {
 }
 
 function switchInventorySubTab(type) {
-  document.getElementById('subTabStockBtn').classList.remove('active');
-  document.getElementById('subTabMachBtn').classList.remove('active');
-  document.getElementById('subTabCustBtn').classList.remove('active');
-  document.getElementById('invSubPanelStock').style.display = 'none';
-  document.getElementById('invSubPanelMachinery').style.display = 'none';
-  document.getElementById('invSubPanelCustomer').style.display = 'none';
-
-  if(type === 'stock') {
-    document.getElementById('subTabStockBtn').classList.add('active');
-    document.getElementById('invSubPanelStock').style.display = 'block';
-    renderStockList();
-  } else if(type === 'machines') {
-    document.getElementById('subTabMachBtn').classList.add('active');
-    document.getElementById('invSubPanelMachinery').style.display = 'block';
-    renderMachineryList();
-  } else {
-    document.getElementById('subTabCustBtn').classList.add('active');
-    document.getElementById('invSubPanelCustomer').style.display = 'block';
-    renderCustomerList();
-  }
+  selectInventoryCategory(type === 'machines' ? 'Machines & Equipment' : (type === 'customer' ? 'CUSTOMERS' : 'ALL'), null);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// Auto-load master data on startup if local inventory has only 1 sample item
+document.addEventListener('DOMContentLoaded', async () => {
   checkAuthSession();
+  if (sampleInventory.length <= 1) {
+    const payload = await getMasterDataPayload();
+    if (payload && payload.inventory && payload.inventory.length > 1) {
+      sampleInventory = payload.inventory;
+      setStored("INVENTORY", sampleInventory);
+      if (payload.customers && payload.customers.length > 0) {
+        customerDatabase = payload.customers;
+        setStored("CUSTOMERS", customerDatabase);
+      }
+      renderStockList();
+      populateDropdownsAndDatalists();
+    }
+  }
 });
 </script>
 
