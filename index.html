@@ -429,7 +429,7 @@
 
   <div class="container">
 
-    <!-- TAB 0: EXECUTIVE BENTO DASHBOARD (NEW) -->
+    <!-- TAB 0: EXECUTIVE BENTO DASHBOARD -->
     <div id="view-dashboard" class="view-panel active">
       <div style="margin-bottom:12px;">
         <h2 style="font-size:17px; font-weight:800; color:var(--primary);">📊 Executive Command Center</h2>
@@ -682,26 +682,41 @@
 
 <!-- ================= MODALS ================= -->
 
-<!-- 0. SMART UPI QR MODAL (NEW) -->
+<!-- 0. SMART UPI QR MODAL (UPDATED WITH ICICI BANK DETAILS) -->
 <div id="upiModal" class="auth-overlay" style="display:none; z-index:3200;">
-  <div class="auth-card" style="max-width:400px; text-align:center;">
+  <div class="auth-card" style="max-width:440px; text-align:center;">
     <div class="card-header">
-      <strong class="card-title">📱 Scan to Pay via UPI</strong>
+      <strong class="card-title">📱 Scan & Pay via UPI / QR</strong>
       <button class="btn btn-outline btn-sm" onclick="closeUpiModal()">✕</button>
     </div>
-    <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-      Customer: <strong id="upiCustName" style="color:var(--primary);">-</strong>
+
+    <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
+      Billed To: <strong id="upiCustName" style="color:var(--primary);">-</strong>
     </div>
-    <div style="background:#ffffff; padding:12px; border-radius:12px; display:inline-block; border:2px dashed #0284c7; margin-bottom:10px;">
-      <img id="upiQrImage" src="" alt="UPI QR" style="width:200px; height:200px; display:block; margin:0 auto;">
+
+    <!-- Official QR Box -->
+    <div style="background:#ffffff; padding:12px; border-radius:14px; display:inline-block; border:2px dashed #0284c7; box-shadow:0 4px 16px rgba(0,0,0,0.08); margin-bottom:10px;">
+      <img id="upiQrImage" src="" alt="ICICI UPI QR" style="width:210px; height:210px; display:block; margin:0 auto; border-radius:8px;">
     </div>
-    <div style="font-size:18px; font-weight:900; color:var(--primary); margin-bottom:4px;" id="upiAmountText">₹0</div>
-    <div style="font-size:10.5px; color:#64748b; margin-bottom:14px;">UPI ID: <strong>8917465040@okbizaxis</strong> (TTESPL BBSR)</div>
+
+    <div style="font-size:20px; font-weight:900; color:var(--primary); margin-bottom:10px;" id="upiAmountText">₹0</div>
+
+    <!-- ICICI Bank Verified Details Card -->
+    <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:10px 12px; text-align:left; font-size:11px; line-height:1.55; margin-bottom:12px;">
+      <div style="color:var(--primary); font-weight:800; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-bottom:4px;">
+        🏦 TWINTOWN EXPRESS SERVICES PVT LTD
+      </div>
+      <div><strong>Bank:</strong> ICICI Bank (Cuttack Road, BBSR)</div>
+      <div><strong>A/C No:</strong> <span style="font-family:monospace; font-weight:700; color:#0f172a;">150005501249</span></div>
+      <div><strong>IFSC Code:</strong> <span style="font-family:monospace; font-weight:700; color:#0f172a;">ICIC0001500</span></div>
+      <div><strong>UPI ID:</strong> <span style="color:#0284c7; font-weight:800;">eazypay.574099310@icici</span></div>
+    </div>
+
     <button class="btn btn-primary btn-block" onclick="closeUpiModal()">✓ Done / Payment Received</button>
   </div>
 </div>
 
-<!-- 0.1 DIGITAL SIGNATURE MODAL (NEW) -->
+<!-- 0.1 DIGITAL SIGNATURE MODAL -->
 <div id="signatureModal" class="auth-overlay" style="display:none; z-index:3100;">
   <div class="auth-card" style="max-width:460px;">
     <div class="card-header">
@@ -1523,7 +1538,7 @@ function populateDropdownsAndDatalists() {
 }
 window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
 
-/* ================= NEW: EXECUTIVE DASHBOARD ENGINE ================= */
+/* ================= EXECUTIVE DASHBOARD ENGINE ================= */
 function renderDashboard() {
   const today = new Date().toISOString().split('T')[0];
   let todayRecv = 0;
@@ -1609,30 +1624,36 @@ function toggleFabMenu() {
   }
 }
 
-/* ================= NEW: SMART UPI QR GENERATOR ================= */
+/* ================= ICICI MERCHANT UPI QR GENERATOR ================= */
 function openUpiModal(customerName, amount) {
   if (!amount || amount <= 0) {
-    alert("Amount zero ya negative nahi ho sakta.");
+    alert("Amount zero ya invalid nahi ho sakta.");
     return;
   }
+
   document.getElementById('upiCustName').textContent = customerName || "Customer";
   document.getElementById('upiAmountText').textContent = '₹' + Number(amount).toLocaleString('en-IN');
 
-  const upiId = "8917465040@okbizaxis";
-  const upiName = "Twin Town Express Services";
-  const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(upiName)}&am=${amount}&cu=INR`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}`;
+  const merchantUpi = "eazypay.574099310@icici";
+  const merchantName = "TWINTOWN EXPRESS SERVICES PVT LTD";
+  const formattedAmt = parseFloat(amount).toFixed(2);
+
+  // NPCI Compliant Dynamic Merchant UPI String
+  const upiPayload = `upi://pay?pa=${encodeURIComponent(merchantUpi)}&pn=${encodeURIComponent(merchantName)}&am=${formattedAmt}&cu=INR&tn=TTESPL Invoice Settlement`;
+
+  // High-Resolution Dynamic QR
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=6&data=${encodeURIComponent(upiPayload)}`;
 
   document.getElementById('upiQrImage').src = qrUrl;
   document.getElementById('upiModal').style.display = 'flex';
 }
+
 function closeUpiModal() {
   document.getElementById('upiModal').style.display = 'none';
 }
 
-/* ================= NEW: DIGITAL SIGNATURE PAD ================= */
+/* ================= DIGITAL SIGNATURE PAD ================= */
 let signatureCanvas, sigCtx, isDrawing = false;
-let activeServiceSignTarget = null;
 
 function initSignatureCanvas() {
   signatureCanvas = document.getElementById('signCanvas');
@@ -1682,7 +1703,7 @@ function saveCustomerSignature() {
   alert("Customer signature verify ho gaya!");
 }
 
-/* ================= NEW: BACKUP & RESTORE ALL DATA ================= */
+/* ================= BACKUP & RESTORE ALL DATA ================= */
 function triggerFullBackupDownload() {
   const fullBackup = {
     staff: registeredEmployees,
