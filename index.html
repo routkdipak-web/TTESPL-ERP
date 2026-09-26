@@ -365,7 +365,7 @@
 </head>
 <body data-theme="light">
 
-<div id="pullToRefreshIndicator">
+<div id="pullToRefreshIndicator" style="display:none;">
   <span>🔄</span> <span id="ptrText">Refreshing data from Cloud...</span>
 </div>
 
@@ -4384,7 +4384,7 @@ function updateGlobalReminders() {
   });
 
   const banner = document.getElementById('dailyReminderText');
-  banner.textContent = `${delDue} Product Orders Due | ${srvDue} Machine Repairs Due | ${freeSrvDue} Free Services Due`;
+  if(banner) banner.textContent = `${delDue} Orders Due | ${srvDue} Repairs Due | ${freeSrvDue} Free Services Due`;
 }
 
 function switchTab(tab, el) {
