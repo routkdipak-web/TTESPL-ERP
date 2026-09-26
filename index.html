@@ -12,7 +12,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TTESPL ERP">
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/9422/9422891.png">
-<link rel="manifest" href='data:application/manifest+json,{"name":"Twin Town Express Services ERP","short_name":"TTESPL ERP","start_url":".","display":"standalone","background_color":"%230a192f","theme_color":"%230a192f","orientation":"portrait","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"192x192","type":"image/png"},{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"512x512","type":"image/png"}]}'>
 
 <!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,18 +50,43 @@
     --shadow-lg: 0 16px 36px rgba(10,37,64,0.15);
   }
 
+  [data-theme="dark"] {
+    --primary: #38bdf8;
+    --primary-light: #0284c7;
+    --primary-dark: #bae6fd;
+    --accent: #fb923c;
+    --accent-hover: #f97316;
+    --cyan: #38bdf8;
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --border-focus: #38bdf8;
+    --success: #34d399;
+    --success-bg: rgba(16, 185, 129, 0.15);
+    --warning: #fbbf24;
+    --warning-bg: rgba(245, 158, 11, 0.15);
+    --danger: #f87171;
+    --danger-bg: rgba(239, 68, 68, 0.15);
+    --wa-bg: #0b141a;
+  }
+
   html { color-scheme: light; }
+  [data-theme="dark"] html { color-scheme: dark; }
+
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
   body { 
-    background: radial-gradient(circle at 5% 0%, rgba(0,180,216,0.08), transparent 30%), radial-gradient(circle at 95% 5%, rgba(255,107,53,0.08), transparent 28%), #f1f5f9;
+    background: radial-gradient(circle at 5% 0%, rgba(0,180,216,0.08), transparent 30%), radial-gradient(circle at 95% 5%, rgba(255,107,53,0.08), transparent 28%), var(--bg);
     color: var(--text-main); padding-bottom: 84px; overflow-x: hidden; -webkit-font-smoothing: antialiased; 
+    transition: background 0.3s ease, color 0.3s ease;
   }
 
   input, select, textarea {
     color-scheme: light !important;
-    background-color: #ffffff !important;
-    color: #0f172a !important;
-    border: 1.5px solid #dbe3eb !important;
+    background-color: var(--card) !important;
+    color: var(--text-main) !important;
+    border: 1.5px solid var(--border) !important;
     border-radius: var(--radius-sm);
     font-size: 13px;
     padding: 10px 12px;
@@ -70,17 +94,20 @@
     outline: none;
     transition: all 0.2s ease;
   }
+  [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea {
+    color-scheme: dark !important;
+  }
   input:focus, select:focus, textarea:focus {
     border-color: var(--cyan) !important;
     box-shadow: 0 0 0 3.5px rgba(0,180,216,0.18) !important;
   }
-  input::placeholder, textarea::placeholder { color: #94a3b8 !important; }
+  input::placeholder, textarea::placeholder { color: var(--text-muted) !important; }
 
   .autocomplete-wrapper { position: relative; width: 100%; }
   .solid-suggestion-box {
     position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-    background: #ffffff !important;
-    border: 1.8px solid #0284c7 !important;
+    background: var(--card) !important;
+    border: 1.8px solid var(--cyan) !important;
     border-radius: 12px;
     box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24) !important;
     max-height: 230px; overflow-y: auto; z-index: 100000;
@@ -88,23 +115,13 @@
   }
   @keyframes popIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
   .suggestion-item {
-    padding: 9px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer;
-    font-size: 12px; color: #0f172a; background: #ffffff !important;
+    padding: 9px 12px; border-bottom: 1px solid var(--border); cursor: pointer;
+    font-size: 12px; color: var(--text-main); background: var(--card) !important;
     display: flex; justify-content: space-between; align-items: center;
   }
   .suggestion-item:last-child { border-bottom: none; }
-  .suggestion-item:hover, .suggestion-item.active { background: #f0f9ff !important; color: #0369a1; }
-  .suggestion-sub { font-size: 10px; color: #64748b; }
-
-  #pullToRefreshIndicator {
-    position: fixed; top: 0; left: 0; right: 0; height: 42px;
-    background: linear-gradient(90deg, var(--primary), var(--primary-light));
-    color: #ffffff; font-size: 11.5px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    transform: translateY(-100%); transition: transform 0.25s ease-out; z-index: 9999;
-    box-shadow: var(--shadow-md);
-  }
-  #pullToRefreshIndicator.visible { transform: translateY(0); }
+  .suggestion-item:hover, .suggestion-item.active { background: rgba(0,180,216,0.1) !important; color: var(--cyan); }
+  .suggestion-sub { font-size: 10px; color: var(--text-muted); }
 
   header {
     background: linear-gradient(135deg, #05162a 0%, #0a2540 60%, #11365c 100%);
@@ -132,7 +149,7 @@
 
   .user-badge {
     background: rgba(255,255,255,0.15); font-size: 11px; padding: 4px 9px; border-radius: 20px;
-    display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.25);
+    display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.25); color: white;
   }
   .user-role-tag {
     font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 8px;
@@ -141,20 +158,20 @@
   .user-role-tag.admin { background: #00b4d8; }
 
   .daily-reminder-banner {
-    background: linear-gradient(90deg, #fffbeb, #fef3c7);
-    border-bottom: 1.5px solid #fde68a; padding: 8px 14px; font-size: 11.5px;
-    color: #92400e; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    background: linear-gradient(90deg, var(--warning-bg), #fef3c7);
+    border-bottom: 1.5px solid var(--border); padding: 8px 14px; font-size: 11.5px;
+    color: var(--text-main); display: flex; align-items: center; justify-content: space-between; gap: 8px;
     font-weight: 600;
   }
 
   .nav-bar {
-    position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.96);
+    position: fixed; bottom: 0; left: 0; right: 0; background: var(--card);
     backdrop-filter: blur(10px);
-    display: flex; border-top: 1px solid #e2e8f0; z-index: 100;
+    display: flex; border-top: 1px solid var(--border); z-index: 100;
     box-shadow: 0 -4px 20px rgba(0,0,0,0.06); height: 62px;
   }
   .nav-item {
-    flex: 1; padding: 6px 1px; text-align: center; font-size: 10px; color: #64748b;
+    flex: 1; padding: 6px 1px; text-align: center; font-size: 10px; color: var(--text-muted);
     cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 3px; font-weight: 700; transition: all 0.2s ease; position: relative;
   }
@@ -174,24 +191,24 @@
 
   .card {
     background: var(--card); border-radius: var(--radius-md); padding: 14px; margin-bottom: 12px;
-    border: 1px solid rgba(148, 163, 184, 0.2); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .card:hover { box-shadow: var(--shadow-md); }
   .card-header {
     display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
-    border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;
+    border-bottom: 1px solid var(--border); padding-bottom: 8px;
   }
   .card-title { font-size: 14.5px; font-weight: 800; color: var(--primary); }
 
   .badge { padding: 3px 9px; border-radius: 6px; font-size: 10.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
-  .badge-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid #fde68a; }
-  .badge-delivered { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
-  .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
-  .badge-info { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
-  .badge-today { background: #fef08a; color: #854d0e; font-weight: 800; border: 1px solid #facc15; }
+  .badge-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--border); }
+  .badge-delivered { background: var(--success-bg); color: var(--success); border: 1px solid var(--border); }
+  .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--border); }
+  .badge-info { background: rgba(0,180,216,0.15); color: var(--cyan); border: 1px solid var(--border); }
+  .badge-today { background: var(--warning-bg); color: var(--warning); font-weight: 800; border: 1px solid var(--border); }
 
   .form-group { margin-bottom: 11px; }
-  .form-label { display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 4px; color: #334155; }
+  .form-label { display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 4px; color: var(--text-main); }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
   .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
@@ -210,22 +227,21 @@
   .btn-excel { background: #107c41; color: white; }
   .btn-print { background: #334155; color: white; }
   .btn-sm { padding: 4px 10px; font-size: 11px; border-radius: 6px; }
-  .btn-outline { background: white; border: 1.5px solid var(--border); color: #475569; }
-  .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
-  .btn-danger-sm { background: var(--danger-bg); color: var(--danger); padding: 4px 8px; border: 1px solid #fecaca; border-radius: 6px; }
-  .btn-danger-sm:hover { background: #fee2e2; }
+  .btn-outline { background: var(--card); border: 1.5px solid var(--border); color: var(--text-main); }
+  .btn-outline:hover { background: rgba(0,0,0,0.05); border-color: var(--cyan); }
+  .btn-danger-sm { background: var(--danger-bg); color: var(--danger); padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; }
   .btn-block { width: 100%; }
 
   .sub-tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1.5px solid var(--border); padding-bottom: 8px; overflow-x: auto; }
   .sub-tab-btn {
-    padding: 6px 14px; font-size: 12px; font-weight: 700; border: none; background: #e2e8f0;
-    border-radius: 8px; cursor: pointer; white-space: nowrap; color: #475569; transition: all 0.2s ease;
+    padding: 6px 14px; font-size: 12px; font-weight: 700; border: none; background: var(--border);
+    border-radius: 8px; cursor: pointer; white-space: nowrap; color: var(--text-muted); transition: all 0.2s ease;
   }
   .sub-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 6px rgba(10,37,64,0.2); }
 
-  /* ================= WHATSAPP GROUP CHAT STYLING ================= */
+  /* WHATSAPP GROUP CHAT STYLING */
   .chat-box-card {
-    background: #ffffff; border: 1px solid #d1d7db; border-radius: var(--radius-lg);
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg);
     display: flex; flex-direction: column; height: calc(100vh - 185px); overflow: hidden;
     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
   }
@@ -242,9 +258,6 @@
   .chat-stream {
     flex: 1; padding: 14px 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
     background-color: var(--wa-bg);
-    background-image: radial-gradient(#d5ceb5 1px, transparent 1px), radial-gradient(#e5dfd3 1px, transparent 1px);
-    background-size: 24px 24px;
-    background-position: 0 0, 12px 12px;
   }
   .lc-day {
     align-self: center; background: rgba(255, 255, 255, 0.92); color: #54656f;
@@ -253,16 +266,10 @@
   }
   .bubble {
     max-width: 82%; padding: 6px 10px 4px 10px; border-radius: 8px; font-size: 12.8px; line-height: 1.38;
-    position: relative; box-shadow: 0 1px 0.5px rgba(11,20,26,.13); word-break: break-word;
+    position: relative; box-shadow: 0 1px 0.5px rgba(11,20,26,.13); word-break: break-word; color: #111b21;
   }
-  .bubble.me {
-    align-self: flex-end; background: #d9fdd3; color: #111b21;
-    border-top-right-radius: 2px;
-  }
-  .bubble.other {
-    align-self: flex-start; background: #ffffff; color: #111b21;
-    border-top-left-radius: 2px;
-  }
+  .bubble.me { align-self: flex-end; background: #d9fdd3; border-top-right-radius: 2px; }
+  .bubble.other { align-self: flex-start; background: #ffffff; border-top-left-radius: 2px; }
   .bubble-author { font-size: 11px; font-weight: 800; color: #008069; margin-bottom: 2px; }
   .bubble.me .bubble-author { display: none; }
   .bubble-time {
@@ -279,41 +286,39 @@
     cursor: pointer; object-fit: cover; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   }
   .chat-input-bar {
-    background: #f0f2f5; padding: 7px 10px; display: flex; align-items: center; gap: 7px;
-    border-top: 1px solid #e9edef;
+    background: var(--card); padding: 7px 10px; display: flex; align-items: center; gap: 7px;
+    border-top: 1px solid var(--border);
   }
   .wa-input-pill {
-    flex: 1; background: #ffffff; border-radius: 22px; padding: 4px 12px;
+    flex: 1; background: var(--card); border-radius: 22px; padding: 4px 12px;
     display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.06);
-    border: 1px solid #e9edef;
+    border: 1px solid var(--border);
   }
   .wa-input-pill input {
     border: none !important; background: transparent !important; padding: 6px 0 !important;
-    font-size: 13.5px; box-shadow: none !important;
+    font-size: 13.5px; box-shadow: none !important; color: var(--text-main) !important;
   }
   .wa-send-round-btn {
     width: 42px; height: 42px; border-radius: 50%; background: var(--wa-teal);
     color: white; border: none; display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 18px; box-shadow: 0 2px 6px rgba(0,128,105,0.4);
-    transition: transform 0.15s ease;
   }
-  .wa-send-round-btn:active { transform: scale(0.92); }
 
   .auth-overlay {
     position: fixed; inset: 0; background: rgba(6, 21, 38, 0.82); backdrop-filter: blur(6px);
     display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 14px;
   }
   .auth-card {
-    background: white; border-radius: var(--radius-lg); width: 100%; max-width: 480px; padding: 22px;
-    box-shadow: var(--shadow-lg); max-height: 94vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.2);
+    background: var(--card); border-radius: var(--radius-lg); width: 100%; max-width: 480px; padding: 22px;
+    box-shadow: var(--shadow-lg); max-height: 94vh; overflow-y: auto; border: 1px solid var(--border);
   }
 
   .items-table { width: 100%; border-collapse: collapse; margin: 8px 0; }
-  .items-table th { background: #f8fafc; padding: 7px 6px; font-size: 11px; text-align: left; color: #475569; font-weight: 700; }
-  .items-table td { padding: 6px 4px; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
+  .items-table th { background: var(--bg); padding: 7px 6px; font-size: 11px; text-align: left; color: var(--text-muted); font-weight: 700; border: 1px solid var(--border); }
+  .items-table td { padding: 6px 4px; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-main); }
 
   .audit-log-box {
-    background: #f8fafc; border-top: 1px dashed var(--border); padding: 6px 10px;
+    background: var(--bg); border-top: 1px dashed var(--border); padding: 6px 10px;
     margin-top: 8px; border-radius: 6px; font-size: 10.5px; color: var(--text-muted);
   }
   .audit-item { margin-bottom: 2px; }
@@ -325,25 +330,23 @@
     box-shadow: 0 6px 20px rgba(255,107,53,0.45); font-size: 24px; font-weight: 800;
     cursor: pointer; z-index: 99; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  #fabMainBtn:active { transform: scale(0.92); }
   #fabMenu {
     position: fixed; bottom: 130px; right: 18px; display: none; flex-direction: column; gap: 8px; z-index: 99;
   }
   .fab-action-btn {
-    background: white; border: 1px solid #cbd5e1; border-radius: 20px; padding: 7px 14px;
-    font-size: 12px; font-weight: 800; color: var(--primary); box-shadow: var(--shadow-md);
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 7px 14px;
+    font-size: 12px; font-weight: 800; color: var(--text-main); box-shadow: var(--shadow-md);
     cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap;
   }
-  .fab-action-btn:hover { background: #f8fafc; color: var(--accent); }
+  .fab-action-btn:hover { background: var(--bg); color: var(--accent); }
 
   @media print {
     body * { visibility: hidden; }
     #printableInvoiceArea, #printableInvoiceArea * { visibility: visible; }
-    #printableInvoiceArea { position: absolute; left: 0; top: 0; width: 100%; padding: 10px; background: white; }
+    #printableInvoiceArea { position: absolute; left: 0; top: 0; width: 100%; padding: 10px; background: white; color: black; }
     .no-print { display: none !important; }
   }
 
-  /* Tally Style Invoice Format (Restored) */
   .invoice-box { 
     border: 1.5px solid #0a2540; padding: 16px; border-radius: 8px; 
     background: white; color: #111827; font-size: 11.5px; 
@@ -352,7 +355,7 @@
   .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0a2540; padding-bottom: 10px; }
   .inv-table { 
     width: 100%; border-collapse: collapse; margin: 12px 0; 
-    font-size: 11px; table-layout: fixed; word-wrap: break-word; 
+    font-size: 11px; table-layout: fixed; word-wrap: break-word; color: #111827; 
   }
   .inv-table th, .inv-table td { 
     border: 1px solid #cbd5e1; padding: 6px 6px; text-align: left; overflow: hidden; 
@@ -360,7 +363,7 @@
   .inv-table th { background: #f1f5f9; font-weight: 700; color: #0f172a; }
 </style>
 </head>
-<body>
+<body data-theme="light">
 
 <div id="pullToRefreshIndicator">
   <span>🔄</span> <span id="ptrText">Refreshing data from Cloud...</span>
@@ -399,7 +402,7 @@
       <div style="font-size:14px; font-weight:800; color:var(--primary); margin-bottom:12px;">Staff Registration</div>
       <div class="form-group">
         <label class="form-label">Full Name</label>
-        <input type="text" id="regName" placeholder="e.g. Ramesh Kumar">
+        <input type="text" id="regName" placeholder="e.g. Dipak Kumar Rout">
       </div>
       <div class="grid-2">
         <div class="form-group">
@@ -427,7 +430,7 @@
       </div>
       <button class="btn btn-accent btn-block" onclick="processRegister()" style="padding:10px;">✓ Register Account</button>
       <div style="text-align:center; margin-top:14px; font-size:12px;">
-        <a href="javascript:void(0)" onclick="showAuthMode('login')" style="color:var(--primary); text-decoration:none; font-weight:700;">Back to Login</a>
+        <a href="javascript:void(0)" onclick="showAuthMode('login')" style="color:var(--text-main); text-decoration:none; font-weight:700;">Back to Login</a>
       </div>
     </div>
 
@@ -469,15 +472,16 @@
       <div class="brand-logo-badge">TT</div>
       <div>
         <div class="brand-title">TWIN TOWN EXPRESS SERVICES</div>
-        <div class="brand-sub">Rasulgarh Industrial Estate, BBSR</div>
+        <div class="brand-sub">Satya Vihar, Rasulgarh, BBSR</div>
       </div>
     </div>
     <div class="header-actions">
+      <button class="btn btn-outline btn-sm" id="themeToggleBtn" onclick="toggleDarkMode()" style="color:white; border-color:rgba(255,255,255,0.3); padding:4px 8px;" title="Dark / Light Mode">🌙</button>
       <div class="sync-badge" id="cloudSyncStatus">
         <span class="sync-dot" id="syncDot"></span> <span id="syncText">Live Cloud</span>
       </div>
       <div class="user-badge">
-        <span>👤</span> <strong id="activeStaffDisplay">Dipak Rout</strong>
+        <span>👤</span> <strong id="activeStaffDisplay">Dipak</strong>
         <span class="user-role-tag admin" id="activeStaffRoleTag">ADMIN</span>
       </div>
       <button class="btn btn-outline btn-sm admin-only-btn" id="headerStaffManageBtn" onclick="openStaffManageModal()" style="display:none; color:white; border-color:rgba(255,255,255,0.4); padding:4px 8px;">👥 Staff</button>
@@ -491,7 +495,7 @@
     <div id="view-dashboard" class="view-panel active">
       <div style="margin-bottom:12px;">
         <h2 style="font-size:17px; font-weight:800; color:var(--primary);">📊 Executive Command Center</h2>
-        <div style="font-size:11px; color:var(--text-muted);">Real-time business performance & priority alerts</div>
+        <div style="font-size:11px; color:var(--text-muted);">Real-time business performance & advanced analytical tools</div>
       </div>
 
       <div class="grid-4" style="margin-bottom:12px;">
@@ -500,29 +504,29 @@
           <div style="font-size:18px; font-weight:900; margin-top:3px;" id="dashTodayRecv">₹0</div>
           <div style="font-size:9.5px; opacity:0.75; margin-top:2px;">Cleared Collections</div>
         </div>
-        <div class="card" style="margin-bottom:0; background:#fff5f5; border-top:3.5px solid var(--danger);">
+        <div class="card" style="margin-bottom:0; background:var(--danger-bg); border-top:3.5px solid var(--danger);">
           <div style="font-size:10px; color:var(--danger); font-weight:800;">PENDING DUES</div>
           <div style="font-size:18px; font-weight:900; color:var(--danger); margin-top:3px;" id="dashTotalDue">₹0</div>
           <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;">Recoverable balance</div>
         </div>
-        <div class="card" style="margin-bottom:0; background:#f0fdf4; border-top:3.5px solid var(--success);">
-          <div style="font-size:10px; color:#166534; font-weight:800;">SERVICE SCHEDULES</div>
-          <div style="font-size:18px; font-weight:900; color:#15803d; margin-top:3px;" id="dashActiveServices">0 Calls</div>
+        <div class="card" style="margin-bottom:0; background:var(--success-bg); border-top:3.5px solid var(--success);">
+          <div style="font-size:10px; color:var(--success); font-weight:800;">SERVICE SCHEDULES</div>
+          <div style="font-size:18px; font-weight:900; color:var(--success); margin-top:3px;" id="dashActiveServices">0 Calls</div>
           <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;">Pending & Warranty</div>
         </div>
-        <div class="card" style="margin-bottom:0; background:#f0f9ff; border-top:3.5px solid var(--cyan);">
-          <div style="font-size:10px; color:#0369a1; font-weight:800;">STOCK INVENTORIES</div>
-          <div style="font-size:18px; font-weight:900; color:#0369a1; margin-top:3px;" id="dashTotalItems">0 Items</div>
+        <div class="card" style="margin-bottom:0; background:rgba(0,180,216,0.1); border-top:3.5px solid var(--cyan);">
+          <div style="font-size:10px; color:var(--cyan); font-weight:800;">STOCK INVENTORIES</div>
+          <div style="font-size:18px; font-weight:900; color:var(--cyan); margin-top:3px;" id="dashTotalItems">0 Items</div>
           <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;" id="dashTotalClients">0 Clients</div>
         </div>
       </div>
 
-      <div class="card" style="background:#ffffff;">
+      <div class="card" style="background:var(--card);">
         <div class="card-header">
-          <strong class="card-title">⚡ Quick Action Terminal</strong>
+          <strong class="card-title">⚡ Quick Action Terminal & Pro Tools</strong>
           <span class="badge badge-info">1-Tap Fast Workflow</span>
         </div>
-        <div class="grid-4">
+        <div class="grid-4" style="margin-bottom:10px;">
           <button class="btn btn-outline" onclick="openOrderModal()" style="padding:12px; flex-direction:column; gap:4px;">
             <span style="font-size:20px;">📦</span>
             <span>Create Order</span>
@@ -539,6 +543,10 @@
             <span style="font-size:20px;">💰</span>
             <span>Cash Closing</span>
           </button>
+        </div>
+        <div class="grid-2">
+          <button class="btn btn-accent btn-sm" onclick="openProfitCalculatorModal()">🧮 Profit Margin & Markup Calculator</button>
+          <button class="btn btn-primary btn-sm" onclick="openSalesReportModal()">📈 Employee Sales Performance & Ageing</button>
         </div>
       </div>
 
@@ -568,7 +576,7 @@
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div>
           <h2 style="font-size:16px; font-weight:800; color:var(--primary);">📦 Product & Chemical Orders</h2>
-          <div style="font-size:11px; color:var(--text-muted);">Pending orders dispatch, invoices & cancellation logs</div>
+          <div style="font-size:11px; color:var(--text-muted);">Pending orders dispatch, invoices & discount calculations</div>
         </div>
         <button class="btn btn-accent btn-sm" onclick="openOrderModal()">+ New Order</button>
       </div>
@@ -649,13 +657,13 @@
           <div style="font-size:10px; color:var(--text-muted); font-weight:800;">RECEIVED</div>
           <div style="font-size:16px; font-weight:800; color:var(--success);" id="metricTotalRecv">₹0</div>
         </div>
-        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:10px; border-top:3.5px solid var(--danger); background:#fffafb;" onclick="filterBilling('due')">
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:10px; border-top:3.5px solid var(--danger); background:var(--danger-bg);" onclick="filterBilling('due')">
           <div style="font-size:10px; color:var(--danger); font-weight:800;">DUE REMAINING</div>
           <div style="font-size:16px; font-weight:800; color:var(--danger);" id="metricTotalDue">₹0</div>
         </div>
       </div>
 
-      <div class="card" style="padding:10px 14px; background:#f8fafc; margin-bottom:12px;">
+      <div class="card" style="padding:10px 14px; background:var(--card); margin-bottom:12px;">
         <div class="form-group" style="margin-bottom:0;">
           <label class="form-label" style="color:var(--danger); font-weight:800;">👤 Filter Due Amount by Booked Staff:</label>
           <select id="billingEmployeeFilter" onchange="filterBillingByEmployee(this.value)">
@@ -713,6 +721,7 @@
     <div class="fab-action-btn" onclick="openLeadModal(); toggleFabMenu();">🎯 New Lead</div>
     <div class="fab-action-btn" onclick="openServiceCallModal(); toggleFabMenu();">🛠️ Service Call</div>
     <div class="fab-action-btn" onclick="openAddCustomerModal(); toggleFabMenu();">👤 Register Client</div>
+    <div class="fab-action-btn" onclick="openProfitCalculatorModal(); toggleFabMenu();">🧮 Profit Calculator</div>
   </div>
   <div id="fabMainBtn" onclick="toggleFabMenu()">+</div>
 
@@ -771,14 +780,14 @@
 
     <div style="font-size:20px; font-weight:900; color:var(--primary); margin-bottom:10px;" id="upiAmountText">₹0</div>
 
-    <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:10px 12px; text-align:left; font-size:11px; line-height:1.55; margin-bottom:12px;">
-      <div style="color:var(--primary); font-weight:800; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-bottom:4px;">
+    <div style="background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:10px 12px; text-align:left; font-size:11px; line-height:1.55; margin-bottom:12px;">
+      <div style="color:var(--primary); font-weight:800; border-bottom:1px solid var(--border); padding-bottom:4px; margin-bottom:4px;">
         🏦 TWINTOWN EXPRESS SERVICES PVT LTD
       </div>
       <div><strong>Bank:</strong> ICICI Bank (Cuttack Road, BBSR)</div>
-      <div><strong>A/C No:</strong> <span style="font-family:monospace; font-weight:700; color:#0f172a;">150005501249</span></div>
-      <div><strong>IFSC Code:</strong> <span style="font-family:monospace; font-weight:700; color:#0f172a;">ICIC0001500</span></div>
-      <div><strong>UPI ID:</strong> <span style="color:#0284c7; font-weight:800;">eazypay.574099310@icici</span></div>
+      <div><strong>A/C No:</strong> <span style="font-family:monospace; font-weight:700; color:var(--text-main);">150005501249</span></div>
+      <div><strong>IFSC Code:</strong> <span style="font-family:monospace; font-weight:700; color:var(--text-main);">ICIC0001500</span></div>
+      <div><strong>UPI ID:</strong> <span style="color:var(--cyan); font-weight:800;">eazypay.574099310@icici</span></div>
     </div>
 
     <button class="btn btn-primary btn-block" onclick="closeUpiModal()">✓ Done / Payment Received</button>
@@ -795,7 +804,7 @@
     <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:8px;">
       Please sign on screen to verify satisfactory machine service completion.
     </div>
-    <canvas id="signCanvas" width="400" height="180" style="background:#ffffff; border:1.8px solid #cbd5e1; border-radius:10px; width:100%; touch-action:none;"></canvas>
+    <canvas id="signCanvas" width="400" height="180" style="background:#ffffff; border:1.8px solid var(--border); border-radius:10px; width:100%; touch-action:none;"></canvas>
     <div style="display:flex; justify-content:space-between; margin-top:8px;">
       <button class="btn btn-outline btn-sm" onclick="clearSignCanvas()">Clear Signature</button>
       <button class="btn btn-primary btn-sm" onclick="saveCustomerSignature()">✓ Confirm Signature</button>
@@ -803,7 +812,67 @@
   </div>
 </div>
 
-<!-- 0.2 ADMIN STAFF MANAGEMENT MODAL -->
+<!-- 0.2 PROFIT MARGIN & MARKUP CALCULATOR MODAL -->
+<div id="profitCalculatorModal" class="auth-overlay" style="display:none; z-index:3250;">
+  <div class="auth-card" style="max-width:480px;">
+    <div class="card-header">
+      <strong class="card-title">🧮 Profit Margin & Markup Calculator</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeProfitCalculatorModal()">✕</button>
+    </div>
+    <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px;">
+      Calculate dealer cost, desired profit margin %, markup %, and final selling price with GST automatically.
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Dealer Purchase Cost (₹)</label>
+        <input type="number" id="calcCostPrice" placeholder="1000" oninput="calculateProfitMetrics()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Desired Profit Margin (%)</label>
+        <input type="number" id="calcMarginPct" placeholder="25" oninput="calculateProfitMetrics()">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">GST Rate (%)</label>
+        <select id="calcGstRate" onchange="calculateProfitMetrics()">
+          <option value="18">18% GST (Standard Spares/Machinery)</option>
+          <option value="12">12% GST</option>
+          <option value="28">28% GST</option>
+          <option value="0">0% GST</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Calculated Selling MRP (₹)</label>
+        <input type="number" id="calcSellingPrice" readonly style="font-weight:800; color:var(--success); background:var(--bg) !important;">
+      </div>
+    </div>
+    <div style="background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px; margin-top:8px; font-size:12px; line-height:1.6;">
+      <div>💰 Gross Profit Amount: <strong id="resProfitAmt" style="color:var(--success);">₹0</strong></div>
+      <div>📊 Effective Markup %: <strong id="resMarkupPct" style="color:var(--primary);">0%</strong></div>
+      <div>📑 GST Tax Included: <strong id="resGstAmt" style="color:var(--cyan);">₹0</strong></div>
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="closeProfitCalculatorModal()">Done</button>
+  </div>
+</div>
+
+<!-- 0.3 EMPLOYEE SALES & AGEING ANALYSIS REPORT MODAL -->
+<div id="salesReportModal" class="auth-overlay" style="display:none; z-index:3250;">
+  <div class="auth-card" style="max-width:680px; width:95%;">
+    <div class="card-header">
+      <strong class="card-title">📈 Employee Sales Performance & Ageing Analysis</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeSalesReportModal()">✕</button>
+    </div>
+    <div class="sub-tabs" style="margin-bottom:10px;">
+      <button class="sub-tab-btn active" id="btnRepSales" onclick="switchReportTab('sales')">👤 Employee Month-wise Sales</button>
+      <button class="sub-tab-btn" id="btnRepAgeing" onclick="switchReportTab('ageing')">⏳ Due Ageing Analysis</button>
+    </div>
+    <div id="reportContentArea" style="max-height:380px; overflow-y:auto; font-size:12px;"></div>
+    <button class="btn btn-outline btn-block" style="margin-top:12px;" onclick="closeSalesReportModal()">Close Report</button>
+  </div>
+</div>
+
+<!-- 0.4 ADMIN STAFF MANAGEMENT MODAL -->
 <div id="staffManageModal" class="auth-overlay" style="display:none; z-index:3300;">
   <div class="auth-card" style="max-width:540px;">
     <div class="card-header">
@@ -818,7 +887,7 @@
   </div>
 </div>
 
-<!-- 0.3 ADMIN LEDGER INVOICE EDIT MODAL -->
+<!-- 0.5 ADMIN LEDGER INVOICE EDIT MODAL -->
 <div id="editLedgerModal" class="auth-overlay" style="display:none; z-index:3400;">
   <div class="auth-card" style="max-width:480px;">
     <div class="card-header">
@@ -843,7 +912,7 @@
     <div class="grid-2">
       <div class="form-group">
         <label class="form-label">Due Amount (₹)</label>
-        <input type="number" id="editLedgerDueAmt" readonly style="background:#f1f5f9 !important; font-weight:800; color:var(--danger);">
+        <input type="number" id="editLedgerDueAmt" readonly style="background:var(--bg) !important; font-weight:800; color:var(--danger);">
       </div>
       <div class="form-group">
         <label class="form-label">Payment Mode</label>
@@ -864,7 +933,7 @@
   </div>
 </div>
 
-<!-- 1. Stock Detail Modal (Original Restored) -->
+<!-- 1. Stock Detail Modal -->
 <div id="stockDetailModal" class="auth-overlay" style="display:none; z-index:2500;">
   <div class="auth-card" style="max-width:580px;">
     <div class="card-header">
@@ -874,7 +943,7 @@
 
     <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;" id="detMeta"></div>
 
-    <div class="grid-3" style="background:#f8fafc; padding:10px; border-radius:10px; margin-bottom:12px; text-align:center; border:1px solid #e2e8f0;">
+    <div class="grid-3" style="background:var(--bg); padding:10px; border-radius:10px; margin-bottom:12px; text-align:center; border:1px solid var(--border);">
       <div>
         <div style="font-size:10px; color:var(--text-muted); font-weight:800;">DEALER PRICE</div>
         <div style="font-size:15px; font-weight:800; color:var(--primary);" id="detDealer">₹0</div>
@@ -889,9 +958,9 @@
       </div>
     </div>
 
-    <div id="detDescWrap" style="background:#f0f9ff; border:1.5px solid #bae6fd; padding:10px; border-radius:10px; margin-bottom:12px; font-size:12px;">
-      <strong style="color:#0369a1; display:block; margin-bottom:4px;">🛠️ Technical Data / Specifications:</strong>
-      <div id="detDesc" style="color:#0f172a; line-height:1.45;"></div>
+    <div id="detDescWrap" style="background:rgba(0,180,216,0.1); border:1.5px solid var(--cyan); padding:10px; border-radius:10px; margin-bottom:12px; font-size:12px;">
+      <strong style="color:var(--cyan); display:block; margin-bottom:4px;">🛠️ Technical Data / Specifications:</strong>
+      <div id="detDesc" style="color:var(--text-main); line-height:1.45;"></div>
     </div>
 
     <div style="display:flex; gap:8px; margin-bottom:12px;">
@@ -899,7 +968,7 @@
     </div>
 
     <div style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:8px;">📋 Sales History (Sold To Customers):</div>
-    <div id="detSalesHistory" style="max-height:240px; overflow-y:auto; border:1px solid #f1f5f9; border-radius:8px; padding:4px;"></div>
+    <div id="detSalesHistory" style="max-height:240px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; padding:4px;"></div>
   </div>
 </div>
 
@@ -1018,11 +1087,11 @@
   </div>
 </div>
 
-<!-- 5. Order Modal (Clean Table Format Restored) -->
+<!-- 5. Order Modal (With MRP & Discount % Column Support) -->
 <div id="orderModal" class="auth-overlay" style="display:none;">
-  <div class="auth-card" style="max-width:580px;">
+  <div class="auth-card" style="max-width:680px; width:95%;">
     <div class="card-header">
-      <strong class="card-title" id="orderModalTitle">Multi-Item Product Order</strong>
+      <strong class="card-title" id="orderModalTitle">Multi-Item Product Order with Discount %</strong>
       <button class="btn btn-outline btn-sm" onclick="closeOrderModal()">✕</button>
     </div>
     <input type="hidden" id="editOrderId">
@@ -1050,13 +1119,15 @@
       </div>
     </div>
 
-    <label class="form-label">Order Items (Search Direct from Stock):</label>
+    <label class="form-label">Order Items (MRP & Discount % auto-calculates final price with GST):</label>
     <table class="items-table">
       <thead>
         <tr>
           <th>Product / Chemical Item</th>
-          <th style="width:75px;">Qty</th>
-          <th style="width:90px;">Rate (₹)</th>
+          <th style="width:60px;">Qty</th>
+          <th style="width:80px;">MRP (₹)</th>
+          <th style="width:70px;">Disc %</th>
+          <th style="width:85px;">Rate (₹)</th>
           <th style="width:80px;">Total</th>
           <th style="width:25px;"></th>
         </tr>
@@ -1065,10 +1136,10 @@
     </table>
     <button class="btn btn-outline btn-sm" onclick="addOrderItemRow()" style="margin-bottom:10px;">+ Add Product Item</button>
 
-    <div class="grid-3" style="background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #e2e8f0;">
+    <div class="grid-3" style="background:var(--bg); padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid var(--border);">
       <div>
         <label class="form-label">Total Amount</label>
-        <input type="number" id="ordTotalAmt" readonly style="font-weight:800; background:#f1f5f9 !important;">
+        <input type="number" id="ordTotalAmt" readonly style="font-weight:800; background:var(--card) !important;">
       </div>
       <div>
         <label class="form-label">Advance Recv (₹)</label>
@@ -1076,7 +1147,7 @@
       </div>
       <div>
         <label class="form-label">Due (₹)</label>
-        <input type="number" id="ordDueAmt" readonly style="font-weight:800; color:var(--danger); background:#f1f5f9 !important;">
+        <input type="number" id="ordDueAmt" readonly style="font-weight:800; color:var(--danger); background:var(--card) !important;">
       </div>
     </div>
 
@@ -1147,7 +1218,7 @@
       <textarea id="srvProblem" rows="2" placeholder="Symptoms..."></textarea>
     </div>
 
-    <div id="srvCompletedFields" style="display:none; background:#f0fdf4; border:1px solid #bbf7d0; padding:10px; border-radius:8px; margin-bottom:10px;">
+    <div id="srvCompletedFields" style="display:none; background:var(--success-bg); border:1px solid var(--border); padding:10px; border-radius:8px; margin-bottom:10px;">
       <div class="grid-2">
         <div class="form-group">
           <label class="form-label">Completion Date</label>
@@ -1164,7 +1235,7 @@
         <input type="text" id="srvActionDone" placeholder="Replaced ceramic plunger & valve seals">
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-        <span style="font-size:11px; font-weight:700; color:#166534;" id="srvSignStatus">Customer Sign: Pending</span>
+        <span style="font-size:11px; font-weight:700; color:var(--success);" id="srvSignStatus">Customer Sign: Pending</span>
         <button class="btn btn-outline btn-sm" onclick="openSignatureModal()">✍️ Take Customer Signature</button>
       </div>
     </div>
@@ -1227,43 +1298,7 @@
   </div>
 </div>
 
-<!-- 8. Machinery Modal -->
-<div id="machineItemModal" class="auth-overlay" style="display:none;">
-  <div class="auth-card">
-    <div class="card-header">
-      <strong class="card-title" id="machModalTitle">Machinery Catalog Item</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeMachineModal()">✕</button>
-    </div>
-    <input type="hidden" id="editMachId">
-    <div class="form-group">
-      <label class="form-label">Machine Model Name</label>
-      <input type="text" id="mName" placeholder="e.g. AR Triplex 200 Bar Commercial Washer">
-    </div>
-    <div class="grid-2">
-      <div class="form-group">
-        <label class="form-label">Pump Model</label>
-        <input type="text" id="mPump" placeholder="AR 15.20 / Hawk">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Motor Specs</label>
-        <input type="text" id="mMotor" placeholder="5 HP 3-Phase 1440 RPM">
-      </div>
-    </div>
-    <div class="grid-2">
-      <div class="form-group">
-        <label class="form-label">Pressure (Bar)</label>
-        <input type="number" id="mBar" placeholder="200">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Standard Price (₹)</label>
-        <input type="number" id="mPrice" placeholder="85000">
-      </div>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveMachineAction()">💾 Save Machine</button>
-  </div>
-</div>
-
-<!-- 9. Customer Profile Modal -->
+<!-- 8. Customer Profile Modal -->
 <div id="customerModal" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="card-header">
@@ -1316,21 +1351,21 @@
     </div>
 
     <div class="grid-3" style="margin-bottom:12px;">
-      <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:10px; border-radius:8px; text-align:center;">
-        <div style="font-size:10px; color:#166534; font-weight:800;">CASH COLLECTED</div>
-        <div style="font-size:16px; font-weight:800; color:#15803d;" id="closeCashAmt">₹0</div>
+      <div style="background:var(--success-bg); border:1px solid var(--border); padding:10px; border-radius:8px; text-align:center;">
+        <div style="font-size:10px; color:var(--success); font-weight:800;">CASH COLLECTED</div>
+        <div style="font-size:16px; font-weight:800; color:var(--success);" id="closeCashAmt">₹0</div>
       </div>
-      <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:10px; border-radius:8px; text-align:center;">
-        <div style="font-size:10px; color:#1e40af; font-weight:800;">UPI / ONLINE</div>
-        <div style="font-size:16px; font-weight:800; color:#1d4ed8;" id="closeUpiAmt">₹0</div>
+      <div style="background:rgba(0,180,216,0.1); border:1px solid var(--border); padding:10px; border-radius:8px; text-align:center;">
+        <div style="font-size:10px; color:var(--cyan); font-weight:800;">UPI / ONLINE</div>
+        <div style="font-size:16px; font-weight:800; color:var(--cyan);" id="closeUpiAmt">₹0</div>
       </div>
-      <div style="background:#faf5ff; border:1px solid #e9d5ff; padding:10px; border-radius:8px; text-align:center;">
-        <div style="font-size:10px; color:#6b21a8; font-weight:800;">BANK / CHEQUE</div>
-        <div style="font-size:16px; font-weight:800; color:#7e22ce;" id="closeBankAmt">₹0</div>
+      <div style="background:rgba(245,158,11,0.1); border:1px solid var(--border); padding:10px; border-radius:8px; text-align:center;">
+        <div style="font-size:10px; color:var(--warning); font-weight:800;">BANK / CHEQUE</div>
+        <div style="font-size:16px; font-weight:800; color:var(--warning);" id="closeBankAmt">₹0</div>
       </div>
     </div>
 
-    <div style="background:#f8fafc; border:1.2px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:12px;">
+    <div style="background:var(--bg); border:1.2px solid var(--border); border-radius:10px; padding:12px; margin-bottom:12px;">
       <div style="font-size:12px; font-weight:800; color:var(--primary); margin-bottom:8px;">💵 Cash Drawer Denomination Count:</div>
       <div class="grid-3" style="font-size:11.5px; row-gap:8px;">
         <div>₹500 x <input type="number" id="note500" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
@@ -1340,7 +1375,7 @@
         <div>₹20 &nbsp;x <input type="number" id="note20" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
         <div>₹10 &nbsp;x <input type="number" id="note10" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
       </div>
-      <div style="margin-top:10px; display:flex; justify-content:space-between; font-weight:800; font-size:12.5px; border-top:1px dashed #cbd5e1; padding-top:6px;">
+      <div style="margin-top:10px; display:flex; justify-content:space-between; font-weight:800; font-size:12.5px; border-top:1px dashed var(--border); padding-top:6px;">
         <span>Total Counted Physical Cash:</span>
         <span id="denomTotalDisplay" style="color:var(--primary);">₹0</span>
       </div>
@@ -1353,11 +1388,20 @@
   </div>
 </div>
 
-<!-- 11. INVOICE PRINT MODAL (EXACT ORIGINAL TALLY STYLE RESTORED) -->
+<!-- 11. INVOICE PRINT MODAL (IGST vs CGST/SGST TOGGLE & CORRECT OFFICE DETAILS) -->
 <div id="invoicePrintModal" class="auth-overlay" style="display:none; z-index:3000;">
   <div class="auth-card" style="max-width:740px; width:95%;">
     <div class="card-header no-print">
-      <strong class="card-title">🖨️ GST Tax Invoice Preview</strong>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <strong class="card-title">🖨️ GST Tax Invoice Preview</strong>
+        <div style="background:var(--bg); padding:4px 8px; border-radius:6px; font-size:11px; display:flex; align-items:center; gap:6px; border:1px solid var(--border);">
+          <span>Tax Type:</span>
+          <select id="taxTypeToggle" onchange="updateInvoiceTaxMode()" style="padding:2px 6px; font-size:11px; border:none; background:transparent; font-weight:800; color:var(--primary);">
+            <option value="INTRA">Intra-State (CGST 9% + SGST 9%)</option>
+            <option value="INTER">Inter-State (IGST 18%)</option>
+          </select>
+        </div>
+      </div>
       <div style="display:flex; gap:6px;">
         <button class="btn btn-print btn-sm" onclick="executeInvoicePrint()">🖨️ Print / Save as PDF</button>
         <button class="btn btn-outline btn-sm" onclick="closeInvoicePrintModal()">✕ Close</button>
@@ -1370,9 +1414,9 @@
           <div>
             <h2 style="color:#0a2540; font-size:16px; font-weight:900;">TWIN TOWN EXPRESS SERVICES PVT LTD</h2>
             <div style="font-size:10.5px; color:#475569; line-height:1.4; margin-top:3px;">
-              Plot No: 148, Rasulgarh Industrial Estate, Bhubaneswar, Odisha - 751010<br>
-              <strong>GSTIN:</strong> 21AAACT9812K1Z9 | <strong>Email:</strong> accounts@twintownexpress.com<br>
-              <strong>Ph:</strong> +91 8917465040 / 0674-2580123
+              PLOT: 1270/8666, SATYA VIHAR, RASHULGARH, BHUBANESWAR-751010<br>
+              <strong>GSTIN:</strong> 21AAACT9812K1ZT | <strong>Email:</strong> info@ttespl.com<br>
+              <strong>Ph:</strong> +91 8917465040 / 0674-3175599
             </div>
           </div>
           <div style="text-align:right;">
@@ -1412,18 +1456,20 @@
         </table>
 
         <div style="display:flex; justify-content:flex-end; margin-top:6px;">
-          <div style="width:260px; font-size:11.5px;">
+          <div style="width:260px; font-size:11.5px;" id="invoiceTaxBreakdownBox">
             <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
               <span>Total Taxable Amount:</span>
               <strong id="invPrintTaxable">₹0</strong>
             </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
-              <span>CGST (9%):</span>
-              <span id="invPrintCgst">₹0</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
-              <span>SGST (9%):</span>
-              <span id="invPrintSgst">₹0</span>
+            <div id="taxLinesContainer">
+              <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
+                <span>CGST (9%):</span>
+                <span id="invPrintCgst">₹0</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
+                <span>SGST (9%):</span>
+                <span id="invPrintSgst">₹0</span>
+              </div>
             </div>
             <div style="display:flex; justify-content:space-between; border-top:1.5px solid #0a2540; padding-top:4px; font-size:13px; font-weight:800; color:#0a2540;">
               <span>Grand Total:</span>
@@ -1466,7 +1512,7 @@ window.DB_PREFIX = DB_PREFIX;
 
 function esc(str) {
   if (!str) return '';
-  return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  return String(str).replace(/'/g, "\'").replace(/"/g, '&quot;');
 }
 
 function getStored(key, defaultVal) {
@@ -1491,9 +1537,22 @@ function setStored(key, val) {
 }
 window.setStored = setStored;
 
+/* Dark / Light Mode Toggle */
+let currentTheme = getStored("THEME", "light");
+function applyTheme(theme) {
+  currentTheme = theme;
+  document.body.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeToggleBtn');
+  if (btn) btn.textContent = (theme === 'dark') ? '☀️' : '🌙';
+  setStored("THEME", theme);
+}
+function toggleDarkMode() {
+  applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+}
+
 /* Clean Production Initialization */
 let registeredEmployees = getStored("STAFF", [
-  { id: 1, name: "Dipak Rout", role: "Admin", mobile: "8917465040", pass: "1234", pin: "0000" }
+  { id: 1, name: "Dipak Kumar Rout", role: "Admin", mobile: "8917465040", pass: "1234", pin: "0000" }
 ]);
 window.registeredEmployees = registeredEmployees;
 
@@ -1542,7 +1601,7 @@ function checkAuthSession() {
   } else {
     document.getElementById('authScreen').style.display = 'none';
     document.getElementById('mainAppWrapper').style.display = 'block';
-    document.getElementById('activeStaffDisplay').textContent = currentUser.name;
+    document.getElementById('activeStaffDisplay').textContent = currentUser.name.split(' ')[0];
     const roleTag = document.getElementById('activeStaffRoleTag');
     if (roleTag) {
       roleTag.textContent = currentUser.role || 'STAFF';
@@ -1644,8 +1703,6 @@ function refreshAllData() {
   renderOrders();
   renderServices();
   renderStockList();
-  renderMachineryList();
-  renderCustomerList();
   renderBilling('all');
   renderChatMessages();
   updateGlobalReminders();
@@ -1669,6 +1726,160 @@ function populateDropdownsAndDatalists() {
 }
 window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
 
+/* ================= PROFIT MARGIN & MARKUP CALCULATOR ================= */
+function openProfitCalculatorModal() {
+  document.getElementById('calcCostPrice').value = "";
+  document.getElementById('calcMarginPct').value = "25";
+  document.getElementById('calcGstRate').value = "18";
+  document.getElementById('calcSellingPrice').value = "";
+  document.getElementById('resProfitAmt').textContent = "₹0";
+  document.getElementById('resMarkupPct').textContent = "0%";
+  document.getElementById('resGstAmt').textContent = "₹0";
+  document.getElementById('profitCalculatorModal').style.display = 'flex';
+}
+function closeProfitCalculatorModal() {
+  document.getElementById('profitCalculatorModal').style.display = 'none';
+}
+
+function calculateProfitMetrics() {
+  const cost = parseFloat(document.getElementById('calcCostPrice').value) || 0;
+  const margin = parseFloat(document.getElementById('calcMarginPct').value) || 0;
+  const gstRate = parseFloat(document.getElementById('calcGstRate').value) || 0;
+
+  if (cost <= 0) return;
+
+  // Selling Price (Excl GST) = Cost / (1 - Margin/100)
+  const basePrice = cost / (1 - (margin / 100));
+  const profitAmt = basePrice - cost;
+  const markupPct = (profitAmt / cost) * 100;
+  const gstAmt = basePrice * (gstRate / 100);
+  const finalMrp = basePrice + gstAmt;
+
+  document.getElementById('calcSellingPrice').value = finalMrp.toFixed(2);
+  document.getElementById('resProfitAmt').textContent = '₹' + profitAmt.toFixed(2);
+  document.getElementById('resMarkupPct').textContent = markupPct.toFixed(1) + '%';
+  document.getElementById('resGstAmt').textContent = '₹' + gstAmt.toFixed(2);
+}
+
+/* ================= EMPLOYEE SALES & AGEING ANALYSIS REPORTS ================= */
+let currentReportTab = 'sales';
+
+function openSalesReportModal() {
+  document.getElementById('salesReportModal').style.display = 'flex';
+  renderReportContent();
+}
+function closeSalesReportModal() {
+  document.getElementById('salesReportModal').style.display = 'none';
+}
+
+function switchReportTab(tab) {
+  currentReportTab = tab;
+  document.getElementById('btnRepSales').classList.toggle('active', tab === 'sales');
+  document.getElementById('btnRepAgeing').classList.toggle('active', tab === 'ageing');
+  renderReportContent();
+}
+
+function renderReportContent() {
+  const area = document.getElementById('reportContentArea');
+  if (!area) return;
+
+  if (currentReportTab === 'sales') {
+    // Employee-wise Month-wise Sales Performance
+    const empSales = {};
+    registeredEmployees.forEach(e => { empSales[e.name] = { total: 0, months: {} }; });
+
+    ordersData.filter(o => o.status === 'Delivered').forEach(o => {
+      const staff = o.bookedBy || 'Unassigned';
+      if (!empSales[staff]) empSales[staff] = { total: 0, months: {} };
+      empSales[staff].total += (o.totalAmount || 0);
+
+      const monthKey = (o.deliveredDate || o.orderDate || '').substring(0, 7); // YYYY-MM
+      if (monthKey) {
+        empSales[staff].months[monthKey] = (empSales[staff].months[monthKey] || 0) + (o.totalAmount || 0);
+      }
+    });
+
+    let html = `<div style="font-weight:800; color:var(--primary); margin-bottom:8px;">📊 Employee-wise & Month-wise Sales Performance Report</div>`;
+    
+    let hasSales = false;
+    for (const [emp, data] of Object.entries(empSales)) {
+      if (data.total > 0) {
+        hasSales = true;
+        let monthDetails = Object.entries(data.months).map(([m, amt]) => `<span style="background:var(--bg); padding:2px 6px; border-radius:4px; margin-right:4px;">${m}: <strong>₹${amt.toLocaleString('en-IN')}</strong></span>`).join('');
+        html += `
+          <div style="background:var(--card); border:1px solid var(--border); border-radius:8px; padding:10px; margin-bottom:8px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <strong>👤 ${emp}</strong>
+              <span style="color:var(--success); font-weight:800;">Total Billed: ₹${data.total.toLocaleString('en-IN')}</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted);">Months: ${monthDetails || 'No monthly breakdown'}</div>
+          </div>
+        `;
+      }
+    }
+    if (!hasSales) {
+      html += `<div style="text-align:center; padding:20px; color:var(--text-muted);">Abhi tak koi delivered sales record nahi hai.</div>`;
+    }
+    area.innerHTML = html;
+
+  } else {
+    // Ageing Analysis for Dues
+    const today = new Date();
+    let bucket0_30 = 0, bucket30_60 = 0, bucket60_plus = 0;
+    let details0_30 = [], details30_60 = [], details60_plus = [];
+
+    ordersData.filter(o => o.status === 'Delivered' && o.dueAmount > 0).forEach(o => {
+      const invDate = new Date(o.deliveredDate || o.orderDate || today);
+      const diffDays = Math.floor((today - invDate) / (1000 * 60 * 60 * 24));
+
+      if (diffDays <= 30) {
+        bucket0_30 += o.dueAmount;
+        details0_30.push(o);
+      } else if (diffDays <= 60) {
+        bucket30_60 += o.dueAmount;
+        details30_60.push(o);
+      } else {
+        bucket60_plus += o.dueAmount;
+        details60_plus.push(o);
+      }
+    });
+
+    area.innerHTML = `
+      <div style="font-weight:800; color:var(--primary); margin-bottom:8px;">⏳ Accounts Receivable Ageing Analysis Report</div>
+      <div class="grid-3" style="margin-bottom:12px; text-align:center;">
+        <div style="background:var(--success-bg); border:1px solid var(--border); padding:10px; border-radius:8px;">
+          <div style="font-size:10px; font-weight:800; color:var(--success);">0 - 30 DAYS</div>
+          <div style="font-size:15px; font-weight:900; color:var(--success);">₹${bucket0_30.toLocaleString('en-IN')}</div>
+          <div style="font-size:9.5px; color:var(--text-muted);">${details0_30.length} Invoices</div>
+        </div>
+        <div style="background:var(--warning-bg); border:1px solid var(--border); padding:10px; border-radius:8px;">
+          <div style="font-size:10px; font-weight:800; color:var(--warning);">31 - 60 DAYS</div>
+          <div style="font-size:15px; font-weight:900; color:var(--warning);">₹${bucket30_60.toLocaleString('en-IN')}</div>
+          <div style="font-size:9.5px; color:var(--text-muted);">${details30_60.length} Invoices</div>
+        </div>
+        <div style="background:var(--danger-bg); border:1px solid var(--border); padding:10px; border-radius:8px;">
+          <div style="font-size:10px; font-weight:800; color:var(--danger);">60+ DAYS (OVERDUE)</div>
+          <div style="font-size:15px; font-weight:900; color:var(--danger);">₹${bucket60_plus.toLocaleString('en-IN')}</div>
+          <div style="font-size:9.5px; color:var(--text-muted);">${details60_plus.length} Invoices</div>
+        </div>
+      </div>
+      <div style="font-size:11.5px; font-weight:700; color:var(--text-main); margin-bottom:6px;">📋 Overdue & Aging Invoices Breakdown:</div>
+      ${[...details60_plus, ...details30_60, ...details0_30].map(o => `
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:8px; padding:8px 10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong>${o.customerName}</strong> (${o.id})
+            <div style="font-size:10.5px; color:var(--text-muted);">Date: ${o.orderDate} | Staff: ${o.bookedBy}</div>
+          </div>
+          <div style="text-align:right;">
+            <strong style="color:var(--danger);">Due: ₹${o.dueAmount.toLocaleString('en-IN')}</strong>
+            <button class="btn btn-outline btn-sm" style="margin-left:8px; padding:2px 6px; font-size:10px;" onclick="sendDueWhatsApp('${o.id}')">💬 Reminder</button>
+          </div>
+        </div>
+      `).join('') || '<div style="text-align:center; padding:15px; color:var(--text-muted);">Koi pending due invoice nahi hai.</div>'}
+    `;
+  }
+}
+
 /* ================= ADMIN STAFF MANAGEMENT ================= */
 function openStaffManageModal() {
   if (!currentUser || currentUser.role !== 'Admin') {
@@ -1677,12 +1888,12 @@ function openStaffManageModal() {
   }
   const box = document.getElementById('staffManageList');
   box.innerHTML = registeredEmployees.map(emp => `
-    <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:10px; margin-bottom:8px;">
+    <div style="background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:8px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
         <strong>${emp.name}</strong>
         <span class="badge ${emp.role === 'Admin' ? 'badge-delivered' : 'badge-info'}">${emp.role}</span>
       </div>
-      <div style="font-size:11px; color:#475569; margin-bottom:6px;">Mobile: <strong>${emp.mobile}</strong></div>
+      <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Mobile: <strong>${emp.mobile}</strong></div>
       <div style="display:flex; gap:6px;">
         <button class="btn btn-outline btn-sm" onclick="editStaffDetailsPrompt(${emp.id})">✏️ Edit Name / Role / Pass</button>
         ${emp.id !== currentUser.id ? `<button class="btn btn-danger-sm btn-sm" onclick="deleteStaffPrompt(${emp.id})">🗑️ Delete</button>` : ''}
@@ -1736,7 +1947,7 @@ function deleteStaffPrompt(empId) {
   }
 }
 
-/* ================= ADMIN LEDGER BILL MODIFY & DELETE ================= */
+/* ================= ADMIN LEDGER INVOICE EDIT MODAL ================= */
 function openAdminEditLedgerModal(ordId) {
   if (!currentUser || currentUser.role !== 'Admin') {
     alert("Permission Denied: Sirf Admin hi ledger invoice modify kar sakte hain!");
@@ -1866,7 +2077,7 @@ function renderDashboard() {
   } else {
     priorityItems.slice(0, 5).forEach(item => {
       const row = document.createElement('div');
-      row.style.cssText = 'background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:9px 12px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;';
+      row.style.cssText = 'background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:9px 12px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;';
       row.onclick = item.action;
       row.innerHTML = `
         <div>
@@ -1980,7 +2191,7 @@ function triggerFullBackupDownload() {
     orders: ordersData,
     services: serviceCallsData,
     backupDate: new Date().toISOString(),
-    version: "2026.1"
+    version: "2026.2"
   };
 
   const str = JSON.stringify(fullBackup, null, 2);
@@ -2012,15 +2223,12 @@ function processRestoreJSON(event) {
   event.target.value = '';
 }
 
-/* ================= AUTOCOMPLETE ENGINE (UNIFIED ALL 39 MACHINES + NO CATALOG GEAR) ================= */
+/* ================= AUTOCOMPLETE ENGINE ================= */
 function handleCustomerAutocomplete(inputEl, targetInputId) {
   const val = (inputEl.value || '').toLowerCase().trim();
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
   if (!box) return;
-  if (!val || val.length < 1) { 
-    box.style.display = 'none'; 
-    return; 
-  }
+  if (!val || val.length < 1) { box.style.display = 'none'; return; }
 
   const matches = (customerDatabase || []).filter(c => {
     const nameMatch = c.name && c.name.toLowerCase().includes(val);
@@ -2040,7 +2248,7 @@ function handleCustomerAutocomplete(inputEl, targetInputId) {
   `).join('');
 
   html += `
-    <div class="suggestion-item" onmousedown="openAddCustomerModal(); document.querySelectorAll('.solid-suggestion-box').forEach(b => b.style.display='none');" style="background:#f0fdf4 !important; color:#15803d; font-weight:800; border-top:1px solid #bbf7d0;">
+    <div class="suggestion-item" onmousedown="openAddCustomerModal(); document.querySelectorAll('.solid-suggestion-box').forEach(b => b.style.display='none');" style="background:var(--success-bg) !important; color:var(--success); font-weight:800; border-top:1px solid var(--border);">
       <div>➕ Register New Customer: "${esc(val)}"</div>
       <span class="badge badge-delivered" style="font-size:9.5px;">Add New</span>
     </div>
@@ -2151,7 +2359,7 @@ function handleOrderItemInput(inputEl) {
   `).join('');
 
   html += `
-    <div class="suggestion-item" onmousedown="openAddPartModal(); document.querySelectorAll('.solid-suggestion-box').forEach(b => b.style.display='none');" style="background:#f0fdf4 !important; color:#15803d; font-weight:800; border-top:1px solid #bbf7d0;">
+    <div class="suggestion-item" onmousedown="openAddPartModal(); document.querySelectorAll('.solid-suggestion-box').forEach(b => b.style.display='none');" style="background:var(--success-bg) !important; color:var(--success); font-weight:800; border-top:1px solid var(--border);">
       <div>➕ Add New Item to Inventory: "${esc(val)}"</div>
       <span class="badge badge-delivered" style="font-size:9.5px;">Add Item</span>
     </div>
@@ -2167,6 +2375,8 @@ function selectOrderItemSuggestion(el, encName, code, rate, stock) {
   if (!row) return;
   const input = row.querySelector('.item-product-input');
   input.value = code ? `${name} [${code}]` : name;
+  row.querySelector('.item-mrp').value = rate || 0;
+  row.querySelector('.item-disc').value = 0;
   row.querySelector('.item-rate').value = rate || 0;
   row.querySelector('.item-stock-warning').innerHTML = `<span style="color:${(stock > 0) ? 'var(--success)' : 'var(--danger)'}">Stock: ${stock} Pcs</span>`;
   const box = row.querySelector('.solid-suggestion-box');
@@ -2309,16 +2519,16 @@ function renderLeads() {
           btn = `<button class="btn btn-primary btn-sm" onclick="openAttendModal('${lead.id}', ${fs.num})">🛠️ Attend & Record</button>`;
         }
         return `
-          <div style="background:white; border:1px solid #cbd5e1; border-radius:8px; padding:7px 10px; margin-bottom:5px;">
+          <div style="background:var(--card); border:1px solid var(--border); border-radius:8px; padding:7px 10px; margin-bottom:5px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <div>
                 <strong>#${fs.num}: ${fs.label}</strong>
-                <div style="font-size:10.5px; color:#64748b;">Scheduled Due Date: <strong>${fs.dueDate}</strong></div>
+                <div style="font-size:10.5px; color:var(--text-muted);">Scheduled Due Date: <strong>${fs.dueDate}</strong></div>
               </div>
               <div>${tag}</div>
             </div>
             ${fs.attended ? `
-              <div style="font-size:10.5px; color:#1e3a8a; margin-top:4px; background:#f8fafc; padding:4px 8px; border-radius:6px;">
+              <div style="font-size:10.5px; color:var(--primary); margin-top:4px; background:var(--bg); padding:4px 8px; border-radius:6px;">
                 📝 <strong>Done:</strong> ${fs.actionDone} | <strong>Parts:</strong> ${fs.partsReplaced}
               </div>
             ` : `<div style="margin-top:5px; text-align:right;">${btn}</div>`}
@@ -2327,17 +2537,17 @@ function renderLeads() {
       }).join('');
 
       installHtml = `
-        <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:10px; padding:10px; margin-top:8px;">
+        <div style="background:rgba(0,180,216,0.1); border:1.5px solid var(--cyan); border-radius:10px; padding:10px; margin-top:8px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <strong style="font-size:12.5px; color:var(--primary);">🚀 MACHINE INSTALLED & WARRANTY RECORD</strong>
             <span class="badge badge-delivered">Installed: ${ins.installDate}</span>
           </div>
-          <div class="grid-3" style="font-size:11px; margin-bottom:8px; background:white; padding:6px; border-radius:6px;">
+          <div class="grid-3" style="font-size:11px; margin-bottom:8px; background:var(--card); padding:6px; border-radius:6px;">
             <div>Machine SN: <strong>${ins.machineSerial}</strong></div>
             <div>Pump SN: <strong>${ins.pumpSerial}</strong></div>
             <div>Invoice: <strong>${ins.invoiceNo}</strong></div>
           </div>
-          <div style="font-size:11.5px; font-weight:800; color:#1e40af; margin-bottom:6px;">🛡️ 4 FREE SERVICES SCHEDULE:</div>
+          <div style="font-size:11.5px; font-weight:800; color:var(--primary); margin-bottom:6px;">🛡️ 4 FREE SERVICES SCHEDULE:</div>
           ${freeSrvHtml}
         </div>
       `;
@@ -2363,7 +2573,7 @@ function renderLeads() {
         <div>Quoted: <strong>₹${Number(lead.quotedPrice || 0).toLocaleString('en-IN')}</strong></div>
       </div>
 
-      <div style="background:#f8fafc; padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
+      <div style="background:var(--bg); padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
         <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;">
           <span>💬 <strong>Remarks:</strong> ${lead.remarks}</span>
           <span style="color:var(--danger); font-weight:800;">Next Followup: ${lead.followupDate}</span>
@@ -2608,7 +2818,7 @@ function addMonths(dateStr, m) {
   return d.toISOString().split('T')[0];
 }
 
-/* ================= TAB 2: ORDERS (ORIGINAL RESTORED) ================= */
+/* ================= TAB 2: ORDERS (WITH DISCOUNT % COLUMN) ================= */
 function switchOrderSubTab(sub) {
   currentOrderSubTab = sub;
   const btnAct = document.getElementById('btnSubTabActiveOrders');
@@ -2659,7 +2869,7 @@ function renderOrders() {
       statusText = '🚫 Cancelled';
     }
 
-    let itemsHtml = o.items.map(i => `<div>• ${i.name} (Qty: <strong>${i.qty}</strong> @ ₹${i.rate}) = ₹${i.total}</div>`).join('');
+    let itemsHtml = o.items.map(i => `<div>• ${i.name} (Qty: <strong>${i.qty}</strong> @ MRP ₹${i.mrp || i.rate}${i.disc ? ' [-' + i.disc + '%]' : ''} = ₹${i.rate}) = ₹${i.total}</div>`).join('');
     let auditHtml = (o.auditTrail || []).map(a => `<div class="audit-item">• By <strong>${a.by}</strong> at ${a.time} (${a.note})</div>`).join('');
 
     const card = document.createElement('div');
@@ -2677,15 +2887,15 @@ function renderOrders() {
         </div>
       </div>
 
-      <div style="background:#f8fafc; padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
+      <div style="background:var(--bg); padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
         ${itemsHtml}
-        <div style="border-top:1px dashed #cbd5e1; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:800;">
+        <div style="border-top:1px dashed var(--border); margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-weight:800;">
           <span>Total: ₹${Number(o.totalAmount || 0).toLocaleString('en-IN')}</span>
           <span style="color:${o.dueAmount > 0 ? 'var(--danger)' : 'var(--success)'};">Due: ₹${Number(o.dueAmount || 0).toLocaleString('en-IN')}</span>
         </div>
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; color:#475569; margin-bottom:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; color:var(--text-muted); margin-bottom:8px;">
         <div>Pay Mode: <strong>${o.payMode}</strong></div>
         <div>Target Delivery: <strong>${o.deliveryDate}</strong></div>
       </div>
@@ -2698,7 +2908,7 @@ function renderOrders() {
           <button class="btn btn-danger-sm btn-sm" style="flex:1;" onclick="cancelOrderAction('${o.id}')">🚫 Cancel Order</button>
         </div>
       ` : `
-        <div style="background:#fef2f2; border:1px solid #fecaca; padding:6px 10px; border-radius:6px; font-size:11px; color:#b91c1c;">
+        <div style="background:var(--danger-bg); border:1px solid var(--border); padding:6px 10px; border-radius:6px; font-size:11px; color:var(--danger);">
           <strong>Cancellation Note:</strong> ${o.cancelReason || 'Order cancelled by customer/staff.'}
         </div>
       `}
@@ -2748,9 +2958,9 @@ function openOrderModal(orderObj = null) {
     document.getElementById('ordDelDate').value = orderObj.deliveryDate;
     document.getElementById('ordRecvAmt').value = orderObj.recvAmount;
     document.getElementById('ordPayMode').value = orderObj.payMode;
-    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.rate));
+    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.mrp || it.rate, it.disc || 0));
   } else {
-    title.textContent = "New Multi-Item Product Order";
+    title.textContent = "New Multi-Item Product Order with Discount %";
     editId.value = "";
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('ordCustSearchInput').value = "";
@@ -2766,7 +2976,7 @@ function openOrderModal(orderObj = null) {
 }
 function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
 
-function addOrderItemRow(itemName = "", qty = 1, rate = 0) {
+function addOrderItemRow(itemName = "", qty = 1, mrp = 0, disc = 0) {
   const tbody = document.getElementById('orderItemsTbody');
   const tr = document.createElement('tr');
 
@@ -2776,8 +2986,10 @@ function addOrderItemRow(itemName = "", qty = 1, rate = 0) {
       <div class="solid-suggestion-box"></div>
       <div class="item-stock-warning" style="font-size:10px; color:var(--text-muted); margin-top:2px;"></div>
     </td>
-    <td><input type="number" class="item-qty" value="${qty}" min="1" oninput="calcOrderTotals()" style="width:70px; font-size:14px; font-weight:700; padding:10px 8px;"></td>
-    <td><input type="number" class="item-rate" value="${rate}" oninput="calcOrderTotals()" style="width:85px; font-size:14px; font-weight:700; padding:10px 8px;"></td>
+    <td><input type="number" class="item-qty" value="${qty}" min="1" oninput="calcOrderTotals()" style="width:55px; font-size:13px; font-weight:700; padding:8px 4px;"></td>
+    <td><input type="number" class="item-mrp" value="${mrp}" oninput="calcDiscountedRate(this)" style="width:75px; font-size:13px; font-weight:700; padding:8px 4px;"></td>
+    <td><input type="number" class="item-disc" value="${disc}" min="0" max="100" oninput="calcDiscountedRate(this)" style="width:65px; font-size:13px; font-weight:700; padding:8px 4px;" placeholder="0%"></td>
+    <td><input type="number" class="item-rate" value="${mrp}" readonly style="width:75px; font-size:13px; font-weight:700; padding:8px 4px; background:var(--bg) !important;" title="Auto-calculated price with discount"></td>
     <td class="item-row-total" style="font-weight:bold; font-size:12px;">₹0</td>
     <td><button class="btn btn-danger-sm" onclick="this.closest('tr').remove(); calcOrderTotals();">✕</button></td>
   `;
@@ -2786,10 +2998,23 @@ function addOrderItemRow(itemName = "", qty = 1, rate = 0) {
   if(itemName) {
     const p = resolvePartFromSearch(itemName);
     if(p) {
-      tr.querySelector('.item-rate').value = rate || p.rate;
+      tr.querySelector('.item-mrp').value = mrp || p.rate;
+      tr.querySelector('.item-rate').value = mrp || p.rate;
       tr.querySelector('.item-stock-warning').innerHTML = `<span style="color:${p.stock > 0 ? 'var(--success)' : 'var(--danger)'}">Stock: ${p.stock} Pcs</span>`;
     }
   }
+  calcOrderTotals();
+}
+
+function calcDiscountedRate(inputEl) {
+  const row = inputEl.closest('tr');
+  if(!row) return;
+  const mrp = parseFloat(row.querySelector('.item-mrp').value) || 0;
+  const disc = parseFloat(row.querySelector('.item-disc').value) || 0;
+
+  // Automatically compute discounted price
+  const discountedRate = mrp * (1 - (disc / 100));
+  row.querySelector('.item-rate').value = Math.round(discountedRate * 100) / 100;
   calcOrderTotals();
 }
 
@@ -2802,14 +3027,14 @@ function calcOrderTotals() {
     r.querySelector('.item-row-total').textContent = '₹' + sub.toLocaleString('en-IN');
     total += sub;
   });
-  document.getElementById('ordTotalAmt').value = total;
+  document.getElementById('ordTotalAmt').value = Math.round(total * 100) / 100;
   calcOrderBalance();
 }
 
 function calcOrderBalance() {
   const total = parseFloat(document.getElementById('ordTotalAmt').value) || 0;
   const recv = parseFloat(document.getElementById('ordRecvAmt').value) || 0;
-  document.getElementById('ordDueAmt').value = Math.max(0, total - recv);
+  document.getElementById('ordDueAmt').value = Math.max(0, Math.round((total - recv) * 100) / 100);
 }
 
 function saveOrderAction() {
@@ -2828,6 +3053,8 @@ function saveOrderAction() {
   document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
     const pName = r.querySelector('.item-product-input').value.trim();
     const qty = parseInt(r.querySelector('.item-qty').value) || 0;
+    const mrp = parseFloat(r.querySelector('.item-mrp').value) || 0;
+    const disc = parseFloat(r.querySelector('.item-disc').value) || 0;
     const rate = parseFloat(r.querySelector('.item-rate').value) || 0;
     const part = resolvePartFromSearch(pName);
 
@@ -2837,6 +3064,8 @@ function saveOrderAction() {
         name: part ? part.name : pName,
         hsn: part ? (part.hsn || "84139190") : "84139190",
         qty,
+        mrp,
+        disc,
         rate,
         total: qty * rate
       });
@@ -2896,7 +3125,7 @@ function saveOrderAction() {
   renderOrders();
   renderBilling('all');
   renderDashboard();
-  alert("Order successfully placed! Delivery hone ke baad ledger me transfer hoga.");
+  alert("Order successfully placed with discount! Delivery hone ke baad ledger me transfer hoga.");
 }
 
 /* ================= DIRECT CLOUD DELIVER FUNCTION ================= */
@@ -2964,7 +3193,9 @@ function shareOrderWhatsApp(ordId) {
   window.open(url, '_blank');
 }
 
-/* ================= GST INVOICE PRINT (WORKING ORIGINAL RESTORED) ================= */
+/* ================= GST INVOICE PRINT & IGST VS CGST/SGST TOGGLE ================= */
+let activePrintOrderObj = null;
+
 function executeInvoicePrint() {
   window.focus();
   setTimeout(() => {
@@ -2975,6 +3206,7 @@ function executeInvoicePrint() {
 function openInvoicePrintModal(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
+  activePrintOrderObj = o;
 
   const cust = customerDatabase.find(c => c.phone === o.phone || c.name === o.customerName);
 
@@ -2987,9 +3219,20 @@ function openInvoicePrintModal(ordId) {
   document.getElementById('invPrintPayMode').textContent = o.payMode;
   document.getElementById('invPrintStaff').textContent = o.bookedBy;
 
+  // Default to Intra-State (CGST + SGST)
+  document.getElementById('taxTypeToggle').value = "INTRA";
+  updateInvoiceTaxMode();
+
+  document.getElementById('invoicePrintModal').style.display = 'flex';
+}
+
+function updateInvoiceTaxMode() {
+  if (!activePrintOrderObj) return;
+  const o = activePrintOrderObj;
+  const taxMode = document.getElementById('taxTypeToggle').value;
+
   const taxable = Math.round((o.totalAmount / 1.18) * 100) / 100;
   const tax = Math.round((o.totalAmount - taxable) * 100) / 100;
-  const halfTax = Math.round((tax / 2) * 100) / 100;
 
   const tbody = document.getElementById('invPrintItemsTbody');
   tbody.innerHTML = (o.items || []).map((it, idx) => {
@@ -2997,7 +3240,7 @@ function openInvoicePrintModal(ordId) {
     return `
       <tr>
         <td>${idx + 1}</td>
-        <td><strong>${it.name}</strong></td>
+        <td><strong>${it.name}</strong> ${it.disc ? '<span style="color:#ff6b35;">(-' + it.disc + '%)</span>' : ''}</td>
         <td>${it.hsn || '84139190'}</td>
         <td>${it.qty}</td>
         <td>₹${Number(it.rate).toLocaleString('en-IN')}</td>
@@ -3006,15 +3249,34 @@ function openInvoicePrintModal(ordId) {
     `;
   }).join('');
 
+  const taxLinesBox = document.getElementById('taxLinesContainer');
+  if (taxMode === 'INTRA') {
+    const halfTax = Math.round((tax / 2) * 100) / 100;
+    taxLinesBox.innerHTML = `
+      <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
+        <span>CGST (9%):</span>
+        <span id="invPrintCgst">₹${halfTax.toFixed(2)}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
+        <span>SGST (9%):</span>
+        <span id="invPrintSgst">₹${halfTax.toFixed(2)}</span>
+      </div>
+    `;
+  } else {
+    taxLinesBox.innerHTML = `
+      <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
+        <span>IGST (18%):</span>
+        <span id="invPrintIgst">₹${tax.toFixed(2)}</span>
+      </div>
+    `;
+  }
+
   document.getElementById('invPrintTaxable').textContent = '₹' + taxable.toFixed(2);
-  document.getElementById('invPrintCgst').textContent = '₹' + halfTax.toFixed(2);
-  document.getElementById('invPrintSgst').textContent = '₹' + halfTax.toFixed(2);
   document.getElementById('invPrintGrandTotal').textContent = '₹' + Number(o.totalAmount).toLocaleString('en-IN');
   document.getElementById('invPrintRecv').textContent = '₹' + Number(o.recvAmount).toLocaleString('en-IN');
   document.getElementById('invPrintDue').textContent = '₹' + Number(o.dueAmount).toLocaleString('en-IN');
-
-  document.getElementById('invoicePrintModal').style.display = 'flex';
 }
+
 function closeInvoicePrintModal() {
   document.getElementById('invoicePrintModal').style.display = 'none';
 }
@@ -3069,7 +3331,7 @@ function sendClosingSummaryWhatsApp() {
   const physicalCash = document.getElementById('denomTotalDisplay').textContent;
   const staff = currentUser ? currentUser.name : "Staff";
 
-  const msg = `*DAILY CASH & SALES CLOSING REPORT*%0A*Company:* TTESPL Rasulgarh, BBSR%0A*Date:* ${today}%0A*Verified By:* ${staff}%0A------------------------------------%0A*Cash Collected:* ${cash}%0A*UPI / Online:* ${upi}%0A*Bank / Cheque:* ${bank}%0A*Total Drawer Cash Count:* ${physicalCash}%0A------------------------------------%0A_Generated via TTESPL ERP Portal_`;
+  const msg = `*DAILY CASH & SALES CLOSING REPORT*%0A*Company:* TTESPL Satya Vihar, BBSR%0A*Date:* ${today}%0A*Verified By:* ${staff}%0A------------------------------------%0A*Cash Collected:* ${cash}%0A*UPI / Online:* ${upi}%0A*Bank / Cheque:* ${bank}%0A*Total Drawer Cash Count:* ${physicalCash}%0A------------------------------------%0A_Generated via TTESPL ERP Portal_`;
   window.open(`https://wa.me/?text=${msg}`, '_blank');
 }
 
@@ -3127,7 +3389,7 @@ function renderServices() {
       <div style="font-size:11.5px; margin-bottom:8px;"><strong>Reported Issue:</strong> ${s.problem}</div>
 
       ${s.status === 'Work Completed' ? `
-        <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
+        <div style="background:var(--success-bg); border:1px solid var(--border); padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
           <div>✅ <strong>Action Done:</strong> ${s.actionDone}</div>
           <div>⚙️ <strong>Part Deducted:</strong> ${s.partUsed || 'None'}</div>
         </div>
@@ -3322,7 +3584,7 @@ const CAT_COLORS = {
 };
 
 function getCatBadge(cat) {
-  const c = CAT_COLORS[cat] || { bg: '#f1f5f9', color: '#334155', border: '#e2e8f0' };
+  const c = CAT_COLORS[cat] || { bg: 'var(--bg)', color: 'var(--text-main)', border: 'var(--border)' };
   return `<span class="badge" style="background:${c.bg}; color:${c.color}; border:1px solid ${c.border}; font-size:10px;">${cat}</span>`;
 }
 
@@ -3381,7 +3643,7 @@ function stockCardHtml(item) {
       <div style="flex:1;">
         <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px;">
           ${badgeHtml}
-          <span style="font-size:11px; font-weight:700; color:#0284c7;">${item.code || ''}</span>
+          <span style="font-size:11px; font-weight:700; color:var(--cyan);">${item.code || ''}</span>
         </div>
         <strong style="font-size:13.5px; color:var(--primary); line-height:1.25;">${item.name}</strong>
         <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
@@ -3390,11 +3652,11 @@ function stockCardHtml(item) {
       </div>
       <div style="text-align:right; min-width:115px;">
         <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}" style="margin-bottom:3px;">${item.stock} in stock</span>
-        <div style="font-size:11px; color:#475569;">Dealer: ₹${Number(item.dealerPrice || 0).toLocaleString('en-IN')}</div>
+        <div style="font-size:11px; color:var(--text-muted);">Dealer: ₹${Number(item.dealerPrice || 0).toLocaleString('en-IN')}</div>
         <div style="font-size:13px; font-weight:800; color:var(--primary);">MRP: ₹${Number(item.rate || 0).toLocaleString('en-IN')}</div>
       </div>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid #f1f5f9; padding-top:6px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid var(--border); padding-top:6px;">
       <span style="font-size:10.5px; color:var(--cyan); font-weight:700;">🔍 Tap to view specs & sales</span>
       <div style="display:flex; gap:6px;">
         <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(${item.id})">✏️ Edit</button>
@@ -3533,7 +3795,8 @@ function openStockDetailModal(id) {
   document.getElementById('detStock').textContent = item.stock;
 
   const descWrap = document.getElementById('detDescWrap');
-  const detailsText = item.specs ? `${item.specs}\n${item.desc || ''}` : (item.desc || 'Standard commercial machinery / care product.');
+  const detailsText = item.specs ? `${item.specs}
+${item.desc || ''}` : (item.desc || 'Standard commercial machinery / care product.');
   if (detailsText) {
     descWrap.style.display = 'block';
     document.getElementById('detDesc').innerText = detailsText;
@@ -3559,7 +3822,7 @@ function openStockDetailModal(id) {
     histBox.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:14px;">Abhi tak koi sale nahi hui hai is item ki.</div>`;
   } else {
     histBox.innerHTML = rows.map(r => `
-      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:7px 10px; margin-bottom:5px; font-size:11.5px;">
+      <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:7px 10px; margin-bottom:5px; font-size:11.5px;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <strong>${r.customerName}</strong>
           <span class="badge ${r.status === 'Delivered' ? 'badge-delivered' : 'badge-pending'}" style="font-size:9.5px;">${r.status}</span>
@@ -3678,9 +3941,11 @@ function deleteStockItem(id) {
 }
 
 function exportInventoryCSV() {
-  let csv = "ID,Name,Code,Category,SubCategory,Machine,DealerPrice,MRP,Stock,HSN\n";
+  let csv = "ID,Name,Code,Category,SubCategory,Machine,DealerPrice,MRP,Stock,HSN
+";
   sampleInventory.forEach(i => {
-    csv += `"${i.id}","${(i.name||'').replace(/"/g, '""')}","${i.code||''}","${i.category||''}","${i.subCategory||''}","${i.machine||''}","${i.dealerPrice||0}","${i.rate||0}","${i.stock||0}","${i.hsn||''}"\n`;
+    csv += `"${i.id}","${(i.name||'').replace(/"/g, '""')}","${i.code||''}","${i.category||''}","${i.subCategory||''}","${i.machine||''}","${i.dealerPrice||0}","${i.rate||0}","${i.stock||0}","${i.hsn||''}"
+`;
   });
   downloadFile(csv, "TTESPL_Master_Inventory.csv", "text/csv");
 }
@@ -3699,11 +3964,11 @@ function customerCardHtml(cust) {
         ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteCustomer(${cust.id})">🗑️</button>` : ''}
       </div>
     </div>
-    <div class="grid-2" style="font-size:11.5px; color:#475569;">
+    <div class="grid-2" style="font-size:11.5px; color:var(--text-muted);">
       <div>📍 ${cust.address || 'Odisha'}</div>
       <div>📧 ${cust.email || 'N/A'}</div>
     </div>
-    <div style="font-size:11px; color:#64748b; margin-top:5px;">GSTIN: <strong>${cust.gst || 'Unregistered'}</strong></div>
+    <div style="font-size:11px; color:var(--text-muted); margin-top:5px;">GSTIN: <strong>${cust.gst || 'Unregistered'}</strong></div>
   `;
 }
 
@@ -3728,134 +3993,6 @@ function deleteCustomer(id) {
     populateDropdownsAndDatalists();
   }
 }
-
-/* Machinery Catalog */
-function renderMachineryList() {
-  const c = document.getElementById('machineryListContainer');
-  if(!c) return;
-  c.innerHTML = '';
-  document.getElementById('totalMachBadge').textContent = `${machineryDatabase.length} Machines`;
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
-
-  machineryDatabase.forEach(mach => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <strong style="font-size:14.5px; color:var(--primary);">🚜 ${mach.name}</strong>
-          <div style="font-size:11px; color:var(--text-muted);">Pump: ${mach.pump} | Motor: ${mach.motor}</div>
-        </div>
-        <div style="text-align:right;">
-          <span class="badge badge-info">${mach.bar} Bar</span>
-          <div style="font-size:13px; font-weight:800; color:var(--primary);">₹${Number(mach.price || 0).toLocaleString('en-IN')}</div>
-        </div>
-      </div>
-      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px; border-top:1px solid #f1f5f9; padding-top:6px;">
-        <button class="btn btn-outline btn-sm" onclick="editMachinePrompt(${mach.id})">✏️ Edit</button>
-        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteMachineAction(${mach.id})">🗑️</button>` : ''}
-      </div>
-    `;
-    c.appendChild(card);
-  });
-}
-window.renderMachineryList = renderMachineryList;
-
-function openAddMachineModal(mObj = null) {
-  const title = document.getElementById('machModalTitle');
-  const editId = document.getElementById('editMachId');
-  if(mObj) {
-    title.textContent = "Edit Machinery Details";
-    editId.value = mObj.id;
-    document.getElementById('mName').value = mObj.name;
-    document.getElementById('mPump').value = mObj.pump;
-    document.getElementById('mMotor').value = mObj.motor;
-    document.getElementById('mBar').value = mObj.bar;
-    document.getElementById('mPrice').value = mObj.price;
-  } else {
-    title.textContent = "Add Machine to Catalog";
-    editId.value = "";
-    document.getElementById('mName').value = "";
-    document.getElementById('mPump').value = "AR Triplex Pump";
-    document.getElementById('mMotor').value = "5 HP 3-Phase";
-    document.getElementById('mBar').value = "200";
-    document.getElementById('mPrice').value = "85000";
-  }
-  document.getElementById('machineItemModal').style.display = 'flex';
-}
-function closeMachineModal() { document.getElementById('machineItemModal').style.display = 'none'; }
-
-function saveMachineAction() {
-  const editId = document.getElementById('editMachId').value;
-  const name = document.getElementById('mName').value.trim();
-  const pump = document.getElementById('mPump').value.trim();
-  const motor = document.getElementById('mMotor').value.trim();
-  const bar = parseInt(document.getElementById('mBar').value) || 0;
-  const price = parseFloat(document.getElementById('mPrice').value) || 0;
-
-  if(!name) { alert("Please enter machine model name!"); return; }
-
-  let savedMach = null;
-
-  if(editId) {
-    const item = machineryDatabase.find(x => x.id === parseInt(editId));
-    if(item) { item.name = name; item.pump = pump; item.motor = motor; item.bar = bar; item.price = price; savedMach = item; }
-  } else {
-    savedMach = { id: Date.now(), name, pump, motor, bar, price };
-    machineryDatabase.unshift(savedMach);
-  }
-
-  setStored("MACHINERY", machineryDatabase);
-
-  if (savedMach && window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
-    window.cloudSync.saveDoc("MACHINERY", savedMach);
-  }
-
-  closeMachineModal();
-  renderMachineryList();
-  populateDropdownsAndDatalists();
-  alert("Machinery catalog updated!");
-}
-
-function editMachinePrompt(id) {
-  const it = machineryDatabase.find(x => x.id === id);
-  if(it) openAddMachineModal(it);
-}
-
-function deleteMachineAction(id) {
-  if (!currentUser || currentUser.role !== 'Admin') {
-    alert("Permission Denied: Sirf Admin hi Machine delete kar sakte hain!");
-    return;
-  }
-  if(confirm("Delete this machine from catalog?")) {
-    machineryDatabase = machineryDatabase.filter(x => x.id !== id);
-    if(window.cloudSync && typeof window.cloudSync.deleteItem === 'function') {
-      window.cloudSync.deleteItem("MACHINERY", id);
-    }
-    setStored("MACHINERY", machineryDatabase);
-    renderMachineryList();
-    populateDropdownsAndDatalists();
-  }
-}
-
-/* Customer Directory */
-const CUST_RENDER_CAP = 50;
-
-function renderCustomerList() {
-  const c = document.getElementById('customerListContainer');
-  if(!c) return;
-  c.innerHTML = '';
-  const totalCust = document.getElementById('totalCustBadge');
-  if (totalCust) totalCust.textContent = `${customerDatabase.length} Registered Clients`;
-
-  customerDatabase.slice(0, CUST_RENDER_CAP).forEach(cust => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = customerCardHtml(cust);
-    c.appendChild(card);
-  });
-}
-window.renderCustomerList = renderCustomerList;
 
 function openAddCustomerModal(cObj = null) {
   const title = document.getElementById('custModalTitle');
@@ -3916,7 +4053,7 @@ function saveCustomerAction() {
   }
 
   closeCustomerModal();
-  renderCustomerList();
+  renderStockList();
   renderDashboard();
   populateDropdownsAndDatalists();
   alert("Customer saved & synced to cloud!");
@@ -3979,7 +4116,7 @@ function renderBilling(filterType, empFilter = "ALL") {
           ` : ''}
         </div>
       </div>
-      <div class="grid-3" style="background:#f8fafc; padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
+      <div class="grid-3" style="background:var(--bg); padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
         <div>Billed: ₹${Number(o.totalAmount || 0).toLocaleString('en-IN')}</div>
         <div>Recv: ₹${Number(o.recvAmount || 0).toLocaleString('en-IN')}</div>
         <div>Due: <strong style="color:var(--danger);">₹${Number(o.dueAmount || 0).toLocaleString('en-IN')}</strong></div>
@@ -4032,15 +4169,17 @@ function collectDuePayment(ordId) {
 function sendDueWhatsApp(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
-  const msg = `*PAYMENT REMINDER - TTESPL*%0A*Customer:* ${o.customerName}%0A*Invoice:* ${o.id}%0A*Pending Due Amount:* Rs.${o.dueAmount}%0APlease clear the pending amount at your earliest.%0AThank you, TTESPL Rasulgarh, Bhubaneswar.`;
+  const msg = `*PAYMENT REMINDER - TTESPL*%0A*Customer:* ${o.customerName}%0A*Invoice:* ${o.id}%0A*Pending Due Amount:* Rs.${o.dueAmount}%0APlease clear the pending amount at your earliest.%0AThank you, TTESPL Satya Vihar, Bhubaneswar.`;
   const url = o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
   window.open(url, '_blank');
 }
 
 function exportLedgerCSV() {
-  let csv = "Invoice,Customer,Phone,Total,Received,Due,Mode,Staff,Date\n";
+  let csv = "Invoice,Customer,Phone,Total,Received,Due,Mode,Staff,Date
+";
   ordersData.filter(o => o.status === 'Delivered').forEach(o => {
-    csv += `"${o.id}","${o.customerName}","${o.phone}","${o.totalAmount}","${o.recvAmount}","${o.dueAmount}","${o.payMode}","${o.bookedBy}","${o.orderDate}"\n`;
+    csv += `"${o.id}","${o.customerName}","${o.phone}","${o.totalAmount}","${o.recvAmount}","${o.dueAmount}","${o.payMode}","${o.bookedBy}","${o.orderDate}"
+`;
   });
   downloadFile(csv, "TTESPL_Ledger.csv", "text/csv");
 }
@@ -4272,6 +4411,7 @@ function switchTab(tab, el) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  applyTheme(currentTheme);
   checkAuthSession();
   if (sampleInventory.length <= 1) {
     const payload = await getMasterDataPayload();
@@ -4291,19 +4431,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 </script>
 
 <script src="live-sync.js?v=7"></script>
-<script>
-setInterval(() => {
-  const syncText = document.getElementById('syncText');
-  const syncDot = document.getElementById('syncDot');
-  if (syncText && syncText.textContent.includes('Uploading')) {
-    setTimeout(() => {
-      if (syncText && syncText.textContent.includes('Uploading')) {
-        syncText.textContent = 'Live Cloud';
-        if (syncDot) syncDot.className = 'sync-dot';
-      }
-    }, 2500);
-  }
-}, 3000);
-</script>
 </body>
 </html>
