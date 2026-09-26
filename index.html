@@ -343,20 +343,21 @@
     .no-print { display: none !important; }
   }
 
+  /* Tally Style Invoice Format (Restored) */
   .invoice-box { 
-    border: 1.5px solid #0a2540; padding: 14px; border-radius: 8px; 
+    border: 1.5px solid #0a2540; padding: 16px; border-radius: 8px; 
     background: white; color: #111827; font-size: 11.5px; 
     width: 100%; box-sizing: border-box; overflow-x: auto; 
   }
   .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0a2540; padding-bottom: 10px; }
   .inv-table { 
-    width: 100%; border-collapse: collapse; margin: 10px 0; 
+    width: 100%; border-collapse: collapse; margin: 12px 0; 
     font-size: 11px; table-layout: fixed; word-wrap: break-word; 
   }
   .inv-table th, .inv-table td { 
-    border: 1px solid #cbd5e1; padding: 5px 6px; text-align: left; overflow: hidden; 
+    border: 1px solid #cbd5e1; padding: 6px 6px; text-align: left; overflow: hidden; 
   }
-  .inv-table th { background: #f1f5f9; font-weight: 700; }
+  .inv-table th { background: #f1f5f9; font-weight: 700; color: #0f172a; }
 </style>
 </head>
 <body>
@@ -562,7 +563,7 @@
       <div id="leadsListContainer"></div>
     </div>
 
-    <!-- TAB 2: ORDERS (WITH CANCELLED SUB-TAB) -->
+    <!-- TAB 2: ORDERS -->
     <div id="view-orders" class="view-panel">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div>
@@ -672,7 +673,6 @@
     <!-- TAB 6: WHATSAPP PREMIUM LIVE GROUP CHAT -->
     <div id="view-chat" class="view-panel">
       <div class="chat-box-card">
-        <!-- WhatsApp Header -->
         <div class="chat-header-bar">
           <div style="display:flex; align-items:center; gap:10px;">
             <div class="wa-group-avatar">TT</div>
@@ -690,10 +690,8 @@
           📷 Photo compress ho rahi hai...
         </div>
 
-        <!-- WhatsApp Wallpaper Chat Stream -->
         <div class="chat-stream" id="chatMessagesContainer"></div>
 
-        <!-- WhatsApp Floating Input Bar -->
         <div class="chat-input-bar">
           <div class="wa-input-pill">
             <span style="font-size:18px; cursor:pointer;" onclick="document.getElementById('chatInputMessage').focus()">😊</span>
@@ -866,7 +864,7 @@
   </div>
 </div>
 
-<!-- 1. Stock Detail Modal -->
+<!-- 1. Stock Detail Modal (Original Restored) -->
 <div id="stockDetailModal" class="auth-overlay" style="display:none; z-index:2500;">
   <div class="auth-card" style="max-width:580px;">
     <div class="card-header">
@@ -1020,7 +1018,7 @@
   </div>
 </div>
 
-<!-- 5. Order Modal (Restored Original Clean Table Structure) -->
+<!-- 5. Order Modal (Clean Table Format Restored) -->
 <div id="orderModal" class="auth-overlay" style="display:none;">
   <div class="auth-card" style="max-width:580px;">
     <div class="card-header">
@@ -1355,7 +1353,7 @@
   </div>
 </div>
 
-<!-- 11. Invoice Print Modal -->
+<!-- 11. INVOICE PRINT MODAL (EXACT ORIGINAL TALLY STYLE RESTORED) -->
 <div id="invoicePrintModal" class="auth-overlay" style="display:none; z-index:3000;">
   <div class="auth-card" style="max-width:740px; width:95%;">
     <div class="card-header no-print">
@@ -1402,12 +1400,12 @@
         <table class="inv-table">
           <thead>
             <tr>
-              <th style="width:28px;">#</th>
+              <th style="width:30px;">#</th>
               <th>Description of Goods / Spares</th>
-              <th style="width:68px;">HSN/SAC</th>
-              <th style="width:36px;">Qty</th>
-              <th style="width:68px;">Rate (₹)</th>
-              <th style="width:74px;">Taxable (₹)</th>
+              <th style="width:75px;">HSN/SAC</th>
+              <th style="width:45px;">Qty</th>
+              <th style="width:85px;">Rate (₹)</th>
+              <th style="width:90px;">Taxable (₹)</th>
             </tr>
           </thead>
           <tbody id="invPrintItemsTbody"></tbody>
@@ -2014,7 +2012,7 @@ function processRestoreJSON(event) {
   event.target.value = '';
 }
 
-/* ================= AUTOCOMPLETE ENGINE ================= */
+/* ================= AUTOCOMPLETE ENGINE (UNIFIED ALL 39 MACHINES + NO CATALOG GEAR) ================= */
 function handleCustomerAutocomplete(inputEl, targetInputId) {
   const val = (inputEl.value || '').toLowerCase().trim();
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
@@ -2484,7 +2482,9 @@ function deleteLeadAction(id) {
   }
   if(confirm("Confirm DELETE this Lead permanently?")) {
     leadsData = leadsData.filter(x => x.id !== id);
-    if(window.cloudSync) window.cloudSync.deleteItem("LEADS", id);
+    if(window.cloudSync && typeof window.cloudSync.deleteItem === 'function') {
+      window.cloudSync.deleteItem("LEADS", id);
+    }
     setStored("LEADS", leadsData);
     renderLeads();
     renderDashboard();
@@ -2608,7 +2608,7 @@ function addMonths(dateStr, m) {
   return d.toISOString().split('T')[0];
 }
 
-/* ================= TAB 2: ORDERS ================= */
+/* ================= TAB 2: ORDERS (ORIGINAL RESTORED) ================= */
 function switchOrderSubTab(sub) {
   currentOrderSubTab = sub;
   const btnAct = document.getElementById('btnSubTabActiveOrders');
@@ -2964,7 +2964,7 @@ function shareOrderWhatsApp(ordId) {
   window.open(url, '_blank');
 }
 
-/* ================= GST INVOICE PRINT ================= */
+/* ================= GST INVOICE PRINT (WORKING ORIGINAL RESTORED) ================= */
 function executeInvoicePrint() {
   window.focus();
   setTimeout(() => {
@@ -2979,7 +2979,7 @@ function openInvoicePrintModal(ordId) {
   const cust = customerDatabase.find(c => c.phone === o.phone || c.name === o.customerName);
 
   document.getElementById('invPrintId').textContent = o.id;
-  document.getElementById('invPrintDate').textContent = o.orderDate;
+  document.getElementById('invPrintDate').textContent = o.deliveredDate || o.orderDate;
   document.getElementById('invPrintCustName').textContent = o.customerName;
   document.getElementById('invPrintCustPhone').textContent = o.phone || 'N/A';
   document.getElementById('invPrintCustAddress').textContent = cust ? cust.address : 'Bhubaneswar, Odisha';
@@ -2992,7 +2992,7 @@ function openInvoicePrintModal(ordId) {
   const halfTax = Math.round((tax / 2) * 100) / 100;
 
   const tbody = document.getElementById('invPrintItemsTbody');
-  tbody.innerHTML = o.items.map((it, idx) => {
+  tbody.innerHTML = (o.items || []).map((it, idx) => {
     const itTaxable = Math.round((it.total / 1.18) * 100) / 100;
     return `
       <tr>
@@ -3000,7 +3000,7 @@ function openInvoicePrintModal(ordId) {
         <td><strong>${it.name}</strong></td>
         <td>${it.hsn || '84139190'}</td>
         <td>${it.qty}</td>
-        <td>₹${it.rate}</td>
+        <td>₹${Number(it.rate).toLocaleString('en-IN')}</td>
         <td>₹${itTaxable.toFixed(2)}</td>
       </tr>
     `;
@@ -3667,7 +3667,9 @@ function deleteStockItem(id) {
   }
   if(confirm("Confirm DELETE this item completely from inventory?")) {
     sampleInventory = sampleInventory.filter(x => x.id !== id);
-    if(window.cloudSync) window.cloudSync.deleteItem("INVENTORY", id);
+    if(window.cloudSync && typeof window.cloudSync.deleteItem === 'function') {
+      window.cloudSync.deleteItem("INVENTORY", id);
+    }
     setStored("INVENTORY", sampleInventory);
     renderStockList();
     renderDashboard();
@@ -3717,7 +3719,9 @@ function deleteCustomer(id) {
   }
   if(confirm("Confirm DELETE customer from directory?")) {
     customerDatabase = customerDatabase.filter(x => x.id !== id);
-    if(window.cloudSync) window.cloudSync.deleteItem("CUSTOMERS", id);
+    if(window.cloudSync && typeof window.cloudSync.deleteItem === 'function') {
+      window.cloudSync.deleteItem("CUSTOMERS", id);
+    }
     setStored("CUSTOMERS", customerDatabase);
     renderStockList();
     renderDashboard();
@@ -3825,7 +3829,9 @@ function deleteMachineAction(id) {
   }
   if(confirm("Delete this machine from catalog?")) {
     machineryDatabase = machineryDatabase.filter(x => x.id !== id);
-    if(window.cloudSync) window.cloudSync.deleteItem("MACHINERY", id);
+    if(window.cloudSync && typeof window.cloudSync.deleteItem === 'function') {
+      window.cloudSync.deleteItem("MACHINERY", id);
+    }
     setStored("MACHINERY", machineryDatabase);
     renderMachineryList();
     populateDropdownsAndDatalists();
