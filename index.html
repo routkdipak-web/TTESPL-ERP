@@ -1460,7 +1460,7 @@ function selectMachineSuggestion(targetInputId, encName, price) {
   if (pInput && !pInput.value) pInput.value = price;
 }
 
-  function handleOrderItemInput(inputEl) {
+function handleOrderItemInput(inputEl) {
   const val = inputEl.value.toLowerCase().trim();
   const row = inputEl.closest('tr');
   const box = row.querySelector('.solid-suggestion-box');
