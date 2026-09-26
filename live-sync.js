@@ -1,4 +1,4 @@
-/* TTESPL ERP - Live Sync v7 (Fixed: Race-Condition, Data Overwrite & Realtime Sync) */
+/* TTESPL ERP - Pure Direct Cloud Architecture (LocalStorage Bypassed) */
 (function () {
   'use strict';
 
@@ -9,82 +9,6 @@
     });
   };
   var me = function () { return (typeof currentUser !== 'undefined' && currentUser) ? currentUser.name : ''; };
-
-  var st = document.createElement('style');
-  st.textContent =
-    '.lc-day{align-self:center;background:#fff;color:#64748b;font-size:10.5px;font-weight:700;padding:2px 10px;border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.08)}' +
-    '.lc-tick{font-size:10px;margin-left:3px}.lc-tick.sent{color:#2563eb}' +
-    '.nav-item{position:relative}';
-  document.head.appendChild(st);
-
-  window.updateAdminDeleteVisibility = function () {
-    var isAdmin = (typeof currentUser !== 'undefined' && currentUser && currentUser.role === 'Admin');
-    document.querySelectorAll('.admin-only-btn').forEach(function (btn) {
-      btn.style.display = isAdmin ? 'inline-flex' : 'none';
-    });
-  };
-
-  function refilter(inputId, filterFn, fullFn) {
-    var el = $(inputId); var q = el ? el.value : '';
-    if (q) filterFn(q); else fullFn();
-  }
-
-  var RENDER = {
-    LEADS: function () { if (typeof renderLeads === 'function') renderLeads(); },
-    ORDERS: function () {
-      if (typeof renderOrders === 'function') renderOrders();
-      var f = $('billingEmployeeFilter');
-      if (typeof renderBilling === 'function') renderBilling('all', f && f.value ? f.value : 'ALL');
-    },
-    SERVICES: function () { if (typeof renderServices === 'function') renderServices(); },
-    INVENTORY: function () {
-      if (typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
-      refilter('stockFilterInput', filterStockList, renderStockList);
-    },
-    MACHINERY: function () {
-      if (typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
-      refilter('machFilterInput', filterMachineList, renderMachineryList);
-    },
-    CUSTOMERS: function () {
-      if (typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
-      refilter('custFilterInput', filterCustomerList, renderCustomerList);
-    },
-    STAFF: function () {
-      if (typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
-    }
-  };
-
-  /* Prevent Snapshot Overwrite during local user modifications */
-  var pushingKeys = {};
-
-  window.applyCloudData = function (key, list) {
-    if (!Array.isArray(list)) return;
-    if (pushingKeys[key]) return; // Local write in progress, skip cloud overwrite
-
-    switch (key) {
-      case 'LEADS': leadsData = list; break;
-      case 'ORDERS': ordersData = list; break;
-      case 'SERVICES': serviceCallsData = list; break;
-      case 'INVENTORY': sampleInventory = list; break;
-      case 'MACHINERY': machineryDatabase = list; break;
-      case 'CUSTOMERS': customerDatabase = list; break;
-      case 'STAFF':
-        if (list.length > 0) {
-          registeredEmployees = list;
-        }
-        break;
-      default: return;
-    }
-
-    try { localStorage.setItem(DB_PREFIX + key, JSON.stringify(list)); } catch (e) {}
-    try {
-      if (RENDER[key]) RENDER[key]();
-      if (typeof renderDashboard === 'function') renderDashboard();
-      window.updateAdminDeleteVisibility();
-    } catch (e) {
-      console.error('render ' + key, e);
-    }
-  };
 
   var CFG = {
     apiKey: "AIzaSyAjsq2wbyXmt8_MjEazM9mAYd5vlZW0dy4",
@@ -120,11 +44,32 @@
       db = F.initializeFirestore(app, { experimentalAutoDetectLongPolling: true, ignoreUndefinedProperties: true });
     } catch (e) { db = F.getFirestore(app); }
 
+    // Direct Real-Time Cloud Methods
     window.cloudSync = {
+      // Direct Single Doc Save/Update to Cloud
+      saveDoc: function (key, item) {
+        var col = MAP[key];
+        if (!col || !item || item.id == null) return Promise.resolve();
+        setSync('Saving...', true);
+        return F.setDoc(F.doc(db, col, String(item.id)), item, { merge: true })
+          .then(function () { setSync('Live Cloud', true); })
+          .catch(function (e) { console.error('Cloud Save Error:', e); setSync('Offline', false); });
+      },
+
+      // Direct Single Doc Delete from Cloud
+      deleteItem: function (key, id) {
+        var col = MAP[key];
+        if (!col || id == null) return Promise.resolve();
+        setSync('Deleting...', true);
+        return F.deleteDoc(F.doc(db, col, String(id)))
+          .then(function () { setSync('Live Cloud', true); })
+          .catch(function (e) { console.error('Cloud Delete Error:', e); setSync('Offline', false); });
+      },
+
+      // Batch Sync for Initial Setup
       pushKey: function (key, arr) {
-        var col = MAP[key]; if (!col || !Array.isArray(arr)) return Promise.resolve();
-        pushingKeys[key] = true;
-        setSync('Uploading...', true);
+        var col = MAP[key];
+        if (!col || !Array.isArray(arr)) return Promise.resolve();
         var jobs = [];
         for (var i = 0; i < arr.length; i += 400) {
           var b = F.writeBatch(db);
@@ -133,54 +78,67 @@
           });
           jobs.push(b.commit());
         }
-        return Promise.all(jobs).then(function () { 
-          setTimeout(function() { pushingKeys[key] = false; }, 800);
-          setSync('Live Cloud', true); 
-        }).catch(function (e) { 
-          pushingKeys[key] = false;
-          console.error('push', key, e); 
-          setSync('Live Cloud', true); 
-        });
+        return Promise.all(jobs).then(function () { setSync('Live Cloud', true); });
       },
-      deleteItem: function (key, id) {
-        var col = MAP[key]; if (!col || id == null) return Promise.resolve();
-        return F.deleteDoc(F.doc(db, col, String(id))).catch(function (e) { console.error('delete', e); });
-      },
+
       sendChatMessage: function (msg) {
         return F.setDoc(F.doc(F.collection(db, 'team_messages')), msg);
       },
       setTypingStatus: function (user, isTyping) {
         var id = 'typing_' + String(user).replace(/[^a-zA-Z0-9]/g, '_');
-        return F.setDoc(F.doc(db, 'chat_status', id), { user: user, isTyping: isTyping, updatedAt: Date.now() }, { merge: true })
-          .catch(function () {});
+        return F.setDoc(F.doc(db, 'chat_status', id), { user: user, isTyping: isTyping, updatedAt: Date.now() }, { merge: true });
       }
     };
 
-    // Realtime Snapshot Listeners with pending writes check
+    // Live Snapshot Listeners: Directly Updates In-Memory Arrays & Rerenders
     Object.keys(MAP).forEach(function (key) {
-      F.onSnapshot(F.collection(db, MAP[key]), { includeMetadataChanges: true }, function (snap) {
-        if (snap.metadata.hasPendingWrites) return; // Ignore local inflight updates
-        var list = []; snap.forEach(function (d) { list.push(d.data()); });
-        if (key === 'STAFF' && !list.length) return;
-        window.applyCloudData(key, list);
+      F.onSnapshot(F.collection(db, MAP[key]), function (snap) {
+        var list = [];
+        snap.forEach(function (d) { list.push(d.data()); });
+
+        // Update in-memory live runtime
+        switch (key) {
+          case 'LEADS': leadsData = list; if (typeof renderLeads === 'function') renderLeads(); break;
+          case 'ORDERS': 
+            ordersData = list; 
+            if (typeof renderOrders === 'function') renderOrders(); 
+            if (typeof renderBilling === 'function') renderBilling('all'); 
+            break;
+          case 'SERVICES': serviceCallsData = list; if (typeof renderServices === 'function') renderServices(); break;
+          case 'INVENTORY': 
+            sampleInventory = list; 
+            if (typeof renderStockList === 'function') renderStockList(); 
+            break;
+          case 'MACHINERY': machineryDatabase = list; break;
+          case 'CUSTOMERS': 
+            customerDatabase = list; 
+            if (typeof renderCustomerList === 'function') renderCustomerList(); 
+            break;
+          case 'STAFF': 
+            if (list.length > 0) registeredEmployees = list; 
+            if (typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
+            break;
+        }
+
+        if (typeof renderDashboard === 'function') renderDashboard();
+        if (typeof updateAdminDeleteVisibility === 'function') updateAdminDeleteVisibility();
         setSync('Live Cloud', true);
-      }, function (err) { console.error(key, err); setSync('Offline', false); });
+      }, function (err) {
+        console.error('Stream error:', key, err);
+        setSync('Offline', false);
+      });
     });
 
-    // Realtime Chat Stream (Latest 150 messages)
+    // Realtime Team Chat
     var q = F.query(F.collection(db, 'team_messages'), F.orderBy('timestamp', 'desc'), F.limit(150));
-    F.onSnapshot(q, { includeMetadataChanges: true }, function (snap) {
+    F.onSnapshot(q, function (snap) {
       var msgs = [];
-      snap.forEach(function (d) {
-        var m = d.data(); m.id = d.id; m._pending = d.metadata.hasPendingWrites; msgs.push(m);
-      });
+      snap.forEach(function (d) { msgs.push(d.data()); });
       msgs.reverse();
-      if (typeof onChatSnapshot === 'function') onChatSnapshot(msgs);
-      setSync('Live Cloud', true);
-    }, function () {});
+      teamChatData = msgs;
+      if (typeof renderChatMessages === 'function') renderChatMessages();
+    });
 
-    setSync('Live Cloud', true);
-    window.updateAdminDeleteVisibility();
   }).catch(function (e) {
     console.error('Firebase initialization failed', e);
     setSync('Offline', false);
