@@ -783,11 +783,11 @@
 
     <div class="grid-3" style="background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #e2e8f0;">
       <div>
-        <label class="form-label">Total Bill</label>
+        <label class="form-label">Total Amount</label>
         <input type="number" id="ordTotalAmt" readonly style="font-weight:800; background:#f1f5f9 !important;">
       </div>
       <div>
-        <label class="form-label">Received (₹)</label>
+        <label class="form-label">Advance Recv (₹)</label>
         <input type="number" id="ordRecvAmt" value="0" oninput="calcOrderBalance()">
       </div>
       <div>
@@ -807,10 +807,11 @@
       </select>
     </div>
 
-    <button class="btn btn-primary btn-block" onclick="saveOrderAction()">💾 Save Order & Generate Invoice</button>
+    <!-- Updated button -->
+    <button class="btn btn-primary btn-block" onclick="saveOrderAction()">💾 Save Order Place</button>
   </div>
 </div>
-
+      
 <!-- 6. Service Call Modal -->
 <div id="serviceModal" class="auth-overlay" style="display:none;">
   <div class="auth-card" style="max-width:540px;">
@@ -2116,7 +2117,7 @@ function saveOrderAction() {
       o.dueAmount = due;
       o.payMode = payMode;
       o.auditTrail = o.auditTrail || [];
-      o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Edited order" });
+      o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Edited order details" });
     }
   } else {
     ordersData.unshift({
@@ -2132,7 +2133,7 @@ function saveOrderAction() {
       payMode: payMode,
       status: "Pending",
       bookedBy: staff,
-      auditTrail: [{ by: currentUser.name, time: getNowStr(), note: "Created order" }]
+      auditTrail: [{ by: currentUser.name, time: getNowStr(), note: "Order placed successfully" }]
     });
   }
 
@@ -2140,8 +2141,30 @@ function saveOrderAction() {
   closeOrderModal();
   renderOrders();
   renderBilling('all');
-  alert("Order saved & synced to cloud!");
+  alert("Order successfully placed! Bill will be auto-generated upon delivery confirmation.");
 }
+
+function markOrderDelivered(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(!o) return;
+
+  o.items.forEach(it => {
+    const p = sampleInventory.find(x => x.id === it.id || x.name === it.name);
+    if(p) p.stock = Math.max(0, p.stock - it.qty);
+  });
+
+  o.status = "Delivered";
+  o.auditTrail = o.auditTrail || [];
+  o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Delivered & Tax Invoice Auto-Generated" });
+  
+  setStored("ORDERS", ordersData);
+  setStored("INVENTORY", sampleInventory);
+  alert(`Order ${ordId} Delivered! Tax invoice generated and added to ledger.`);
+  renderOrders();
+  renderStockList();
+  renderBilling('all');
+}
+
 
 /* Admin Only Delete Guard */
 function deleteOrderAction(id) {
