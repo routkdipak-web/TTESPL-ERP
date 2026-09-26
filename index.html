@@ -282,7 +282,6 @@
     .no-print { display: none !important; }
   }
 
-  /* Fixed: Perfect Responsive Container & Fixed-Layout Fit for GST Invoice */
   .invoice-box { 
     border: 1.5px solid #0a2540; padding: 14px; border-radius: 8px; 
     background: white; color: #111827; font-size: 11.5px; 
@@ -515,7 +514,6 @@
         <button class="btn btn-accent btn-sm" onclick="openOrderModal()">+ New Order</button>
       </div>
 
-      <!-- Orders View Sub Tabs -->
       <div class="sub-tabs" style="margin-bottom:12px;">
         <button class="sub-tab-btn active" id="btnSubTabActiveOrders" onclick="switchOrderSubTab('active')">⏳ Active Orders (<span id="countActiveOrders">0</span>)</button>
         <button class="sub-tab-btn" id="btnSubTabCancelledOrders" onclick="switchOrderSubTab('cancelled')">🚫 Cancelled Orders (<span id="countCancelledOrders">0</span>)</button>
@@ -686,7 +684,7 @@
 
 <!-- ================= MODALS ================= -->
 
-<!-- 0. SMART UPI QR MODAL (VERIFIED ICICI BANK DETAILS) -->
+<!-- 0. SMART UPI QR MODAL -->
 <div id="upiModal" class="auth-overlay" style="display:none; z-index:3200;">
   <div class="auth-card" style="max-width:440px; text-align:center;">
     <div class="card-header">
@@ -1286,7 +1284,7 @@
   </div>
 </div>
 
-<!-- 11. Invoice Print Modal (Fixed: Instant Print Fallback & Layout Alignment) -->
+<!-- 11. Invoice Print Modal -->
 <div id="invoicePrintModal" class="auth-overlay" style="display:none; z-index:3000;">
   <div class="auth-card" style="max-width:740px; width:95%;">
     <div class="card-header no-print">
@@ -1424,7 +1422,7 @@ function setStored(key, val) {
 }
 window.setStored = setStored;
 
-/* Clean Production Initialization (Testing Data Purged) */
+/* Clean Production Initialization */
 let registeredEmployees = getStored("STAFF", [
   { id: 1, name: "Dipak Rout", role: "Admin", mobile: "8917465040", pass: "1234", pin: "0000" }
 ]);
@@ -1453,7 +1451,6 @@ let machineryDatabase = getStored("MACHINERY", [
 ]);
 window.machineryDatabase = machineryDatabase;
 
-// Fresh Cleaned Data Collections
 let leadsData = getStored("LEADS", []);
 window.leadsData = leadsData;
 
@@ -1603,7 +1600,7 @@ function populateDropdownsAndDatalists() {
 }
 window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
 
-/* ================= ADMIN STAFF MANAGEMENT (FIXED: PERMANENT CLOUD DELETE) ================= */
+/* ================= ADMIN STAFF MANAGEMENT (WITH CLOUD DELETE PUSH) ================= */
 function openStaffManageModal() {
   if (!currentUser || currentUser.role !== 'Admin') {
     alert("Permission Denied: Only Admin can manage staff.");
@@ -1739,7 +1736,6 @@ function renderDashboard() {
   let todayRecv = 0;
   let totalDue = 0;
 
-  // Ledger stats based on Delivered orders
   ordersData.filter(o => o.status === 'Delivered').forEach(o => {
     if (o.orderDate === today) todayRecv += (o.recvAmount || 0);
     totalDue += (o.dueAmount || 0);
@@ -1938,7 +1934,7 @@ function processRestoreJSON(event) {
   event.target.value = '';
 }
 
-/* ================= SOLID SEARCHABLE AUTOCOMPLETE ENGINE (FIXED: CATALOG GEAR EXCLUDED) ================= */
+/* ================= AUTOCOMPLETE ENGINE (FIXED: UNIFIED ALL 39 MACHINES + CATALOG GEAR EXCLUSION) ================= */
 function handleCustomerAutocomplete(inputEl, targetInputId) {
   const val = (inputEl.value || '').toLowerCase().trim();
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
@@ -1986,25 +1982,55 @@ function selectCustomerSuggestion(targetInputId, encName, phone) {
   }
 }
 
+// Fixed: Searches all 39 machines from Inventory (Machines & Equipment) plus Machinery catalog
 function handleMachineAutocomplete(inputEl, targetInputId) {
   const val = (inputEl.value || '').toLowerCase().trim();
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
   if (!box) return;
   if (!val) { box.style.display = 'none'; return; }
 
-  const matches = (machineryDatabase || []).filter(m =>
+  // 1. Gather all machines from Inventory category "Machines & Equipment"
+  const inventoryMachines = (sampleInventory || []).filter(item => 
+    item.category === 'Machines & Equipment' &&
+    ((item.name && item.name.toLowerCase().includes(val)) ||
+     (item.code && item.code.toLowerCase().includes(val)) ||
+     (item.machine && item.machine.toLowerCase().includes(val)))
+  ).map(item => ({
+    name: item.name,
+    sub: `Code: ${item.code || 'N/A'}${item.machine ? ' | ' + item.machine : ''}`,
+    price: item.rate || item.dealerPrice || 0
+  }));
+
+  // 2. Gather machines from Machinery Database
+  const catalogMachines = (machineryDatabase || []).filter(m =>
     (m.name && m.name.toLowerCase().includes(val)) ||
     (m.pump && m.pump.toLowerCase().includes(val)) ||
     (m.motor && m.motor.toLowerCase().includes(val))
-  ).slice(0, 8);
+  ).map(m => ({
+    name: m.name,
+    sub: `${m.pump || ''} | ${m.motor || ''} | ${m.bar || 0} Bar`,
+    price: m.price || 0
+  }));
 
+  // Merge uniquely by model name
+  const combined = [];
+  const seenNames = new Set();
+  [...inventoryMachines, ...catalogMachines].forEach(m => {
+    const key = m.name.toLowerCase().trim();
+    if (!seenNames.has(key)) {
+      seenNames.add(key);
+      combined.push(m);
+    }
+  });
+
+  const matches = combined.slice(0, 10);
   if (matches.length === 0) { box.style.display = 'none'; return; }
 
   box.innerHTML = matches.map(m => `
     <div class="suggestion-item" onmousedown="selectMachineSuggestion('${targetInputId}', '${encodeURIComponent(m.name || '')}', ${m.price || 0})">
       <div>
         <strong>🚜 ${m.name}</strong>
-        <div class="suggestion-sub">${m.pump || ''} | ${m.motor || ''} | ${m.bar || 0} Bar</div>
+        <div class="suggestion-sub">${m.sub}</div>
       </div>
       <strong style="color:var(--primary); font-size:11.5px;">₹${Number(m.price || 0).toLocaleString('en-IN')}</strong>
     </div>
@@ -2024,7 +2050,7 @@ function selectMachineSuggestion(targetInputId, encName, price) {
   if (pInput && !pInput.value) pInput.value = price;
 }
 
-// Fixed: Exclude "Catalog Equipment" to eliminate duplicate unpriced items
+// Fixed: Exclude "Catalog Equipment" to eliminate duplicate items
 function handleOrderItemInput(inputEl) {
   const val = (inputEl.value || '').toLowerCase().trim();
   const row = inputEl.closest('tr');
@@ -2819,7 +2845,7 @@ function shareOrderWhatsApp(ordId) {
   window.open(url, '_blank');
 }
 
-/* ================= GST INVOICE PRINT (FIXED: SAFE MOBILE PRINT EXECUTION) ================= */
+/* ================= GST INVOICE PRINT ================= */
 function executeInvoicePrint() {
   window.focus();
   setTimeout(() => {
@@ -3731,13 +3757,12 @@ function saveCustomerAction() {
   alert("Customer saved & synced to cloud!");
 }
 
-/* ================= TAB 5: BILLING & LEDGER (ADMIN EDIT & DELETE SUPPORT) ================= */
+/* ================= TAB 5: BILLING & LEDGER ================= */
 function renderBilling(filterType, empFilter = "ALL") {
   let totalBilled = 0;
   let totalRecv = 0;
   let totalDue = 0;
 
-  // Only Delivered or Fully cleared orders enter financial ledger
   const ledgerList = ordersData.filter(o => o.status === 'Delivered');
 
   ledgerList.forEach(o => {
