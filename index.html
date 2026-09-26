@@ -251,6 +251,34 @@
   .items-table th { background: #f8fafc; padding: 7px 6px; font-size: 11px; text-align: left; color: #475569; font-weight: 700; }
   .items-table td { padding: 6px 4px; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
 
+  /* Order item entry — compact card rows (mobile-friendly, replaces plain table rows) */
+  .order-items-list { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 10px; }
+  .order-item-row {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 9px 10px;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.04);
+  }
+  .oi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 6px; }
+  .oi-grid > div { display: flex; flex-direction: column; }
+  .oi-grid label { font-size: 9.5px; color: #64748b; font-weight: 800; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .oi-grid input { padding: 7px 7px; font-size: 12.5px; font-weight: 700; }
+  .oi-summary {
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
+    margin-top: 7px; padding-top: 7px; border-top: 1px dashed #dbe3eb; font-size: 11px; color: #334155;
+  }
+  .oi-line-total b { color: var(--primary); font-size: 12px; }
+  .badge-backorder { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; font-weight: 800; }
+
+  /* Tally-style invoice polish */
+  .invoice-box { box-shadow: 0 4px 18px rgba(10,37,64,0.08); }
+  .inv-table { min-width: 640px; }
+  .inv-table tbody tr:nth-child(even) { background: #f8fafc; }
+  .inv-table td, .inv-table th { white-space: nowrap; }
+  .inv-totals-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; }
+  @media print {
+    .inv-table { min-width: 0 !important; table-layout: fixed !important; }
+    .inv-table td, .inv-table th { white-space: normal !important; }
+  }
+
   .audit-log-box {
     background: #f8fafc; border-top: 1px dashed var(--border); padding: 6px 10px;
     margin-top: 8px; border-radius: 6px; font-size: 10.5px; color: var(--text-muted);
@@ -820,6 +848,14 @@
       </div>
     </div>
 
+    <div style="display:flex; gap:8px; margin-bottom:12px; align-items:flex-end; background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:10px; padding:9px 10px;">
+      <div class="form-group" style="margin-bottom:0; flex:1;">
+        <label class="form-label" style="color:#15803d;">📦 Received Qty (Add to Stock)</label>
+        <input type="number" id="detAddStockQty" placeholder="e.g. 10" min="1">
+      </div>
+      <button class="btn btn-accent btn-sm" onclick="quickAddStock()">➕ Add Stock</button>
+    </div>
+
     <div id="detDescWrap" style="background:#f0f9ff; border:1.5px solid #bae6fd; padding:10px; border-radius:10px; margin-bottom:12px; font-size:12px;">
       <strong style="color:#0369a1; display:block; margin-bottom:4px;">🛠️ Technical Data / Specifications:</strong>
       <div id="detDesc" style="color:#0f172a; line-height:1.45;"></div>
@@ -981,26 +1017,26 @@
       </div>
     </div>
 
-    <label class="form-label">Order Items (Search Direct from Stock):</label>
-    <table class="items-table">
-      <thead>
-        <tr>
-          <th>Product / Chemical Item</th>
-          <th style="width:75px;">Qty</th>
-          <th style="width:90px;">Rate (₹)</th>
-          <th style="width:80px;">Total</th>
-          <th style="width:25px;"></th>
-        </tr>
-      </thead>
-      <tbody id="orderItemsTbody"></tbody>
-    </table>
+    <label class="form-label">Order Items — Machine / Spare / Chemical (Search Direct from Stock):</label>
+    <div id="orderItemsTbody" class="order-items-list"></div>
     <button class="btn btn-outline btn-sm" onclick="addOrderItemRow()" style="margin-bottom:10px;">+ Add Product Item</button>
 
-    <div class="grid-3" style="background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #e2e8f0;">
+    <div class="grid-3" style="background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:8px; border:1px solid #e2e8f0;">
       <div>
-        <label class="form-label">Total Amount</label>
-        <input type="number" id="ordTotalAmt" readonly style="font-weight:800; background:#f1f5f9 !important;">
+        <label class="form-label">Taxable Amt (₹)</label>
+        <input type="number" id="ordTaxableAmt" readonly style="font-weight:700; background:#f1f5f9 !important;">
       </div>
+      <div>
+        <label class="form-label">GST Amt (₹)</label>
+        <input type="number" id="ordGstAmt" readonly style="font-weight:700; background:#f1f5f9 !important;">
+      </div>
+      <div>
+        <label class="form-label">Grand Total (₹)</label>
+        <input type="number" id="ordTotalAmt" readonly style="font-weight:800; background:#f1f5f9 !important; color:var(--primary);">
+      </div>
+    </div>
+
+    <div class="grid-2" style="background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #e2e8f0;">
       <div>
         <label class="form-label">Advance Recv (₹)</label>
         <input type="number" id="ordRecvAmt" value="0" oninput="calcOrderBalance()">
@@ -1331,29 +1367,32 @@
         <table class="inv-table">
           <thead>
             <tr>
-              <th style="width:28px;">#</th>
+              <th style="width:26px;">#</th>
               <th>Description of Goods / Spares</th>
-              <th style="width:68px;">HSN/SAC</th>
-              <th style="width:36px;">Qty</th>
-              <th style="width:68px;">Rate (₹)</th>
-              <th style="width:74px;">Taxable (₹)</th>
+              <th style="width:64px;">HSN/SAC</th>
+              <th style="width:34px;">Qty</th>
+              <th style="width:64px;">MRP (₹)</th>
+              <th style="width:52px;">Disc%</th>
+              <th style="width:70px;">Rate (₹)</th>
+              <th style="width:50px;">GST%</th>
+              <th style="width:78px;">Amount (₹)</th>
             </tr>
           </thead>
           <tbody id="invPrintItemsTbody"></tbody>
         </table>
 
-        <div style="display:flex; justify-content:flex-end; margin-top:6px;">
-          <div style="width:260px; font-size:11.5px;">
+        <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+          <div class="inv-totals-box" style="width:270px; font-size:11.5px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
               <span>Total Taxable Amount:</span>
               <strong id="invPrintTaxable">₹0</strong>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
-              <span>CGST (9%):</span>
+              <span>CGST:</span>
               <span id="invPrintCgst">₹0</span>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
-              <span>SGST (9%):</span>
+              <span>SGST:</span>
               <span id="invPrintSgst">₹0</span>
             </div>
             <div style="display:flex; justify-content:space-between; border-top:1.5px solid #0a2540; padding-top:4px; font-size:13px; font-weight:800; color:#0a2540;">
@@ -2053,7 +2092,7 @@ function selectMachineSuggestion(targetInputId, encName, price) {
 // Fixed: Exclude "Catalog Equipment" to eliminate duplicate items
 function handleOrderItemInput(inputEl) {
   const val = (inputEl.value || '').toLowerCase().trim();
-  const row = inputEl.closest('tr');
+  const row = inputEl.closest('.order-item-row');
   if (!row) return;
   const box = row.querySelector('.solid-suggestion-box');
   if(!box) return;
@@ -2090,12 +2129,13 @@ function handleOrderItemInput(inputEl) {
 
 function selectOrderItemSuggestion(el, encName, code, rate, stock) {
   const name = decodeURIComponent(encName);
-  const row = el.closest('tr');
+  const row = el.closest('.order-item-row');
   if (!row) return;
   const input = row.querySelector('.item-product-input');
   input.value = code ? `${name} [${code}]` : name;
-  row.querySelector('.item-rate').value = rate || 0;
-  row.querySelector('.item-stock-warning').innerHTML = `<span style="color:${(stock > 0) ? 'var(--success)' : 'var(--danger)'}">Stock: ${stock} Pcs</span>`;
+  row.querySelector('.item-mrp').value = rate || 0;
+  const stockTxt = stock < 0 ? `⚠️ Backorder: ${stock} Pcs` : `Stock: ${stock} Pcs`;
+  row.querySelector('.item-stock-warning').innerHTML = `<span style="color:${(stock > 0) ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">${stockTxt}</span>`;
   const box = row.querySelector('.solid-suggestion-box');
   if (box) box.style.display = 'none';
   calcOrderTotals();
@@ -2651,7 +2691,7 @@ function openOrderModal(orderObj = null) {
     document.getElementById('ordDelDate').value = orderObj.deliveryDate;
     document.getElementById('ordRecvAmt').value = orderObj.recvAmount;
     document.getElementById('ordPayMode').value = orderObj.payMode;
-    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.rate));
+    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, (it.mrp != null ? it.mrp : it.rate), (it.discPercent || 0), (it.gstPercent != null ? it.gstPercent : 18)));
   } else {
     title.textContent = "New Multi-Item Product Order";
     editId.value = "";
@@ -2669,43 +2709,63 @@ function openOrderModal(orderObj = null) {
 }
 function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
 
-function addOrderItemRow(itemName = "", qty = 1, rate = 0) {
+function addOrderItemRow(itemName = "", qty = 1, mrp = 0, discPercent = 0, gstPercent = 18) {
   const tbody = document.getElementById('orderItemsTbody');
-  const tr = document.createElement('tr');
+  const row = document.createElement('div');
+  row.className = 'order-item-row';
 
-  tr.innerHTML = `
-    <td class="autocomplete-wrapper">
-      <input type="text" class="item-product-input" value="${itemName}" placeholder="Type item name..." oninput="handleOrderItemInput(this)">
+  row.innerHTML = `
+    <div class="autocomplete-wrapper">
+      <input type="text" class="item-product-input" value="${itemName}" placeholder="Type item name (machine / spare / chemical)..." oninput="handleOrderItemInput(this)">
       <div class="solid-suggestion-box"></div>
-      <div class="item-stock-warning" style="font-size:10px; color:var(--text-muted); margin-top:2px;"></div>
-    </td>
-    <td><input type="number" class="item-qty" value="${qty}" min="1" oninput="calcOrderTotals()" style="width:70px; font-size:14px; font-weight:700; padding:10px 8px;"></td>
-    <td><input type="number" class="item-rate" value="${rate}" oninput="calcOrderTotals()" style="width:85px; font-size:14px; font-weight:700; padding:10px 8px;"></td>
-    <td class="item-row-total" style="font-weight:bold; font-size:12px;">₹0</td>
-    <td><button class="btn btn-danger-sm" onclick="this.closest('tr').remove(); calcOrderTotals();">✕</button></td>
+    </div>
+    <div class="oi-grid">
+      <div><label>Qty</label><input type="number" class="item-qty" value="${qty}" min="1" oninput="calcOrderTotals()"></div>
+      <div><label>MRP ₹</label><input type="number" class="item-mrp" value="${mrp}" min="0" oninput="calcOrderTotals()"></div>
+      <div><label>Disc %</label><input type="number" class="item-disc" value="${discPercent}" min="0" max="100" oninput="calcOrderTotals()"></div>
+      <div><label>GST %</label><input type="number" class="item-gst" value="${gstPercent}" min="0" max="28" oninput="calcOrderTotals()"></div>
+    </div>
+    <div class="oi-summary">
+      <span class="item-stock-warning"></span>
+      <span class="oi-line-total">Rate ₹0 × 0 = ₹0 <b>+GST = ₹0</b></span>
+      <button class="btn btn-danger-sm" onclick="this.closest('.order-item-row').remove(); calcOrderTotals();">✕ Remove</button>
+    </div>
   `;
 
-  tbody.appendChild(tr);
+  tbody.appendChild(row);
   if(itemName) {
     const p = resolvePartFromSearch(itemName);
     if(p) {
-      tr.querySelector('.item-rate').value = rate || p.rate;
-      tr.querySelector('.item-stock-warning').innerHTML = `<span style="color:${p.stock > 0 ? 'var(--success)' : 'var(--danger)'}">Stock: ${p.stock} Pcs</span>`;
+      if(!mrp) row.querySelector('.item-mrp').value = p.rate || 0;
+      const stockTxt = p.stock < 0 ? `⚠️ Backorder: ${p.stock} Pcs` : `Stock: ${p.stock} Pcs`;
+      row.querySelector('.item-stock-warning').innerHTML = `<span style="color:${p.stock > 0 ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">${stockTxt}</span>`;
     }
   }
   calcOrderTotals();
 }
 
 function calcOrderTotals() {
-  let total = 0;
-  document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
+  let taxable = 0, gstTotal = 0, grand = 0;
+  document.querySelectorAll('#orderItemsTbody .order-item-row').forEach(r => {
     const q = parseFloat(r.querySelector('.item-qty').value) || 0;
-    const rate = parseFloat(r.querySelector('.item-rate').value) || 0;
-    const sub = q * rate;
-    r.querySelector('.item-row-total').textContent = '₹' + sub.toLocaleString('en-IN');
-    total += sub;
+    const mrp = parseFloat(r.querySelector('.item-mrp').value) || 0;
+    const disc = Math.min(100, Math.max(0, parseFloat(r.querySelector('.item-disc').value) || 0));
+    const gstRaw = parseFloat(r.querySelector('.item-gst').value);
+    const gstPct = isNaN(gstRaw) ? 18 : gstRaw;
+
+    const rate = mrp * (1 - disc / 100);
+    const lineTaxable = q * rate;
+    const lineGst = lineTaxable * gstPct / 100;
+    const lineTotal = lineTaxable + lineGst;
+
+    r.querySelector('.oi-line-total').innerHTML =
+      `Rate ₹${rate.toFixed(2)} × ${q} = ₹${lineTaxable.toFixed(2)} <b>+GST ₹${lineGst.toFixed(2)} = ₹${lineTotal.toFixed(2)}</b>`;
+
+    taxable += lineTaxable; gstTotal += lineGst; grand += lineTotal;
   });
-  document.getElementById('ordTotalAmt').value = total;
+  document.getElementById('ordTaxableAmt').value = Math.round(taxable * 100) / 100;
+  document.getElementById('ordGstAmt').value = Math.round(gstTotal * 100) / 100;
+  document.getElementById('ordTotalAmt').value = Math.round(grand * 100) / 100;
   calcOrderBalance();
 }
 
@@ -2728,11 +2788,20 @@ function saveOrderAction() {
   const payMode = document.getElementById('ordPayMode').value;
 
   let items = [];
-  document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
+  let sumTaxable = 0, sumGst = 0;
+  document.querySelectorAll('#orderItemsTbody .order-item-row').forEach(r => {
     const pName = r.querySelector('.item-product-input').value.trim();
     const qty = parseInt(r.querySelector('.item-qty').value) || 0;
-    const rate = parseFloat(r.querySelector('.item-rate').value) || 0;
+    const mrp = parseFloat(r.querySelector('.item-mrp').value) || 0;
+    const disc = Math.min(100, Math.max(0, parseFloat(r.querySelector('.item-disc').value) || 0));
+    const gstRaw = parseFloat(r.querySelector('.item-gst').value);
+    const gstPercent = isNaN(gstRaw) ? 18 : gstRaw;
     const part = resolvePartFromSearch(pName);
+
+    const rate = Math.round(mrp * (1 - disc / 100) * 100) / 100;
+    const lineTaxable = Math.round(qty * rate * 100) / 100;
+    const lineGst = Math.round(lineTaxable * gstPercent / 100 * 100) / 100;
+    const lineTotal = Math.round((lineTaxable + lineGst) * 100) / 100;
 
     if(pName && qty > 0) {
       items.push({
@@ -2740,9 +2809,16 @@ function saveOrderAction() {
         name: part ? part.name : pName,
         hsn: part ? (part.hsn || "84139190") : "84139190",
         qty,
+        mrp,
+        discPercent: disc,
+        gstPercent,
         rate,
-        total: qty * rate
+        taxable: lineTaxable,
+        gstAmt: lineGst,
+        total: lineTotal
       });
+      sumTaxable += lineTaxable;
+      sumGst += lineGst;
     }
   });
 
@@ -2761,6 +2837,8 @@ function saveOrderAction() {
       o.deliveryDate = delDate;
       o.items = items;
       o.totalAmount = total;
+      o.taxableAmount = Math.round(sumTaxable * 100) / 100;
+      o.gstAmount = Math.round(sumGst * 100) / 100;
       o.recvAmount = recv;
       o.dueAmount = due;
       o.payMode = payMode;
@@ -2776,6 +2854,8 @@ function saveOrderAction() {
       deliveryDate: delDate,
       items: items,
       totalAmount: total,
+      taxableAmount: Math.round(sumTaxable * 100) / 100,
+      gstAmount: Math.round(sumGst * 100) / 100,
       recvAmount: recv,
       dueAmount: due,
       payMode: payMode,
@@ -2799,7 +2879,7 @@ function markOrderDelivered(ordId) {
 
   o.items.forEach(it => {
     const p = sampleInventory.find(x => x.id === it.id || x.name === it.name);
-    if(p) p.stock = Math.max(0, p.stock - it.qty);
+    if(p) p.stock = (p.stock || 0) - it.qty; // negative allowed: stock goes into backorder, auto-corrects when new stock is received
   });
 
   o.status = "Delivered";
@@ -2868,29 +2948,42 @@ function openInvoicePrintModal(ordId) {
   document.getElementById('invPrintPayMode').textContent = o.payMode;
   document.getElementById('invPrintStaff').textContent = o.bookedBy;
 
-  const taxable = Math.round((o.totalAmount / 1.18) * 100) / 100;
-  const tax = Math.round((o.totalAmount - taxable) * 100) / 100;
-  const halfTax = Math.round((tax / 2) * 100) / 100;
-
+  // New-format orders carry exact per-item mrp/disc%/gst%/taxable; old orders (pre-upgrade) only had a flat tax-inclusive rate, so fall back to a reverse 18% split for those.
+  let taxable = 0, gstTotalAmt = 0;
   const tbody = document.getElementById('invPrintItemsTbody');
   tbody.innerHTML = o.items.map((it, idx) => {
-    const itTaxable = Math.round((it.total / 1.18) * 100) / 100;
+    const isNewFormat = it.taxable != null && it.gstAmt != null;
+    const gstPct = it.gstPercent != null ? it.gstPercent : 18;
+    const mrp = it.mrp != null ? it.mrp : it.rate;
+    const disc = it.discPercent || 0;
+    const rate = it.rate != null ? it.rate : mrp;
+    const itTaxable = isNewFormat ? it.taxable : Math.round((it.total / (1 + gstPct / 100)) * 100) / 100;
+    const itGst = isNewFormat ? it.gstAmt : Math.round((it.total - itTaxable) * 100) / 100;
+    taxable += itTaxable; gstTotalAmt += itGst;
     return `
       <tr>
         <td>${idx + 1}</td>
         <td><strong>${it.name}</strong></td>
         <td>${it.hsn || '84139190'}</td>
         <td>${it.qty}</td>
-        <td>₹${it.rate}</td>
-        <td>₹${itTaxable.toFixed(2)}</td>
+        <td>₹${Number(mrp).toLocaleString('en-IN')}</td>
+        <td>${disc}%</td>
+        <td>₹${Number(rate).toLocaleString('en-IN')}</td>
+        <td>${gstPct}%</td>
+        <td>₹${(itTaxable + itGst).toFixed(2)}</td>
       </tr>
     `;
   }).join('');
 
+  taxable = Math.round(taxable * 100) / 100;
+  gstTotalAmt = Math.round(gstTotalAmt * 100) / 100;
+  const halfTax = Math.round((gstTotalAmt / 2) * 100) / 100;
+  const grandTotal = Math.round((taxable + gstTotalAmt) * 100) / 100;
+
   document.getElementById('invPrintTaxable').textContent = '₹' + taxable.toFixed(2);
   document.getElementById('invPrintCgst').textContent = '₹' + halfTax.toFixed(2);
   document.getElementById('invPrintSgst').textContent = '₹' + halfTax.toFixed(2);
-  document.getElementById('invPrintGrandTotal').textContent = '₹' + Number(o.totalAmount).toLocaleString('en-IN');
+  document.getElementById('invPrintGrandTotal').textContent = '₹' + grandTotal.toLocaleString('en-IN');
   document.getElementById('invPrintRecv').textContent = '₹' + Number(o.recvAmount).toLocaleString('en-IN');
   document.getElementById('invPrintDue').textContent = '₹' + Number(o.dueAmount).toLocaleString('en-IN');
 
@@ -3256,7 +3349,7 @@ function stockCardHtml(item) {
         </div>
       </div>
       <div style="text-align:right; min-width:115px;">
-        <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}" style="margin-bottom:3px;">${item.stock} in stock</span>
+        <span class="badge ${item.stock < 0 ? 'badge-backorder' : (item.stock <= 5 ? 'badge-danger' : 'badge-delivered')}" style="margin-bottom:3px;">${item.stock < 0 ? '⚠️ ' + item.stock + ' Backorder' : item.stock + ' in stock'}</span>
         <div style="font-size:11px; color:#475569;">Dealer: ₹${Number(item.dealerPrice || 0).toLocaleString('en-IN')}</div>
         <div style="font-size:13px; font-weight:800; color:var(--primary);">MRP: ₹${Number(item.rate || 0).toLocaleString('en-IN')}</div>
       </div>
@@ -3397,7 +3490,10 @@ function openStockDetailModal(id) {
 
   document.getElementById('detDealer').textContent = '₹' + Number(item.dealerPrice || 0).toLocaleString('en-IN');
   document.getElementById('detMrp').textContent = '₹' + Number(item.rate || 0).toLocaleString('en-IN');
-  document.getElementById('detStock').textContent = item.stock;
+  const detStockEl = document.getElementById('detStock');
+  detStockEl.textContent = item.stock < 0 ? `⚠️ ${item.stock} (Backorder)` : item.stock;
+  detStockEl.style.color = item.stock < 0 ? 'var(--danger)' : (item.stock <= 5 ? 'var(--warning)' : 'var(--success)');
+  document.getElementById('detAddStockQty').value = '';
 
   const descWrap = document.getElementById('detDescWrap');
   const detailsText = item.specs ? `${item.specs}\n${item.desc || ''}` : (item.desc || 'Standard commercial machinery / care product.');
@@ -3441,6 +3537,29 @@ function openStockDetailModal(id) {
 window.openStockDetailModal = openStockDetailModal;
 function closeStockDetailModal() { document.getElementById('stockDetailModal').style.display = 'none'; }
 window.closeStockDetailModal = closeStockDetailModal;
+
+/* Quick "Received Stock" entry — adds to current stock so a negative (backorder) balance auto-corrects itself */
+function quickAddStock() {
+  const item = sampleInventory.find(x => x.id === activeStockDetailId);
+  if (!item) return;
+  const qtyEl = document.getElementById('detAddStockQty');
+  const qty = parseInt(qtyEl.value) || 0;
+  if (qty <= 0) { alert("Please enter a valid received quantity!"); return; }
+
+  const before = item.stock || 0;
+  item.stock = before + qty;
+  setStored("INVENTORY", sampleInventory);
+  qtyEl.value = '';
+
+  const detStockEl = document.getElementById('detStock');
+  detStockEl.textContent = item.stock < 0 ? `⚠️ ${item.stock} (Backorder)` : item.stock;
+  detStockEl.style.color = item.stock < 0 ? 'var(--danger)' : (item.stock <= 5 ? 'var(--warning)' : 'var(--success)');
+
+  renderStockList();
+  renderDashboard();
+  alert(`Stock updated: ${before} + ${qty} received = ${item.stock} in hand.`);
+}
+window.quickAddStock = quickAddStock;
 
 function editFromDetailModal() {
   const item = sampleInventory.find(x => x.id === activeStockDetailId);
