@@ -472,7 +472,9 @@
         <div style="display:flex; gap:6px;">
           <button class="btn btn-primary btn-sm" onclick="loadMasterCatalogAction()">📦 Reload Master Data</button>
           <button class="btn btn-accent btn-sm" onclick="openAddPartModal()">+ Add Item</button>
-          <button class="btn btn-outline btn-sm" onclick="exportInventoryCSV()">📥 CSV</button>
+<button class="btn btn-accent btn-sm" id="dynamicRegisterClientBtn" onclick="openAddCustomerModal()" style="display:none;">+ Register Client</button>
+<button class="btn btn-outline btn-sm" onclick="exportInventoryCSV()">📥 CSV</button>
+
         </div>
       </div>
 
@@ -1381,20 +1383,15 @@ function handleCustomerAutocomplete(inputEl, targetInputId) {
   const val = inputEl.value.toLowerCase().trim();
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
   if (!box) return;
-  if (!val || val.length < 2) { box.style.display = 'none'; return; }
+  if (!val || val.length < 1) { box.style.display = 'none'; return; }
 
   const matches = customerDatabase.filter(c =>
     c.name.toLowerCase().includes(val) ||
     (c.phone && c.phone.includes(val)) ||
     (c.person && c.person.toLowerCase().includes(val))
-  ).slice(0, 10);
+  ).slice(0, 8);
 
-  if (matches.length === 0) {
-    box.style.display = 'none';
-    return;
-  }
-
-  box.innerHTML = matches.map(c => `
+  let html = matches.map(c => `
     <div class="suggestion-item" onclick="selectCustomerSuggestion('${targetInputId}', '${encodeURIComponent(c.name)}', '${c.phone}')">
       <div>
         <strong>${c.name}</strong>
@@ -1403,6 +1400,15 @@ function handleCustomerAutocomplete(inputEl, targetInputId) {
       <span class="badge badge-info" style="font-size:9.5px;">${c.phone}</span>
     </div>
   `).join('');
+
+  html += `
+    <div class="suggestion-item" onclick="openAddCustomerModal(); document.querySelectorAll('.solid-suggestion-box').forEach(b => b.style.display='none');" style="background:#f0fdf4 !important; color:#15803d; font-weight:800; border-top:1px solid #bbf7d0;">
+      <div>➕ Register New Customer: "${esc(val)}"</div>
+      <span class="badge badge-delivered" style="font-size:9.5px;">Add New</span>
+    </div>
+  `;
+
+  box.innerHTML = html;
   box.style.display = 'block';
 }
 
@@ -1452,6 +1458,41 @@ function selectMachineSuggestion(targetInputId, encName, price) {
   }
   const pInput = document.getElementById('leadPrice');
   if (pInput && !pInput.value) pInput.value = price;
+}
+
+  function handleOrderItemInput(inputEl) {
+  const val = inputEl.value.toLowerCase().trim();
+  const row = inputEl.closest('tr');
+  const box = row.querySelector('.solid-suggestion-box');
+  if(!box) return;
+
+  if(!val || val.length < 1) { box.style.display = 'none'; return; }
+
+  const matches = sampleInventory.filter(p =>
+    p.name.toLowerCase().includes(val) ||
+    (p.code && p.code.toLowerCase().includes(val)) ||
+    (p.category && p.category.toLowerCase().includes(val))
+  ).slice(0, 8);
+
+  let html = matches.map(p => `
+    <div class="suggestion-item" onclick="selectOrderItemSuggestion(this, '${encodeURIComponent(p.name)}', '${p.code}', ${p.rate}, ${p.stock})">
+      <div>
+        <strong>${p.name}</strong>
+        <div class="suggestion-sub">Code: ${p.code} | Stock: ${p.stock}</div>
+      </div>
+      <strong style="color:var(--accent);">₹${p.rate}</strong>
+    </div>
+  `).join('');
+
+  html += `
+    <div class="suggestion-item" onclick="openAddPartModal(); document.querySelectorAll('.solid-suggestion-box').forEach(b => b.style.display='none');" style="background:#f0fdf4 !important; color:#15803d; font-weight:800; border-top:1px solid #bbf7d0;">
+      <div>➕ Add New Item to Inventory: "${esc(val)}"</div>
+      <span class="badge badge-delivered" style="font-size:9.5px;">Add Item</span>
+    </div>
+  `;
+
+  box.innerHTML = html;
+  box.style.display = 'block';
 }
 
 function handlePartAutocomplete(inputEl, targetInputId) {
@@ -4158,5 +4199,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 })();
 </script>
+  const origSelectInvCat = window.selectInventoryCategory;
+window.selectInventoryCategory = function(categoryName, btnEl) {
+  if (typeof origSelectInvCat === 'function') origSelectInvCat(categoryName, btnEl);
+  const regBtn = document.getElementById('dynamicRegisterClientBtn');
+  if (regBtn) {
+    regBtn.style.display = (categoryName === 'CUSTOMERS') ? 'inline-flex' : 'none';
+  }
+};
+
 </body>
 </html>
