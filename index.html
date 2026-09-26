@@ -278,13 +278,24 @@
   @media print {
     body * { visibility: hidden; }
     #printableInvoiceArea, #printableInvoiceArea * { visibility: visible; }
-    #printableInvoiceArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; }
+    #printableInvoiceArea { position: absolute; left: 0; top: 0; width: 100%; padding: 10px; background: white; }
     .no-print { display: none !important; }
   }
-  .invoice-box { border: 1.5px solid #0a2540; padding: 20px; border-radius: 8px; background: white; color: #111827; font-size: 12px; }
+
+  /* Fixed: Perfect Responsive Container & Fixed-Layout Fit for GST Invoice */
+  .invoice-box { 
+    border: 1.5px solid #0a2540; padding: 14px; border-radius: 8px; 
+    background: white; color: #111827; font-size: 11.5px; 
+    width: 100%; box-sizing: border-box; overflow-x: auto; 
+  }
   .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0a2540; padding-bottom: 10px; }
-  .inv-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 11.5px; }
-  .inv-table th, .inv-table td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; }
+  .inv-table { 
+    width: 100%; border-collapse: collapse; margin: 10px 0; 
+    font-size: 11px; table-layout: fixed; word-wrap: break-word; 
+  }
+  .inv-table th, .inv-table td { 
+    border: 1px solid #cbd5e1; padding: 5px 6px; text-align: left; overflow: hidden; 
+  }
   .inv-table th { background: #f1f5f9; font-weight: 700; }
 </style>
 </head>
@@ -725,7 +736,7 @@
   </div>
 </div>
 
-<!-- 0.2 ADMIN STAFF MANAGEMENT MODAL (NEW) -->
+<!-- 0.2 ADMIN STAFF MANAGEMENT MODAL -->
 <div id="staffManageModal" class="auth-overlay" style="display:none; z-index:3300;">
   <div class="auth-card" style="max-width:540px;">
     <div class="card-header">
@@ -740,7 +751,7 @@
   </div>
 </div>
 
-<!-- 0.3 ADMIN LEDGER INVOICE EDIT MODAL (NEW) -->
+<!-- 0.3 ADMIN LEDGER INVOICE EDIT MODAL -->
 <div id="editLedgerModal" class="auth-overlay" style="display:none; z-index:3400;">
   <div class="auth-card" style="max-width:480px;">
     <div class="card-header">
@@ -1275,13 +1286,13 @@
   </div>
 </div>
 
-<!-- 11. Invoice Print Modal -->
+<!-- 11. Invoice Print Modal (Fixed: Instant Print Fallback & Layout Alignment) -->
 <div id="invoicePrintModal" class="auth-overlay" style="display:none; z-index:3000;">
   <div class="auth-card" style="max-width:740px; width:95%;">
     <div class="card-header no-print">
       <strong class="card-title">🖨️ GST Tax Invoice Preview</strong>
       <div style="display:flex; gap:6px;">
-        <button class="btn btn-print btn-sm" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        <button class="btn btn-print btn-sm" onclick="executeInvoicePrint()">🖨️ Print / Save as PDF</button>
         <button class="btn btn-outline btn-sm" onclick="closeInvoicePrintModal()">✕ Close</button>
       </div>
     </div>
@@ -1322,12 +1333,12 @@
         <table class="inv-table">
           <thead>
             <tr>
-              <th style="width:30px;">#</th>
+              <th style="width:28px;">#</th>
               <th>Description of Goods / Spares</th>
-              <th style="width:65px;">HSN/SAC</th>
-              <th style="width:40px;">Qty</th>
-              <th style="width:70px;">Rate (₹)</th>
-              <th style="width:75px;">Taxable (₹)</th>
+              <th style="width:68px;">HSN/SAC</th>
+              <th style="width:36px;">Qty</th>
+              <th style="width:68px;">Rate (₹)</th>
+              <th style="width:74px;">Taxable (₹)</th>
             </tr>
           </thead>
           <tbody id="invPrintItemsTbody"></tbody>
@@ -1592,7 +1603,7 @@ function populateDropdownsAndDatalists() {
 }
 window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
 
-/* ================= ADMIN STAFF MANAGEMENT ================= */
+/* ================= ADMIN STAFF MANAGEMENT (FIXED: PERMANENT CLOUD DELETE) ================= */
 function openStaffManageModal() {
   if (!currentUser || currentUser.role !== 'Admin') {
     alert("Permission Denied: Only Admin can manage staff.");
@@ -1608,7 +1619,7 @@ function openStaffManageModal() {
       <div style="font-size:11px; color:#475569; margin-bottom:6px;">Mobile: <strong>${emp.mobile}</strong></div>
       <div style="display:flex; gap:6px;">
         <button class="btn btn-outline btn-sm" onclick="editStaffDetailsPrompt(${emp.id})">✏️ Edit Name / Role / Pass</button>
-        ${emp.id !== currentUser.id ? `<button class="btn btn-danger-sm" onclick="deleteStaffPrompt(${emp.id})">🗑️ Delete</button>` : ''}
+        ${emp.id !== currentUser.id ? `<button class="btn btn-danger-sm btn-sm" onclick="deleteStaffPrompt(${emp.id})">🗑️ Delete</button>` : ''}
       </div>
     </div>
   `).join('');
@@ -1643,11 +1654,15 @@ function editStaffDetailsPrompt(empId) {
 }
 
 function deleteStaffPrompt(empId) {
-  if (confirm("Confirm permanent removal of this staff account?")) {
+  if (confirm("Confirm permanent removal of this staff account from Cloud & App?")) {
     registeredEmployees = registeredEmployees.filter(e => e.id !== empId);
     setStored("STAFF", registeredEmployees);
+    if (window.cloudSync && typeof window.cloudSync.deleteItem === 'function') {
+      window.cloudSync.deleteItem("STAFF", empId);
+    }
     openStaffManageModal();
     refreshAllData();
+    alert("Staff permanently deleted from Cloud & Local memory.");
   }
 }
 
@@ -1724,7 +1739,7 @@ function renderDashboard() {
   let todayRecv = 0;
   let totalDue = 0;
 
-  // Ledger stats based on Delivered or Paid orders
+  // Ledger stats based on Delivered orders
   ordersData.filter(o => o.status === 'Delivered').forEach(o => {
     if (o.orderDate === today) todayRecv += (o.recvAmount || 0);
     totalDue += (o.dueAmount || 0);
@@ -1923,7 +1938,7 @@ function processRestoreJSON(event) {
   event.target.value = '';
 }
 
-/* ================= SOLID SEARCHABLE AUTOCOMPLETE ENGINE ================= */
+/* ================= SOLID SEARCHABLE AUTOCOMPLETE ENGINE (FIXED: CATALOG GEAR EXCLUDED) ================= */
 function handleCustomerAutocomplete(inputEl, targetInputId) {
   const val = (inputEl.value || '').toLowerCase().trim();
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
@@ -2009,6 +2024,7 @@ function selectMachineSuggestion(targetInputId, encName, price) {
   if (pInput && !pInput.value) pInput.value = price;
 }
 
+// Fixed: Exclude "Catalog Equipment" to eliminate duplicate unpriced items
 function handleOrderItemInput(inputEl) {
   const val = (inputEl.value || '').toLowerCase().trim();
   const row = inputEl.closest('tr');
@@ -2019,9 +2035,10 @@ function handleOrderItemInput(inputEl) {
   if(!val || val.length < 1) { box.style.display = 'none'; return; }
 
   const matches = (sampleInventory || []).filter(p =>
-    (p.name && p.name.toLowerCase().includes(val)) ||
-    (p.code && p.code.toLowerCase().includes(val)) ||
-    (p.category && p.category.toLowerCase().includes(val))
+    p.category !== 'Catalog Equipment' &&
+    ((p.name && p.name.toLowerCase().includes(val)) ||
+     (p.code && p.code.toLowerCase().includes(val)) ||
+     (p.category && p.category.toLowerCase().includes(val)))
   ).slice(0, 8);
 
   let html = matches.map(p => `
@@ -2042,7 +2059,7 @@ function handleOrderItemInput(inputEl) {
   `;
 
   box.innerHTML = html;
-  box.style.display = 'block';
+  box.style.display = matches.length ? 'block' : 'none';
 }
 
 function selectOrderItemSuggestion(el, encName, code, rate, stock) {
@@ -2065,9 +2082,10 @@ function handlePartAutocomplete(inputEl, targetInputId) {
   if (!val || val.length < 1) { box.style.display = 'none'; return; }
 
   const matches = (sampleInventory || []).filter(p =>
-    (p.name && p.name.toLowerCase().includes(val)) ||
-    (p.code && p.code.toLowerCase().includes(val)) ||
-    (p.category && p.category.toLowerCase().includes(val))
+    p.category !== 'Catalog Equipment' &&
+    ((p.name && p.name.toLowerCase().includes(val)) ||
+     (p.code && p.code.toLowerCase().includes(val)) ||
+     (p.category && p.category.toLowerCase().includes(val)))
   ).slice(0, 10);
 
   if (matches.length === 0) { box.style.display = 'none'; return; }
@@ -2753,7 +2771,6 @@ function markOrderDelivered(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
 
-  // Auto stock reduction upon successful dispatch
   o.items.forEach(it => {
     const p = sampleInventory.find(x => x.id === it.id || x.name === it.name);
     if(p) p.stock = Math.max(0, p.stock - it.qty);
@@ -2802,7 +2819,14 @@ function shareOrderWhatsApp(ordId) {
   window.open(url, '_blank');
 }
 
-/* ================= GST INVOICE PRINT ================= */
+/* ================= GST INVOICE PRINT (FIXED: SAFE MOBILE PRINT EXECUTION) ================= */
+function executeInvoicePrint() {
+  window.focus();
+  setTimeout(() => {
+    window.print();
+  }, 150);
+}
+
 function openInvoicePrintModal(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
@@ -4049,8 +4073,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 </script>
 
-<script src="live-sync.js?v=5"></script>
-  <script>
+<script src="live-sync.js?v=6"></script>
+<script>
 // Auto-reset status badge if stuck in Uploading state
 setInterval(() => {
   const syncText = document.getElementById('syncText');
@@ -4064,6 +4088,6 @@ setInterval(() => {
     }, 2500);
   }
 }, 3000);
-  </script>
+</script>
 </body>
 </html>
