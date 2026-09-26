@@ -223,7 +223,7 @@
   }
   .sub-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 6px rgba(10,37,64,0.2); }
 
-  /* WhatsApp Style Chat Theme */
+  /* ================= WHATSAPP GROUP CHAT STYLING ================= */
   .chat-box-card {
     background: #ffffff; border: 1px solid #d1d7db; border-radius: var(--radius-lg);
     display: flex; flex-direction: column; height: calc(100vh - 185px); overflow: hidden;
@@ -311,32 +311,6 @@
   .items-table { width: 100%; border-collapse: collapse; margin: 8px 0; }
   .items-table th { background: #f8fafc; padding: 7px 6px; font-size: 11px; text-align: left; color: #475569; font-weight: 700; }
   .items-table td { padding: 6px 4px; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
-
-  .order-items-list { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 10px; }
-  .order-item-row {
-    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 9px 10px;
-    box-shadow: 0 1px 3px rgba(15,23,42,0.04);
-  }
-  .oi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 6px; }
-  .oi-grid > div { display: flex; flex-direction: column; }
-  .oi-grid label { font-size: 9.5px; color: #64748b; font-weight: 800; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
-  .oi-grid input { padding: 7px 7px; font-size: 12.5px; font-weight: 700; }
-  .oi-summary {
-    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
-    margin-top: 7px; padding-top: 7px; border-top: 1px dashed #dbe3eb; font-size: 11px; color: #334155;
-  }
-  .oi-line-total b { color: var(--primary); font-size: 12px; }
-  .badge-backorder { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; font-weight: 800; }
-
-  .invoice-box { box-shadow: 0 4px 18px rgba(10,37,64,0.08); }
-  .inv-table { min-width: 640px; }
-  .inv-table tbody tr:nth-child(even) { background: #f8fafc; }
-  .inv-table td, .inv-table th { white-space: nowrap; }
-  .inv-totals-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; }
-  @media print {
-    .inv-table { min-width: 0 !important; table-layout: fixed !important; }
-    .inv-table td, .inv-table th { white-space: normal !important; }
-  }
 
   .audit-log-box {
     background: #f8fafc; border-top: 1px dashed var(--border); padding: 6px 10px;
@@ -892,6 +866,599 @@
   </div>
 </div>
 
+<!-- 1. Stock Detail Modal -->
+<div id="stockDetailModal" class="auth-overlay" style="display:none; z-index:2500;">
+  <div class="auth-card" style="max-width:580px;">
+    <div class="card-header">
+      <strong class="card-title" id="detName" style="font-size:15px;">Item Specifications</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeStockDetailModal()">✕</button>
+    </div>
+
+    <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;" id="detMeta"></div>
+
+    <div class="grid-3" style="background:#f8fafc; padding:10px; border-radius:10px; margin-bottom:12px; text-align:center; border:1px solid #e2e8f0;">
+      <div>
+        <div style="font-size:10px; color:var(--text-muted); font-weight:800;">DEALER PRICE</div>
+        <div style="font-size:15px; font-weight:800; color:var(--primary);" id="detDealer">₹0</div>
+      </div>
+      <div>
+        <div style="font-size:10px; color:var(--text-muted); font-weight:800;">CUSTOMER MRP</div>
+        <div style="font-size:15px; font-weight:800; color:var(--accent);" id="detMrp">₹0</div>
+      </div>
+      <div>
+        <div style="font-size:10px; color:var(--text-muted); font-weight:800;">STOCK IN HAND</div>
+        <div style="font-size:15px; font-weight:800;" id="detStock">0</div>
+      </div>
+    </div>
+
+    <div id="detDescWrap" style="background:#f0f9ff; border:1.5px solid #bae6fd; padding:10px; border-radius:10px; margin-bottom:12px; font-size:12px;">
+      <strong style="color:#0369a1; display:block; margin-bottom:4px;">🛠️ Technical Data / Specifications:</strong>
+      <div id="detDesc" style="color:#0f172a; line-height:1.45;"></div>
+    </div>
+
+    <div style="display:flex; gap:8px; margin-bottom:12px;">
+      <button class="btn btn-outline btn-sm btn-block" onclick="editFromDetailModal()">✏️ Edit Item Details</button>
+    </div>
+
+    <div style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:8px;">📋 Sales History (Sold To Customers):</div>
+    <div id="detSalesHistory" style="max-height:240px; overflow-y:auto; border:1px solid #f1f5f9; border-radius:8px; padding:4px;"></div>
+  </div>
+</div>
+
+<!-- 2. Lead Modal -->
+<div id="leadModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title" id="leadModalTitle">Machine Inquiry & Lead</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeLeadModal()">✕</button>
+    </div>
+    <input type="hidden" id="editLeadId">
+    
+    <div class="form-group autocomplete-wrapper">
+      <label class="form-label">🔍 Select Customer:</label>
+      <input type="text" id="leadCustSearchInput" placeholder="Type customer name or phone..." oninput="handleCustomerAutocomplete(this, 'leadCustSearchInput')">
+      <div class="solid-suggestion-box" id="leadCustSuggestBox"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Inquiry Date</label>
+        <input type="date" id="leadInqDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Handled By</label>
+        <select id="leadStaffSelect" class="emp-dropdown"></select>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">🚜 Machine Model:</label>
+        <input type="text" id="leadMachine" placeholder="Type machine model..." oninput="handleMachineAutocomplete(this, 'leadMachine')">
+        <div class="solid-suggestion-box" id="leadMachineSuggestBox"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quoted Price (₹)</label>
+        <input type="number" id="leadPrice" placeholder="85000">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Next Follow-up Date</label>
+      <input type="date" id="leadFollowupDate">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Discussion Remarks</label>
+      <textarea id="leadRemarks" rows="2" placeholder="Discussion notes..."></textarea>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveLeadAction()">💾 Save Machine Lead</button>
+  </div>
+</div>
+
+<!-- 3. Machine Installation Modal -->
+<div id="installationModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title">⚙️ Machine Installation & Warranty</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeInstallModal()">✕</button>
+    </div>
+    <div id="insCustHeading" style="font-size:12px; font-weight:bold; color:var(--primary); margin-bottom:8px;"></div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Installation Date</label>
+        <input type="date" id="insDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Final Price (₹)</label>
+        <input type="number" id="insFinalPrice">
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="form-group">
+        <label class="form-label">Machine S/N</label>
+        <input type="text" id="insMachSN" placeholder="SN-2026-09">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pump S/N</label>
+        <input type="text" id="insPumpSN" placeholder="AR-9812">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Invoice No</label>
+        <input type="text" id="insInvNo" placeholder="TTESPL/26/092">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveInstallationAction()">✓ Confirm & Schedule 4 Free Services</button>
+  </div>
+</div>
+
+<!-- 4. Attend Free Service Modal -->
+<div id="attendFreeServiceModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title">🛠️ Attend Free Service Record</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeAttendModal()">✕</button>
+    </div>
+    <div id="freeSrvHeading" style="font-size:12px; font-weight:bold; color:var(--primary); margin-bottom:8px;"></div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Actual Attended Date</label>
+        <input type="date" id="freeSrvActDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Attended Engineer</label>
+        <select id="freeSrvStaff" class="emp-dropdown"></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Action Taken / Service Summary</label>
+      <textarea id="freeSrvAction" rows="2" placeholder="Replaced oil, calibrated pressure..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Spare Parts Replaced (If Any)</label>
+      <input type="text" id="freeSrvParts" placeholder="1L HPW Oil, 1x Seal kit">
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveFreeServiceAction()">Save Free Service Slip</button>
+  </div>
+</div>
+
+<!-- 5. Order Modal (Restored Original Clean Table Structure) -->
+<div id="orderModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card" style="max-width:580px;">
+    <div class="card-header">
+      <strong class="card-title" id="orderModalTitle">Multi-Item Product Order</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeOrderModal()">✕</button>
+    </div>
+    <input type="hidden" id="editOrderId">
+    
+    <div class="grid-2">
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">🔍 Customer:</label>
+        <input type="text" id="ordCustSearchInput" placeholder="Type customer name/phone..." oninput="handleCustomerAutocomplete(this, 'ordCustSearchInput')">
+        <div class="solid-suggestion-box" id="ordCustSuggestBox"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Order Booked By</label>
+        <select id="ordStaffSelect" class="emp-dropdown"></select>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Order Date</label>
+        <input type="date" id="ordDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Expected Delivery Date</label>
+        <input type="date" id="ordDelDate">
+      </div>
+    </div>
+
+    <label class="form-label">Order Items (Search Direct from Stock):</label>
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Product / Chemical Item</th>
+          <th style="width:75px;">Qty</th>
+          <th style="width:90px;">Rate (₹)</th>
+          <th style="width:80px;">Total</th>
+          <th style="width:25px;"></th>
+        </tr>
+      </thead>
+      <tbody id="orderItemsTbody"></tbody>
+    </table>
+    <button class="btn btn-outline btn-sm" onclick="addOrderItemRow()" style="margin-bottom:10px;">+ Add Product Item</button>
+
+    <div class="grid-3" style="background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #e2e8f0;">
+      <div>
+        <label class="form-label">Total Amount</label>
+        <input type="number" id="ordTotalAmt" readonly style="font-weight:800; background:#f1f5f9 !important;">
+      </div>
+      <div>
+        <label class="form-label">Advance Recv (₹)</label>
+        <input type="number" id="ordRecvAmt" value="0" oninput="calcOrderBalance()">
+      </div>
+      <div>
+        <label class="form-label">Due (₹)</label>
+        <input type="number" id="ordDueAmt" readonly style="font-weight:800; color:var(--danger); background:#f1f5f9 !important;">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Payment Mode Collected:</label>
+      <select id="ordPayMode">
+        <option value="Cash">💵 Cash</option>
+        <option value="UPI / QR Code">📱 UPI / QR Code</option>
+        <option value="Net Banking / NEFT">🏦 Net Banking / NEFT</option>
+        <option value="Cheque">📜 Cheque</option>
+        <option value="Not Paid / Full Due">⏳ Not Paid / Full Due</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary btn-block" onclick="saveOrderAction()">💾 Save Order Place</button>
+  </div>
+</div>
+      
+<!-- 6. Service Call Modal -->
+<div id="serviceModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card" style="max-width:540px;">
+    <div class="card-header">
+      <strong class="card-title" id="serviceModalTitle">Service & Repair Record</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeServiceModal()">✕</button>
+    </div>
+    <input type="hidden" id="editServiceId">
+    
+    <div class="grid-2">
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">🔍 Customer:</label>
+        <input type="text" id="srvCustSearchInput" placeholder="Type customer name..." oninput="handleCustomerAutocomplete(this, 'srvCustSearchInput')">
+        <div class="solid-suggestion-box" id="srvCustSuggestBox"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Attended Engineer</label>
+        <select id="srvStaffSelect" class="emp-dropdown"></select>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">🚜 Machine Model:</label>
+        <input type="text" id="srvMachine" placeholder="Search machine model..." oninput="handleMachineAutocomplete(this, 'srvMachine')">
+        <div class="solid-suggestion-box" id="srvMachineSuggestBox"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Call Received Date</label>
+        <input type="date" id="srvRecvDate">
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Target Service Date</label>
+        <input type="date" id="srvTargetDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Service Status</label>
+        <select id="srvStatusSelect" onchange="toggleServiceCompletionFields(this.value)">
+          <option value="Pending / Scheduled">Pending / Scheduled</option>
+          <option value="Work Completed">Work Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Reported Issue / Symptoms</label>
+      <textarea id="srvProblem" rows="2" placeholder="Symptoms..."></textarea>
+    </div>
+
+    <div id="srvCompletedFields" style="display:none; background:#f0fdf4; border:1px solid #bbf7d0; padding:10px; border-radius:8px; margin-bottom:10px;">
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Completion Date</label>
+          <input type="date" id="srvDoneDate">
+        </div>
+        <div class="form-group autocomplete-wrapper">
+          <label class="form-label">Part Used (Stock Deducted)</label>
+          <input type="text" id="srvPartSearchInput" placeholder="Search replaced part..." oninput="handlePartAutocomplete(this, 'srvPartSearchInput')">
+          <div class="solid-suggestion-box" id="srvPartSuggestBox"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Action Taken & Root Cause</label>
+        <input type="text" id="srvActionDone" placeholder="Replaced ceramic plunger & valve seals">
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+        <span style="font-size:11px; font-weight:700; color:#166534;" id="srvSignStatus">Customer Sign: Pending</span>
+        <button class="btn btn-outline btn-sm" onclick="openSignatureModal()">✍️ Take Customer Signature</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-block" onclick="saveServiceAction()">💾 Save Service Call</button>
+  </div>
+</div>
+
+<!-- 7. Inventory Item Add/Edit Modal -->
+<div id="stockItemModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title" id="stockModalTitle">Inventory Item</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeStockModal()">✕</button>
+    </div>
+    <input type="hidden" id="editStockId">
+    <div class="form-group">
+      <label class="form-label">Part / Product Name</label>
+      <input type="text" id="stkName" placeholder="e.g. AR Pump Ceramic Plunger 18mm">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Part / SKU Code</label>
+        <input type="text" id="stkCode" placeholder="AR-PL-18">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <input type="text" id="stkCategory" placeholder="e.g. Spares - HRC">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Machine Model (Applicable)</label>
+        <input type="text" id="stkMachine" placeholder="e.g. HRC / HRK / BC780">
+      </div>
+      <div class="form-group">
+        <label class="form-label">HSN Code</label>
+        <input type="text" id="stkHsn" placeholder="84139190">
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="form-group">
+        <label class="form-label">Current Stock</label>
+        <input type="number" id="stkQty" value="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Dealer Price (₹)</label>
+        <input type="number" id="stkDealerRate" placeholder="1200">
+      </div>
+      <div class="form-group">
+        <label class="form-label">MRP (₹)</label>
+        <input type="number" id="stkRate" placeholder="1500">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Technical Specs & Notes</label>
+      <textarea id="stkDesc" rows="2" placeholder="Specifications, specs, machine match..."></textarea>
+    </div>
+    <button class="btn btn-accent btn-block" onclick="saveStockItemAction()">💾 Save Item</button>
+  </div>
+</div>
+
+<!-- 8. Machinery Modal -->
+<div id="machineItemModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title" id="machModalTitle">Machinery Catalog Item</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeMachineModal()">✕</button>
+    </div>
+    <input type="hidden" id="editMachId">
+    <div class="form-group">
+      <label class="form-label">Machine Model Name</label>
+      <input type="text" id="mName" placeholder="e.g. AR Triplex 200 Bar Commercial Washer">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Pump Model</label>
+        <input type="text" id="mPump" placeholder="AR 15.20 / Hawk">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Motor Specs</label>
+        <input type="text" id="mMotor" placeholder="5 HP 3-Phase 1440 RPM">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Pressure (Bar)</label>
+        <input type="number" id="mBar" placeholder="200">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Standard Price (₹)</label>
+        <input type="number" id="mPrice" placeholder="85000">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveMachineAction()">💾 Save Machine</button>
+  </div>
+</div>
+
+<!-- 9. Customer Profile Modal -->
+<div id="customerModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title" id="custModalTitle">Customer Profile</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeCustomerModal()">✕</button>
+    </div>
+    <input type="hidden" id="editCustId">
+    <div class="form-group">
+      <label class="form-label">Workshop / Business Name</label>
+      <input type="text" id="cName" placeholder="e.g. Sambit Autocare Private Limited">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" id="cPhone" placeholder="10-digit number" maxlength="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email ID</label>
+        <input type="email" id="cEmail" placeholder="client@gmail.com">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Workshop Address & Landmark</label>
+      <input type="text" id="cAddress" placeholder="Plot No, Street, City, District">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">GSTIN / Reg No.</label>
+        <input type="text" id="cGst" placeholder="21AAAAA0000A1Z5">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contact Person Name</label>
+        <input type="text" id="cPerson" placeholder="Owner / Manager">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveCustomerAction()">💾 Save Customer Profile</button>
+  </div>
+</div>
+
+<!-- 10. Cash Closing Modal -->
+<div id="cashClosingModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card" style="max-width:540px;">
+    <div class="card-header">
+      <strong class="card-title">💰 Daily Shift & Cash Closing Summary</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeDailyCashClosingModal()">✕</button>
+    </div>
+    
+    <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">
+      Date: <strong id="closeSummaryDate">Today</strong> | Verified By: <strong id="closeSummaryStaff">Staff</strong>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:12px;">
+      <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:10px; border-radius:8px; text-align:center;">
+        <div style="font-size:10px; color:#166534; font-weight:800;">CASH COLLECTED</div>
+        <div style="font-size:16px; font-weight:800; color:#15803d;" id="closeCashAmt">₹0</div>
+      </div>
+      <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:10px; border-radius:8px; text-align:center;">
+        <div style="font-size:10px; color:#1e40af; font-weight:800;">UPI / ONLINE</div>
+        <div style="font-size:16px; font-weight:800; color:#1d4ed8;" id="closeUpiAmt">₹0</div>
+      </div>
+      <div style="background:#faf5ff; border:1px solid #e9d5ff; padding:10px; border-radius:8px; text-align:center;">
+        <div style="font-size:10px; color:#6b21a8; font-weight:800;">BANK / CHEQUE</div>
+        <div style="font-size:16px; font-weight:800; color:#7e22ce;" id="closeBankAmt">₹0</div>
+      </div>
+    </div>
+
+    <div style="background:#f8fafc; border:1.2px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:12px;">
+      <div style="font-size:12px; font-weight:800; color:var(--primary); margin-bottom:8px;">💵 Cash Drawer Denomination Count:</div>
+      <div class="grid-3" style="font-size:11.5px; row-gap:8px;">
+        <div>₹500 x <input type="number" id="note500" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹200 x <input type="number" id="note200" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹100 x <input type="number" id="note100" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹50 &nbsp;x <input type="number" id="note50" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹20 &nbsp;x <input type="number" id="note20" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹10 &nbsp;x <input type="number" id="note10" style="width:65px; display:inline-block; padding:4px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+      </div>
+      <div style="margin-top:10px; display:flex; justify-content:space-between; font-weight:800; font-size:12.5px; border-top:1px dashed #cbd5e1; padding-top:6px;">
+        <span>Total Counted Physical Cash:</span>
+        <span id="denomTotalDisplay" style="color:var(--primary);">₹0</span>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-wa btn-block" onclick="sendClosingSummaryWhatsApp()">💬 Send Report to WhatsApp</button>
+      <button class="btn btn-outline btn-sm" onclick="closeDailyCashClosingModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- 11. Invoice Print Modal -->
+<div id="invoicePrintModal" class="auth-overlay" style="display:none; z-index:3000;">
+  <div class="auth-card" style="max-width:740px; width:95%;">
+    <div class="card-header no-print">
+      <strong class="card-title">🖨️ GST Tax Invoice Preview</strong>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-print btn-sm" onclick="executeInvoicePrint()">🖨️ Print / Save as PDF</button>
+        <button class="btn btn-outline btn-sm" onclick="closeInvoicePrintModal()">✕ Close</button>
+      </div>
+    </div>
+
+    <div id="printableInvoiceArea">
+      <div class="invoice-box">
+        <div class="invoice-header">
+          <div>
+            <h2 style="color:#0a2540; font-size:16px; font-weight:900;">TWIN TOWN EXPRESS SERVICES PVT LTD</h2>
+            <div style="font-size:10.5px; color:#475569; line-height:1.4; margin-top:3px;">
+              Plot No: 148, Rasulgarh Industrial Estate, Bhubaneswar, Odisha - 751010<br>
+              <strong>GSTIN:</strong> 21AAACT9812K1Z9 | <strong>Email:</strong> accounts@twintownexpress.com<br>
+              <strong>Ph:</strong> +91 8917465040 / 0674-2580123
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:14px; font-weight:800; color:#ff6b35;">TAX INVOICE</div>
+            <div style="font-size:11px;">Invoice: <strong id="invPrintId">ORD-901</strong></div>
+            <div style="font-size:11px;">Date: <strong id="invPrintDate">2026-09-26</strong></div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; border-bottom:1px solid #cbd5e1; padding-bottom:8px;">
+          <div>
+            <strong style="color:#0a2540; font-size:11.5px;">BILLED TO / CUSTOMER:</strong>
+            <div style="font-size:12px; font-weight:700;" id="invPrintCustName">Client Name</div>
+            <div style="font-size:11px;" id="invPrintCustAddress">Address</div>
+            <div style="font-size:11px;">Mobile: <span id="invPrintCustPhone">-</span></div>
+            <div style="font-size:11px;">GSTIN: <strong id="invPrintCustGst">Unregistered</strong></div>
+          </div>
+          <div style="text-align:right; font-size:11px;">
+            <div>Payment Mode: <strong id="invPrintPayMode">Cash</strong></div>
+            <div>Place of Supply: <strong>21-Odisha</strong></div>
+            <div>Billed By: <strong id="invPrintStaff">Staff</strong></div>
+          </div>
+        </div>
+
+        <table class="inv-table">
+          <thead>
+            <tr>
+              <th style="width:28px;">#</th>
+              <th>Description of Goods / Spares</th>
+              <th style="width:68px;">HSN/SAC</th>
+              <th style="width:36px;">Qty</th>
+              <th style="width:68px;">Rate (₹)</th>
+              <th style="width:74px;">Taxable (₹)</th>
+            </tr>
+          </thead>
+          <tbody id="invPrintItemsTbody"></tbody>
+        </table>
+
+        <div style="display:flex; justify-content:flex-end; margin-top:6px;">
+          <div style="width:260px; font-size:11.5px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
+              <span>Total Taxable Amount:</span>
+              <strong id="invPrintTaxable">₹0</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
+              <span>CGST (9%):</span>
+              <span id="invPrintCgst">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#475569;">
+              <span>SGST (9%):</span>
+              <span id="invPrintSgst">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-top:1.5px solid #0a2540; padding-top:4px; font-size:13px; font-weight:800; color:#0a2540;">
+              <span>Grand Total:</span>
+              <span id="invPrintGrandTotal">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:2px;">
+              <span>Amount Received:</span>
+              <span id="invPrintRecv">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; color:#b91c1c; font-weight:700;">
+              <span>Balance Due:</span>
+              <span id="invPrintDue">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px; border-top:1px solid #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:flex-end;">
+          <div style="font-size:9.5px; color:#64748b; line-height:1.4;">
+            <strong>Declaration & Terms:</strong><br>
+            1. Goods once sold will not be taken back without original warranty seal.<br>
+            2. High-pressure machinery requires 3-phase stable voltage.
+          </div>
+          <div style="text-align:center; font-size:11px;">
+            <div style="font-weight:700; color:#0a2540;">For TWIN TOWN EXPRESS SERVICES PVT LTD</div>
+            <div style="height:35px;"></div>
+            <div>Authorised Signatory</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="master-data.js?v=2"></script>
 
 <script>
@@ -1104,7 +1671,7 @@ function populateDropdownsAndDatalists() {
 }
 window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
 
-/* ================= ADMIN STAFF MANAGEMENT (WITH CLOUD DELETE PUSH) ================= */
+/* ================= ADMIN STAFF MANAGEMENT ================= */
 function openStaffManageModal() {
   if (!currentUser || currentUser.role !== 'Admin') {
     alert("Permission Denied: Only Admin can manage staff.");
@@ -1145,6 +1712,10 @@ function editStaffDetailsPrompt(empId) {
   if (newPass && newPass.trim().length >= 4) emp.pass = newPass.trim();
 
   setStored("STAFF", registeredEmployees);
+  if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
+    window.cloudSync.saveDoc("STAFF", emp);
+  }
+
   if (currentUser.id === emp.id) {
     currentUser = emp;
     setStored("SESSION_USER", emp);
@@ -1212,6 +1783,11 @@ function saveAdminLedgerInvoice() {
   o.auditTrail.unshift({ by: currentUser.name + " (Admin)", time: getNowStr(), note: "Modified billing numbers in ledger" });
 
   setStored("ORDERS", ordersData);
+
+  if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
+    window.cloudSync.saveDoc("ORDERS", o);
+  }
+
   closeEditLedgerModal();
   renderBilling('all');
   renderDashboard();
@@ -1240,7 +1816,6 @@ function renderDashboard() {
   let todayRecv = 0;
   let totalDue = 0;
 
-  // Ledger stats based on Delivered orders
   ordersData.filter(o => o.status === 'Delivered').forEach(o => {
     if (o.orderDate === today) todayRecv += (o.recvAmount || 0);
     totalDue += (o.dueAmount || 0);
@@ -1439,7 +2014,7 @@ function processRestoreJSON(event) {
   event.target.value = '';
 }
 
-/* ================= AUTOCOMPLETE ENGINE (UNIFIED ALL 39 MACHINES + CATALOG GEAR EXCLUSION) ================= */
+/* ================= AUTOCOMPLETE ENGINE ================= */
 function handleCustomerAutocomplete(inputEl, targetInputId) {
   const val = (inputEl.value || '').toLowerCase().trim();
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
@@ -1553,7 +2128,7 @@ function selectMachineSuggestion(targetInputId, encName, price) {
 
 function handleOrderItemInput(inputEl) {
   const val = (inputEl.value || '').toLowerCase().trim();
-  const row = inputEl.closest('.order-item-row');
+  const row = inputEl.closest('tr');
   if (!row) return;
   const box = row.querySelector('.solid-suggestion-box');
   if(!box) return;
@@ -1590,13 +2165,12 @@ function handleOrderItemInput(inputEl) {
 
 function selectOrderItemSuggestion(el, encName, code, rate, stock) {
   const name = decodeURIComponent(encName);
-  const row = el.closest('.order-item-row');
+  const row = el.closest('tr');
   if (!row) return;
   const input = row.querySelector('.item-product-input');
   input.value = code ? `${name} [${code}]` : name;
-  row.querySelector('.item-mrp').value = rate || 0;
-  const stockTxt = stock < 0 ? `⚠️ Backorder: ${stock} Pcs` : `Stock: ${stock} Pcs`;
-  row.querySelector('.item-stock-warning').innerHTML = `<span style="color:${(stock > 0) ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">${stockTxt}</span>`;
+  row.querySelector('.item-rate').value = rate || 0;
+  row.querySelector('.item-stock-warning').innerHTML = `<span style="color:${(stock > 0) ? 'var(--success)' : 'var(--danger)'}">Stock: ${stock} Pcs</span>`;
   const box = row.querySelector('.solid-suggestion-box');
   if (box) box.style.display = 'none';
   calcOrderTotals();
@@ -1893,7 +2467,6 @@ function saveLeadAction() {
 
   setStored("LEADS", leadsData);
 
-  // Direct Cloud Single Doc Push
   if (savedLead && window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
     window.cloudSync.saveDoc("LEADS", savedLead);
   }
@@ -1911,9 +2484,7 @@ function deleteLeadAction(id) {
   }
   if(confirm("Confirm DELETE this Lead permanently?")) {
     leadsData = leadsData.filter(x => x.id !== id);
-    if(window.cloudSync && typeof window.cloudSync.deleteItem === 'function') {
-      window.cloudSync.deleteItem("LEADS", id);
-    }
+    if(window.cloudSync) window.cloudSync.deleteItem("LEADS", id);
     setStored("LEADS", leadsData);
     renderLeads();
     renderDashboard();
@@ -2177,7 +2748,7 @@ function openOrderModal(orderObj = null) {
     document.getElementById('ordDelDate').value = orderObj.deliveryDate;
     document.getElementById('ordRecvAmt').value = orderObj.recvAmount;
     document.getElementById('ordPayMode').value = orderObj.payMode;
-    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, (it.mrp != null ? it.mrp : it.rate), (it.discPercent || 0), (it.gstPercent != null ? it.gstPercent : 18)));
+    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.rate));
   } else {
     title.textContent = "New Multi-Item Product Order";
     editId.value = "";
@@ -2195,63 +2766,43 @@ function openOrderModal(orderObj = null) {
 }
 function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
 
-function addOrderItemRow(itemName = "", qty = 1, mrp = 0, discPercent = 0, gstPercent = 18) {
+function addOrderItemRow(itemName = "", qty = 1, rate = 0) {
   const tbody = document.getElementById('orderItemsTbody');
-  const row = document.createElement('div');
-  row.className = 'order-item-row';
+  const tr = document.createElement('tr');
 
-  row.innerHTML = `
-    <div class="autocomplete-wrapper">
-      <input type="text" class="item-product-input" value="${itemName}" placeholder="Type item name (machine / spare / chemical)..." oninput="handleOrderItemInput(this)">
+  tr.innerHTML = `
+    <td class="autocomplete-wrapper">
+      <input type="text" class="item-product-input" value="${itemName}" placeholder="Type item name..." oninput="handleOrderItemInput(this)">
       <div class="solid-suggestion-box"></div>
-    </div>
-    <div class="oi-grid">
-      <div><label>Qty</label><input type="number" class="item-qty" value="${qty}" min="1" oninput="calcOrderTotals()"></div>
-      <div><label>MRP ₹</label><input type="number" class="item-mrp" value="${mrp}" min="0" oninput="calcOrderTotals()"></div>
-      <div><label>Disc %</label><input type="number" class="item-disc" value="${discPercent}" min="0" max="100" oninput="calcOrderTotals()"></div>
-      <div><label>GST %</label><input type="number" class="item-gst" value="${gstPercent}" min="0" max="28" oninput="calcOrderTotals()"></div>
-    </div>
-    <div class="oi-summary">
-      <span class="item-stock-warning"></span>
-      <span class="oi-line-total">Rate ₹0 × 0 = ₹0 <b>+GST = ₹0</b></span>
-      <button class="btn btn-danger-sm" onclick="this.closest('.order-item-row').remove(); calcOrderTotals();">✕ Remove</button>
-    </div>
+      <div class="item-stock-warning" style="font-size:10px; color:var(--text-muted); margin-top:2px;"></div>
+    </td>
+    <td><input type="number" class="item-qty" value="${qty}" min="1" oninput="calcOrderTotals()" style="width:70px; font-size:14px; font-weight:700; padding:10px 8px;"></td>
+    <td><input type="number" class="item-rate" value="${rate}" oninput="calcOrderTotals()" style="width:85px; font-size:14px; font-weight:700; padding:10px 8px;"></td>
+    <td class="item-row-total" style="font-weight:bold; font-size:12px;">₹0</td>
+    <td><button class="btn btn-danger-sm" onclick="this.closest('tr').remove(); calcOrderTotals();">✕</button></td>
   `;
 
-  tbody.appendChild(row);
+  tbody.appendChild(tr);
   if(itemName) {
     const p = resolvePartFromSearch(itemName);
     if(p) {
-      if(!mrp) row.querySelector('.item-mrp').value = p.rate || 0;
-      const stockTxt = p.stock < 0 ? `⚠️ Backorder: ${p.stock} Pcs` : `Stock: ${p.stock} Pcs`;
-      row.querySelector('.item-stock-warning').innerHTML = `<span style="color:${p.stock > 0 ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">${stockTxt}</span>`;
+      tr.querySelector('.item-rate').value = rate || p.rate;
+      tr.querySelector('.item-stock-warning').innerHTML = `<span style="color:${p.stock > 0 ? 'var(--success)' : 'var(--danger)'}">Stock: ${p.stock} Pcs</span>`;
     }
   }
   calcOrderTotals();
 }
 
 function calcOrderTotals() {
-  let taxable = 0, gstTotal = 0, grand = 0;
-  document.querySelectorAll('#orderItemsTbody .order-item-row').forEach(r => {
+  let total = 0;
+  document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
     const q = parseFloat(r.querySelector('.item-qty').value) || 0;
-    const mrp = parseFloat(r.querySelector('.item-mrp').value) || 0;
-    const disc = Math.min(100, Math.max(0, parseFloat(r.querySelector('.item-disc').value) || 0));
-    const gstRaw = parseFloat(r.querySelector('.item-gst').value);
-    const gstPct = isNaN(gstRaw) ? 18 : gstRaw;
-
-    const rate = mrp * (1 - disc / 100);
-    const lineTaxable = q * rate;
-    const lineGst = lineTaxable * gstPct / 100;
-    const lineTotal = lineTaxable + lineGst;
-
-    r.querySelector('.oi-line-total').innerHTML =
-      `Rate ₹${rate.toFixed(2)} × ${q} = ₹${lineTaxable.toFixed(2)} <b>+GST ₹${lineGst.toFixed(2)} = ₹${lineTotal.toFixed(2)}</b>`;
-
-    taxable += lineTaxable; gstTotal += lineGst; grand += lineTotal;
+    const rate = parseFloat(r.querySelector('.item-rate').value) || 0;
+    const sub = q * rate;
+    r.querySelector('.item-row-total').textContent = '₹' + sub.toLocaleString('en-IN');
+    total += sub;
   });
-  document.getElementById('ordTaxableAmt').value = Math.round(taxable * 100) / 100;
-  document.getElementById('ordGstAmt').value = Math.round(gstTotal * 100) / 100;
-  document.getElementById('ordTotalAmt').value = Math.round(grand * 100) / 100;
+  document.getElementById('ordTotalAmt').value = total;
   calcOrderBalance();
 }
 
@@ -2274,20 +2825,11 @@ function saveOrderAction() {
   const payMode = document.getElementById('ordPayMode').value;
 
   let items = [];
-  let sumTaxable = 0, sumGst = 0;
-  document.querySelectorAll('#orderItemsTbody .order-item-row').forEach(r => {
+  document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
     const pName = r.querySelector('.item-product-input').value.trim();
     const qty = parseInt(r.querySelector('.item-qty').value) || 0;
-    const mrp = parseFloat(r.querySelector('.item-mrp').value) || 0;
-    const disc = Math.min(100, Math.max(0, parseFloat(r.querySelector('.item-disc').value) || 0));
-    const gstRaw = parseFloat(r.querySelector('.item-gst').value);
-    const gstPercent = isNaN(gstRaw) ? 18 : gstRaw;
+    const rate = parseFloat(r.querySelector('.item-rate').value) || 0;
     const part = resolvePartFromSearch(pName);
-
-    const rate = Math.round(mrp * (1 - disc / 100) * 100) / 100;
-    const lineTaxable = Math.round(qty * rate * 100) / 100;
-    const lineGst = Math.round(lineTaxable * gstPercent / 100 * 100) / 100;
-    const lineTotal = Math.round((lineTaxable + lineGst) * 100) / 100;
 
     if(pName && qty > 0) {
       items.push({
@@ -2295,16 +2837,9 @@ function saveOrderAction() {
         name: part ? part.name : pName,
         hsn: part ? (part.hsn || "84139190") : "84139190",
         qty,
-        mrp,
-        discPercent: disc,
-        gstPercent,
         rate,
-        taxable: lineTaxable,
-        gstAmt: lineGst,
-        total: lineTotal
+        total: qty * rate
       });
-      sumTaxable += lineTaxable;
-      sumGst += lineGst;
     }
   });
 
@@ -2325,8 +2860,6 @@ function saveOrderAction() {
       o.deliveryDate = delDate;
       o.items = items;
       o.totalAmount = total;
-      o.taxableAmount = Math.round(sumTaxable * 100) / 100;
-      o.gstAmount = Math.round(sumGst * 100) / 100;
       o.recvAmount = recv;
       o.dueAmount = due;
       o.payMode = payMode;
@@ -2343,8 +2876,6 @@ function saveOrderAction() {
       deliveryDate: delDate,
       items: items,
       totalAmount: total,
-      taxableAmount: Math.round(sumTaxable * 100) / 100,
-      gstAmount: Math.round(sumGst * 100) / 100,
       recvAmount: recv,
       dueAmount: due,
       payMode: payMode,
@@ -2357,7 +2888,6 @@ function saveOrderAction() {
 
   setStored("ORDERS", ordersData);
 
-  // Direct Cloud Push
   if (savedOrder && window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
     window.cloudSync.saveDoc("ORDERS", savedOrder);
   }
@@ -2369,16 +2899,15 @@ function saveOrderAction() {
   alert("Order successfully placed! Delivery hone ke baad ledger me transfer hoga.");
 }
 
-/* ================= NEW DIRECT CLOUD FUNCTION (BYPASSES OVERWRITE) ================= */
+/* ================= DIRECT CLOUD DELIVER FUNCTION ================= */
 function markOrderDelivered(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
 
-  // Stock deduct karein aur Cloud me update karein
   o.items.forEach(it => {
     const p = sampleInventory.find(x => x.id === it.id || x.name === it.name);
     if(p) {
-      p.stock = (p.stock || 0) - it.qty; // negative allowed: stock goes into backorder
+      p.stock = Math.max(0, p.stock - it.qty);
       if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
         window.cloudSync.saveDoc("INVENTORY", p);
       }
@@ -2388,9 +2917,8 @@ function markOrderDelivered(ordId) {
   o.status = "Delivered";
   o.deliveredDate = new Date().toISOString().split('T')[0];
   o.auditTrail = o.auditTrail || [];
-  o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Delivered & Tax Invoice Created" });
+  o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Order delivered & moved to financial ledger" });
   
-  // DIRECT CLOUD SAVE: LocalStorage bypass karke seedhe Firestore me save
   if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
     window.cloudSync.saveDoc("ORDERS", o);
   }
@@ -2398,7 +2926,7 @@ function markOrderDelivered(ordId) {
   setStored("ORDERS", ordersData);
   setStored("INVENTORY", sampleInventory);
 
-  alert(`Order ${ordId} Deliver ho gaya aur seedhe Cloud me Tax Invoice ban gaya!`);
+  alert(`Order ${ordId} Deliver ho gaya! Yeh order list se hatkar direct Ledger me Tax Invoice ban chuka hai.`);
   renderOrders();
   renderStockList();
   renderBilling('all');
@@ -2459,41 +2987,29 @@ function openInvoicePrintModal(ordId) {
   document.getElementById('invPrintPayMode').textContent = o.payMode;
   document.getElementById('invPrintStaff').textContent = o.bookedBy;
 
-  let taxable = 0, gstTotalAmt = 0;
+  const taxable = Math.round((o.totalAmount / 1.18) * 100) / 100;
+  const tax = Math.round((o.totalAmount - taxable) * 100) / 100;
+  const halfTax = Math.round((tax / 2) * 100) / 100;
+
   const tbody = document.getElementById('invPrintItemsTbody');
   tbody.innerHTML = o.items.map((it, idx) => {
-    const isNewFormat = it.taxable != null && it.gstAmt != null;
-    const gstPct = it.gstPercent != null ? it.gstPercent : 18;
-    const mrp = it.mrp != null ? it.mrp : it.rate;
-    const disc = it.discPercent || 0;
-    const rate = it.rate != null ? it.rate : mrp;
-    const itTaxable = isNewFormat ? it.taxable : Math.round((it.total / (1 + gstPct / 100)) * 100) / 100;
-    const itGst = isNewFormat ? it.gstAmt : Math.round((it.total - itTaxable) * 100) / 100;
-    taxable += itTaxable; gstTotalAmt += itGst;
+    const itTaxable = Math.round((it.total / 1.18) * 100) / 100;
     return `
       <tr>
         <td>${idx + 1}</td>
         <td><strong>${it.name}</strong></td>
         <td>${it.hsn || '84139190'}</td>
         <td>${it.qty}</td>
-        <td>₹${Number(mrp).toLocaleString('en-IN')}</td>
-        <td>${disc}%</td>
-        <td>₹${Number(rate).toLocaleString('en-IN')}</td>
-        <td>${gstPct}%</td>
-        <td>₹${(itTaxable + itGst).toFixed(2)}</td>
+        <td>₹${it.rate}</td>
+        <td>₹${itTaxable.toFixed(2)}</td>
       </tr>
     `;
   }).join('');
 
-  taxable = Math.round(taxable * 100) / 100;
-  gstTotalAmt = Math.round(gstTotalAmt * 100) / 100;
-  const halfTax = Math.round((gstTotalAmt / 2) * 100) / 100;
-  const grandTotal = Math.round((taxable + gstTotalAmt) * 100) / 100;
-
   document.getElementById('invPrintTaxable').textContent = '₹' + taxable.toFixed(2);
   document.getElementById('invPrintCgst').textContent = '₹' + halfTax.toFixed(2);
   document.getElementById('invPrintSgst').textContent = '₹' + halfTax.toFixed(2);
-  document.getElementById('invPrintGrandTotal').textContent = '₹' + grandTotal.toLocaleString('en-IN');
+  document.getElementById('invPrintGrandTotal').textContent = '₹' + Number(o.totalAmount).toLocaleString('en-IN');
   document.getElementById('invPrintRecv').textContent = '₹' + Number(o.recvAmount).toLocaleString('en-IN');
   document.getElementById('invPrintDue').textContent = '₹' + Number(o.dueAmount).toLocaleString('en-IN');
 
@@ -2873,7 +3389,7 @@ function stockCardHtml(item) {
         </div>
       </div>
       <div style="text-align:right; min-width:115px;">
-        <span class="badge ${item.stock < 0 ? 'badge-backorder' : (item.stock <= 5 ? 'badge-danger' : 'badge-delivered')}" style="margin-bottom:3px;">${item.stock < 0 ? '⚠️ ' + item.stock + ' Backorder' : item.stock + ' in stock'}</span>
+        <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}" style="margin-bottom:3px;">${item.stock} in stock</span>
         <div style="font-size:11px; color:#475569;">Dealer: ₹${Number(item.dealerPrice || 0).toLocaleString('en-IN')}</div>
         <div style="font-size:13px; font-weight:800; color:var(--primary);">MRP: ₹${Number(item.rate || 0).toLocaleString('en-IN')}</div>
       </div>
@@ -3014,10 +3530,7 @@ function openStockDetailModal(id) {
 
   document.getElementById('detDealer').textContent = '₹' + Number(item.dealerPrice || 0).toLocaleString('en-IN');
   document.getElementById('detMrp').textContent = '₹' + Number(item.rate || 0).toLocaleString('en-IN');
-  const detStockEl = document.getElementById('detStock');
-  detStockEl.textContent = item.stock < 0 ? `⚠️ ${item.stock} (Backorder)` : item.stock;
-  detStockEl.style.color = item.stock < 0 ? 'var(--danger)' : (item.stock <= 5 ? 'var(--warning)' : 'var(--success)');
-  document.getElementById('detAddStockQty').value = '';
+  document.getElementById('detStock').textContent = item.stock;
 
   const descWrap = document.getElementById('detDescWrap');
   const detailsText = item.specs ? `${item.specs}\n${item.desc || ''}` : (item.desc || 'Standard commercial machinery / care product.');
@@ -3061,33 +3574,6 @@ function openStockDetailModal(id) {
 window.openStockDetailModal = openStockDetailModal;
 function closeStockDetailModal() { document.getElementById('stockDetailModal').style.display = 'none'; }
 window.closeStockDetailModal = closeStockDetailModal;
-
-function quickAddStock() {
-  const item = sampleInventory.find(x => x.id === activeStockDetailId);
-  if (!item) return;
-  const qtyEl = document.getElementById('detAddStockQty');
-  const qty = parseInt(qtyEl.value) || 0;
-  if (qty <= 0) { alert("Please enter a valid received quantity!"); return; }
-
-  const before = item.stock || 0;
-  item.stock = before + qty;
-  setStored("INVENTORY", sampleInventory);
-
-  if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
-    window.cloudSync.saveDoc("INVENTORY", item);
-  }
-
-  qtyEl.value = '';
-
-  const detStockEl = document.getElementById('detStock');
-  detStockEl.textContent = item.stock < 0 ? `⚠️ ${item.stock} (Backorder)` : item.stock;
-  detStockEl.style.color = item.stock < 0 ? 'var(--danger)' : (item.stock <= 5 ? 'var(--warning)' : 'var(--success)');
-
-  renderStockList();
-  renderDashboard();
-  alert(`Stock updated: ${before} + ${qty} received = ${item.stock} in hand.`);
-}
-window.quickAddStock = quickAddStock;
 
 function editFromDetailModal() {
   const item = sampleInventory.find(x => x.id === activeStockDetailId);
@@ -3181,9 +3667,7 @@ function deleteStockItem(id) {
   }
   if(confirm("Confirm DELETE this item completely from inventory?")) {
     sampleInventory = sampleInventory.filter(x => x.id !== id);
-    if(window.cloudSync && typeof window.cloudSync.deleteItem === 'function') {
-      window.cloudSync.deleteItem("INVENTORY", id);
-    }
+    if(window.cloudSync) window.cloudSync.deleteItem("INVENTORY", id);
     setStored("INVENTORY", sampleInventory);
     renderStockList();
     renderDashboard();
@@ -3233,9 +3717,7 @@ function deleteCustomer(id) {
   }
   if(confirm("Confirm DELETE customer from directory?")) {
     customerDatabase = customerDatabase.filter(x => x.id !== id);
-    if(window.cloudSync && typeof window.cloudSync.deleteItem === 'function') {
-      window.cloudSync.deleteItem("CUSTOMERS", id);
-    }
+    if(window.cloudSync) window.cloudSync.deleteItem("CUSTOMERS", id);
     setStored("CUSTOMERS", customerDatabase);
     renderStockList();
     renderDashboard();
@@ -3258,7 +3740,7 @@ function renderMachineryList() {
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
           <strong style="font-size:14.5px; color:var(--primary);">🚜 ${mach.name}</strong>
-          <div style="font-size:11px; color:var(--text-muted);">${mach.pump} | Motor: ${mach.motor}</div>
+          <div style="font-size:11px; color:var(--text-muted);">Pump: ${mach.pump} | Motor: ${mach.motor}</div>
         </div>
         <div style="text-align:right;">
           <span class="badge badge-info">${mach.bar} Bar</span>
@@ -3343,9 +3825,7 @@ function deleteMachineAction(id) {
   }
   if(confirm("Delete this machine from catalog?")) {
     machineryDatabase = machineryDatabase.filter(x => x.id !== id);
-    if(window.cloudSync && typeof window.cloudSync.deleteItem === 'function') {
-      window.cloudSync.deleteItem("MACHINERY", id);
-    }
+    if(window.cloudSync) window.cloudSync.deleteItem("MACHINERY", id);
     setStored("MACHINERY", machineryDatabase);
     renderMachineryList();
     populateDropdownsAndDatalists();
