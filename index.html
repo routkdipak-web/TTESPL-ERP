@@ -4198,7 +4198,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
 })();
-</script>
   const origSelectInvCat = window.selectInventoryCategory;
 window.selectInventoryCategory = function(categoryName, btnEl) {
   if (typeof origSelectInvCat === 'function') origSelectInvCat(categoryName, btnEl);
@@ -4207,6 +4206,7 @@ window.selectInventoryCategory = function(categoryName, btnEl) {
     regBtn.style.display = (categoryName === 'CUSTOMERS') ? 'inline-flex' : 'none';
   }
 };
-
+  
+</script>
 </body>
 </html>
