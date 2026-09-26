@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/9422/9422891.png">
 <link rel="manifest" href='data:application/manifest+json,{"name":"Twin Town Express Services ERP","short_name":"TTESPL ERP","start_url":".","display":"standalone","background_color":"%230a192f","theme_color":"%230a192f","orientation":"portrait","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"192x192","type":"image/png"},{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"512x512","type":"image/png"}]}'>
 
-<!-- Google Fonts: Inter -->
+<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
     --accent: #ff6b35;
     --accent-hover: #e85a24;
     --cyan: #00b4d8;
-    --bg: #f3f6fa;
+    --bg: #f1f5f9;
     --card: #ffffff;
     --text-main: #0f172a;
     --text-muted: #64748b;
@@ -40,35 +40,37 @@
     --danger: #ef4444;
     --danger-bg: #fef2f2;
     --wa-color: #25d366;
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-    --shadow-lg: 0 12px 28px rgba(0,0,0,0.12);
+    --radius-sm: 9px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+    --shadow-sm: 0 2px 5px rgba(0,0,0,0.04);
+    --shadow-md: 0 8px 24px rgba(15,23,42,0.06);
+    --shadow-lg: 0 16px 36px rgba(10,37,64,0.15);
   }
 
   html { color-scheme: light; }
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-  body { background: var(--bg); color: var(--text-main); padding-bottom: 78px; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  body { 
+    background: radial-gradient(circle at 5% 0%, rgba(0,180,216,0.08), transparent 30%), radial-gradient(circle at 95% 5%, rgba(255,107,53,0.08), transparent 28%), #f1f5f9;
+    color: var(--text-main); padding-bottom: 84px; overflow-x: hidden; -webkit-font-smoothing: antialiased; 
+  }
 
   /* Input & Autocomplete Solid Rendering */
   input, select, textarea {
     color-scheme: light !important;
     background-color: #ffffff !important;
     color: #0f172a !important;
-    border: 1.5px solid var(--border) !important;
-    opacity: 1 !important;
+    border: 1.5px solid #dbe3eb !important;
     border-radius: var(--radius-sm);
     font-size: 13px;
-    padding: 9px 12px;
+    padding: 10px 12px;
     width: 100%;
     outline: none;
     transition: all 0.2s ease;
   }
   input:focus, select:focus, textarea:focus {
     border-color: var(--cyan) !important;
-    box-shadow: 0 0 0 3px rgba(0,180,216,0.18) !important;
+    box-shadow: 0 0 0 3.5px rgba(0,180,216,0.18) !important;
   }
   input::placeholder, textarea::placeholder { color: #94a3b8 !important; }
 
@@ -77,15 +79,15 @@
   .solid-suggestion-box {
     position: absolute; top: calc(100% + 4px); left: 0; right: 0;
     background: #ffffff !important;
-    border: 1.5px solid #0284c7 !important;
-    border-radius: 10px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22) !important;
-    max-height: 220px; overflow-y: auto; z-index: 100000;
+    border: 1.8px solid #0284c7 !important;
+    border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24) !important;
+    max-height: 230px; overflow-y: auto; z-index: 100000;
     display: none; animation: popIn 0.15s ease-out;
   }
   @keyframes popIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
   .suggestion-item {
-    padding: 8px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer;
+    padding: 9px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer;
     font-size: 12px; color: #0f172a; background: #ffffff !important;
     display: flex; justify-content: space-between; align-items: center;
   }
@@ -106,15 +108,16 @@
 
   /* Header */
   header {
-    background: linear-gradient(135deg, #061526 0%, #0a2540 60%, #11365c 100%);
+    background: linear-gradient(135deg, #05162a 0%, #0a2540 60%, #11365c 100%);
+    backdrop-filter: blur(12px);
     color: white; padding: 12px 16px; position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.18); display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.18); display: flex; justify-content: space-between; align-items: center;
   }
   .brand-area { display: flex; align-items: center; gap: 10px; }
   .brand-logo-badge {
-    width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #ff6b35, #f59e0b);
-    display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 900;
-    color: white; box-shadow: 0 2px 6px rgba(255,107,53,0.4);
+    width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #ff6b35, #f59e0b);
+    display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900;
+    color: white; box-shadow: 0 3px 8px rgba(255,107,53,0.45);
   }
   .brand-title { font-size: 14.5px; font-weight: 800; letter-spacing: 0.3px; line-height: 1.15; color: #ffffff; }
   .brand-sub { font-size: 10px; color: #94a3b8; font-weight: 600; }
@@ -148,12 +151,13 @@
 
   /* Navigation Bar */
   .nav-bar {
-    position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff;
+    position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(10px);
     display: flex; border-top: 1px solid #e2e8f0; z-index: 100;
-    box-shadow: 0 -4px 16px rgba(0,0,0,0.06); height: 60px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06); height: 62px;
   }
   .nav-item {
-    flex: 1; padding: 8px 2px; text-align: center; font-size: 10.5px; color: #64748b;
+    flex: 1; padding: 6px 1px; text-align: center; font-size: 10px; color: #64748b;
     cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 3px; font-weight: 700; transition: all 0.2s ease; position: relative;
   }
@@ -167,15 +171,15 @@
   }
 
   /* Layout Containers & Panels */
-  .container { max-width: 900px; margin: 0 auto; padding: 14px; }
+  .container { max-width: 920px; margin: 0 auto; padding: 14px; }
   .view-panel { display: none; }
   .view-panel.active { display: block; animation: panelFade 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
   @keyframes panelFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* Premium Cards */
+  /* Premium Bento Cards */
   .card {
     background: var(--card); border-radius: var(--radius-md); padding: 14px; margin-bottom: 12px;
-    border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border: 1px solid rgba(148, 163, 184, 0.2); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .card:hover { box-shadow: var(--shadow-md); }
   .card-header {
@@ -197,6 +201,7 @@
   .form-label { display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 4px; color: #334155; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
 
   /* Buttons */
   .btn {
@@ -248,7 +253,7 @@
 
   /* Modals Overlay with Blur */
   .auth-overlay {
-    position: fixed; inset: 0; background: rgba(6, 21, 38, 0.82); backdrop-filter: blur(5px);
+    position: fixed; inset: 0; background: rgba(6, 21, 38, 0.82); backdrop-filter: blur(6px);
     display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 14px;
   }
   .auth-card {
@@ -266,7 +271,24 @@
   }
   .audit-item { margin-bottom: 2px; }
 
-  .admin-only-btn { display: inline-flex; }
+  /* FLOATING QUICK ACTION BUTTON (FAB) */
+  #fabMainBtn {
+    position: fixed; bottom: 74px; right: 18px; width: 48px; height: 48px;
+    background: linear-gradient(135deg, var(--accent), #ff9d3d);
+    color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 20px rgba(255,107,53,0.45); font-size: 24px; font-weight: 800;
+    cursor: pointer; z-index: 99; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  #fabMainBtn:active { transform: scale(0.92); }
+  #fabMenu {
+    position: fixed; bottom: 130px; right: 18px; display: none; flex-direction: column; gap: 8px; z-index: 99;
+  }
+  .fab-action-btn {
+    background: white; border: 1px solid #cbd5e1; border-radius: 20px; padding: 7px 14px;
+    font-size: 12px; font-weight: 800; color: var(--primary); box-shadow: var(--shadow-md);
+    cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap;
+  }
+  .fab-action-btn:hover { background: #f8fafc; color: var(--accent); }
 
   @media print {
     body * { visibility: hidden; }
@@ -288,6 +310,7 @@
 </div>
 
 <input type="file" id="chatAttachmentInput" style="display:none;" accept="image/*,.pdf,.doc,.docx" onchange="handleChatFileUpload(event)">
+<input type="file" id="backupRestoreInput" style="display:none;" accept=".json" onchange="processRestoreJSON(event)">
 
 <!-- ================= AUTH SCREEN ================= -->
 <div id="authScreen" class="auth-overlay" style="display:none;">
@@ -406,8 +429,75 @@
 
   <div class="container">
 
+    <!-- TAB 0: EXECUTIVE BENTO DASHBOARD (NEW) -->
+    <div id="view-dashboard" class="view-panel active">
+      <div style="margin-bottom:12px;">
+        <h2 style="font-size:17px; font-weight:800; color:var(--primary);">📊 Executive Command Center</h2>
+        <div style="font-size:11px; color:var(--text-muted);">Real-time business performance & priority alerts</div>
+      </div>
+
+      <!-- Bento Key Metrics -->
+      <div class="grid-4" style="margin-bottom:12px;">
+        <div class="card" style="margin-bottom:0; background:linear-gradient(135deg, #0a2540, #13395e); color:white; border:none;">
+          <div style="font-size:10px; opacity:0.85; font-weight:700;">TODAY'S CASH & RECV</div>
+          <div style="font-size:18px; font-weight:900; margin-top:3px;" id="dashTodayRecv">₹0</div>
+          <div style="font-size:9.5px; opacity:0.75; margin-top:2px;">Cleared Collections</div>
+        </div>
+        <div class="card" style="margin-bottom:0; background:#fff5f5; border-top:3.5px solid var(--danger);">
+          <div style="font-size:10px; color:var(--danger); font-weight:800;">PENDING DUES</div>
+          <div style="font-size:18px; font-weight:900; color:var(--danger); margin-top:3px;" id="dashTotalDue">₹0</div>
+          <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;">Recoverable balance</div>
+        </div>
+        <div class="card" style="margin-bottom:0; background:#f0fdf4; border-top:3.5px solid var(--success);">
+          <div style="font-size:10px; color:#166534; font-weight:800;">SERVICE SCHEDULES</div>
+          <div style="font-size:18px; font-weight:900; color:#15803d; margin-top:3px;" id="dashActiveServices">0 Calls</div>
+          <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;">Pending & Warranty</div>
+        </div>
+        <div class="card" style="margin-bottom:0; background:#f0f9ff; border-top:3.5px solid var(--cyan);">
+          <div style="font-size:10px; color:#0369a1; font-weight:800;">STOCK INVENTORIES</div>
+          <div style="font-size:18px; font-weight:900; color:#0369a1; margin-top:3px;" id="dashTotalItems">0 Items</div>
+          <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;" id="dashTotalClients">0 Clients</div>
+        </div>
+      </div>
+
+      <!-- Quick Action Bento Grid -->
+      <div class="card" style="background:#ffffff;">
+        <div class="card-header">
+          <strong class="card-title">⚡ Quick Action Terminal</strong>
+          <span class="badge badge-info">1-Tap Fast Workflow</span>
+        </div>
+        <div class="grid-4">
+          <button class="btn btn-outline" onclick="openOrderModal()" style="padding:12px; flex-direction:column; gap:4px;">
+            <span style="font-size:20px;">📦</span>
+            <span>Create Order</span>
+          </button>
+          <button class="btn btn-outline" onclick="openLeadModal()" style="padding:12px; flex-direction:column; gap:4px;">
+            <span style="font-size:20px;">🎯</span>
+            <span>Machine Inquiry</span>
+          </button>
+          <button class="btn btn-outline" onclick="openServiceCallModal()" style="padding:12px; flex-direction:column; gap:4px;">
+            <span style="font-size:20px;">🛠️</span>
+            <span>Service Call</span>
+          </button>
+          <button class="btn btn-outline" onclick="openDailyCashClosingModal()" style="padding:12px; flex-direction:column; gap:4px;">
+            <span style="font-size:20px;">💰</span>
+            <span>Cash Closing</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Priority Action Items Feed -->
+      <div class="card">
+        <div class="card-header">
+          <strong class="card-title">🚨 Action Required (Today's Follow-ups & Orders)</strong>
+          <span class="badge badge-pending" id="dashPriorityCount">0 Pending</span>
+        </div>
+        <div id="dashPriorityContainer" style="font-size:12px;"></div>
+      </div>
+    </div>
+
     <!-- TAB 1: LEADS -->
-    <div id="view-leads" class="view-panel active">
+    <div id="view-leads" class="view-panel">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div>
           <h2 style="font-size:16px; font-weight:800; color:var(--primary);">🎯 Machine Leads & Installations</h2>
@@ -442,14 +532,12 @@
       <div id="serviceListContainer"></div>
     </div>
 
-    <!-- TAB 4: INVENTORY, MACHINES, CHEMICALS & SPARES -->
+    <!-- TAB 4: INVENTORY -->
     <div id="view-inventory" class="view-panel">
-      <!-- Master Search Bar -->
       <div style="margin-bottom:10px;">
         <input type="text" id="stockFilterInput" placeholder="🔍 Master Search: Type ANY product, machine, chemical, spare, polisher, code..." oninput="filterStockList(this.value)" style="font-size:13.5px; padding:11px 14px; border-width:2px; box-shadow:var(--shadow-sm);">
       </div>
 
-      <!-- Category Filter Pills -->
       <div class="sub-tabs" id="inventoryCategoryTabs" style="padding-bottom:10px; margin-bottom:12px; gap:6px;">
         <button class="sub-tab-btn active" onclick="selectInventoryCategory('ALL', this)">🌟 All Items (<span id="catCountAll">0</span>)</button>
         <button class="sub-tab-btn" onclick="selectInventoryCategory('Machines & Equipment', this)">🚜 Machines (<span id="catCountMach">0</span>)</button>
@@ -463,7 +551,6 @@
         <button class="sub-tab-btn" onclick="selectInventoryCategory('CUSTOMERS', this)">👥 Customers (<span id="catCountCust">0</span>)</button>
       </div>
 
-      <!-- Action & Counter Header -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
         <div>
           <span class="badge badge-delivered" id="totalPartsBadge" style="font-size:11.5px; padding:5px 10px;">0 Items</span>
@@ -477,16 +564,17 @@
         </div>
       </div>
 
-      <!-- Dynamic Product / Customer List Container -->
       <div id="stockListContainer"></div>
     </div>
 
     <!-- TAB 5: BILLING & LEDGER -->
     <div id="view-billing" class="view-panel">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
         <h2 style="font-size:16px; font-weight:800; color:var(--primary);">📑 Billing & Financial Ledger</h2>
-        <div style="display:flex; gap:6px;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
           <button class="btn btn-accent btn-sm" onclick="openDailyCashClosingModal()">💰 Cash Closing</button>
+          <button class="btn btn-primary btn-sm" onclick="triggerFullBackupDownload()">💾 Backup All Data</button>
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('backupRestoreInput').click()">📂 Restore</button>
           <button class="btn btn-outline btn-sm" onclick="exportLedgerCSV()">📥 CSV</button>
         </div>
       </div>
@@ -521,7 +609,7 @@
       <div id="billingListContainer"></div>
     </div>
 
-    <!-- TAB 6: REAL-TIME TEAM CHAT -->
+    <!-- TAB 6: CHAT -->
     <div id="view-chat" class="view-panel">
       <div class="chat-box-card">
         <div class="chat-header-bar">
@@ -548,9 +636,22 @@
 
   </div>
 
+  <!-- FLOATING QUICK ACTION BUTTON (FAB) -->
+  <div id="fabMenu">
+    <div class="fab-action-btn" onclick="openOrderModal(); toggleFabMenu();">📦 New Order</div>
+    <div class="fab-action-btn" onclick="openLeadModal(); toggleFabMenu();">🎯 New Lead</div>
+    <div class="fab-action-btn" onclick="openServiceCallModal(); toggleFabMenu();">🛠️ Service Call</div>
+    <div class="fab-action-btn" onclick="openAddCustomerModal(); toggleFabMenu();">👤 Register Client</div>
+  </div>
+  <div id="fabMainBtn" onclick="toggleFabMenu()">+</div>
+
   <!-- BOTTOM NAVIGATION -->
   <div class="nav-bar">
-    <div class="nav-item active" onclick="switchTab('leads', this)">
+    <div class="nav-item active" onclick="switchTab('dashboard', this)">
+      <div class="nav-icon">📊</div>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('leads', this)">
       <div class="nav-icon">🎯</div>
       <span>Leads</span>
     </div>
@@ -563,7 +664,7 @@
       <span>Services</span>
     </div>
     <div class="nav-item" onclick="switchTab('inventory', this)">
-      <div class="nav-icon">📊</div>
+      <div class="nav-icon">🏷️</div>
       <span>Stock</span>
     </div>
     <div class="nav-item" onclick="switchTab('billing', this)">
@@ -580,6 +681,43 @@
 </div>
 
 <!-- ================= MODALS ================= -->
+
+<!-- 0. SMART UPI QR MODAL (NEW) -->
+<div id="upiModal" class="auth-overlay" style="display:none; z-index:3200;">
+  <div class="auth-card" style="max-width:400px; text-align:center;">
+    <div class="card-header">
+      <strong class="card-title">📱 Scan to Pay via UPI</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeUpiModal()">✕</button>
+    </div>
+    <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+      Customer: <strong id="upiCustName" style="color:var(--primary);">-</strong>
+    </div>
+    <div style="background:#ffffff; padding:12px; border-radius:12px; display:inline-block; border:2px dashed #0284c7; margin-bottom:10px;">
+      <img id="upiQrImage" src="" alt="UPI QR" style="width:200px; height:200px; display:block; margin:0 auto;">
+    </div>
+    <div style="font-size:18px; font-weight:900; color:var(--primary); margin-bottom:4px;" id="upiAmountText">₹0</div>
+    <div style="font-size:10.5px; color:#64748b; margin-bottom:14px;">UPI ID: <strong>8917465040@okbizaxis</strong> (TTESPL BBSR)</div>
+    <button class="btn btn-primary btn-block" onclick="closeUpiModal()">✓ Done / Payment Received</button>
+  </div>
+</div>
+
+<!-- 0.1 DIGITAL SIGNATURE MODAL (NEW) -->
+<div id="signatureModal" class="auth-overlay" style="display:none; z-index:3100;">
+  <div class="auth-card" style="max-width:460px;">
+    <div class="card-header">
+      <strong class="card-title">✍️ Customer Service Verification Sign</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeSignModal()">✕</button>
+    </div>
+    <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:8px;">
+      Please sign on screen to verify satisfactory machine service completion.
+    </div>
+    <canvas id="signCanvas" width="400" height="180" style="background:#ffffff; border:1.8px solid #cbd5e1; border-radius:10px; width:100%; touch-action:none;"></canvas>
+    <div style="display:flex; justify-content:space-between; margin-top:8px;">
+      <button class="btn btn-outline btn-sm" onclick="clearSignCanvas()">Clear Signature</button>
+      <button class="btn btn-primary btn-sm" onclick="saveCustomerSignature()">✓ Confirm Signature</button>
+    </div>
+  </div>
+</div>
 
 <!-- 1. Stock Detail Modal -->
 <div id="stockDetailModal" class="auth-overlay" style="display:none; z-index:2500;">
@@ -880,6 +1018,10 @@
         <label class="form-label">Action Taken & Root Cause</label>
         <input type="text" id="srvActionDone" placeholder="Replaced ceramic plunger & valve seals">
       </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+        <span style="font-size:11px; font-weight:700; color:#166534;" id="srvSignStatus">Customer Sign: Pending</span>
+        <button class="btn btn-outline btn-sm" onclick="openSignatureModal()">✍️ Take Customer Signature</button>
+      </div>
     </div>
 
     <button class="btn btn-primary btn-block" onclick="saveServiceAction()">💾 Save Service Call</button>
@@ -1170,7 +1312,6 @@
   </div>
 </div>
 
-<!-- Load Embedded Master Data JS with cache buster -->
 <script src="master-data.js?v=2"></script>
 
 <script>
@@ -1352,6 +1493,7 @@ function getNowStr() {
 
 function refreshAllData() {
   populateDropdownsAndDatalists();
+  renderDashboard();
   renderLeads();
   renderOrders();
   renderServices();
@@ -1380,6 +1522,208 @@ function populateDropdownsAndDatalists() {
   }
 }
 window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
+
+/* ================= NEW: EXECUTIVE DASHBOARD ENGINE ================= */
+function renderDashboard() {
+  const today = new Date().toISOString().split('T')[0];
+  let todayRecv = 0;
+  let totalDue = 0;
+
+  ordersData.forEach(o => {
+    if (o.orderDate === today) todayRecv += (o.recvAmount || 0);
+    totalDue += (o.dueAmount || 0);
+  });
+
+  const activeServices = serviceCallsData.filter(s => s.status !== 'Work Completed').length;
+
+  document.getElementById('dashTodayRecv').textContent = '₹' + todayRecv.toLocaleString('en-IN');
+  document.getElementById('dashTotalDue').textContent = '₹' + totalDue.toLocaleString('en-IN');
+  document.getElementById('dashActiveServices').textContent = `${activeServices} Active`;
+  document.getElementById('dashTotalItems').textContent = `${sampleInventory.length} Items`;
+  document.getElementById('dashTotalClients').textContent = `${customerDatabase.length} Clients`;
+
+  // Priority Feed: Due orders + Followups due today or delayed
+  const priorityBox = document.getElementById('dashPriorityContainer');
+  priorityBox.innerHTML = '';
+
+  let priorityItems = [];
+
+  ordersData.filter(o => o.status === 'Pending' && o.deliveryDate <= today).forEach(o => {
+    priorityItems.push({
+      type: 'Order Due',
+      title: `📦 Order Due: ${o.customerName} (₹${o.totalAmount})`,
+      sub: `Delivery Date: ${o.deliveryDate} | Staff: ${o.bookedBy}`,
+      action: () => { switchTab('orders', document.querySelectorAll('.nav-item')[2]); }
+    });
+  });
+
+  serviceCallsData.filter(s => s.status !== 'Work Completed' && s.targetDate <= today).forEach(s => {
+    priorityItems.push({
+      type: 'Service Due',
+      title: `🛠️ Machine Service: ${s.customerName}`,
+      sub: `Target: ${s.targetDate} | Machine: ${s.machine}`,
+      action: () => { switchTab('services', document.querySelectorAll('.nav-item')[3]); }
+    });
+  });
+
+  leadsData.filter(l => l.status !== 'Installed' && l.followupDate <= today).forEach(l => {
+    priorityItems.push({
+      type: 'Lead Followup',
+      title: `🎯 Follow-up Due: ${l.customerName}`,
+      sub: `Quoted: ₹${l.quotedPrice} | Machine: ${l.machine}`,
+      action: () => { switchTab('leads', document.querySelectorAll('.nav-item')[1]); }
+    });
+  });
+
+  document.getElementById('dashPriorityCount').textContent = `${priorityItems.length} Urgent`;
+
+  if (priorityItems.length === 0) {
+    priorityBox.innerHTML = `<div style="text-align:center; padding:12px; color:var(--success); font-weight:700;">✅ Sabhi targets aur deliveries updated hain! Koi pending alert nahi hai.</div>`;
+  } else {
+    priorityItems.slice(0, 5).forEach(item => {
+      const row = document.createElement('div');
+      row.style.cssText = 'background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:9px 12px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;';
+      row.onclick = item.action;
+      row.innerHTML = `
+        <div>
+          <strong style="color:var(--primary); font-size:12.5px;">${item.title}</strong>
+          <div style="font-size:10.5px; color:var(--text-muted); margin-top:2px;">${item.sub}</div>
+        </div>
+        <button class="btn btn-outline btn-sm">View →</button>
+      `;
+      priorityBox.appendChild(row);
+    });
+  }
+}
+
+/* ================= FAB QUICK MENU ================= */
+function toggleFabMenu() {
+  const menu = document.getElementById('fabMenu');
+  const btn = document.getElementById('fabMainBtn');
+  if (menu.style.display === 'flex') {
+    menu.style.display = 'none';
+    btn.style.transform = 'rotate(0deg)';
+  } else {
+    menu.style.display = 'flex';
+    btn.style.transform = 'rotate(45deg)';
+  }
+}
+
+/* ================= NEW: SMART UPI QR GENERATOR ================= */
+function openUpiModal(customerName, amount) {
+  if (!amount || amount <= 0) {
+    alert("Amount zero ya negative nahi ho sakta.");
+    return;
+  }
+  document.getElementById('upiCustName').textContent = customerName || "Customer";
+  document.getElementById('upiAmountText').textContent = '₹' + Number(amount).toLocaleString('en-IN');
+
+  const upiId = "8917465040@okbizaxis";
+  const upiName = "Twin Town Express Services";
+  const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(upiName)}&am=${amount}&cu=INR`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}`;
+
+  document.getElementById('upiQrImage').src = qrUrl;
+  document.getElementById('upiModal').style.display = 'flex';
+}
+function closeUpiModal() {
+  document.getElementById('upiModal').style.display = 'none';
+}
+
+/* ================= NEW: DIGITAL SIGNATURE PAD ================= */
+let signatureCanvas, sigCtx, isDrawing = false;
+let activeServiceSignTarget = null;
+
+function initSignatureCanvas() {
+  signatureCanvas = document.getElementById('signCanvas');
+  if (!signatureCanvas) return;
+  sigCtx = signatureCanvas.getContext('2d');
+  sigCtx.strokeStyle = "#0a2540";
+  sigCtx.lineWidth = 2.5;
+  sigCtx.lineCap = "round";
+
+  const getPos = (e) => {
+    const rect = signatureCanvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  };
+
+  const startDraw = (e) => { isDrawing = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); };
+  const draw = (e) => { if (!isDrawing) return; const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); };
+  const stopDraw = () => { isDrawing = false; };
+
+  signatureCanvas.addEventListener('mousedown', startDraw);
+  signatureCanvas.addEventListener('mousemove', draw);
+  signatureCanvas.addEventListener('mouseup', stopDraw);
+
+  signatureCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDraw(e); }, { passive: false });
+  signatureCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); }, { passive: false });
+  signatureCanvas.addEventListener('touchend', stopDraw);
+}
+
+function openSignatureModal() {
+  document.getElementById('signatureModal').style.display = 'flex';
+  setTimeout(initSignatureCanvas, 100);
+}
+function closeSignModal() {
+  document.getElementById('signatureModal').style.display = 'none';
+}
+function clearSignCanvas() {
+  if (sigCtx) sigCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+}
+function saveCustomerSignature() {
+  const statusEl = document.getElementById('srvSignStatus');
+  if (statusEl) {
+    statusEl.textContent = "Customer Sign: ✓ Attached";
+    statusEl.style.color = "var(--success)";
+  }
+  closeSignModal();
+  alert("Customer signature verify ho gaya!");
+}
+
+/* ================= NEW: BACKUP & RESTORE ALL DATA ================= */
+function triggerFullBackupDownload() {
+  const fullBackup = {
+    staff: registeredEmployees,
+    customers: customerDatabase,
+    inventory: sampleInventory,
+    machinery: machineryDatabase,
+    leads: leadsData,
+    orders: ordersData,
+    services: serviceCallsData,
+    backupDate: new Date().toISOString(),
+    version: "2026.1"
+  };
+
+  const str = JSON.stringify(fullBackup, null, 2);
+  downloadFile(str, `TTESPL_Full_ERP_Backup_${new Date().toISOString().split('T')[0]}.json`, "application/json");
+}
+
+function processRestoreJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (confirm("Restore karne se current memory update ho jayegi. Continue karein?")) {
+        if (data.customers) { customerDatabase = data.customers; setStored("CUSTOMERS", customerDatabase); }
+        if (data.inventory) { sampleInventory = data.inventory; setStored("INVENTORY", sampleInventory); }
+        if (data.orders) { ordersData = data.orders; setStored("ORDERS", ordersData); }
+        if (data.services) { serviceCallsData = data.services; setStored("SERVICES", serviceCallsData); }
+        if (data.leads) { leadsData = data.leads; setStored("LEADS", leadsData); }
+        refreshAllData();
+        alert("Success: Pura ERP data successfully restore ho gaya!");
+      }
+    } catch(err) {
+      alert("Invalid backup file. Kripya valid JSON backup file chunein.");
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
 
 /* ================= SOLID SEARCHABLE AUTOCOMPLETE ENGINE ================= */
 function handleCustomerAutocomplete(inputEl, targetInputId) {
@@ -1621,29 +1965,6 @@ async function loadMasterCatalogAction() {
   }
 }
 
-async function loadMasterCustomersAction() {
-  const btn = event ? event.target : null;
-  const oldText = btn ? btn.innerText : "";
-  if (btn) btn.innerText = "⏳ Loading...";
-
-  try {
-    const payload = await getMasterDataPayload();
-    if (payload && payload.customers && payload.customers.length > 0) {
-      if (confirm(`Directory se sabhi ${payload.customers.length} registered clients load karein?`)) {
-        customerDatabase = payload.customers;
-        setStored("CUSTOMERS", customerDatabase);
-        renderCustomerList();
-        populateDropdownsAndDatalists();
-        alert(`Success: ${customerDatabase.length} registered customers load ho gaye!`);
-      }
-    } else {
-      alert("Error: Master customer data load nahi ho saki. 1 minute baad dobara try karein.");
-    }
-  } finally {
-    if (btn) btn.innerText = oldText || "📦 Reload Full Customers";
-  }
-}
-
 /* ================= TAB 1: LEADS ================= */
 function renderLeads() {
   const c = document.getElementById('leadsListContainer');
@@ -1821,6 +2142,7 @@ function saveLeadAction() {
   setStored("LEADS", leadsData);
   closeLeadModal();
   renderLeads();
+  renderDashboard();
   alert("Lead saved & synced!");
 }
 
@@ -1834,6 +2156,7 @@ function deleteLeadAction(id) {
     if(window.cloudSync) window.cloudSync.deleteItem("LEADS", id);
     setStored("LEADS", leadsData);
     renderLeads();
+    renderDashboard();
   }
 }
 
@@ -1885,6 +2208,7 @@ function saveInstallationAction() {
   setStored("LEADS", leadsData);
   closeInstallModal();
   renderLeads();
+  renderDashboard();
   alert("Installation saved & 4 Free Services scheduled!");
 }
 
@@ -1924,6 +2248,7 @@ function saveFreeServiceAction() {
   setStored("LEADS", leadsData);
   closeAttendModal();
   renderLeads();
+  renderDashboard();
   alert("Free Service recorded successfully!");
 }
 
@@ -1995,6 +2320,7 @@ function renderOrders() {
 
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
         <button class="btn btn-print btn-sm" style="flex:1;" onclick="openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice PDF</button>
+        <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
         <button class="btn btn-wa btn-sm" style="flex:1;" onclick="shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
         ${o.status !== 'Delivered' ? `
           <button class="btn btn-primary btn-sm" style="flex:1;" onclick="markOrderDelivered('${o.id}')">✓ Mark Delivered</button>
@@ -2162,6 +2488,7 @@ function saveOrderAction() {
   closeOrderModal();
   renderOrders();
   renderBilling('all');
+  renderDashboard();
   alert("Order successfully placed!");
 }
 
@@ -2184,6 +2511,7 @@ function markOrderDelivered(ordId) {
   renderOrders();
   renderStockList();
   renderBilling('all');
+  renderDashboard();
 }
 
 function deleteOrderAction(id) {
@@ -2197,6 +2525,7 @@ function deleteOrderAction(id) {
     setStored("ORDERS", ordersData);
     renderOrders();
     renderBilling('all');
+    renderDashboard();
   }
 }
 
@@ -2499,6 +2828,7 @@ function saveServiceAction() {
   closeServiceModal();
   renderServices();
   renderStockList();
+  renderDashboard();
   alert("Service record saved & synced to cloud!");
 }
 
@@ -2512,6 +2842,7 @@ function deleteServiceAction(id) {
     if(window.cloudSync) window.cloudSync.deleteItem("SERVICES", id);
     setStored("SERVICES", serviceCallsData);
     renderServices();
+    renderDashboard();
   }
 }
 
@@ -2528,7 +2859,7 @@ function editServicePrompt(srvId) {
   if(s) openServiceCallModal(s);
 }
 
-/* ================= TAB 4: UNIFIED INVENTORY & CATEGORY FILTER ENGINE ================= */
+/* ================= TAB 4: UNIFIED INVENTORY ================= */
 let activeInventoryCategory = 'ALL';
 const STOCK_RENDER_CAP = 60;
 
@@ -2579,6 +2910,11 @@ function selectInventoryCategory(categoryName, btnEl) {
   const titleEl = document.getElementById('currentCategoryTitle');
   if (titleEl) {
     titleEl.textContent = categoryName === 'ALL' ? '• All Categories Combined' : `• Category: ${categoryName}`;
+  }
+
+  const regBtn = document.getElementById('dynamicRegisterClientBtn');
+  if (regBtn) {
+    regBtn.style.display = (categoryName === 'CUSTOMERS') ? 'inline-flex' : 'none';
   }
 
   const sInput = document.getElementById('stockFilterInput');
@@ -2787,10 +3123,6 @@ function openStockDetailModal(id) {
   }
 
   document.getElementById('stockDetailModal').style.display = 'flex';
-  
-  if (typeof window.ttShowProductWeb === 'function') {
-    window.ttShowProductWeb(item);
-  }
 }
 window.openStockDetailModal = openStockDetailModal;
 function closeStockDetailModal() { document.getElementById('stockDetailModal').style.display = 'none'; }
@@ -2862,6 +3194,7 @@ function saveStockItemAction() {
   setStored("INVENTORY", sampleInventory);
   closeStockModal();
   renderStockList();
+  renderDashboard();
   populateDropdownsAndDatalists();
   alert("Item saved in inventory & synced to cloud!");
 }
@@ -2881,6 +3214,7 @@ function deleteStockItem(id) {
     if(window.cloudSync) window.cloudSync.deleteItem("INVENTORY", id);
     setStored("INVENTORY", sampleInventory);
     renderStockList();
+    renderDashboard();
     populateDropdownsAndDatalists();
   }
 }
@@ -2930,6 +3264,7 @@ function deleteCustomer(id) {
     if(window.cloudSync) window.cloudSync.deleteItem("CUSTOMERS", id);
     setStored("CUSTOMERS", customerDatabase);
     renderStockList();
+    renderDashboard();
     populateDropdownsAndDatalists();
   }
 }
@@ -3040,7 +3375,8 @@ function renderCustomerList() {
   const c = document.getElementById('customerListContainer');
   if(!c) return;
   c.innerHTML = '';
-  document.getElementById('totalCustBadge').textContent = `${customerDatabase.length} Registered Clients`;
+  const totalCust = document.getElementById('totalCustBadge');
+  if (totalCust) totalCust.textContent = `${customerDatabase.length} Registered Clients`;
 
   customerDatabase.slice(0, CUST_RENDER_CAP).forEach(cust => {
     const card = document.createElement('div');
@@ -3048,13 +3384,6 @@ function renderCustomerList() {
     card.innerHTML = customerCardHtml(cust);
     c.appendChild(card);
   });
-
-  if (customerDatabase.length > CUST_RENDER_CAP) {
-    const hint = document.createElement('div');
-    hint.style.cssText = 'text-align:center; font-size:11.5px; color:var(--text-muted); padding:10px; font-weight:600;';
-    hint.textContent = `Showing 50 of ${customerDatabase.length} clients — use the search bar above to find any customer instantly.`;
-    c.appendChild(hint);
-  }
 }
 window.renderCustomerList = renderCustomerList;
 
@@ -3109,6 +3438,7 @@ function saveCustomerAction() {
   setStored("CUSTOMERS", customerDatabase);
   closeCustomerModal();
   renderCustomerList();
+  renderDashboard();
   populateDropdownsAndDatalists();
   alert("Customer saved & synced to cloud!");
 }
@@ -3163,6 +3493,7 @@ function renderBilling(filterType, empFilter = "ALL") {
       </div>
       <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
         <button class="btn btn-print btn-sm" style="flex:1;" onclick="openInvoicePrintModal('${o.id}')">🖨️ View Tax Invoice</button>
+        <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
         ${o.dueAmount > 0 ? `
           <button class="btn btn-outline btn-sm" style="flex:1;" onclick="collectDuePayment('${o.id}')">💵 Collect Due</button>
           <button class="btn btn-wa btn-sm" style="flex:1;" onclick="sendDueWhatsApp('${o.id}')">💬 Due Reminder</button>
@@ -3196,6 +3527,7 @@ function collectDuePayment(ordId) {
     o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: `Collected ₹${p} via ${mode}` });
     setStored("ORDERS", ordersData);
     renderBilling('due', document.getElementById('billingEmployeeFilter').value);
+    renderDashboard();
   }
 }
 
@@ -3343,15 +3675,6 @@ function compressImageFile(file, maxDim = 1280, targetBytes = 350 * 1024) {
           dataUrl = canvas.toDataURL('image/jpeg', quality);
         }
 
-        if (dataUrl.length * 0.75 > targetBytes && (width > 800 || height > 800)) {
-          const scale = 800 / Math.max(width, height);
-          const c2 = document.createElement('canvas');
-          c2.width = Math.round(width * scale);
-          c2.height = Math.round(height * scale);
-          c2.getContext('2d').drawImage(canvas, 0, 0, c2.width, c2.height);
-          dataUrl = c2.toDataURL('image/jpeg', 0.65);
-        }
-
         resolve(dataUrl);
       };
       img.src = e.target.result;
@@ -3374,7 +3697,6 @@ function handleChatFileUpload(event) {
       sendLiveChatMessage({ name: (file.name || 'photo.jpg').replace(/\.[^.]+$/, '.jpg'), type: 'image/jpeg', data: dataUrl });
     }).catch(err => {
       if (compressBar) compressBar.style.display = 'none';
-      console.error("Compression failed:", err);
       alert("Photo compress nahi ho payi, dobara try karein.");
     });
   } else {
@@ -3410,8 +3732,9 @@ function switchTab(tab, el) {
   document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('view-' + tab).classList.add('active');
-  el.classList.add('active');
+  if (el) el.classList.add('active');
 
+  if(tab === 'dashboard') renderDashboard();
   if(tab === 'leads') renderLeads();
   if(tab === 'orders') renderOrders();
   if(tab === 'services') renderServices();
@@ -3441,65 +3764,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       renderStockList();
       populateDropdownsAndDatalists();
+      renderDashboard();
     }
   }
 });
 </script>
 
-<!-- Live Cloud Synchronization Script -->
 <script src="live-sync.js?v=5"></script>
-<script>
-(function () {
-  "use strict";
-
-  const css = document.createElement("style");
-  css.textContent = `
-    body{
-      background:
-        radial-gradient(circle at 5% 0%,rgba(0,180,216,.08),transparent 28%),
-        radial-gradient(circle at 95% 5%,rgba(255,107,53,.08),transparent 25%),
-        #eef3f8 !important;
-    }
-    header{
-      background:linear-gradient(135deg,#04111f,#0a2949,#14517e) !important;
-      box-shadow:0 8px 28px rgba(2,18,34,.22) !important;
-    }
-    .card{
-      border:1px solid rgba(148,163,184,.23) !important;
-      border-radius:18px !important;
-      background:linear-gradient(145deg,#fff,#f8fbff) !important;
-      box-shadow:0 8px 24px rgba(15,23,42,.06) !important;
-    }
-    .btn{
-      border-radius:11px !important;
-    }
-    .btn-primary{
-      background:linear-gradient(135deg,#08213a,#14517e) !important;
-      box-shadow:0 6px 16px rgba(10,37,64,.18) !important;
-    }
-    .btn-accent{
-      background:linear-gradient(135deg,#ff6b35,#ff9d3d) !important;
-    }
-    input,select,textarea{
-      border-radius:11px !important;
-      border-color:#d9e2ec !important;
-    }
-    input:focus,select:focus,textarea:focus{
-      border-color:#00a6cc !important;
-      box-shadow:0 0 0 4px rgba(0,180,216,.11) !important;
-    }
-  `;
-  document.head.appendChild(css);
-
-  const origSelectInvCat = window.selectInventoryCategory;
-  window.selectInventoryCategory = function(categoryName, btnEl) {
-    if (typeof origSelectInvCat === 'function') origSelectInvCat(categoryName, btnEl);
-    const regBtn = document.getElementById('dynamicRegisterClientBtn');
-    if (regBtn) {
-      regBtn.style.display = (categoryName === 'CUSTOMERS') ? 'inline-flex' : 'none';
-    }
-  };
-})();
-</script>
 </body>
 </html>
