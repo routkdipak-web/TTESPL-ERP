@@ -1748,7 +1748,6 @@ function calculateProfitMetrics() {
 
   if (cost <= 0) return;
 
-  // Selling Price (Excl GST) = Cost / (1 - Margin/100)
   const basePrice = cost / (1 - (margin / 100));
   const profitAmt = basePrice - cost;
   const markupPct = (profitAmt / cost) * 100;
@@ -1784,7 +1783,6 @@ function renderReportContent() {
   if (!area) return;
 
   if (currentReportTab === 'sales') {
-    // Employee-wise Month-wise Sales Performance
     const empSales = {};
     registeredEmployees.forEach(e => { empSales[e.name] = { total: 0, months: {} }; });
 
@@ -1793,14 +1791,13 @@ function renderReportContent() {
       if (!empSales[staff]) empSales[staff] = { total: 0, months: {} };
       empSales[staff].total += (o.totalAmount || 0);
 
-      const monthKey = (o.deliveredDate || o.orderDate || '').substring(0, 7); // YYYY-MM
+      const monthKey = (o.deliveredDate || o.orderDate || '').substring(0, 7);
       if (monthKey) {
         empSales[staff].months[monthKey] = (empSales[staff].months[monthKey] || 0) + (o.totalAmount || 0);
       }
     });
 
     let html = `<div style="font-weight:800; color:var(--primary); margin-bottom:8px;">📊 Employee-wise & Month-wise Sales Performance Report</div>`;
-    
     let hasSales = false;
     for (const [emp, data] of Object.entries(empSales)) {
       if (data.total > 0) {
@@ -1823,7 +1820,6 @@ function renderReportContent() {
     area.innerHTML = html;
 
   } else {
-    // Ageing Analysis for Dues
     const today = new Date();
     let bucket0_30 = 0, bucket30_60 = 0, bucket60_plus = 0;
     let details0_30 = [], details30_60 = [], details60_plus = [];
@@ -2039,6 +2035,7 @@ function renderDashboard() {
   document.getElementById('dashTotalClients').textContent = `${customerDatabase.length} Clients`;
 
   const priorityBox = document.getElementById('dashPriorityContainer');
+  if(!priorityBox) return;
   priorityBox.innerHTML = '';
 
   let priorityItems = [];
@@ -2070,7 +2067,8 @@ function renderDashboard() {
     });
   });
 
-  document.getElementById('dashPriorityCount').textContent = `${priorityItems.length} Urgent`;
+  const countBadge = document.getElementById('dashPriorityCount');
+  if(countBadge) countBadge.textContent = `${priorityItems.length} Pending`;
 
   if (priorityItems.length === 0) {
     priorityBox.innerHTML = `<div style="text-align:center; padding:12px; color:var(--success); font-weight:700;">✅ Sabhi targets aur deliveries updated hain! Koi pending alert nahi hai.</div>`;
@@ -2095,6 +2093,7 @@ function renderDashboard() {
 function toggleFabMenu() {
   const menu = document.getElementById('fabMenu');
   const btn = document.getElementById('fabMainBtn');
+  if (!menu || !btn) return;
   if (menu.style.display === 'flex') {
     menu.style.display = 'none';
     btn.style.transform = 'rotate(0deg)';
@@ -2493,6 +2492,7 @@ async function loadMasterCatalogAction() {
 /* ================= TAB 1: LEADS ================= */
 function renderLeads() {
   const c = document.getElementById('leadsListContainer');
+  if(!c) return;
   c.innerHTML = '';
   const isAdmin = currentUser && (currentUser.role === 'Admin');
 
@@ -2823,18 +2823,14 @@ function switchOrderSubTab(sub) {
   currentOrderSubTab = sub;
   const btnAct = document.getElementById('btnSubTabActiveOrders');
   const btnCan = document.getElementById('btnSubTabCancelledOrders');
-  if (sub === 'active') {
-    btnAct.classList.add('active');
-    btnCan.classList.remove('active');
-  } else {
-    btnCan.classList.add('active');
-    btnAct.classList.remove('active');
-  }
+  if (btnAct) btnAct.classList.toggle('active', sub === 'active');
+  if (btnCan) btnCan.classList.toggle('active', sub === 'cancelled');
   renderOrders();
 }
 
 function renderOrders() {
   const c = document.getElementById('ordersListContainer');
+  if(!c) return;
   c.innerHTML = '';
   const today = new Date().toISOString().split('T')[0];
   const isAdmin = currentUser && (currentUser.role === 'Admin');
@@ -2842,8 +2838,10 @@ function renderOrders() {
   const pendingList = ordersData.filter(o => o.status === 'Pending');
   const cancelledList = ordersData.filter(o => o.status === 'Cancelled');
 
-  document.getElementById('countActiveOrders').textContent = pendingList.length;
-  document.getElementById('countCancelledOrders').textContent = cancelledList.length;
+  const activeCountEl = document.getElementById('countActiveOrders');
+  const cancelCountEl = document.getElementById('countCancelledOrders');
+  if(activeCountEl) activeCountEl.textContent = pendingList.length;
+  if(cancelCountEl) cancelCountEl.textContent = cancelledList.length;
 
   const targetList = (currentOrderSubTab === 'active') ? pendingList : cancelledList;
 
@@ -2869,7 +2867,7 @@ function renderOrders() {
       statusText = '🚫 Cancelled';
     }
 
-    let itemsHtml = o.items.map(i => `<div>• ${i.name} (Qty: <strong>${i.qty}</strong> @ MRP ₹${i.mrp || i.rate}${i.disc ? ' [-' + i.disc + '%]' : ''} = ₹${i.rate}) = ₹${i.total}</div>`).join('');
+    let itemsHtml = (o.items || []).map(i => `<div>• ${i.name} (Qty: <strong>${i.qty}</strong> @ MRP ₹${i.mrp || i.rate}${i.disc ? ' [-' + i.disc + '%]' : ''} = ₹${i.rate}) = ₹${i.total}</div>`).join('');
     let auditHtml = (o.auditTrail || []).map(a => `<div class="audit-item">• By <strong>${a.by}</strong> at ${a.time} (${a.note})</div>`).join('');
 
     const card = document.createElement('div');
@@ -2945,23 +2943,24 @@ function cancelOrderAction(ordId) {
 
 function openOrderModal(orderObj = null) {
   const tbody = document.getElementById('orderItemsTbody');
+  if(!tbody) return;
   tbody.innerHTML = '';
   const title = document.getElementById('orderModalTitle');
   const editId = document.getElementById('editOrderId');
 
   if(orderObj) {
-    title.textContent = "Edit Order & Items";
-    editId.value = orderObj.id;
+    if(title) title.textContent = "Edit Order & Items";
+    if(editId) editId.value = orderObj.id;
     document.getElementById('ordCustSearchInput').value = `${orderObj.customerName} (${orderObj.phone || ''})`;
     document.getElementById('ordStaffSelect').value = orderObj.bookedBy;
     document.getElementById('ordDate').value = orderObj.orderDate;
     document.getElementById('ordDelDate').value = orderObj.deliveryDate;
     document.getElementById('ordRecvAmt').value = orderObj.recvAmount;
     document.getElementById('ordPayMode').value = orderObj.payMode;
-    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.mrp || it.rate, it.disc || 0));
+    (orderObj.items || []).forEach(it => addOrderItemRow(it.name, it.qty, it.mrp || it.rate, it.disc || 0));
   } else {
-    title.textContent = "New Multi-Item Product Order with Discount %";
-    editId.value = "";
+    if(title) title.textContent = "New Multi-Item Product Order with Discount %";
+    if(editId) editId.value = "";
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('ordCustSearchInput').value = "";
     document.getElementById('ordDate').value = today;
@@ -2978,6 +2977,7 @@ function closeOrderModal() { document.getElementById('orderModal').style.display
 
 function addOrderItemRow(itemName = "", qty = 1, mrp = 0, disc = 0) {
   const tbody = document.getElementById('orderItemsTbody');
+  if(!tbody) return;
   const tr = document.createElement('tr');
 
   tr.innerHTML = `
@@ -3012,7 +3012,6 @@ function calcDiscountedRate(inputEl) {
   const mrp = parseFloat(row.querySelector('.item-mrp').value) || 0;
   const disc = parseFloat(row.querySelector('.item-disc').value) || 0;
 
-  // Automatically compute discounted price
   const discountedRate = mrp * (1 - (disc / 100));
   row.querySelector('.item-rate').value = Math.round(discountedRate * 100) / 100;
   calcOrderTotals();
@@ -3187,7 +3186,7 @@ function editOrderPrompt(ordId) {
 function shareOrderWhatsApp(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
-  const itemsText = o.items.map(i => `${i.name} (x${i.qty}) - Rs.${i.total}`).join('%0A');
+  const itemsText = (o.items || []).map(i => `${i.name} (x${i.qty}) - Rs.${i.total}`).join('%0A');
   const msg = `*TWIN TOWN EXPRESS SERVICES PVT LTD*%0A*Invoice:* ${o.id}%0A*Customer:* ${o.customerName}%0A-----------------------%0A*Items:*%0A${itemsText}%0A-----------------------%0A*Total Bill:* Rs.${o.totalAmount}%0A*Paid:* Rs.${o.recvAmount}%0A*Due Remaining:* Rs.${o.dueAmount}%0A*Status:* ${o.status}%0A%0A_Authorised Partner - Rasulgarh, BBSR_`;
   const url = o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
   window.open(url, '_blank');
@@ -3219,7 +3218,6 @@ function openInvoicePrintModal(ordId) {
   document.getElementById('invPrintPayMode').textContent = o.payMode;
   document.getElementById('invPrintStaff').textContent = o.bookedBy;
 
-  // Default to Intra-State (CGST + SGST)
   document.getElementById('taxTypeToggle').value = "INTRA";
   updateInvoiceTaxMode();
 
@@ -3338,6 +3336,7 @@ function sendClosingSummaryWhatsApp() {
 /* ================= TAB 3: SERVICES & REPAIRS ================= */
 function renderServices() {
   const c = document.getElementById('serviceListContainer');
+  if(!c) return;
   c.innerHTML = '';
   const today = new Date().toISOString().split('T')[0];
   const isAdmin = currentUser && (currentUser.role === 'Admin');
@@ -3410,8 +3409,8 @@ function openServiceCallModal(srvObj = null) {
   const editId = document.getElementById('editServiceId');
 
   if(srvObj) {
-    title.textContent = "Edit Service Call";
-    editId.value = srvObj.id;
+    if(title) title.textContent = "Edit Service Call";
+    if(editId) editId.value = srvObj.id;
     document.getElementById('srvCustSearchInput').value = `${srvObj.customerName} (${srvObj.phone || ''})`;
     document.getElementById('srvStaffSelect').value = srvObj.attendedBy;
     document.getElementById('srvMachine').value = srvObj.machine;
@@ -3426,8 +3425,8 @@ function openServiceCallModal(srvObj = null) {
       document.getElementById('srvPartSearchInput').value = srvObj.partUsed;
     }
   } else {
-    title.textContent = "New Service / Repair Call";
-    editId.value = "";
+    if(title) title.textContent = "New Service / Repair Call";
+    if(editId) editId.value = "";
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('srvCustSearchInput').value = "";
     document.getElementById('srvRecvDate').value = today;
@@ -3444,6 +3443,7 @@ function closeServiceModal() { document.getElementById('serviceModal').style.dis
 
 function toggleServiceCompletionFields(statusVal) {
   const f = document.getElementById('srvCompletedFields');
+  if(!f) return;
   f.style.display = (statusVal === 'Work Completed') ? 'block' : 'none';
   if(f.style.display === 'block') {
     document.getElementById('srvDoneDate').value = new Date().toISOString().split('T')[0];
@@ -3673,7 +3673,8 @@ function renderStockList() {
   updateCategoryCounts();
 
   if (activeInventoryCategory === 'CUSTOMERS') {
-    document.getElementById('totalPartsBadge').textContent = `${customerDatabase.length} Clients`;
+    const badgeEl = document.getElementById('totalPartsBadge');
+    if(badgeEl) badgeEl.textContent = `${customerDatabase.length} Clients`;
     customerDatabase.slice(0, STOCK_RENDER_CAP).forEach(cust => {
       const card = document.createElement('div');
       card.className = 'card';
@@ -3694,7 +3695,8 @@ function renderStockList() {
     list = list.filter(i => i.category === activeInventoryCategory);
   }
 
-  document.getElementById('totalPartsBadge').textContent = `${list.length} Items`;
+  const badgeEl = document.getElementById('totalPartsBadge');
+  if(badgeEl) badgeEl.textContent = `${list.length} Items`;
 
   const slice = list.slice(0, STOCK_RENDER_CAP);
   slice.forEach(item => {
@@ -3730,7 +3732,8 @@ function filterStockList(val) {
       (cust.gst && cust.gst.toLowerCase().includes(q))
     ) : customerDatabase;
 
-    document.getElementById('totalPartsBadge').textContent = `${res.length} Matches`;
+    const badgeEl = document.getElementById('totalPartsBadge');
+    if(badgeEl) badgeEl.textContent = `${res.length} Matches`;
     res.slice(0, 80).forEach(cust => {
       const card = document.createElement('div');
       card.className = 'card';
@@ -3756,7 +3759,8 @@ function filterStockList(val) {
     (i.specs && i.specs.toLowerCase().includes(q))
   ) : baseList;
 
-  document.getElementById('totalPartsBadge').textContent = `${results.length} Matches`;
+  const badgeEl = document.getElementById('totalPartsBadge');
+  if(badgeEl) badgeEl.textContent = `${results.length} Matches`;
 
   results.slice(0, 80).forEach(item => {
     const card = document.createElement('div');
@@ -3795,8 +3799,7 @@ function openStockDetailModal(id) {
   document.getElementById('detStock').textContent = item.stock;
 
   const descWrap = document.getElementById('detDescWrap');
-  const detailsText = item.specs ? `${item.specs}
-${item.desc || ''}` : (item.desc || 'Standard commercial machinery / care product.');
+  const detailsText = item.specs ? `${item.specs}\n${item.desc || ''}` : (item.desc || 'Standard commercial machinery / care product.');
   if (detailsText) {
     descWrap.style.display = 'block';
     document.getElementById('detDesc').innerText = detailsText;
@@ -3849,8 +3852,8 @@ function openAddPartModal(partObj = null) {
   const title = document.getElementById('stockModalTitle');
   const editId = document.getElementById('editStockId');
   if(partObj) {
-    title.textContent = "Edit Inventory Item";
-    editId.value = partObj.id;
+    if(title) title.textContent = "Edit Inventory Item";
+    if(editId) editId.value = partObj.id;
     document.getElementById('stkName').value = partObj.name;
     document.getElementById('stkCode').value = partObj.code;
     document.getElementById('stkCategory').value = partObj.category || "";
@@ -3861,8 +3864,8 @@ function openAddPartModal(partObj = null) {
     document.getElementById('stkRate').value = partObj.rate;
     document.getElementById('stkDesc').value = partObj.desc || partObj.specs || "";
   } else {
-    title.textContent = "Add New Item to Inventory";
-    editId.value = "";
+    if(title) title.textContent = "Add New Item to Inventory";
+    if(editId) editId.value = "";
     document.getElementById('stkName').value = "";
     document.getElementById('stkCode').value = "";
     document.getElementById('stkCategory').value = activeInventoryCategory !== 'ALL' && activeInventoryCategory !== 'CUSTOMERS' ? activeInventoryCategory : "Machines & Equipment";
@@ -3941,11 +3944,9 @@ function deleteStockItem(id) {
 }
 
 function exportInventoryCSV() {
-  let csv = "ID,Name,Code,Category,SubCategory,Machine,DealerPrice,MRP,Stock,HSN
-";
+  let csv = "ID,Name,Code,Category,SubCategory,Machine,DealerPrice,MRP,Stock,HSN\n";
   sampleInventory.forEach(i => {
-    csv += `"${i.id}","${(i.name||'').replace(/"/g, '""')}","${i.code||''}","${i.category||''}","${i.subCategory||''}","${i.machine||''}","${i.dealerPrice||0}","${i.rate||0}","${i.stock||0}","${i.hsn||''}"
-`;
+    csv += `"${i.id}","${(i.name||'').replace(/"/g, '""')}","${i.code||''}","${i.category||''}","${i.subCategory||''}","${i.machine||''}","${i.dealerPrice||0}","${i.rate||0}","${i.stock||0}","${i.hsn||''}"\n`;
   });
   downloadFile(csv, "TTESPL_Master_Inventory.csv", "text/csv");
 }
@@ -3998,8 +3999,8 @@ function openAddCustomerModal(cObj = null) {
   const title = document.getElementById('custModalTitle');
   const editId = document.getElementById('editCustId');
   if(cObj) {
-    title.textContent = "Edit Customer Profile";
-    editId.value = cObj.id;
+    if(title) title.textContent = "Edit Customer Profile";
+    if(editId) editId.value = cObj.id;
     document.getElementById('cName').value = cObj.name;
     document.getElementById('cPhone').value = cObj.phone;
     document.getElementById('cEmail').value = cObj.email;
@@ -4007,8 +4008,8 @@ function openAddCustomerModal(cObj = null) {
     document.getElementById('cGst').value = cObj.gst;
     document.getElementById('cPerson').value = cObj.person;
   } else {
-    title.textContent = "Register Client";
-    editId.value = "";
+    if(title) title.textContent = "Register Client";
+    if(editId) editId.value = "";
     document.getElementById('cName').value = "";
     document.getElementById('cPhone').value = "";
     document.getElementById('cEmail').value = "";
@@ -4073,25 +4074,30 @@ function renderBilling(filterType, empFilter = "ALL") {
     totalDue += o.dueAmount;
   });
 
-  document.getElementById('metricTotalBilled').textContent = '₹' + totalBilled.toLocaleString('en-IN');
-  document.getElementById('metricTotalRecv').textContent = '₹' + totalRecv.toLocaleString('en-IN');
-  document.getElementById('metricTotalDue').textContent = '₹' + totalDue.toLocaleString('en-IN');
+  const bEl = document.getElementById('metricTotalBilled');
+  const rEl = document.getElementById('metricTotalRecv');
+  const dEl = document.getElementById('metricTotalDue');
+  if(bEl) bEl.textContent = '₹' + totalBilled.toLocaleString('en-IN');
+  if(rEl) rEl.textContent = '₹' + totalRecv.toLocaleString('en-IN');
+  if(dEl) dEl.textContent = '₹' + totalDue.toLocaleString('en-IN');
 
   const container = document.getElementById('billingListContainer');
+  if(!container) return;
   container.innerHTML = '';
   const isAdmin = currentUser && (currentUser.role === 'Admin');
 
   let list = ledgerList;
   if(empFilter !== "ALL") list = list.filter(o => o.bookedBy === empFilter);
 
+  const filterTitleEl = document.getElementById('billingFilterTitle');
   if(filterType === 'due') {
     list = list.filter(o => o.dueAmount > 0);
-    document.getElementById('billingFilterTitle').innerHTML = `🔴 Filtered: <span style="color:var(--danger);">DUE CUSTOMERS ONLY (${list.length})</span>`;
+    if(filterTitleEl) filterTitleEl.innerHTML = `🔴 Filtered: <span style="color:var(--danger);">DUE CUSTOMERS ONLY (${list.length})</span>`;
   } else if(filterType === 'received') {
     list = list.filter(o => o.dueAmount === 0);
-    document.getElementById('billingFilterTitle').innerHTML = `🟢 Filtered: <span style="color:var(--success);">FULLY PAID (${list.length})</span>`;
+    if(filterTitleEl) filterTitleEl.innerHTML = `🟢 Filtered: <span style="color:var(--success);">FULLY PAID (${list.length})</span>`;
   } else {
-    document.getElementById('billingFilterTitle').textContent = `Showing Delivered Tax Invoices (${list.length})`;
+    if(filterTitleEl) filterTitleEl.textContent = `Showing Delivered Tax Invoices (${list.length})`;
   }
 
   if (list.length === 0) {
@@ -4175,11 +4181,9 @@ function sendDueWhatsApp(ordId) {
 }
 
 function exportLedgerCSV() {
-  let csv = "Invoice,Customer,Phone,Total,Received,Due,Mode,Staff,Date
-";
+  let csv = "Invoice,Customer,Phone,Total,Received,Due,Mode,Staff,Date\n";
   ordersData.filter(o => o.status === 'Delivered').forEach(o => {
-    csv += `"${o.id}","${o.customerName}","${o.phone}","${o.totalAmount}","${o.recvAmount}","${o.dueAmount}","${o.payMode}","${o.bookedBy}","${o.orderDate}"
-`;
+    csv += `"${o.id}","${o.customerName}","${o.phone}","${o.totalAmount}","${o.recvAmount}","${o.dueAmount}","${o.payMode}","${o.bookedBy}","${o.orderDate}"\n`;
   });
   downloadFile(csv, "TTESPL_Ledger.csv", "text/csv");
 }
@@ -4224,7 +4228,8 @@ function renderChatMessages() {
   const container = document.getElementById('chatMessagesContainer');
   if(!container) return;
   container.innerHTML = '';
-  document.getElementById('chatCountBadge').textContent = `${teamChatData.length} msgs`;
+  const badgeEl = document.getElementById('chatCountBadge');
+  if(badgeEl) badgeEl.textContent = `${teamChatData.length} msgs`;
 
   let lastDay = '';
   const myName = currentUser ? currentUser.name : '';
@@ -4274,6 +4279,7 @@ window.renderChatMessages = renderChatMessages;
 
 function sendLiveChatMessage(fileObj = null) {
   const input = document.getElementById('chatInputMessage');
+  if(!input) return;
   const txt = input.value.trim();
   if(!txt && !fileObj) return;
 
@@ -4390,7 +4396,8 @@ function updateGlobalReminders() {
 function switchTab(tab, el) {
   document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('view-' + tab).classList.add('active');
+  const targetPanel = document.getElementById('view-' + tab);
+  if(targetPanel) targetPanel.classList.add('active');
   if (el) el.classList.add('active');
 
   if(tab === 'dashboard') renderDashboard();
