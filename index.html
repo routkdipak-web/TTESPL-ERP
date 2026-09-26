@@ -55,7 +55,6 @@
     color: var(--text-main); padding-bottom: 84px; overflow-x: hidden; -webkit-font-smoothing: antialiased; 
   }
 
-  /* Input & Autocomplete Solid Rendering */
   input, select, textarea {
     color-scheme: light !important;
     background-color: #ffffff !important;
@@ -74,7 +73,6 @@
   }
   input::placeholder, textarea::placeholder { color: #94a3b8 !important; }
 
-  /* Custom Solid Searchable Autocomplete Popup */
   .autocomplete-wrapper { position: relative; width: 100%; }
   .solid-suggestion-box {
     position: absolute; top: calc(100% + 4px); left: 0; right: 0;
@@ -95,7 +93,6 @@
   .suggestion-item:hover, .suggestion-item.active { background: #f0f9ff !important; color: #0369a1; }
   .suggestion-sub { font-size: 10px; color: #64748b; }
 
-  /* Pull to Refresh Bar */
   #pullToRefreshIndicator {
     position: fixed; top: 0; left: 0; right: 0; height: 42px;
     background: linear-gradient(90deg, var(--primary), var(--primary-light));
@@ -106,7 +103,6 @@
   }
   #pullToRefreshIndicator.visible { transform: translateY(0); }
 
-  /* Header */
   header {
     background: linear-gradient(135deg, #05162a 0%, #0a2540 60%, #11365c 100%);
     backdrop-filter: blur(12px);
@@ -141,7 +137,6 @@
   }
   .user-role-tag.admin { background: #00b4d8; }
 
-  /* Schedule Banner */
   .daily-reminder-banner {
     background: linear-gradient(90deg, #fffbeb, #fef3c7);
     border-bottom: 1.5px solid #fde68a; padding: 8px 14px; font-size: 11.5px;
@@ -149,7 +144,6 @@
     font-weight: 600;
   }
 
-  /* Navigation Bar */
   .nav-bar {
     position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.96);
     backdrop-filter: blur(10px);
@@ -170,13 +164,11 @@
     border-radius: 10px; padding: 1px 5px; min-width: 15px; height: 15px; line-height: 13px;
   }
 
-  /* Layout Containers & Panels */
   .container { max-width: 920px; margin: 0 auto; padding: 14px; }
   .view-panel { display: none; }
   .view-panel.active { display: block; animation: panelFade 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
   @keyframes panelFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* Premium Bento Cards */
   .card {
     background: var(--card); border-radius: var(--radius-md); padding: 14px; margin-bottom: 12px;
     border: 1px solid rgba(148, 163, 184, 0.2); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -188,7 +180,6 @@
   }
   .card-title { font-size: 14.5px; font-weight: 800; color: var(--primary); }
 
-  /* Badges */
   .badge { padding: 3px 9px; border-radius: 6px; font-size: 10.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
   .badge-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid #fde68a; }
   .badge-delivered { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
@@ -196,14 +187,12 @@
   .badge-info { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
   .badge-today { background: #fef08a; color: #854d0e; font-weight: 800; border: 1px solid #facc15; }
 
-  /* Forms & Grids */
   .form-group { margin-bottom: 11px; }
   .form-label { display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 4px; color: #334155; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
   .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
 
-  /* Buttons */
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 5px;
     padding: 8px 14px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 700;
@@ -224,7 +213,6 @@
   .btn-danger-sm:hover { background: #fee2e2; }
   .btn-block { width: 100%; }
 
-  /* Sub Tabs */
   .sub-tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1.5px solid var(--border); padding-bottom: 8px; overflow-x: auto; }
   .sub-tab-btn {
     padding: 6px 14px; font-size: 12px; font-weight: 700; border: none; background: #e2e8f0;
@@ -232,7 +220,6 @@
   }
   .sub-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 6px rgba(10,37,64,0.2); }
 
-  /* Chat Box */
   .chat-box-card {
     background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-lg);
     display: flex; flex-direction: column; height: calc(100vh - 195px); overflow: hidden; box-shadow: var(--shadow-sm);
@@ -251,7 +238,6 @@
   .bubble-img-preview { max-width: 100%; max-height: 240px; border-radius: 8px; margin-top: 4px; cursor: pointer; object-fit: cover; }
   .chat-input-bar { background: #ffffff; border-top: 1px solid var(--border); padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
 
-  /* Modals Overlay with Blur */
   .auth-overlay {
     position: fixed; inset: 0; background: rgba(6, 21, 38, 0.82); backdrop-filter: blur(6px);
     display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 14px;
@@ -271,7 +257,6 @@
   }
   .audit-item { margin-bottom: 2px; }
 
-  /* FLOATING QUICK ACTION BUTTON (FAB) */
   #fabMainBtn {
     position: fixed; bottom: 74px; right: 18px; width: 48px; height: 48px;
     background: linear-gradient(135deg, var(--accent), #ff9d3d);
@@ -423,6 +408,7 @@
         <span>👤</span> <strong id="activeStaffDisplay">Dipak Rout</strong>
         <span class="user-role-tag admin" id="activeStaffRoleTag">ADMIN</span>
       </div>
+      <button class="btn btn-outline btn-sm admin-only-btn" id="headerStaffManageBtn" onclick="openStaffManageModal()" style="display:none; color:white; border-color:rgba(255,255,255,0.4); padding:4px 8px;">👥 Staff</button>
       <button class="btn btn-outline btn-sm" style="color:white; border-color:rgba(255,255,255,0.3); padding:4px 8px;" onclick="performFullLogout()">Logout</button>
     </div>
   </header>
@@ -508,15 +494,22 @@
       <div id="leadsListContainer"></div>
     </div>
 
-    <!-- TAB 2: ORDERS -->
+    <!-- TAB 2: ORDERS (WITH CANCELLED SUB-TAB) -->
     <div id="view-orders" class="view-panel">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div>
           <h2 style="font-size:16px; font-weight:800; color:var(--primary);">📦 Product & Chemical Orders</h2>
-          <div style="font-size:11px; color:var(--text-muted);">Stock validation, invoices & WhatsApp slips</div>
+          <div style="font-size:11px; color:var(--text-muted);">Pending orders dispatch, invoices & cancellation logs</div>
         </div>
         <button class="btn btn-accent btn-sm" onclick="openOrderModal()">+ New Order</button>
       </div>
+
+      <!-- Orders View Sub Tabs -->
+      <div class="sub-tabs" style="margin-bottom:12px;">
+        <button class="sub-tab-btn active" id="btnSubTabActiveOrders" onclick="switchOrderSubTab('active')">⏳ Active Orders (<span id="countActiveOrders">0</span>)</button>
+        <button class="sub-tab-btn" id="btnSubTabCancelledOrders" onclick="switchOrderSubTab('cancelled')">🚫 Cancelled Orders (<span id="countCancelledOrders">0</span>)</button>
+      </div>
+
       <div id="ordersListContainer"></div>
     </div>
 
@@ -682,7 +675,7 @@
 
 <!-- ================= MODALS ================= -->
 
-<!-- 0. SMART UPI QR MODAL (UPDATED WITH ICICI BANK DETAILS) -->
+<!-- 0. SMART UPI QR MODAL (VERIFIED ICICI BANK DETAILS) -->
 <div id="upiModal" class="auth-overlay" style="display:none; z-index:3200;">
   <div class="auth-card" style="max-width:440px; text-align:center;">
     <div class="card-header">
@@ -694,14 +687,12 @@
       Billed To: <strong id="upiCustName" style="color:var(--primary);">-</strong>
     </div>
 
-    <!-- Official QR Box -->
     <div style="background:#ffffff; padding:12px; border-radius:14px; display:inline-block; border:2px dashed #0284c7; box-shadow:0 4px 16px rgba(0,0,0,0.08); margin-bottom:10px;">
       <img id="upiQrImage" src="" alt="ICICI UPI QR" style="width:210px; height:210px; display:block; margin:0 auto; border-radius:8px;">
     </div>
 
     <div style="font-size:20px; font-weight:900; color:var(--primary); margin-bottom:10px;" id="upiAmountText">₹0</div>
 
-    <!-- ICICI Bank Verified Details Card -->
     <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:10px 12px; text-align:left; font-size:11px; line-height:1.55; margin-bottom:12px;">
       <div style="color:var(--primary); font-weight:800; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-bottom:4px;">
         🏦 TWINTOWN EXPRESS SERVICES PVT LTD
@@ -731,6 +722,67 @@
       <button class="btn btn-outline btn-sm" onclick="clearSignCanvas()">Clear Signature</button>
       <button class="btn btn-primary btn-sm" onclick="saveCustomerSignature()">✓ Confirm Signature</button>
     </div>
+  </div>
+</div>
+
+<!-- 0.2 ADMIN STAFF MANAGEMENT MODAL (NEW) -->
+<div id="staffManageModal" class="auth-overlay" style="display:none; z-index:3300;">
+  <div class="auth-card" style="max-width:540px;">
+    <div class="card-header">
+      <strong class="card-title">👥 Admin Staff Management & Role Control</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeStaffManageModal()">✕</button>
+    </div>
+    <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;">
+      Admin can update staff names, passwords, and assigned department roles.
+    </div>
+    <div id="staffManageList" style="max-height:340px; overflow-y:auto; margin-bottom:12px;"></div>
+    <button class="btn btn-outline btn-block" onclick="closeStaffManageModal()">Close</button>
+  </div>
+</div>
+
+<!-- 0.3 ADMIN LEDGER INVOICE EDIT MODAL (NEW) -->
+<div id="editLedgerModal" class="auth-overlay" style="display:none; z-index:3400;">
+  <div class="auth-card" style="max-width:480px;">
+    <div class="card-header">
+      <strong class="card-title">✏️ Admin Edit Ledger Invoice</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeEditLedgerModal()">✕</button>
+    </div>
+    <input type="hidden" id="editLedgerInvId">
+    <div class="form-group">
+      <label class="form-label">Customer Name</label>
+      <input type="text" id="editLedgerCustName">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Total Amount (₹)</label>
+        <input type="number" id="editLedgerTotalAmt" oninput="calcEditLedgerBalance()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount Received (₹)</label>
+        <input type="number" id="editLedgerRecvAmt" oninput="calcEditLedgerBalance()">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Due Amount (₹)</label>
+        <input type="number" id="editLedgerDueAmt" readonly style="background:#f1f5f9 !important; font-weight:800; color:var(--danger);">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Mode</label>
+        <select id="editLedgerPayMode">
+          <option value="Cash">💵 Cash</option>
+          <option value="UPI / QR Code">📱 UPI / QR Code</option>
+          <option value="Net Banking / NEFT">🏦 Net Banking / NEFT</option>
+          <option value="Cheque">📜 Cheque</option>
+          <option value="Not Paid / Full Due">⏳ Not Paid / Full Due</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Booked By Staff</label>
+      <select id="editLedgerStaffSelect" class="emp-dropdown"></select>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveAdminLedgerInvoice()">💾 Update Ledger Bill</button>
   </div>
 </div>
 
@@ -1248,7 +1300,7 @@
           <div style="text-align:right;">
             <div style="font-size:14px; font-weight:800; color:#ff6b35;">TAX INVOICE</div>
             <div style="font-size:11px;">Invoice: <strong id="invPrintId">ORD-901</strong></div>
-            <div style="font-size:11px;">Date: <strong id="invPrintDate">2026-09-24</strong></div>
+            <div style="font-size:11px;">Date: <strong id="invPrintDate">2026-09-26</strong></div>
           </div>
         </div>
 
@@ -1330,7 +1382,7 @@
 <script src="master-data.js?v=2"></script>
 
 <script>
-/* ================= ENGINE LOGIC & STATE ================= */
+/* ================= ENGINE LOGIC & FRESH STATE ================= */
 const DB_PREFIX = "TTESPL_ERP_";
 window.DB_PREFIX = DB_PREFIX;
 
@@ -1361,7 +1413,7 @@ function setStored(key, val) {
 }
 window.setStored = setStored;
 
-/* Clean Staff Database */
+/* Clean Production Initialization (Testing Data Purged) */
 let registeredEmployees = getStored("STAFF", [
   { id: 1, name: "Dipak Rout", role: "Admin", mobile: "8917465040", pass: "1234", pin: "0000" }
 ]);
@@ -1369,19 +1421,16 @@ window.registeredEmployees = registeredEmployees;
 
 let currentUser = getStored("SESSION_USER", null);
 
-/* Master Customer Database */
 let customerDatabase = getStored("CUSTOMERS", (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.customers) || [
   { id: 1, name: "Trinity Techno Solution", person: "Trinity Techno Solution", phone: "6371256123", email: "", address: "Plot No-1159/2782, Behind Debaki Tower, Bomikhal, Khordha", gst: "21DDTPM0058K1ZC" }
 ]);
 window.customerDatabase = customerDatabase;
 
-/* Master Inventory Database */
 let sampleInventory = getStored("INVENTORY", (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.inventory) || [
-  { id: 1001, name: "valve kit -A,", code: "2186", category: "Machine Spares", machine: "HRC", stock: 0, dealerPrice: 1205.96, rate: 1608.34, hsn: "84139190", desc: "Spare part for HRC. Code: 2186", specs: "Machine Model: HRC | Part Code: 2186" }
+  { id: 1001, name: "valve kit -A,", code: "2186", category: "Machine Spares", machine: "HRC", stock: 10, dealerPrice: 1205.96, rate: 1608.34, hsn: "84139190", desc: "Spare part for HRC. Code: 2186", specs: "Machine Model: HRC | Part Code: 2186" }
 ]);
 window.sampleInventory = sampleInventory;
 
-/* Machinery Catalog */
 let machineryDatabase = getStored("MACHINERY", [
   { id: 201, name: "AR Triplex 200 Bar Commercial Washer", pump: "AR 15.20", motor: "5 HP 3-Phase", bar: 200, price: 85000 },
   { id: 202, name: "AR 680 (1Φ) Compact Washer", pump: "AR Triplex", motor: "3 HP Single-Phase", bar: 150, price: 64834 },
@@ -1393,6 +1442,7 @@ let machineryDatabase = getStored("MACHINERY", [
 ]);
 window.machineryDatabase = machineryDatabase;
 
+// Fresh Cleaned Data Collections
 let leadsData = getStored("LEADS", []);
 window.leadsData = leadsData;
 
@@ -1404,6 +1454,8 @@ window.serviceCallsData = serviceCallsData;
 
 let teamChatData = [];
 window.teamChatData = teamChatData;
+
+let currentOrderSubTab = 'active';
 
 /* ---------- AUTH & SESSION ---------- */
 function checkAuthSession() {
@@ -1430,6 +1482,8 @@ function updateAdminDeleteVisibility() {
   document.querySelectorAll('.admin-only-btn').forEach(btn => {
     btn.style.display = isAdmin ? 'inline-flex' : 'none';
   });
+  const staffBtn = document.getElementById('headerStaffManageBtn');
+  if (staffBtn) staffBtn.style.display = isAdmin ? 'inline-flex' : 'none';
 }
 window.updateAdminDeleteVisibility = updateAdminDeleteVisibility;
 
@@ -1538,13 +1592,140 @@ function populateDropdownsAndDatalists() {
 }
 window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
 
+/* ================= ADMIN STAFF MANAGEMENT ================= */
+function openStaffManageModal() {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Only Admin can manage staff.");
+    return;
+  }
+  const box = document.getElementById('staffManageList');
+  box.innerHTML = registeredEmployees.map(emp => `
+    <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:10px; margin-bottom:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <strong>${emp.name}</strong>
+        <span class="badge ${emp.role === 'Admin' ? 'badge-delivered' : 'badge-info'}">${emp.role}</span>
+      </div>
+      <div style="font-size:11px; color:#475569; margin-bottom:6px;">Mobile: <strong>${emp.mobile}</strong></div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-outline btn-sm" onclick="editStaffDetailsPrompt(${emp.id})">✏️ Edit Name / Role / Pass</button>
+        ${emp.id !== currentUser.id ? `<button class="btn btn-danger-sm" onclick="deleteStaffPrompt(${emp.id})">🗑️ Delete</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('staffManageModal').style.display = 'flex';
+}
+function closeStaffManageModal() {
+  document.getElementById('staffManageModal').style.display = 'none';
+}
+
+function editStaffDetailsPrompt(empId) {
+  const emp = registeredEmployees.find(e => e.id === empId);
+  if (!emp) return;
+
+  const newName = prompt("Update Staff Full Name:", emp.name);
+  if (!newName) return;
+
+  const newRole = prompt("Update Role (Admin / Machinery Specialist / Field Technician / Sales & Support / Store Manager):", emp.role);
+  const newPass = prompt("Update Password (or leave blank to keep same):", emp.pass);
+
+  emp.name = newName.trim();
+  if (newRole) emp.role = newRole.trim();
+  if (newPass && newPass.trim().length >= 4) emp.pass = newPass.trim();
+
+  setStored("STAFF", registeredEmployees);
+  if (currentUser.id === emp.id) {
+    currentUser = emp;
+    setStored("SESSION_USER", emp);
+  }
+  openStaffManageModal();
+  refreshAllData();
+  alert("Staff profile successfully updated!");
+}
+
+function deleteStaffPrompt(empId) {
+  if (confirm("Confirm permanent removal of this staff account?")) {
+    registeredEmployees = registeredEmployees.filter(e => e.id !== empId);
+    setStored("STAFF", registeredEmployees);
+    openStaffManageModal();
+    refreshAllData();
+  }
+}
+
+/* ================= ADMIN LEDGER BILL MODIFY & DELETE ================= */
+function openAdminEditLedgerModal(ordId) {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Sirf Admin hi ledger invoice modify kar sakte hain!");
+    return;
+  }
+  const o = ordersData.find(x => x.id === ordId);
+  if (!o) return;
+
+  document.getElementById('editLedgerInvId').value = o.id;
+  document.getElementById('editLedgerCustName').value = o.customerName;
+  document.getElementById('editLedgerTotalAmt').value = o.totalAmount;
+  document.getElementById('editLedgerRecvAmt').value = o.recvAmount;
+  document.getElementById('editLedgerDueAmt').value = o.dueAmount;
+  document.getElementById('editLedgerPayMode').value = o.payMode;
+  document.getElementById('editLedgerStaffSelect').value = o.bookedBy;
+
+  document.getElementById('editLedgerModal').style.display = 'flex';
+}
+function closeEditLedgerModal() {
+  document.getElementById('editLedgerModal').style.display = 'none';
+}
+
+function calcEditLedgerBalance() {
+  const tot = parseFloat(document.getElementById('editLedgerTotalAmt').value) || 0;
+  const recv = parseFloat(document.getElementById('editLedgerRecvAmt').value) || 0;
+  document.getElementById('editLedgerDueAmt').value = Math.max(0, tot - recv);
+}
+
+function saveAdminLedgerInvoice() {
+  const invId = document.getElementById('editLedgerInvId').value;
+  const o = ordersData.find(x => x.id === invId);
+  if (!o) return;
+
+  o.customerName = document.getElementById('editLedgerCustName').value.trim();
+  o.totalAmount = parseFloat(document.getElementById('editLedgerTotalAmt').value) || 0;
+  o.recvAmount = parseFloat(document.getElementById('editLedgerRecvAmt').value) || 0;
+  o.dueAmount = parseFloat(document.getElementById('editLedgerDueAmt').value) || 0;
+  o.payMode = document.getElementById('editLedgerPayMode').value;
+  o.bookedBy = document.getElementById('editLedgerStaffSelect').value;
+
+  o.auditTrail = o.auditTrail || [];
+  o.auditTrail.unshift({ by: currentUser.name + " (Admin)", time: getNowStr(), note: "Modified billing numbers in ledger" });
+
+  setStored("ORDERS", ordersData);
+  closeEditLedgerModal();
+  renderBilling('all');
+  renderDashboard();
+  alert("Ledger invoice successfully updated!");
+}
+
+function deleteAdminLedgerInvoice(ordId) {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Sirf Admin hi bill ledger se delete kar sakte hain!");
+    return;
+  }
+  if (confirm(`Confirm permanent deletion of Invoice ${ordId} from ledger?`)) {
+    ordersData = ordersData.filter(x => x.id !== ordId);
+    if(window.cloudSync) window.cloudSync.deleteItem("ORDERS", ordId);
+    setStored("ORDERS", ordersData);
+    renderBilling('all');
+    renderDashboard();
+    renderOrders();
+    alert(`Invoice ${ordId} deleted successfully.`);
+  }
+}
+
 /* ================= EXECUTIVE DASHBOARD ENGINE ================= */
 function renderDashboard() {
   const today = new Date().toISOString().split('T')[0];
   let todayRecv = 0;
   let totalDue = 0;
 
-  ordersData.forEach(o => {
+  // Ledger stats based on Delivered or Paid orders
+  ordersData.filter(o => o.status === 'Delivered').forEach(o => {
     if (o.orderDate === today) todayRecv += (o.recvAmount || 0);
     totalDue += (o.dueAmount || 0);
   });
@@ -1557,7 +1738,6 @@ function renderDashboard() {
   document.getElementById('dashTotalItems').textContent = `${sampleInventory.length} Items`;
   document.getElementById('dashTotalClients').textContent = `${customerDatabase.length} Clients`;
 
-  // Priority Feed: Due orders + Followups due today or delayed
   const priorityBox = document.getElementById('dashPriorityContainer');
   priorityBox.innerHTML = '';
 
@@ -1638,10 +1818,7 @@ function openUpiModal(customerName, amount) {
   const merchantName = "TWINTOWN EXPRESS SERVICES PVT LTD";
   const formattedAmt = parseFloat(amount).toFixed(2);
 
-  // NPCI Compliant Dynamic Merchant UPI String
   const upiPayload = `upi://pay?pa=${encodeURIComponent(merchantUpi)}&pn=${encodeURIComponent(merchantName)}&am=${formattedAmt}&cu=INR&tn=TTESPL Invoice Settlement`;
-
-  // High-Resolution Dynamic QR
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=6&data=${encodeURIComponent(upiPayload)}`;
 
   document.getElementById('upiQrImage').src = qrUrl;
@@ -1992,6 +2169,11 @@ function renderLeads() {
   c.innerHTML = '';
   const isAdmin = currentUser && (currentUser.role === 'Admin');
 
+  if (leadsData.length === 0) {
+    c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Abhi koi active inquiry nahi hai. Nayi lead add karne ke liye <strong>+ New Lead</strong> par click karein.</div>`;
+    return;
+  }
+
   leadsData.forEach(lead => {
     const card = document.createElement('div');
     card.className = 'card';
@@ -2290,22 +2472,55 @@ function addMonths(dateStr, m) {
   return d.toISOString().split('T')[0];
 }
 
-/* ================= TAB 2: ORDERS ================= */
+/* ================= TAB 2: ORDERS (ACTIVE VS CANCELLED LOGIC) ================= */
+function switchOrderSubTab(sub) {
+  currentOrderSubTab = sub;
+  const btnAct = document.getElementById('btnSubTabActiveOrders');
+  const btnCan = document.getElementById('btnSubTabCancelledOrders');
+  if (sub === 'active') {
+    btnAct.classList.add('active');
+    btnCan.classList.remove('active');
+  } else {
+    btnCan.classList.add('active');
+    btnAct.classList.remove('active');
+  }
+  renderOrders();
+}
+
 function renderOrders() {
   const c = document.getElementById('ordersListContainer');
   c.innerHTML = '';
   const today = new Date().toISOString().split('T')[0];
   const isAdmin = currentUser && (currentUser.role === 'Admin');
 
-  ordersData.forEach(o => {
+  const pendingList = ordersData.filter(o => o.status === 'Pending');
+  const cancelledList = ordersData.filter(o => o.status === 'Cancelled');
+
+  document.getElementById('countActiveOrders').textContent = pendingList.length;
+  document.getElementById('countCancelledOrders').textContent = cancelledList.length;
+
+  const targetList = (currentOrderSubTab === 'active') ? pendingList : cancelledList;
+
+  if (targetList.length === 0) {
+    c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">${currentOrderSubTab === 'active' ? 'Koi active pending order nahi hai. Naya order place karne ke liye <strong>+ New Order</strong> click karein.' : 'Koi cancelled order record nahi hai.'}</div>`;
+    return;
+  }
+
+  targetList.forEach(o => {
     let statusBadge = 'badge-pending';
     let statusText = o.status;
-    if(o.status === 'Pending' && o.deliveryDate < today) {
+
+    if (o.status === 'Pending') {
+      if (o.deliveryDate < today) {
+        statusBadge = 'badge-danger';
+        statusText = '⚠️ Delayed (' + o.deliveryDate + ')';
+      } else {
+        statusBadge = 'badge-pending';
+        statusText = '⏳ Pending Dispatch';
+      }
+    } else if (o.status === 'Cancelled') {
       statusBadge = 'badge-danger';
-      statusText = '⚠️ Delayed (' + o.deliveryDate + ')';
-    } else if(o.status === 'Delivered') {
-      statusBadge = 'badge-delivered';
-      statusText = '✓ Delivered';
+      statusText = '🚫 Cancelled';
     }
 
     let itemsHtml = o.items.map(i => `<div>• ${i.name} (Qty: <strong>${i.qty}</strong> @ ₹${i.rate}) = ₹${i.total}</div>`).join('');
@@ -2317,11 +2532,11 @@ function renderOrders() {
       <div class="card-header">
         <div>
           <strong style="font-size:14.5px; color:var(--primary);">${o.customerName}</strong>
-          <div style="font-size:11px; color:var(--text-muted);">Invoice: ${o.id} | Date: ${o.orderDate} | Staff: <strong>${o.bookedBy}</strong></div>
+          <div style="font-size:11px; color:var(--text-muted);">Ref: ${o.id} | Date: ${o.orderDate} | Staff: <strong>${o.bookedBy}</strong></div>
         </div>
         <div style="display:flex; gap:5px; align-items:center;">
           <span class="badge ${statusBadge}">${statusText}</span>
-          <button class="btn btn-outline btn-sm" onclick="editOrderPrompt('${o.id}')">✏️ Edit</button>
+          ${o.status === 'Pending' ? `<button class="btn btn-outline btn-sm" onclick="editOrderPrompt('${o.id}')">✏️ Edit</button>` : ''}
           ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteOrderAction('${o.id}')">🗑️</button>` : ''}
         </div>
       </div>
@@ -2336,17 +2551,21 @@ function renderOrders() {
 
       <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; color:#475569; margin-bottom:8px;">
         <div>Pay Mode: <strong>${o.payMode}</strong></div>
-        <div>Delivery: <strong>${o.deliveryDate}</strong></div>
+        <div>Target Delivery: <strong>${o.deliveryDate}</strong></div>
       </div>
 
-      <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <button class="btn btn-print btn-sm" style="flex:1;" onclick="openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice PDF</button>
-        <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
-        <button class="btn btn-wa btn-sm" style="flex:1;" onclick="shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
-        ${o.status !== 'Delivered' ? `
-          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="markOrderDelivered('${o.id}')">✓ Mark Delivered</button>
-        ` : ''}
-      </div>
+      ${o.status === 'Pending' ? `
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="markOrderDelivered('${o.id}')">✓ Deliver & Bill</button>
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
+          <button class="btn btn-wa btn-sm" style="flex:1;" onclick="shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
+          <button class="btn btn-danger-sm btn-sm" style="flex:1;" onclick="cancelOrderAction('${o.id}')">🚫 Cancel Order</button>
+        </div>
+      ` : `
+        <div style="background:#fef2f2; border:1px solid #fecaca; padding:6px 10px; border-radius:6px; font-size:11px; color:#b91c1c;">
+          <strong>Cancellation Note:</strong> ${o.cancelReason || 'Order cancelled by customer/staff.'}
+        </div>
+      `}
 
       <div class="audit-log-box">${auditHtml}</div>
     `;
@@ -2355,6 +2574,23 @@ function renderOrders() {
   updateGlobalReminders();
 }
 window.renderOrders = renderOrders;
+
+function cancelOrderAction(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if (!o) return;
+  const reason = prompt(`Order ${ordId} cancel karne ka kaaran (Reason):`, "Customer cancelled");
+  if (reason === null) return;
+
+  o.status = "Cancelled";
+  o.cancelReason = reason || "Order Cancelled";
+  o.auditTrail = o.auditTrail || [];
+  o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: `Cancelled order: ${o.cancelReason}` });
+
+  setStored("ORDERS", ordersData);
+  alert(`Order ${ordId} cancel kar diya gaya hai aur Cancelled Orders section me bhej diya gaya hai.`);
+  renderOrders();
+  renderDashboard();
+}
 
 function openOrderModal(orderObj = null) {
   const tbody = document.getElementById('orderItemsTbody');
@@ -2510,25 +2746,27 @@ function saveOrderAction() {
   renderOrders();
   renderBilling('all');
   renderDashboard();
-  alert("Order successfully placed!");
+  alert("Order successfully placed! Delivery hone ke baad ledger me transfer hoga.");
 }
 
 function markOrderDelivered(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
 
+  // Auto stock reduction upon successful dispatch
   o.items.forEach(it => {
     const p = sampleInventory.find(x => x.id === it.id || x.name === it.name);
     if(p) p.stock = Math.max(0, p.stock - it.qty);
   });
 
   o.status = "Delivered";
+  o.deliveredDate = new Date().toISOString().split('T')[0];
   o.auditTrail = o.auditTrail || [];
-  o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Delivered & Tax Invoice Auto-Generated" });
+  o.auditTrail.unshift({ by: currentUser.name, time: getNowStr(), note: "Order delivered & moved to financial ledger" });
   
   setStored("ORDERS", ordersData);
   setStored("INVENTORY", sampleInventory);
-  alert(`Order ${ordId} Delivered! Tax invoice generated and added to ledger.`);
+  alert(`Order ${ordId} Deliver ho gaya! Yeh order list se hatkar direct Ledger me Tax Invoice ban chuka hai.`);
   renderOrders();
   renderStockList();
   renderBilling('all');
@@ -2623,7 +2861,7 @@ function openDailyCashClosingModal() {
   let bankTotal = 0;
 
   ordersData.forEach(o => {
-    if(o.orderDate === today && o.recvAmount > 0) {
+    if(o.orderDate === today && o.recvAmount > 0 && o.status !== 'Cancelled') {
       if(o.payMode === 'Cash') cashTotal += o.recvAmount;
       else if(o.payMode.includes('UPI')) upiTotal += o.recvAmount;
       else bankTotal += o.recvAmount;
@@ -2672,6 +2910,11 @@ function renderServices() {
   c.innerHTML = '';
   const today = new Date().toISOString().split('T')[0];
   const isAdmin = currentUser && (currentUser.role === 'Admin');
+
+  if (serviceCallsData.length === 0) {
+    c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi repair call pending nahi hai. Nayi service entry ke liye <strong>+ New Service Call</strong> dabayein.</div>`;
+    return;
+  }
 
   serviceCallsData.forEach(s => {
     let statusBadge = 'badge-pending';
@@ -3464,13 +3707,16 @@ function saveCustomerAction() {
   alert("Customer saved & synced to cloud!");
 }
 
-/* ================= TAB 5: BILLING ================= */
+/* ================= TAB 5: BILLING & LEDGER (ADMIN EDIT & DELETE SUPPORT) ================= */
 function renderBilling(filterType, empFilter = "ALL") {
   let totalBilled = 0;
   let totalRecv = 0;
   let totalDue = 0;
 
-  ordersData.forEach(o => {
+  // Only Delivered or Fully cleared orders enter financial ledger
+  const ledgerList = ordersData.filter(o => o.status === 'Delivered');
+
+  ledgerList.forEach(o => {
     totalBilled += o.totalAmount;
     totalRecv += o.recvAmount;
     totalDue += o.dueAmount;
@@ -3482,8 +3728,9 @@ function renderBilling(filterType, empFilter = "ALL") {
 
   const container = document.getElementById('billingListContainer');
   container.innerHTML = '';
+  const isAdmin = currentUser && (currentUser.role === 'Admin');
 
-  let list = ordersData;
+  let list = ledgerList;
   if(empFilter !== "ALL") list = list.filter(o => o.bookedBy === empFilter);
 
   if(filterType === 'due') {
@@ -3493,7 +3740,12 @@ function renderBilling(filterType, empFilter = "ALL") {
     list = list.filter(o => o.dueAmount === 0);
     document.getElementById('billingFilterTitle').innerHTML = `🟢 Filtered: <span style="color:var(--success);">FULLY PAID (${list.length})</span>`;
   } else {
-    document.getElementById('billingFilterTitle').textContent = `Showing Invoices (${list.length})`;
+    document.getElementById('billingFilterTitle').textContent = `Showing Delivered Tax Invoices (${list.length})`;
+  }
+
+  if (list.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Abhi koi delivered tax invoice nahi hai. Jab order deliver hoga toh ledger me invoice generate ho jayega.</div>`;
+    return;
   }
 
   list.forEach(o => {
@@ -3503,9 +3755,15 @@ function renderBilling(filterType, empFilter = "ALL") {
       <div class="card-header">
         <div>
           <strong style="font-size:14.5px; color:var(--primary);">${o.customerName}</strong>
-          <div style="font-size:11px; color:var(--text-muted);">Invoice: ${o.id} | Staff: <strong>${o.bookedBy}</strong></div>
+          <div style="font-size:11px; color:var(--text-muted);">Invoice: ${o.id} | Delivered: ${o.deliveredDate || o.orderDate} | Staff: <strong>${o.bookedBy}</strong></div>
         </div>
-        <span class="badge ${o.dueAmount > 0 ? 'badge-danger' : 'badge-delivered'}">${o.dueAmount > 0 ? 'Due: ₹' + o.dueAmount : 'Full Paid'}</span>
+        <div style="display:flex; align-items:center; gap:5px;">
+          <span class="badge ${o.dueAmount > 0 ? 'badge-danger' : 'badge-delivered'}">${o.dueAmount > 0 ? 'Due: ₹' + o.dueAmount : 'Full Paid'}</span>
+          ${isAdmin ? `
+            <button class="btn btn-outline btn-sm admin-only-btn" onclick="openAdminEditLedgerModal('${o.id}')" title="Modify Bill">✏️ Edit</button>
+            <button class="btn btn-danger-sm btn-sm admin-only-btn" onclick="deleteAdminLedgerInvoice('${o.id}')" title="Delete from Ledger">🗑️</button>
+          ` : ''}
+        </div>
       </div>
       <div class="grid-3" style="background:#f8fafc; padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:8px;">
         <div>Billed: ₹${Number(o.totalAmount || 0).toLocaleString('en-IN')}</div>
@@ -3562,7 +3820,7 @@ function sendDueWhatsApp(ordId) {
 
 function exportLedgerCSV() {
   let csv = "Invoice,Customer,Phone,Total,Received,Due,Mode,Staff,Date\n";
-  ordersData.forEach(o => {
+  ordersData.filter(o => o.status === 'Delivered').forEach(o => {
     csv += `"${o.id}","${o.customerName}","${o.phone}","${o.totalAmount}","${o.recvAmount}","${o.dueAmount}","${o.payMode}","${o.bookedBy}","${o.orderDate}"\n`;
   });
   downloadFile(csv, "TTESPL_Ledger.csv", "text/csv");
