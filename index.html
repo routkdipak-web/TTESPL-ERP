@@ -4050,5 +4050,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 </script>
 
 <script src="live-sync.js?v=5"></script>
+  <script>
+// Auto-reset status badge if stuck in Uploading state
+setInterval(() => {
+  const syncText = document.getElementById('syncText');
+  const syncDot = document.getElementById('syncDot');
+  if (syncText && syncText.textContent.includes('Uploading')) {
+    setTimeout(() => {
+      if (syncText && syncText.textContent.includes('Uploading')) {
+        syncText.textContent = 'Live Cloud';
+        if (syncDot) syncDot.className = 'sync-dot';
+      }
+    }, 2500);
+  }
+}, 3000);
+  </script>
 </body>
 </html>
