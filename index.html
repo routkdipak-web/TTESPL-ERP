@@ -158,7 +158,6 @@
 
   .brand-area { display: flex; align-items: center; gap: 9px; position: relative; z-index: 2; max-width: calc(100% - 60px); }
   
-  /* 3D Premium TTESPL Emblem Logo */
   .brand-logo-badge {
     width: 36px; height: 36px; min-width: 36px; border-radius: 10px;
     background: linear-gradient(135deg, #ff6b35, #f59e0b 50%, #00b4d8);
@@ -176,7 +175,6 @@
   .brand-text-row { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
   .brand-title-line { display: flex; align-items: baseline; gap: 4px; overflow: hidden; }
   
-  /* Constant Glowing & Holographic Animated Title */
   .brand-title-glow {
     font-size: 12.5px; font-weight: 900; letter-spacing: 0.3px; line-height: 1.1;
     background: linear-gradient(90deg, #ffffff 0%, #38bdf8 30%, #ff9d3d 60%, #ffffff 100%);
@@ -204,7 +202,6 @@
   }
   @keyframes liveSyncGlow { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.25); opacity: 0.7; } }
 
-  /* Profile Avatar Pill & Menu */
   .profile-menu-wrapper { position: relative; z-index: 10000; }
   .profile-avatar-btn {
     display: flex; align-items: center; gap: 5px; background: rgba(255, 255, 255, 0.12);
@@ -224,7 +221,6 @@
   }
   .profile-avatar-role-dot.admin { background: #00b4d8; }
 
-  /* Premium Glassmorphic Profile Dropdown */
   .profile-dropdown-card {
     position: fixed; top: 58px; right: 12px; width: 290px;
     background: rgba(10, 25, 47, 0.97) !important; backdrop-filter: blur(25px) !important; -webkit-backdrop-filter: blur(25px);
@@ -258,7 +254,7 @@
   }
   .profile-menu-item-left { display: flex; align-items: center; gap: 8px; }
 
-  /* ------------------- DYNAMIC MONEY RAIN ANIMATION (PAISA KI BARISH) ------------------- */
+  /* ------------------- DYNAMIC MONEY RAIN ANIMATION ------------------- */
   #moneyRainOverlay {
     position: fixed; inset: 0; pointer-events: none; z-index: 9999999;
     overflow: hidden; display: none;
@@ -286,32 +282,86 @@
   }
   [data-theme="dark"] .daily-reminder-banner { background: #451a03; color: #fde68a; border-bottom-color: #78350f; }
 
+  /* ------------------- LIVE ANIMATED FOOTER (CAR WASH INTEGRATION) ------------------- */
   .nav-bar {
-    position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    display: flex; border-top: 1px solid var(--border); z-index: 100;
-    box-shadow: 0 -6px 25px rgba(0,0,0,0.06); height: 68px; padding-bottom: env(safe-area-inset-bottom);
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(135deg, rgba(6, 19, 36, 0.94), rgba(10, 37, 64, 0.96));
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    display: flex; border-top: 1.5px solid rgba(0, 180, 216, 0.35); z-index: 1000;
+    box-shadow: 0 -8px 30px rgba(0,0,0,0.35); height: 68px; padding-bottom: env(safe-area-inset-bottom);
+    overflow: hidden;
   }
-  [data-theme="dark"] .nav-bar { background: rgba(17, 24, 39, 0.88); }
+  [data-theme="dark"] .nav-bar {
+    background: linear-gradient(135deg, rgba(5, 10, 20, 0.96), rgba(15, 23, 42, 0.97));
+    border-top: 1.5px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .footer-carwash-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.22; overflow: hidden;
+  }
+  .footer-car {
+    position: absolute; left: 8%; bottom: 6px; width: 120px; height: 28px;
+    animation: footerCarDrive 18s linear infinite;
+  }
+  @keyframes footerCarDrive {
+    0% { transform: translateX(-140px); }
+    100% { transform: translateX(110vw); }
+  }
 
   .nav-item {
-    flex: 1; padding: 6px 2px; text-align: center; font-size: 10.5px; color: var(--text-muted);
+    flex: 1; padding: 6px 2px; text-align: center; font-size: 10.5px; color: #94a3b8;
     cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; font-weight: 700; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); position: relative;
+    gap: 3px; font-weight: 700; transition: all 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+    position: relative; z-index: 2;
   }
-  .nav-item.active { color: var(--accent); }
-  .nav-item.active .nav-icon { transform: translateY(-3px) scale(1.15); filter: drop-shadow(0 3px 6px rgba(255,107,53,0.4)); }
-  .nav-icon { font-size: 19px; transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+  .nav-item:active { transform: scale(0.88); }
+  .nav-item.active { color: #ffffff; }
+  .nav-item.active .nav-icon {
+    transform: translateY(-3px) scale(1.18);
+    filter: drop-shadow(0 0 10px rgba(0, 180, 216, 0.85)) drop-shadow(0 2px 6px rgba(255, 107, 53, 0.6));
+  }
+  .nav-icon { font-size: 19px; transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1); }
   .nav-badge {
     position: absolute; top: 5px; right: calc(50% - 16px);
     background: var(--danger); color: white; font-size: 9.5px; font-weight: 800;
     border-radius: 10px; padding: 1px 6px; min-width: 16px; height: 16px; line-height: 14px;
+    box-shadow: 0 0 8px rgba(239,68,68,0.7);
   }
 
+  /* ------------------- iOS-STYLE PAGE TRANSITION & TOP GLOWING BANNER ------------------- */
   .container { max-width: 960px; margin: 0 auto; padding: 14px; }
   .view-panel { display: none; }
-  .view-panel.active { display: block; animation: panelFade 0.28s cubic-bezier(0.16, 1, 0.3, 1); }
-  @keyframes panelFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .view-panel.active {
+    display: block;
+    animation: iosPageIn 0.38s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  }
+  @keyframes iosPageIn {
+    0% { opacity: 0; transform: translateY(18px) scale(0.975); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .page-top-header-banner {
+    background: linear-gradient(135deg, rgba(10, 37, 64, 0.88), rgba(0, 180, 216, 0.25));
+    border: 1.5px solid rgba(0, 180, 216, 0.45);
+    border-radius: 16px; padding: 12px 16px; margin-bottom: 14px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 8px 24px rgba(0, 180, 216, 0.15); position: relative; overflow: hidden;
+  }
+  [data-theme="dark"] .page-top-header-banner {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(56, 189, 248, 0.2));
+  }
+  .page-top-header-banner::before {
+    content: ""; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+    animation: topBannerShine 4s infinite linear;
+  }
+  @keyframes topBannerShine { 0% { left: -100%; } 100% { left: 200%; } }
+
+  .page-top-title {
+    font-size: 16px; font-weight: 900; letter-spacing: 0.3px; color: #ffffff;
+    display: flex; align-items: center; gap: 8px; text-shadow: 0 0 12px rgba(0, 180, 216, 0.5);
+  }
+  .page-top-sub { font-size: 11px; color: #cbd5e1; margin-top: 2px; }
 
   .card {
     background: var(--card); border-radius: var(--radius-md); padding: 16px; margin-bottom: 14px;
@@ -447,13 +497,9 @@
     max-width: 82%; padding: 8px 12px 6px 12px; border-radius: 10px; font-size: 13.5px; line-height: 1.4;
     position: relative; box-shadow: 0 1px 1px rgba(11,20,26,.13); word-break: break-word;
   }
-  .bubble.me {
-    align-self: flex-end; background: #d9fdd3; color: #111b21; border-top-right-radius: 2px;
-  }
+  .bubble.me { align-self: flex-end; background: #d9fdd3; color: #111b21; border-top-right-radius: 2px; }
   [data-theme="dark"] .bubble.me { background: #005c4b; color: #e9edef; }
-  .bubble.other {
-    align-self: flex-start; background: #ffffff; color: #111b21; border-top-left-radius: 2px;
-  }
+  .bubble.other { align-self: flex-start; background: #ffffff; color: #111b21; border-top-left-radius: 2px; }
   [data-theme="dark"] .bubble.other { background: #202c33; color: #e9edef; }
   .bubble-author { font-size: 11.5px; font-weight: 800; color: #008069; margin-bottom: 2px; }
   [data-theme="dark"] .bubble-author { color: #25d366; }
@@ -556,9 +602,7 @@
 </head>
 <body data-theme="light">
 
-<!-- DYNAMIC 3-SECOND MONEY RAIN CANVAS -->
 <div id="moneyRainOverlay"></div>
-
 <div id="broadcastToastContainer"></div>
 
 <div id="pullToRefreshIndicator">
@@ -567,7 +611,6 @@
 
 <input type="file" id="chatAttachmentInput" style="display:none;" accept="image/*,.pdf,.doc,.docx" onchange="handleChatFileUpload(event)">
 <input type="file" id="backupRestoreInput" style="display:none;" accept=".json" onchange="processRestoreJSON(event)">
-
 <input type="file" id="deliveryPhotoFileInput" accept="image/*" style="display:none;" onchange="handleDeliveryPhotoCaptured(event)">
 <input type="file" id="paymentProofFileInput" accept="image/*" style="display:none;" onchange="handlePaymentProofCaptured(event)">
 
@@ -716,7 +759,7 @@
       <strong>📅 SCHEDULE:</strong>
       <span id="dailyReminderText">Checking schedules...</span>
     </div>
-    <button class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:10px;" onclick="document.getElementById('dailyReminderBanner').style.display='none'">✕</button>
+    <button class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:10px;" onclick="triggerAppHaptic(); document.getElementById('dailyReminderBanner').style.display='none'">✕</button>
   </div>
 
   <!-- SLIM PREMIUM HEADER -->
@@ -752,7 +795,7 @@
 
     <!-- Right: Single Profile Avatar Touch Button -->
     <div class="profile-menu-wrapper">
-      <div class="profile-avatar-btn" id="profileHeaderTriggerBtn" onclick="toggleProfileDrawer(event)" title="Profile & App Menu">
+      <div class="profile-avatar-btn" id="profileHeaderTriggerBtn" onclick="triggerAppHaptic(); toggleProfileDrawer(event)" title="Profile & App Menu">
         <div class="profile-avatar-img" id="headerProfileAvatarInitial">D</div>
         <div class="profile-avatar-role-dot admin" id="headerProfileDot"></div>
         <span style="font-size:10px; font-weight:800; margin:0 2px;">▾</span>
@@ -760,7 +803,7 @@
     </div>
   </header>
 
-  <!-- GUARANTEED WORKING GLASSMORPHIC PROFILE DRAWER -->
+  <!-- GLASSMORPHIC PROFILE DRAWER -->
   <div class="profile-dropdown-card" id="profileDropdownCard">
     <div class="profile-header-info">
       <div class="profile-header-name" id="menuStaffName">Dipak Kumar Rout</div>
@@ -769,7 +812,7 @@
     </div>
 
     <div class="profile-menu-list">
-      <div class="profile-menu-item" onclick="toggleThemeMode(); closeProfileDrawer();">
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); toggleThemeMode(); closeProfileDrawer();">
         <div class="profile-menu-item-left">
           <span>🌙</span>
           <span>Day / Night Theme</span>
@@ -777,7 +820,7 @@
         <span style="font-size:11px; opacity:0.8;" id="currentThemeTag">Light/Dark</span>
       </div>
 
-      <div class="profile-menu-item" onclick="requestAppSystemPermissions(); closeProfileDrawer();">
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); requestAppSystemPermissions(); closeProfileDrawer();">
         <div class="profile-menu-item-left">
           <span>🔔</span>
           <span>Permissions</span>
@@ -785,7 +828,7 @@
         <span style="font-size:10px; color:#10b981;">Camera/Alerts</span>
       </div>
 
-      <div class="profile-menu-item" onclick="openGlobalSearchModal(); closeProfileDrawer();">
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); openGlobalSearchModal(); closeProfileDrawer();">
         <div class="profile-menu-item-left">
           <span>🔍</span>
           <span>Master Search</span>
@@ -794,7 +837,7 @@
       </div>
 
       <!-- ADMIN ONLY: All Employees / Staff Control -->
-      <div class="profile-menu-item admin-only-item" id="menuAdminStaffBtn" onclick="openStaffManageModal(); closeProfileDrawer();" style="display:none; background:rgba(0,180,216,0.18);">
+      <div class="profile-menu-item admin-only-item" id="menuAdminStaffBtn" onclick="triggerAppHaptic(); openStaffManageModal(); closeProfileDrawer();" style="display:none; background:rgba(0,180,216,0.18);">
         <div class="profile-menu-item-left">
           <span>👥</span>
           <span style="color:#38bdf8;">All Employees (Admin)</span>
@@ -802,7 +845,7 @@
         <span class="badge badge-info" style="font-size:9.5px; padding:2px 6px;">Manage</span>
       </div>
 
-      <div class="profile-menu-item" onclick="performFullLogout(); closeProfileDrawer();" style="color:#ef4444; border-top:1px solid rgba(255,255,255,0.12); margin-top:4px;">
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); performFullLogout(); closeProfileDrawer();" style="color:#ef4444; border-top:1px solid rgba(255,255,255,0.12); margin-top:4px;">
         <div class="profile-menu-item-left">
           <span>🚪</span>
           <span>Logout Session</span>
@@ -816,12 +859,12 @@
 
     <!-- TAB 0: EXECUTIVE BENTO DASHBOARD -->
     <div id="view-dashboard" class="view-panel active">
-      <div style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="page-top-header-banner">
         <div>
-          <h2 style="font-size:18px; font-weight:800; color:var(--text-main);">📊 Executive Command Center</h2>
-          <div style="font-size:11.5px; color:var(--text-muted);">Real-time business performance & priority alerts</div>
+          <div class="page-top-title"><span>📊</span> <span>Executive Command Center</span></div>
+          <div class="page-top-sub">Live Business Status, Recoveries & High Priority Schedules</div>
         </div>
-        <button class="btn btn-primary btn-sm" onclick="openPerformanceReportModal()">📈 Staff Sales Report</button>
+        <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); openPerformanceReportModal()">📈 Staff Report</button>
       </div>
 
       <div class="grid-4" style="margin-bottom:14px;">
@@ -853,19 +896,19 @@
           <span class="badge badge-info">1-Tap Fast Workflow</span>
         </div>
         <div class="grid-4">
-          <div class="qa-tile" onclick="openOrderModal()">
+          <div class="qa-tile" onclick="triggerAppHaptic(); openOrderModal()">
             <div class="qa-icon-badge">📦</div>
             <span>Create Order</span>
           </div>
-          <div class="qa-tile" onclick="openLeadModal()">
+          <div class="qa-tile" onclick="triggerAppHaptic(); openLeadModal()">
             <div class="qa-icon-badge">🎯</div>
             <span>Machine Inquiry</span>
           </div>
-          <div class="qa-tile" onclick="openServiceCallModal()">
+          <div class="qa-tile" onclick="triggerAppHaptic(); openServiceCallModal()">
             <div class="qa-icon-badge">🛠️</div>
             <span>Service Call</span>
           </div>
-          <div class="qa-tile" onclick="openProfitCalculatorModal()">
+          <div class="qa-tile" onclick="triggerAppHaptic(); openProfitCalculatorModal()">
             <div class="qa-icon-badge">🧮</div>
             <span>Profit / Markup</span>
           </div>
@@ -883,12 +926,12 @@
 
     <!-- TAB 1: LEADS -->
     <div id="view-leads" class="view-panel">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div class="page-top-header-banner">
         <div>
-          <h2 style="font-size:17px; font-weight:800; color:var(--text-main);">🎯 Machine Leads & Installations</h2>
-          <div style="font-size:11.5px; color:var(--text-muted);">Inquiry, Follow-up & 4 Free Service Schedules</div>
+          <div class="page-top-title"><span>🎯</span> <span>Machine Leads & Inquiries</span></div>
+          <div class="page-top-sub">Customer Quotes, Lead Conversions & 4 Free Service Schedules</div>
         </div>
-        <button class="btn btn-accent btn-sm" onclick="openLeadModal()">+ New Lead</button>
+        <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openLeadModal()">+ New Lead</button>
       </div>
 
       <div class="filter-bar">
@@ -906,7 +949,7 @@
             <option value="ALL">All Staff</option>
           </select>
         </div>
-        <button class="btn btn-outline btn-sm" onclick="clearLeadsFilters()">✕ Clear</button>
+        <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); clearLeadsFilters()">✕ Clear</button>
       </div>
 
       <div id="leadsListContainer"></div>
@@ -914,17 +957,17 @@
 
     <!-- TAB 2: ORDERS -->
     <div id="view-orders" class="view-panel">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div class="page-top-header-banner">
         <div>
-          <h2 style="font-size:17px; font-weight:800; color:var(--text-main);">📦 Product & Chemical Orders</h2>
-          <div style="font-size:11.5px; color:var(--text-muted);">Pending orders dispatch, invoices & cancellation logs</div>
+          <div class="page-top-title"><span>📦</span> <span>Orders & Dispatch Hub</span></div>
+          <div class="page-top-sub">Track Deliveries, Generate GST Bills & Record Proofs</div>
         </div>
-        <button class="btn btn-accent btn-sm" onclick="openOrderModal()">+ New Order</button>
+        <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openOrderModal()">+ New Order</button>
       </div>
 
       <div class="sub-tabs" style="margin-bottom:14px;">
-        <button class="sub-tab-btn active" id="btnSubTabActiveOrders" onclick="switchOrderSubTab('active')">⏳ Active Orders (<span id="countActiveOrders">0</span>)</button>
-        <button class="sub-tab-btn" id="btnSubTabCancelledOrders" onclick="switchOrderSubTab('cancelled')">🚫 Cancelled Orders (<span id="countCancelledOrders">0</span>)</button>
+        <button class="sub-tab-btn active" id="btnSubTabActiveOrders" onclick="triggerAppHaptic(); switchOrderSubTab('active')">⏳ Active Orders (<span id="countActiveOrders">0</span>)</button>
+        <button class="sub-tab-btn" id="btnSubTabCancelledOrders" onclick="triggerAppHaptic(); switchOrderSubTab('cancelled')">🚫 Cancelled Orders (<span id="countCancelledOrders">0</span>)</button>
       </div>
 
       <div class="filter-bar">
@@ -942,7 +985,7 @@
             <option value="ALL">All Staff</option>
           </select>
         </div>
-        <button class="btn btn-outline btn-sm" onclick="clearOrdersFilters()">✕ Clear</button>
+        <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); clearOrdersFilters()">✕ Clear</button>
       </div>
 
       <div id="ordersListContainer"></div>
@@ -950,12 +993,12 @@
 
     <!-- TAB 3: SERVICES -->
     <div id="view-services" class="view-panel">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div class="page-top-header-banner">
         <div>
-          <h2 style="font-size:17px; font-weight:800; color:var(--text-main);">🛠️ Machine Service & Repairs</h2>
-          <div style="font-size:11.5px; color:var(--text-muted);">Service logs, delay monitoring & auto stock debit</div>
+          <div class="page-top-title"><span>🛠️</span> <span>Service & Machine Repairs</span></div>
+          <div class="page-top-sub">High-Pressure Washers, Motors & Breakdown Tickets</div>
         </div>
-        <button class="btn btn-accent btn-sm" onclick="openServiceCallModal()">+ New Service Call</button>
+        <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openServiceCallModal()">+ New Service Call</button>
       </div>
 
       <div class="filter-bar">
@@ -973,7 +1016,7 @@
             <option value="ALL">All Staff</option>
           </select>
         </div>
-        <button class="btn btn-outline btn-sm" onclick="clearServicesFilters()">✕ Clear</button>
+        <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); clearServicesFilters()">✕ Clear</button>
       </div>
 
       <div id="serviceListContainer"></div>
@@ -981,21 +1024,32 @@
 
     <!-- TAB 4: INVENTORY -->
     <div id="view-inventory" class="view-panel">
+      <div class="page-top-header-banner">
+        <div>
+          <div class="page-top-title"><span>🏷️</span> <span>Stock & Master Inventory</span></div>
+          <div class="page-top-sub">Machinery, Spares, Detailing Chemicals & Verified Clients</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); loadMasterCatalogAction()">📦 Master Data</button>
+          <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openAddPartModal()">+ Add Item</button>
+        </div>
+      </div>
+
       <div style="margin-bottom:12px;">
         <input type="text" id="stockFilterInput" placeholder="🔍 Master Search: Type ANY product, machine, chemical, spare, polisher, code..." oninput="filterStockList(this.value)" style="font-size:14px; padding:12px 16px; border-width:2px; box-shadow:var(--shadow-sm);">
       </div>
 
       <div class="sub-tabs" id="inventoryCategoryTabs" style="padding-bottom:10px; margin-bottom:14px; gap:8px;">
-        <button class="sub-tab-btn active" onclick="selectInventoryCategory('ALL', this)">🌟 All Items (<span id="catCountAll">0</span>)</button>
-        <button class="sub-tab-btn" onclick="selectInventoryCategory('Machines & Equipment', this)">🚜 Machines (<span id="catCountMach">0</span>)</button>
-        <button class="sub-tab-btn" onclick="selectInventoryCategory('Catalog Equipment', this)">📖 Catalog Gear (<span id="catCountCat">0</span>)</button>
-        <button class="sub-tab-btn" onclick="selectInventoryCategory('Ma-Fra Chemicals', this)">🧼 Ma-Fra Chemicals (<span id="catCountMafraChem">0</span>)</button>
-        <button class="sub-tab-btn" onclick="selectInventoryCategory('Mafra Detailing', this)">✨ Mafra Detailing (<span id="catCountMafraDet">0</span>)</button>
-        <button class="sub-tab-btn" onclick="selectInventoryCategory('Maniac Line', this)">⚡ Maniac Line (<span id="catCountManiac">0</span>)</button>
-        <button class="sub-tab-btn" onclick="selectInventoryCategory('Maxshine Gear & Tools', this)">🛠️ Maxshine (<span id="catCountMaxshine">0</span>)</button>
-        <button class="sub-tab-btn" onclick="selectInventoryCategory('Vista Car Care', this)">🚗 Vista (<span id="catCountVista">0</span>)</button>
-        <button class="sub-tab-btn" onclick="selectInventoryCategory('Machine Spares', this)">⚙️ Spares (<span id="catCountSpares">0</span>)</button>
-        <button class="sub-tab-btn" onclick="selectInventoryCategory('CUSTOMERS', this)">👥 Customers (<span id="catCountCust">0</span>)</button>
+        <button class="sub-tab-btn active" onclick="triggerAppHaptic(); selectInventoryCategory('ALL', this)">🌟 All Items (<span id="catCountAll">0</span>)</button>
+        <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Machines & Equipment', this)">🚜 Machines (<span id="catCountMach">0</span>)</button>
+        <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Catalog Equipment', this)">📖 Catalog Gear (<span id="catCountCat">0</span>)</button>
+        <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Ma-Fra Chemicals', this)">🧼 Ma-Fra Chemicals (<span id="catCountMafraChem">0</span>)</button>
+        <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Mafra Detailing', this)">✨ Mafra Detailing (<span id="catCountMafraDet">0</span>)</button>
+        <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Maniac Line', this)">⚡ Maniac Line (<span id="catCountManiac">0</span>)</button>
+        <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Maxshine Gear & Tools', this)">🛠️ Maxshine (<span id="catCountMaxshine">0</span>)</button>
+        <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Vista Car Care', this)">🚗 Vista (<span id="catCountVista">0</span>)</button>
+        <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Machine Spares', this)">⚙️ Spares (<span id="catCountSpares">0</span>)</button>
+        <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('CUSTOMERS', this)">👥 Customers (<span id="catCountCust">0</span>)</button>
       </div>
 
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
@@ -1004,10 +1058,8 @@
           <span id="currentCategoryTitle" style="font-size:12px; font-weight:700; color:var(--text-main); margin-left:8px;"></span>
         </div>
         <div style="display:flex; gap:8px;">
-          <button class="btn btn-primary btn-sm" onclick="loadMasterCatalogAction()">📦 Reload Master Data</button>
-          <button class="btn btn-accent btn-sm" onclick="openAddPartModal()">+ Add Item</button>
-          <button class="btn btn-accent btn-sm" id="dynamicRegisterClientBtn" onclick="openAddCustomerModal()" style="display:none;">+ Register Client</button>
-          <button class="btn btn-outline btn-sm" onclick="exportInventoryCSV()">📥 CSV</button>
+          <button class="btn btn-accent btn-sm" id="dynamicRegisterClientBtn" onclick="triggerAppHaptic(); openAddCustomerModal()" style="display:none;">+ Register Client</button>
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); exportInventoryCSV()">📥 CSV</button>
         </div>
       </div>
 
@@ -1016,26 +1068,27 @@
 
     <!-- TAB 5: BILLING & LEDGER -->
     <div id="view-billing" class="view-panel">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
-        <h2 style="font-size:17px; font-weight:800; color:var(--text-main);">📑 Billing & Financial Ledger</h2>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn btn-accent btn-sm" onclick="openDailyCashClosingModal()">💰 Cash Closing</button>
-          <button class="btn btn-primary btn-sm" onclick="openAgeingAnalysisModal()">⏳ Ageing Analysis</button>
-          <button class="btn btn-primary btn-sm" onclick="triggerFullBackupDownload()">💾 Backup All Data</button>
-          <button class="btn btn-outline btn-sm" onclick="document.getElementById('backupRestoreInput').click()">📂 Restore</button>
+      <div class="page-top-header-banner">
+        <div>
+          <div class="page-top-title"><span>📑</span> <span>Financial Ledger & Billing</span></div>
+          <div class="page-top-sub">Live Dues, Tax Invoices, Collections & Cash Drawer Summary</div>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openDailyCashClosingModal()">💰 Cash Closing</button>
+          <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); openAgeingAnalysisModal()">⏳ Ageing Analysis</button>
         </div>
       </div>
 
       <div class="grid-3" style="margin-bottom:14px;">
-        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:12px; border-top:4px solid var(--primary);" onclick="filterBilling('all')">
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:12px; border-top:4px solid var(--primary);" onclick="triggerAppHaptic(); filterBilling('all')">
           <div style="font-size:10.5px; color:var(--text-muted); font-weight:800;">TOTAL BILLED</div>
           <div style="font-size:17px; font-weight:800; color:var(--text-main);" id="metricTotalBilled">₹0</div>
         </div>
-        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:12px; border-top:4px solid var(--success);" onclick="filterBilling('received')">
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:12px; border-top:4px solid var(--success);" onclick="triggerAppHaptic(); filterBilling('received')">
           <div style="font-size:10.5px; color:var(--text-muted); font-weight:800;">RECEIVED</div>
           <div style="font-size:17px; font-weight:800; color:var(--success);" id="metricTotalRecv">₹0</div>
         </div>
-        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:12px; border-top:4px solid var(--danger); background:var(--danger-bg);" onclick="filterBilling('due')">
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:12px; border-top:4px solid var(--danger); background:var(--danger-bg);" onclick="triggerAppHaptic(); filterBilling('due')">
           <div style="font-size:10.5px; color:var(--danger); font-weight:800;">DUE REMAINING</div>
           <div style="font-size:17px; font-weight:800; color:var(--danger);" id="metricTotalDue">₹0</div>
         </div>
@@ -1058,6 +1111,14 @@
 
     <!-- TAB 6: WHATSAPP CHAT -->
     <div id="view-chat" class="view-panel">
+      <div class="page-top-header-banner">
+        <div>
+          <div class="page-top-title"><span>💬</span> <span>Team Live Discussion Hub</span></div>
+          <div class="page-top-sub">Instant Company Chat, Workshop Coordination & Updates</div>
+        </div>
+        <span class="badge" id="chatCountBadge" style="background:rgba(255,255,255,0.22); color:#fff; border:none; font-size:11px;">0 msgs</span>
+      </div>
+
       <div class="chat-box-card">
         <div class="chat-header-bar">
           <div style="display:flex; align-items:center; gap:12px;">
@@ -1067,7 +1128,6 @@
               <div style="font-size:11.5px; opacity:0.92; font-weight:600;">Team discussion portal</div>
             </div>
           </div>
-          <span class="badge" id="chatCountBadge" style="background:rgba(255,255,255,0.22); color:#fff; border:none; font-size:11px;">0 msgs</span>
         </div>
 
         <div class="chat-stream" id="chatMessagesContainer"></div>
@@ -1076,9 +1136,9 @@
           <div class="wa-input-pill">
             <span style="font-size:20px; cursor:pointer;" onclick="document.getElementById('chatInputMessage').focus()">😊</span>
             <input type="text" id="chatInputMessage" placeholder="Message..." onkeydown="if(event.key==='Enter') sendLiveChatMessage()">
-            <button class="btn btn-outline btn-sm" onclick="document.getElementById('chatAttachmentInput').click()" style="padding:6px 10px; border:none; background:transparent; font-size:20px; color:var(--text-muted);" title="Attach Document">📎</button>
+            <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); document.getElementById('chatAttachmentInput').click()" style="padding:6px 10px; border:none; background:transparent; font-size:20px; color:var(--text-muted);" title="Attach Document">📎</button>
           </div>
-          <button class="wa-send-round-btn" onclick="sendLiveChatMessage()" title="Send">
+          <button class="wa-send-round-btn" onclick="triggerAppHaptic(); sendLiveChatMessage()" title="Send">
             <span style="margin-left:2px; font-size:18px;">➤</span>
           </button>
         </div>
@@ -1087,43 +1147,56 @@
 
   </div>
 
-  <!-- FLOATING QUICK ACTION BUTTON (FAB) -->
+  <!-- FLOATING ACTION BUTTON -->
   <div id="fabMenu">
-    <div class="fab-action-btn" onclick="openOrderModal(); toggleFabMenu();">📦 New Order</div>
-    <div class="fab-action-btn" onclick="openLeadModal(); toggleFabMenu();">🎯 New Lead</div>
-    <div class="fab-action-btn" onclick="openServiceCallModal(); toggleFabMenu();">🛠️ Service Call</div>
-    <div class="fab-action-btn" onclick="openProfitCalculatorModal(); toggleFabMenu();">🧮 Profit Calculator</div>
-    <div class="fab-action-btn" onclick="openPerformanceReportModal(); toggleFabMenu();">📈 Sales Report</div>
+    <div class="fab-action-btn" onclick="triggerAppHaptic(); openOrderModal(); toggleFabMenu();">📦 New Order</div>
+    <div class="fab-action-btn" onclick="triggerAppHaptic(); openLeadModal(); toggleFabMenu();">🎯 New Lead</div>
+    <div class="fab-action-btn" onclick="triggerAppHaptic(); openServiceCallModal(); toggleFabMenu();">🛠️ Service Call</div>
+    <div class="fab-action-btn" onclick="triggerAppHaptic(); openProfitCalculatorModal(); toggleFabMenu();">🧮 Profit Calculator</div>
+    <div class="fab-action-btn" onclick="triggerAppHaptic(); openPerformanceReportModal(); toggleFabMenu();">📈 Sales Report</div>
   </div>
-  <div id="fabMainBtn" onclick="toggleFabMenu()">+</div>
+  <div id="fabMainBtn" onclick="triggerAppHaptic(); toggleFabMenu()">+</div>
 
-  <!-- BOTTOM NAVIGATION -->
+  <!-- LIVE ANIMATED FOOTER -->
   <div class="nav-bar">
-    <div class="nav-item active" onclick="switchTab('dashboard', this)">
+    <div class="footer-carwash-canvas">
+      <div class="water-spray" style="right:auto; left:15%; width:200px;"></div>
+      <div class="wash-bubble wb1" style="left:20%;"></div>
+      <div class="wash-bubble wb2" style="left:40%;"></div>
+      <div class="wash-bubble wb3" style="left:60%;"></div>
+      <div class="wash-bubble wb4" style="left:80%;"></div>
+      <svg class="footer-car" viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 28 C20 28, 25 18, 45 15 C65 12, 105 12, 125 18 C140 22, 150 25, 156 28 C158 29, 160 31, 158 33 C154 35, 140 35, 134 35 C132 31, 126 28, 120 28 C114 28, 108 31, 106 35 L52 35 C50 31, 44 28, 38 28 C32 28, 26 31, 24 35 L6 35 C2 35, 0 32, 2 30 Z" fill="rgba(0, 180, 216, 0.45)"/>
+        <circle cx="38" cy="33" r="5" fill="#061526" stroke="#00b4d8" stroke-width="1.5"/>
+        <circle cx="120" cy="33" r="5" fill="#061526" stroke="#00b4d8" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <div class="nav-item active" onclick="triggerAppHaptic(); switchTab('dashboard', this)">
       <div class="nav-icon">📊</div>
       <span>Home</span>
     </div>
-    <div class="nav-item" onclick="switchTab('leads', this)">
+    <div class="nav-item" onclick="triggerAppHaptic(); switchTab('leads', this)">
       <div class="nav-icon">🎯</div>
       <span>Leads</span>
     </div>
-    <div class="nav-item" onclick="switchTab('orders', this)">
+    <div class="nav-item" onclick="triggerAppHaptic(); switchTab('orders', this)">
       <div class="nav-icon">📦</div>
       <span>Orders</span>
     </div>
-    <div class="nav-item" onclick="switchTab('services', this)">
+    <div class="nav-item" onclick="triggerAppHaptic(); switchTab('services', this)">
       <div class="nav-icon">🛠️</div>
       <span>Services</span>
     </div>
-    <div class="nav-item" onclick="switchTab('inventory', this)">
+    <div class="nav-item" onclick="triggerAppHaptic(); switchTab('inventory', this)">
       <div class="nav-icon">🏷️</div>
       <span>Stock</span>
     </div>
-    <div class="nav-item" onclick="switchTab('billing', this)">
+    <div class="nav-item" onclick="triggerAppHaptic(); switchTab('billing', this)">
       <div class="nav-icon">📑</div>
       <span>Ledger</span>
     </div>
-    <div class="nav-item" onclick="switchTab('chat', this)">
+    <div class="nav-item" onclick="triggerAppHaptic(); switchTab('chat', this)">
       <div class="nav-icon">💬</div>
       <span>Chat</span>
       <span class="nav-badge" id="chatNavBadge" style="display:none;">0</span>
@@ -1139,7 +1212,7 @@
   <div class="auth-card" style="max-width:440px; text-align:center;">
     <div class="card-header">
       <strong class="card-title">📱 Scan & Pay via UPI / QR</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeUpiModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeUpiModal()">✕</button>
     </div>
 
     <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">
@@ -1162,7 +1235,7 @@
       <div><strong>UPI ID:</strong> <span style="color:var(--cyan); font-weight:800;">eazypay.574099310@icici</span></div>
     </div>
 
-    <button class="btn btn-primary btn-block" onclick="closeUpiModal()">✓ Done / Payment Received</button>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); closeUpiModal()">✓ Done / Payment Received</button>
   </div>
 </div>
 
@@ -1171,40 +1244,31 @@
   <div class="auth-card" style="max-width:460px;">
     <div class="card-header">
       <strong class="card-title">✍️ Customer Service Verification Sign</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeSignModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeSignModal()">✕</button>
     </div>
     <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
       Please sign on screen to verify satisfactory machine service completion.
     </div>
     <canvas id="signCanvas" width="400" height="180" style="background:#ffffff; border:1.8px solid var(--border); border-radius:12px; width:100%; touch-action:none;"></canvas>
     <div style="display:flex; justify-content:space-between; margin-top:10px;">
-      <button class="btn btn-outline btn-sm" onclick="clearSignCanvas()">Clear Signature</button>
-      <button class="btn btn-primary btn-sm" onclick="saveCustomerSignature()">✓ Confirm Signature</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); clearSignCanvas()">Clear Signature</button>
+      <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); saveCustomerSignature()">✓ Confirm Signature</button>
     </div>
   </div>
 </div>
 
-<!-- 0.2 ADMIN STAFF MANAGEMENT MODAL -->
+<!-- 0.2 ADMIN STAFF MANAGEMENT MODAL (FACTORY RESET COMPLETELY REMOVED) -->
 <div id="staffManageModal" class="auth-overlay" style="display:none; z-index:3300;">
   <div class="auth-card" style="max-width:540px;">
     <div class="card-header">
       <strong class="card-title">👥 Admin Staff Management & Role Control</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeStaffManageModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeStaffManageModal()">✕</button>
     </div>
     <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-      Admin can update staff names, passwords, and assigned department roles.
+      Admin can update staff names, passwords, and assigned department roles securely.
     </div>
-    <div id="staffManageList" style="max-height:360px; overflow-y:auto; margin-bottom:14px;"></div>
-
-    <div style="border:1.5px dashed var(--danger); border-radius:var(--radius-sm); padding:12px; margin-bottom:14px; background:var(--danger-bg);">
-      <div style="font-size:12.5px; font-weight:800; color:var(--danger); margin-bottom:4px;">⚠️ Danger Zone: Factory Reset</div>
-      <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px; line-height:1.5;">
-        Yeh Orders, Leads, Services, Ledger, Customers, Inventory, Staff Login aur Chat — sab kuch LOCAL aur CLOUD dono se permanently delete kar dega.
-      </div>
-      <button class="btn btn-danger btn-block" onclick="performFactoryReset()">🗑️ Factory Reset App (Sab Kuch Clear)</button>
-    </div>
-
-    <button class="btn btn-outline btn-block" onclick="closeStaffManageModal()">Close</button>
+    <div id="staffManageList" style="max-height:380px; overflow-y:auto; margin-bottom:14px;"></div>
+    <button class="btn btn-outline btn-block" onclick="triggerAppHaptic(); closeStaffManageModal()">Close</button>
   </div>
 </div>
 
@@ -1213,7 +1277,7 @@
   <div class="auth-card" style="max-width:480px;">
     <div class="card-header">
       <strong class="card-title">✏️ Admin Edit Ledger Invoice</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeEditLedgerModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeEditLedgerModal()">✕</button>
     </div>
     <input type="hidden" id="editLedgerInvId">
     <div class="form-group">
@@ -1250,7 +1314,7 @@
       <label class="form-label">Booked By Staff</label>
       <select id="editLedgerStaffSelect" class="emp-dropdown"></select>
     </div>
-    <button class="btn btn-primary btn-block" onclick="saveAdminLedgerInvoice()">💾 Update Ledger Bill</button>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveAdminLedgerInvoice()">💾 Update Ledger Bill</button>
   </div>
 </div>
 
@@ -1259,7 +1323,7 @@
   <div class="auth-card" style="max-width:460px;">
     <div class="card-header">
       <strong class="card-title">🧮 Profit Margin & Markup Calculator</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeProfitCalculatorModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeProfitCalculatorModal()">✕</button>
     </div>
     <div class="grid-2">
       <div class="form-group">
@@ -1285,7 +1349,7 @@
         <strong id="calcMarkupPct" style="color:var(--accent); font-size:15px;">0%</strong>
       </div>
     </div>
-    <button class="btn btn-outline btn-block" style="margin-top:14px;" onclick="closeProfitCalculatorModal()">Close Calculator</button>
+    <button class="btn btn-outline btn-block" style="margin-top:14px;" onclick="triggerAppHaptic(); closeProfitCalculatorModal()">Close Calculator</button>
   </div>
 </div>
 
@@ -1294,22 +1358,22 @@
   <div class="auth-card" style="max-width:560px;">
     <div class="card-header">
       <strong class="card-title">⏳ Receivables Ageing Analysis</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeAgeingAnalysisModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeAgeingAnalysisModal()">✕</button>
     </div>
     <div id="ageingReportContainer" style="max-height:360px; overflow-y:auto; margin-bottom:14px;"></div>
-    <button class="btn btn-outline btn-block" onclick="closeAgeingAnalysisModal()">Close</button>
+    <button class="btn btn-outline btn-block" onclick="triggerAppHaptic(); closeAgeingAnalysisModal()">Close</button>
   </div>
 </div>
 
-<!-- 0.6 EMPLOYEE-WISE MONTH-WISE SALES PERFORMANCE REPORT MODAL -->
+<!-- 0.6 PERFORMANCE REPORT MODAL -->
 <div id="performanceReportModal" class="auth-overlay" style="display:none; z-index:3500;">
   <div class="auth-card" style="max-width:620px;">
     <div class="card-header">
       <strong class="card-title">📈 Employee-wise Sales Performance</strong>
-      <button class="btn btn-outline btn-sm" onclick="closePerformanceReportModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closePerformanceReportModal()">✕</button>
     </div>
     <div id="performanceReportContainer" style="max-height:380px; overflow-y:auto; margin-bottom:14px;"></div>
-    <button class="btn btn-outline btn-block" onclick="closePerformanceReportModal()">Close</button>
+    <button class="btn btn-outline btn-block" onclick="triggerAppHaptic(); closePerformanceReportModal()">Close</button>
   </div>
 </div>
 
@@ -1318,11 +1382,9 @@
   <div class="auth-card" style="max-width:580px;">
     <div class="card-header">
       <strong class="card-title" id="detName" style="font-size:15px;">Item Specifications</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeStockDetailModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeStockDetailModal()">✕</button>
     </div>
-
     <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;" id="detMeta"></div>
-
     <div class="grid-3" style="background:var(--bg); padding:12px; border-radius:12px; margin-bottom:14px; text-align:center; border:1px solid var(--border);">
       <div>
         <div style="font-size:10.5px; color:var(--text-muted); font-weight:800;">DEALER PRICE</div>
@@ -1337,17 +1399,14 @@
         <div style="font-size:16px; font-weight:800;" id="detStock">0</div>
       </div>
     </div>
-
     <div id="detDescWrap" style="background:rgba(0,180,216,0.1); border:1.5px solid var(--cyan); padding:12px; border-radius:12px; margin-bottom:14px; font-size:12.5px;">
       <strong style="color:var(--cyan); display:block; margin-bottom:4px;">🛠️ Technical Data / Specifications:</strong>
       <div id="detDesc" style="color:var(--text-main); line-height:1.5;"></div>
     </div>
-
     <div style="display:flex; gap:10px; margin-bottom:14px;">
-      <button class="btn btn-outline btn-sm btn-block" onclick="editFromDetailModal()">✏️ Edit Item Details</button>
+      <button class="btn btn-outline btn-sm btn-block" onclick="triggerAppHaptic(); editFromDetailModal()">✏️ Edit Item Details</button>
     </div>
-
-    <div style="font-size:13.5px; font-weight:800; color:var(--text-main); margin-bottom:8px;">📋 Sales History (Sold To Customers):</div>
+    <div style="font-size:13.5px; font-weight:800; color:var(--text-main); margin-bottom:8px;">📋 Sales History:</div>
     <div id="detSalesHistory" style="max-height:240px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:6px;"></div>
   </div>
 </div>
@@ -1357,7 +1416,7 @@
   <div class="auth-card" style="max-width:520px;">
     <div class="card-header">
       <strong class="card-title">🔍 Master Search</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeGlobalSearchModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeGlobalSearchModal()">✕</button>
     </div>
     <div class="form-group" style="margin-bottom:10px;">
       <input type="text" id="globalSearchInput" placeholder="Customer, order ref, machine, item code, phone..." oninput="performGlobalSearch(this.value)">
@@ -1371,16 +1430,14 @@
   <div class="auth-card">
     <div class="card-header">
       <strong class="card-title" id="leadModalTitle">Machine Inquiry & Lead</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeLeadModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeLeadModal()">✕</button>
     </div>
     <input type="hidden" id="editLeadId">
-    
     <div class="form-group autocomplete-wrapper">
       <label class="form-label">🔍 Select Customer:</label>
       <input type="text" id="leadCustSearchInput" placeholder="Type customer name or phone..." oninput="handleCustomerAutocomplete(this, 'leadCustSearchInput')">
       <div class="solid-suggestion-box" id="leadCustSuggestBox"></div>
     </div>
-
     <div class="grid-2">
       <div class="form-group">
         <label class="form-label">Inquiry Date</label>
@@ -1391,7 +1448,6 @@
         <select id="leadStaffSelect" class="emp-dropdown"></select>
       </div>
     </div>
-
     <div class="grid-2">
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">🚜 Machine Model:</label>
@@ -1411,7 +1467,7 @@
       <label class="form-label">Discussion Remarks</label>
       <textarea id="leadRemarks" rows="2" placeholder="Discussion notes..."></textarea>
     </div>
-    <button class="btn btn-primary btn-block" onclick="saveLeadAction()" style="padding:12px;">💾 Save Machine Lead</button>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveLeadAction()" style="padding:12px;">💾 Save Machine Lead</button>
   </div>
 </div>
 
@@ -1420,10 +1476,9 @@
   <div class="auth-card" style="max-width:680px;">
     <div class="card-header">
       <strong class="card-title" id="orderModalTitle">Multi-Item Product Order</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeOrderModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeOrderModal()">✕</button>
     </div>
     <input type="hidden" id="editOrderId">
-    
     <div class="grid-2">
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">🔍 Customer:</label>
@@ -1435,7 +1490,6 @@
         <select id="ordStaffSelect" class="emp-dropdown"></select>
       </div>
     </div>
-
     <div class="grid-3" style="align-items:center; background:var(--bg); padding:10px; border-radius:10px; margin-bottom:12px; border:1px solid var(--border);">
       <div class="form-group" style="margin-bottom:0;">
         <label class="form-label">Tax Supply Type</label>
@@ -1469,7 +1523,7 @@
       </thead>
       <tbody id="orderItemsTbody"></tbody>
     </table>
-    <button class="btn btn-outline btn-sm" onclick="addOrderItemRow()" style="margin-bottom:12px;">+ Add Product Item</button>
+    <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); addOrderItemRow()" style="margin-bottom:12px;">+ Add Product Item</button>
 
     <div class="grid-3" style="background:var(--bg); padding:12px; border-radius:10px; margin-bottom:12px; border:1px solid var(--border);">
       <div>
@@ -1497,7 +1551,7 @@
       </select>
     </div>
 
-    <button class="btn btn-primary btn-block" onclick="saveOrderAction()" style="padding:12px;">💾 Save Order Place</button>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveOrderAction()" style="padding:12px;">💾 Save Order Place</button>
   </div>
 </div>
       
@@ -1506,10 +1560,9 @@
   <div class="auth-card" style="max-width:540px;">
     <div class="card-header">
       <strong class="card-title" id="serviceModalTitle">Service & Repair Record</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeServiceModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeServiceModal()">✕</button>
     </div>
     <input type="hidden" id="editServiceId">
-    
     <div class="grid-2">
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">🔍 Customer:</label>
@@ -1521,7 +1574,6 @@
         <select id="srvStaffSelect" class="emp-dropdown"></select>
       </div>
     </div>
-
     <div class="grid-2">
       <div class="form-group autocomplete-wrapper">
         <label class="form-label">🚜 Machine Model:</label>
@@ -1533,7 +1585,6 @@
         <input type="date" id="srvRecvDate">
       </div>
     </div>
-
     <div class="grid-2">
       <div class="form-group">
         <label class="form-label">Target Service Date</label>
@@ -1547,12 +1598,10 @@
         </select>
       </div>
     </div>
-
     <div class="form-group">
       <label class="form-label">Reported Issue / Symptoms</label>
       <textarea id="srvProblem" rows="2" placeholder="Symptoms..."></textarea>
     </div>
-
     <div id="srvCompletedFields" style="display:none; background:var(--success-bg); border:1px solid rgba(16,185,129,0.3); padding:12px; border-radius:10px; margin-bottom:12px;">
       <div class="grid-2">
         <div class="form-group">
@@ -1571,20 +1620,19 @@
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
         <span style="font-size:11.5px; font-weight:700; color:var(--success);" id="srvSignStatus">Customer Sign: Pending</span>
-        <button class="btn btn-outline btn-sm" onclick="openSignatureModal()">✍️ Take Customer Signature</button>
+        <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openSignatureModal()">✍️ Take Customer Signature</button>
       </div>
     </div>
-
-    <button class="btn btn-primary btn-block" onclick="saveServiceAction()" style="padding:12px;">💾 Save Service Call</button>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveServiceAction()" style="padding:12px;">💾 Save Service Call</button>
   </div>
 </div>
 
-<!-- 7. Inventory Item Add/Edit Modal -->
+<!-- 7. Inventory Item Modal -->
 <div id="stockItemModal" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="card-header">
       <strong class="card-title" id="stockModalTitle">Inventory Item</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeStockModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeStockModal()">✕</button>
     </div>
     <input type="hidden" id="editStockId">
     <div class="form-group">
@@ -1629,7 +1677,7 @@
       <label class="form-label">Technical Specs & Notes</label>
       <textarea id="stkDesc" rows="2" placeholder="Specifications, specs, machine match..."></textarea>
     </div>
-    <button class="btn btn-accent btn-block" onclick="saveStockItemAction()" style="padding:12px;">💾 Save Item</button>
+    <button class="btn btn-accent btn-block" onclick="triggerAppHaptic(); saveStockItemAction()" style="padding:12px;">💾 Save Item</button>
   </div>
 </div>
 
@@ -1638,7 +1686,7 @@
   <div class="auth-card">
     <div class="card-header">
       <strong class="card-title" id="custModalTitle">Customer Profile</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeCustomerModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeCustomerModal()">✕</button>
     </div>
     <input type="hidden" id="editCustId">
     <div class="form-group">
@@ -1669,7 +1717,7 @@
         <input type="text" id="cPerson" placeholder="Owner / Manager">
       </div>
     </div>
-    <button class="btn btn-primary btn-block" onclick="saveCustomerAction()" style="padding:12px;">💾 Save Customer Profile</button>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveCustomerAction()" style="padding:12px;">💾 Save Customer Profile</button>
   </div>
 </div>
 
@@ -1678,13 +1726,11 @@
   <div class="auth-card" style="max-width:540px;">
     <div class="card-header">
       <strong class="card-title">💰 Daily Shift & Cash Closing Summary</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeDailyCashClosingModal()">✕</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeDailyCashClosingModal()">✕</button>
     </div>
-    
     <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px;">
       Date: <strong id="closeSummaryDate">Today</strong> | Verified By: <strong id="closeSummaryStaff">Staff</strong>
     </div>
-
     <div class="grid-3" style="margin-bottom:14px;">
       <div style="background:var(--success-bg); border:1px solid rgba(16,185,129,0.3); padding:12px; border-radius:10px; text-align:center;">
         <div style="font-size:10.5px; color:var(--success); font-weight:800;">CASH COLLECTED</div>
@@ -1699,7 +1745,6 @@
         <div style="font-size:17px; font-weight:800; color:#7e22ce;" id="closeBankAmt">₹0</div>
       </div>
     </div>
-
     <div style="background:var(--bg); border:1.2px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px;">
       <div style="font-size:12.5px; font-weight:800; color:var(--text-main); margin-bottom:10px;">💵 Cash Drawer Denomination Count:</div>
       <div class="grid-3" style="font-size:12px; row-gap:10px;">
@@ -1715,10 +1760,9 @@
         <span id="denomTotalDisplay" style="color:var(--text-main);">₹0</span>
       </div>
     </div>
-
     <div style="display:flex; gap:10px;">
-      <button class="btn btn-wa btn-block" onclick="sendClosingSummaryWhatsApp()" style="padding:12px;">💬 Send Report to WhatsApp</button>
-      <button class="btn btn-outline btn-sm" onclick="closeDailyCashClosingModal()">Close</button>
+      <button class="btn btn-wa btn-block" onclick="triggerAppHaptic(); sendClosingSummaryWhatsApp()" style="padding:12px;">💬 Send Report to WhatsApp</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeDailyCashClosingModal()">Close</button>
     </div>
   </div>
 </div>
@@ -1729,11 +1773,10 @@
     <div class="card-header no-print">
       <strong class="card-title">🖨️ GST Tax Invoice Preview</strong>
       <div style="display:flex; gap:8px;">
-        <button class="btn btn-print btn-sm" onclick="executeInvoicePrint()">🖨️ Print / Save as PDF</button>
-        <button class="btn btn-outline btn-sm" onclick="closeInvoicePrintModal()">✕ Close</button>
+        <button class="btn btn-print btn-sm" onclick="triggerAppHaptic(); executeInvoicePrint()">🖨️ Print / Save as PDF</button>
+        <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeInvoicePrintModal()">✕ Close</button>
       </div>
     </div>
-
     <div id="printableInvoiceArea">
       <div class="invoice-box">
         <div class="invoice-header">
@@ -1751,7 +1794,6 @@
             <div style="font-size:11.5px;">Date: <strong id="invPrintDate">2026-09-26</strong></div>
           </div>
         </div>
-
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; border-bottom:1px solid #cbd5e1; padding-bottom:10px;">
           <div>
             <strong style="color:#0a2540; font-size:12px;">BILLED TO / CUSTOMER:</strong>
@@ -1766,7 +1808,6 @@
             <div>Billed By: <strong id="invPrintStaff">Staff</strong></div>
           </div>
         </div>
-
         <table class="inv-table">
           <thead>
             <tr>
@@ -1780,7 +1821,6 @@
           </thead>
           <tbody id="invPrintItemsTbody"></tbody>
         </table>
-
         <div style="display:flex; justify-content:flex-end; margin-top:8px;">
           <div style="width:280px; font-size:11.5px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
@@ -1811,7 +1851,6 @@
             </div>
           </div>
         </div>
-
         <div style="margin-top:24px; border-top:1px solid #cbd5e1; padding-top:12px; display:flex; justify-content:space-between; align-items:flex-end;">
           <div style="font-size:10px; color:#64748b; line-height:1.45;">
             <strong>Declaration & Terms:</strong><br>
@@ -1834,8 +1873,17 @@
 
 <script>
 /* ==========================================================================
-   ADVANCED AUDIO SYNTHESIZER (WEB AUDIO API - ZERO EXTERNAL ASSET DEPENDENCY)
+   HAPTIC FEEDBACK & SOUND SYNTHESIZER
    ========================================================================== */
+function triggerAppHaptic(intensity = 18) {
+  try {
+    if (navigator.vibrate) {
+      navigator.vibrate(intensity);
+    }
+  } catch(e) {}
+}
+window.triggerAppHaptic = triggerAppHaptic;
+
 let audioCtxInstance = null;
 function getAudioContext() {
   if (!audioCtxInstance) {
@@ -1847,11 +1895,10 @@ function getAudioContext() {
   return audioCtxInstance;
 }
 
-// 1. Order Placed Sound (Uplifting Pop Celebration Chime)
 function playOrderPlacedSound() {
   try {
     const ctx = getAudioContext();
-    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+    const notes = [523.25, 659.25, 783.99, 1046.50];
     notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -1865,18 +1912,17 @@ function playOrderPlacedSound() {
       osc.start(ctx.currentTime + (idx * 0.08));
       osc.stop(ctx.currentTime + (idx * 0.08) + 0.35);
     });
-  } catch(e) { console.log("Audio not supported:", e); }
+  } catch(e) {}
 }
 
-// 2. Delivery Complete Sound (Crisp Affirmative Ding)
 function playDeliverySound() {
   try {
     const ctx = getAudioContext();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, ctx.currentTime); // A5
-    osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.15); // E6
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.15);
     gain.gain.setValueAtTime(0.25, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
     osc.connect(gain);
@@ -1886,11 +1932,9 @@ function playDeliverySound() {
   } catch(e) {}
 }
 
-// 3. ATM Cash Machine Sound (Whirr + Fast Banknote Shuffling Dispense)
 function playAtmCashSound() {
   try {
     const ctx = getAudioContext();
-    // Motor gear whirr
     const motor = ctx.createOscillator();
     const motorGain = ctx.createGain();
     motor.type = 'sawtooth';
@@ -1904,7 +1948,6 @@ function playAtmCashSound() {
     motor.start(ctx.currentTime);
     motor.stop(ctx.currentTime + 1.2);
 
-    // Bill counting rhythmic flutter
     for (let i = 0; i < 9; i++) {
       const startTime = ctx.currentTime + 0.2 + (i * 0.09);
       const osc = ctx.createOscillator();
@@ -1921,11 +1964,10 @@ function playAtmCashSound() {
   } catch(e) {}
 }
 
-// 4. Coin Clinking & Jingle Sound (UPI & Online Collections)
 function playCoinSound() {
   try {
     const ctx = getAudioContext();
-    const coinPitches = [1864.66, 2349.32, 2793.83, 3135.96]; // A#6, D7, F7, G7
+    const coinPitches = [1864.66, 2349.32, 2793.83, 3135.96];
     coinPitches.forEach((freq, idx) => {
       const startTime = ctx.currentTime + (idx * 0.06);
       const osc = ctx.createOscillator();
@@ -1942,7 +1984,6 @@ function playCoinSound() {
   } catch(e) {}
 }
 
-// 5. Money Rain (Paisa ki Barish) - 3 Seconds Celebration Screen Animation
 function triggerMoneyRainEffect() {
   const container = document.getElementById('moneyRainOverlay');
   if (!container) return;
@@ -1956,7 +1997,7 @@ function triggerMoneyRainEffect() {
     const isCoin = Math.random() > 0.45;
     const elem = document.createElement('div');
     const leftPos = Math.random() * 95;
-    const duration = 1.4 + Math.random() * 1.5; // fall duration between 1.4s to 2.9s
+    const duration = 1.4 + Math.random() * 1.5;
     const delay = Math.random() * 0.8;
 
     if (isCoin) {
@@ -1974,7 +2015,6 @@ function triggerMoneyRainEffect() {
     container.appendChild(elem);
   }
 
-  // Exactly 3 seconds ke baad safely remove ho jayega
   setTimeout(() => {
     container.style.display = 'none';
     container.innerHTML = '';
@@ -1982,7 +2022,7 @@ function triggerMoneyRainEffect() {
 }
 
 /* ==========================================================================
-   ENGINE LOGIC & PROFILE MENU TOGGLE
+   APP ENGINE & STORAGE (SAFE STATE - FACTORY RESET REMOVED)
    ========================================================================== */
 const DB_PREFIX = "TTESPL_ERP_";
 window.DB_PREFIX = DB_PREFIX;
@@ -2025,7 +2065,6 @@ function setStored(key, val) {
 }
 window.setStored = setStored;
 
-/* THEME MODE */
 function toggleThemeMode() {
   const body = document.body;
   const current = body.getAttribute('data-theme');
@@ -2046,7 +2085,6 @@ document.addEventListener('DOMContentLoaded', () => {
   updateThemeMenuLabel(savedTheme);
 });
 
-/* ROBUST GUARANTEED PROFILE MENU TOGGLE */
 function toggleProfileDrawer(e) {
   if (e) {
     e.preventDefault();
@@ -2377,36 +2415,6 @@ function performFullLogout() {
   }
 }
 
-async function performFactoryReset() {
-  if (!currentUser || currentUser.role !== 'Admin') {
-    alert("Permission Denied: Sirf Admin hi Factory Reset kar sakte hain!");
-    return;
-  }
-  const typed = prompt("⚠️ Yeh SAARA data LOCAL aur CLOUD dono se PERMANENTLY delete kar dega.\n\nConfirm karne ke liye neeche RESET likhein:");
-  if (typed !== 'RESET') {
-    alert("Factory Reset cancel ho gaya.");
-    return;
-  }
-  if (!confirm("Aakhri confirmation: Kya aap sach me SAB KUCH permanently delete karna chahte hain?")) {
-    return;
-  }
-
-  try {
-    Object.keys(localStorage).forEach(k => {
-      if (k.startsWith(DB_PREFIX)) localStorage.removeItem(k);
-    });
-    if (window.cloudSync && typeof window.cloudSync.wipeAll === 'function') {
-      await window.cloudSync.wipeAll();
-    }
-    alert("✓ Factory Reset complete. App restart ho raha hai...");
-    location.reload();
-  } catch (e) {
-    console.error("Factory Reset Error:", e);
-    alert("Reset error: " + e.message);
-  }
-}
-window.performFactoryReset = performFactoryReset;
-
 function getNowStr() {
   const d = new Date();
   return d.toISOString().split('T')[0] + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -2574,8 +2582,8 @@ function openStaffManageModal() {
       </div>
       <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:8px;">Mobile: <strong>${emp.mobile}</strong></div>
       <div style="display:flex; gap:8px;">
-        <button class="btn btn-outline btn-sm" onclick="editStaffDetailsPrompt(${emp.id})">✏️ Edit Name / Role / Pass</button>
-        ${emp.id !== currentUser.id ? `<button class="btn btn-danger-sm btn-sm" onclick="deleteStaffPrompt(${emp.id})">🗑️ Delete</button>` : ''}
+        <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); editStaffDetailsPrompt(${emp.id})">✏️ Edit Name / Role / Pass</button>
+        ${emp.id !== currentUser.id ? `<button class="btn btn-danger-sm btn-sm" onclick="triggerAppHaptic(); deleteStaffPrompt(${emp.id})">🗑️ Delete</button>` : ''}
       </div>
     </div>
   `).join('');
@@ -2829,46 +2837,6 @@ function saveCustomerSignature() {
   alert("Customer signature verify ho gaya!");
 }
 
-function triggerFullBackupDownload() {
-  const fullBackup = {
-    staff: registeredEmployees,
-    customers: customerDatabase,
-    inventory: sampleInventory,
-    machinery: machineryDatabase,
-    leads: leadsData,
-    orders: ordersData,
-    services: serviceCallsData,
-    backupDate: new Date().toISOString(),
-    version: "2026.2"
-  };
-  const str = JSON.stringify(fullBackup, null, 2);
-  downloadFile(str, `TTESPL_Full_ERP_Backup_${new Date().toISOString().split('T')[0]}.json`, "application/json");
-}
-
-function processRestoreJSON(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (confirm("Restore karne se current memory update ho jayegi. Continue karein?")) {
-        if (data.customers) { customerDatabase = data.customers; setStored("CUSTOMERS", customerDatabase); }
-        if (data.inventory) { sampleInventory = data.inventory; setStored("INVENTORY", sampleInventory); }
-        if (data.orders) { ordersData = data.orders; setStored("ORDERS", ordersData); }
-        if (data.services) { serviceCallsData = data.services; setStored("SERVICES", serviceCallsData); }
-        if (data.leads) { leadsData = data.leads; setStored("LEADS", leadsData); }
-        refreshAllData();
-        alert("Success: Pura ERP data successfully restore ho gaya!");
-      }
-    } catch(err) {
-      alert("Invalid backup file.");
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
-}
-
 function handleCustomerAutocomplete(inputEl, targetInputId) {
   const val = (inputEl.value || '').toLowerCase().trim();
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
@@ -3115,8 +3083,8 @@ function renderLeads() {
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
           <span class="badge ${lead.status === 'Installed' ? 'badge-delivered' : 'badge-pending'}">${lead.status}</span>
-          <button class="btn btn-outline btn-sm" onclick="editLeadPrompt('${lead.id}')">✏️ Edit</button>
-          ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteLeadAction('${lead.id}')">🗑️</button>` : ''}
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); editLeadPrompt('${lead.id}')">✏️ Edit</button>
+          ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="triggerAppHaptic(); deleteLeadAction('${lead.id}')">🗑️</button>` : ''}
         </div>
       </div>
       <div style="font-size:12.5px; margin-bottom:6px;">Machine: <strong>${lead.machine}</strong> | Quoted: <strong>₹${Number(lead.quotedPrice || 0).toLocaleString('en-IN')}</strong></div>
@@ -3264,8 +3232,8 @@ function renderOrders() {
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
           <span class="badge ${statusBadge}">${statusText}</span>
-          ${o.status === 'Pending' ? `<button class="btn btn-outline btn-sm" onclick="editOrderPrompt('${o.id}')">✏️ Edit</button>` : ''}
-          ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteOrderAction('${o.id}')">🗑️</button>` : ''}
+          ${o.status === 'Pending' ? `<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); editOrderPrompt('${o.id}')">✏️ Edit</button>` : ''}
+          ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="triggerAppHaptic(); deleteOrderAction('${o.id}')">🗑️</button>` : ''}
         </div>
       </div>
       <div style="background:var(--bg); padding:10px; border-radius:8px; font-size:12px; margin-bottom:8px;">
@@ -3277,10 +3245,10 @@ function renderOrders() {
       </div>
       ${o.status === 'Pending' ? `
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="openDeliveryProofModal('${o.id}')">📸 Deliver & Upload Proof</button>
-          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
-          <button class="btn btn-wa btn-sm" style="flex:1;" onclick="shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
-          <button class="btn btn-danger-sm btn-sm" style="flex:1;" onclick="cancelOrderAction('${o.id}')">🚫 Cancel</button>
+          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openDeliveryProofModal('${o.id}')">📸 Deliver & Upload Proof</button>
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
+          <button class="btn btn-wa btn-sm" style="flex:1;" onclick="triggerAppHaptic(); shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
+          <button class="btn btn-danger-sm btn-sm" style="flex:1;" onclick="triggerAppHaptic(); cancelOrderAction('${o.id}')">🚫 Cancel</button>
         </div>
       ` : ''}
     `;
@@ -3350,7 +3318,7 @@ function addOrderItemRow(itemName = "", qty = 1, mrp = 0, disc = 0) {
     <td><input type="number" class="item-disc" value="${disc}" min="0" max="100" oninput="calcOrderTotals()" style="width:65px; font-size:13px; font-weight:700;"></td>
     <td><input type="number" class="item-rate" readonly style="width:80px; font-size:13px; font-weight:700; background:var(--bg) !important;"></td>
     <td class="item-row-total" style="font-weight:bold; font-size:12.5px;">₹0</td>
-    <td><button class="btn btn-danger-sm" onclick="this.closest('tr').remove(); calcOrderTotals();">✕</button></td>
+    <td><button class="btn btn-danger-sm" onclick="triggerAppHaptic(); this.closest('tr').remove(); calcOrderTotals();">✕</button></td>
   `;
 
   tbody.appendChild(tr);
@@ -3434,7 +3402,6 @@ function saveOrderAction() {
     };
     ordersData.unshift(newO);
 
-    // 🔊 POP-UP CELEBRATION SOUND ON ORDER PLACED!
     playOrderPlacedSound();
 
     if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
@@ -3502,7 +3469,6 @@ function executeConfirmedDelivery() {
   o.deliveredDate = chosenDate || new Date().toISOString().split('T')[0];
   o.deliveryProofPhoto = currentDeliveryPhotoBase64;
 
-  // 🔊 DELIVERY SOUND EFFECT!
   playDeliverySound();
 
   setStored("ORDERS", ordersData);
@@ -3572,14 +3538,12 @@ function executeConfirmedPaymentCollection() {
   o.lastPaymentDate = new Date().toISOString().split('T')[0];
   o.payMode = payModeChosen;
 
-  // 🔊 ATM SOUND FOR CASH & COIN JINGLE FOR UPI/OTHER
   if (payModeChosen === 'Cash') {
     playAtmCashSound();
   } else {
     playCoinSound();
   }
 
-  // 🌧️ 3 SECONDS MONEY RAIN ON SCREEN CELEBRATION!
   triggerMoneyRainEffect();
 
   setStored("ORDERS", ordersData);
@@ -3756,13 +3720,13 @@ function renderServices() {
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
           <span class="badge ${statusBadge}">${statusText}</span>
-          <button class="btn btn-outline btn-sm" onclick="editServicePrompt('${s.id}')">✏️ Edit</button>
-          ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteServiceAction('${s.id}')">🗑️</button>` : ''}
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); editServicePrompt('${s.id}')">✏️ Edit</button>
+          ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="triggerAppHaptic(); deleteServiceAction('${s.id}')">🗑️</button>` : ''}
         </div>
       </div>
       <div style="font-size:12.5px; margin-bottom:6px;"><strong>Machine:</strong> ${s.machine}</div>
       <div style="font-size:12px; margin-bottom:10px;"><strong>Issue:</strong> ${s.problem}</div>
-      ${s.status === 'Work Completed' ? `<div style="background:var(--success-bg); padding:8px; border-radius:8px; font-size:11.5px;">✅ <strong>Done:</strong> ${s.actionDone}</div>` : `<button class="btn btn-primary btn-sm btn-block" onclick="openExecuteServiceModal('${s.id}')">🛠️ Attend & Complete</button>`}
+      ${s.status === 'Work Completed' ? `<div style="background:var(--success-bg); padding:8px; border-radius:8px; font-size:11.5px;">✅ <strong>Done:</strong> ${s.actionDone}</div>` : `<button class="btn btn-primary btn-sm btn-block" onclick="triggerAppHaptic(); openExecuteServiceModal('${s.id}')">🛠️ Attend & Complete</button>`}
     `;
     c.appendChild(card);
   });
@@ -3902,7 +3866,7 @@ function renderStockList() {
       card.innerHTML = `
         <div class="card-header">
           <div><strong>${cust.name}</strong><div style="font-size:11px; color:var(--text-muted);">${cust.phone}</div></div>
-          <button class="btn btn-outline btn-sm" onclick="editCustomerPrompt(${cust.id})">✏️ Edit</button>
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); editCustomerPrompt(${cust.id})">✏️ Edit</button>
         </div>
         <div style="font-size:11.5px; color:var(--text-muted);">📍 ${cust.address || 'Odisha'} | GSTIN: ${cust.gst || 'Unregistered'}</div>
       `;
@@ -3918,7 +3882,7 @@ function renderStockList() {
     const card = document.createElement('div');
     card.className = 'card';
     card.style.cursor = 'pointer';
-    card.onclick = () => openStockDetailModal(item.id);
+    card.onclick = () => { triggerAppHaptic(); openStockDetailModal(item.id); };
     card.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:flex-start;">
         <div>
@@ -3932,8 +3896,8 @@ function renderStockList() {
         </div>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px; border-top:1px solid var(--border); padding-top:6px;">
-        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(${item.id})">✏️ Edit</button>
-        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="event.stopPropagation(); deleteStockItem(${item.id})">🗑️</button>` : ''}
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); editStockItemPrompt(${item.id})">✏️ Edit</button>
+        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="event.stopPropagation(); triggerAppHaptic(); deleteStockItem(${item.id})">🗑️</button>` : ''}
       </div>
     `;
     c.appendChild(card);
@@ -3961,6 +3925,7 @@ function filterStockList(val) {
     card.className = 'card';
     card.style.cursor = 'pointer';
     card.onclick = () => {
+      triggerAppHaptic();
       if (activeInventoryCategory === 'CUSTOMERS') {
         editCustomerPrompt(item.id);
       } else {
@@ -4176,13 +4141,13 @@ function renderBilling(filterType, empFilter = "ALL") {
         </div>
         <div style="display:flex; align-items:center; gap:6px;">
           <span class="badge ${o.dueAmount > 0 ? 'badge-danger' : 'badge-delivered'}">${o.dueAmount > 0 ? 'Due: ₹' + o.dueAmount : 'Paid'}</span>
-          ${isAdmin ? `<button class="btn btn-outline btn-sm admin-only-btn" onclick="openAdminEditLedgerModal('${o.id}')">✏️</button>` : ''}
+          ${isAdmin ? `<button class="btn btn-outline btn-sm admin-only-btn" onclick="triggerAppHaptic(); openAdminEditLedgerModal('${o.id}')">✏️</button>` : ''}
         </div>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
-        <button class="btn btn-print btn-sm" style="flex:1;" onclick="openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice</button>
-        <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
-        ${o.dueAmount > 0 ? `<button class="btn btn-outline btn-sm" style="flex:1;" onclick="collectDuePayment('${o.id}')">💵 Collect Due</button>` : ''}
+        <button class="btn btn-print btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice</button>
+        <button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
+        ${o.dueAmount > 0 ? `<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); collectDuePayment('${o.id}')">💵 Collect Due</button>` : ''}
       </div>
     `;
     container.appendChild(card);
