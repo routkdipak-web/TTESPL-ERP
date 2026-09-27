@@ -100,6 +100,37 @@
           photo: notif.photo || ''
         };
         return F.addDoc(F.collection(db, 'app_notifications'), notifDoc);
+      },
+
+      // FACTORY RESET: permanently wipes every document in every cloud
+      // collection (business data + staff/login accounts + chat history +
+      // notifications) so the app truly comes back as brand-new.
+      wipeAll: function () {
+        var collectionsToWipe = Object.keys(MAP).map(function (k) { return MAP[k]; })
+          .concat(['team_messages', 'chat_status', 'app_notifications']);
+
+        function wipeCollection(colName) {
+          return F.getDocs(F.collection(db, colName)).then(function (snap) {
+            var docs = [];
+            snap.forEach(function (d) { docs.push(d.ref); });
+            var jobs = [];
+            for (var i = 0; i < docs.length; i += 400) {
+              var b = F.writeBatch(db);
+              docs.slice(i, i + 400).forEach(function (ref) { b.delete(ref); });
+              jobs.push(b.commit());
+            }
+            return Promise.all(jobs);
+          });
+        }
+
+        setSync('Resetting...', true);
+        return Promise.all(collectionsToWipe.map(wipeCollection))
+          .then(function () { setSync('Live Cloud', true); })
+          .catch(function (e) {
+            console.error('Factory Reset Error:', e);
+            setSync('Offline', false);
+            throw e;
+          });
       }
     };
 
