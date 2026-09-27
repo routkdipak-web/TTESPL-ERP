@@ -280,7 +280,7 @@
   }
   [data-theme="dark"] .daily-reminder-banner { background: #451a03; color: #fde68a; border-bottom-color: #78350f; }
 
-  /* ------------------- LIVE ANIMATED FOOTER ------------------- */
+  /* ------------------- LIVE ANIMATED FOOTER (SPORTS CAR RACING) ------------------- */
   .nav-bar {
     position: fixed; bottom: 0; left: 0; right: 0;
     background: linear-gradient(135deg, rgba(6, 19, 36, 0.94), rgba(10, 37, 64, 0.96));
@@ -294,15 +294,17 @@
     border-top: 1.5px solid rgba(56, 189, 248, 0.3);
   }
   .footer-carwash-canvas {
-    position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.22; overflow: hidden;
+    position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.25; overflow: hidden;
   }
   .footer-car {
-    position: absolute; left: 8%; bottom: 6px; width: 120px; height: 28px;
-    animation: footerCarDrive 18s linear infinite;
+    position: absolute; left: 5%; bottom: 6px; width: 110px; height: 32px;
+    animation: footerCarDrive 12s linear infinite; filter: drop-shadow(0 0 8px #00b4d8);
   }
   @keyframes footerCarDrive {
-    0% { transform: translateX(-140px); }
-    100% { transform: translateX(110vw); }
+    0% { transform: translateX(-150px) scaleX(1); }
+    50% { transform: translateX(105vw) scaleX(1); }
+    50.1% { transform: translateX(105vw) scaleX(-1); }
+    100% { transform: translateX(-150px) scaleX(-1); }
   }
 
   .nav-item {
@@ -377,15 +379,6 @@
   .stat-value { font-variant-numeric: tabular-nums; letter-spacing: -0.3px; display: inline-block; }
   .stat-value.pulse-update { animation: statValuePulse 0.4s cubic-bezier(0.34,1.56,0.64,1); }
   @keyframes statValuePulse { 0% { transform: scale(1); } 45% { transform: scale(1.12); } 100% { transform: scale(1); } }
-
-  .btn-primary, .btn-accent { position: relative; overflow: hidden; }
-  .btn-primary::before, .btn-accent::before {
-    content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.28), transparent);
-    transform: skewX(-20deg);
-  }
-  .btn-primary:hover::before, .btn-accent:hover::before { animation: btnShine 0.9s ease; }
-  @keyframes btnShine { from { left: -60%; } to { left: 130%; } }
 
   .qa-tile {
     background: var(--card); border: 1.5px solid var(--border); border-radius: 14px;
@@ -462,15 +455,51 @@
     animation: fabShimmer 2.4s infinite;
   }
   @keyframes fabShimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-  .fab-action-btn:nth-child(1) { animation: fabSlideIn 0.22s cubic-bezier(0.32,0.72,0,1) backwards 0.04s; }
-  .fab-action-btn:nth-child(2) { animation: fabSlideIn 0.22s cubic-bezier(0.32,0.72,0,1) backwards 0.08s; }
-  .fab-action-btn:nth-child(3) { animation: fabSlideIn 0.22s cubic-bezier(0.32,0.72,0,1) backwards 0.12s; }
-  .fab-action-btn:nth-child(4) { animation: fabSlideIn 0.22s cubic-bezier(0.32,0.72,0,1) backwards 0.16s; }
-  .fab-action-btn:nth-child(5) { animation: fabSlideIn 0.22s cubic-bezier(0.32,0.72,0,1) backwards 0.20s; }
-  @keyframes fabSlideIn {
-    from { opacity: 0; transform: translateY(16px) scale(0.9); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+
+  /* ------------------- PREMIUM MESSENGER CHAT UI (WHATSAPP / FB STYLE) ------------------- */
+  .chat-messenger-container {
+    background: var(--card); border-radius: var(--radius-md); border: 1px solid var(--border);
+    box-shadow: var(--shadow-md); display: flex; flex-direction: column; height: calc(100vh - 190px); min-height: 480px;
+    overflow: hidden; position: relative;
   }
+  .chat-messenger-header {
+    background: linear-gradient(135deg, #0a2540, #13395e); color: #fff; padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--cyan);
+  }
+  .chat-messenger-stream {
+    flex: 1; padding: 16px; overflow-y: auto; background: var(--bg); display: flex; flex-direction: column; gap: 12px;
+  }
+  .messenger-bubble {
+    max-width: 78%; padding: 10px 14px; border-radius: 16px; font-size: 13px; line-height: 1.45;
+    position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.06); animation: msgPopIn 0.2s ease;
+  }
+  @keyframes msgPopIn { from { opacity: 0; transform: translateY(6px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .messenger-bubble.incoming {
+    background: var(--card); color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border);
+  }
+  .messenger-bubble.outgoing {
+    background: linear-gradient(135deg, #00b4d8, #0a2540); color: #ffffff; align-self: flex-end; border-bottom-right-radius: 4px;
+  }
+  .msg-author-tag { font-size: 10px; font-weight: 800; color: var(--cyan); margin-bottom: 2px; display: block; }
+  .msg-time-tag { font-size: 9px; opacity: 0.75; float: right; margin-left: 8px; margin-top: 4px; }
+  
+  .chat-messenger-input-area {
+    padding: 12px 16px; background: var(--card); border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .chat-messenger-input-wrap {
+    flex: 1; display: flex; align-items: center; background: var(--bg); border-radius: 24px;
+    border: 1.5px solid var(--border); padding: 4px 6px 4px 14px; gap: 6px;
+  }
+  .chat-messenger-input-wrap input {
+    border: none !important; background: transparent !important; padding: 8px 0 !important; box-shadow: none !important; font-size: 13.5px;
+  }
+  .chat-send-btn {
+    width: 44px; height: 44px; min-width: 44px; border-radius: 50%; background: linear-gradient(135deg, #00b4d8, #0a2540);
+    color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,180,216,0.4); transition: transform 0.2s ease;
+  }
+  .chat-send-btn:active { transform: scale(0.9); }
 
   .items-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
   .items-table th { background: var(--bg); padding: 8px 6px; font-size: 11.5px; text-align: left; color: var(--text-muted); font-weight: 700; }
@@ -973,37 +1002,30 @@
       <div id="billingListContainer"></div>
     </div>
 
-    <!-- TAB 6: WHATSAPP CHAT -->
+    <!-- TAB 6: WHATSAPP / MESSENGER CHAT HUB -->
     <div id="view-chat" class="view-panel">
-      <div class="page-top-header-banner">
-        <div>
-          <div class="page-top-title"><span>💬</span> <span>Team Live Discussion Hub</span></div>
-          <div class="page-top-sub">Instant Company Chat, Workshop Coordination & Updates</div>
-        </div>
-        <span class="badge" id="chatCountBadge" style="background:rgba(255,255,255,0.22); color:#fff; border:none; font-size:11px;">0 msgs</span>
-      </div>
-
-      <div class="chat-box-card">
-        <div class="chat-header-bar">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <div class="wa-group-avatar">TT</div>
+      <div class="chat-messenger-container">
+        <div class="chat-messenger-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:36px; height:36px; border-radius:50%; background:#25d366; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px; color:#fff;">TT</div>
             <div>
-              <div style="font-size:14.5px; font-weight:800; line-height:1.2;">TTESPL Team Live Hub</div>
-              <div style="font-size:11.5px; opacity:0.92; font-weight:600;">Team discussion portal</div>
+              <div style="font-size:14px; font-weight:800; line-height:1.2;">TTESPL Premium Live Chat</div>
+              <div style="font-size:10.5px; opacity:0.85;">Online • Encrypted Team Messenger</div>
             </div>
           </div>
+          <span class="badge" id="chatCountBadge" style="background:rgba(255,255,255,0.2); color:#fff; border:none;">0 msgs</span>
         </div>
 
-        <div class="chat-stream" id="chatMessagesContainer"></div>
+        <div class="chat-messenger-stream" id="chatMessagesContainer"></div>
 
-        <div class="chat-input-bar">
-          <div class="wa-input-pill">
-            <span style="font-size:20px; cursor:pointer;" onclick="document.getElementById('chatInputMessage').focus()">😊</span>
-            <input type="text" id="chatInputMessage" placeholder="Message..." onkeydown="if(event.key==='Enter') sendLiveChatMessage()">
-            <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); document.getElementById('chatAttachmentInput').click()" style="padding:6px 10px; border:none; background:transparent; font-size:20px; color:var(--text-muted);" title="Attach Document">📎</button>
+        <div class="chat-messenger-input-area">
+          <div class="chat-messenger-input-wrap">
+            <span style="font-size:18px; cursor:pointer;" onclick="document.getElementById('chatInputMessage').focus()" title="Emoji">😊</span>
+            <input type="text" id="chatInputMessage" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendLiveChatMessage()">
+            <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); document.getElementById('chatAttachmentInput').click()" style="padding:4px 8px; border:none; background:transparent; font-size:18px; color:var(--text-muted);" title="Attach File">📎</button>
           </div>
-          <button class="wa-send-round-btn" onclick="triggerAppHaptic(); sendLiveChatMessage()" title="Send">
-            <span style="margin-left:2px; font-size:18px;">➤</span>
+          <button class="chat-send-btn" onclick="triggerAppHaptic(); sendLiveChatMessage()" title="Send">
+            <span style="font-size:16px; margin-left:1px;">➤</span>
           </button>
         </div>
       </div>
@@ -1021,7 +1043,7 @@
   </div>
   <div id="fabMainBtn" onclick="triggerAppHaptic(); toggleFabMenu()">+</div>
 
-  <!-- LIVE ANIMATED FOOTER -->
+  <!-- LIVE ANIMATED FOOTER WITH RACING SPORTS CAR -->
   <div class="nav-bar">
     <div class="footer-carwash-canvas">
       <div class="water-spray" style="right:auto; left:15%; width:200px;"></div>
@@ -1029,10 +1051,19 @@
       <div class="wash-bubble wb2" style="left:40%;"></div>
       <div class="wash-bubble wb3" style="left:60%;"></div>
       <div class="wash-bubble wb4" style="left:80%;"></div>
-      <svg class="footer-car" viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 28 C20 28, 25 18, 45 15 C65 12, 105 12, 125 18 C140 22, 150 25, 156 28 C158 29, 160 31, 158 33 C154 35, 140 35, 134 35 C132 31, 126 28, 120 28 C114 28, 108 31, 106 35 L52 35 C50 31, 44 28, 38 28 C32 28, 26 31, 24 35 L6 35 C2 35, 0 32, 2 30 Z" fill="rgba(0, 180, 216, 0.45)"/>
-        <circle cx="38" cy="33" r="5" fill="#061526" stroke="#00b4d8" stroke-width="1.5"/>
-        <circle cx="120" cy="33" r="5" fill="#061526" stroke="#00b4d8" stroke-width="1.5"/>
+      <!-- ANIMATED RACING SPORTS CAR SVG -->
+      <svg class="footer-car" viewBox="0 0 180 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 35 L30 22 C35 18, 55 15, 95 15 C135 15, 150 20, 162 30 C168 35, 175 37, 175 40 C175 43, 165 44, 155 44 C145 44, 140 38, 130 38 C120 38, 115 44, 105 44 L65 44 C55 44, 50 38, 40 38 C30 38, 25 44, 15 44 C8 44, 5 40, 8 36 Z" fill="url(#carGrad)" stroke="#00b4d8" stroke-width="2"/>
+        <path d="M48 22 L70 18 L115 18 L135 30 L48 30 Z" fill="rgba(0,180,216,0.3)" stroke="#fff" stroke-width="1"/>
+        <circle cx="32" cy="40" r="7" fill="#061526" stroke="#facc15" stroke-width="2.5"/>
+        <circle cx="145" cy="40" r="7" fill="#061526" stroke="#facc15" stroke-width="2.5"/>
+        <defs>
+          <linearGradient id="carGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#ff6b35"/>
+            <stop offset="50%" stop-color="#00b4d8"/>
+            <stop offset="100%" stop-color="#eab308"/>
+          </linearGradient>
+        </defs>
       </svg>
     </div>
 
@@ -2138,7 +2169,10 @@ function performGlobalSearch(qRaw) {
 }
 window.performGlobalSearch = performGlobalSearch;
 
-let teamChatData = [];
+let teamChatData = [
+  { sender: "Dipak Kumar Rout", text: "Welcome to TTESPL premium team messenger! 🚀", time: "10:00 AM" },
+  { sender: "System Bot", text: "Live sync active across all ERP modules.", time: "10:01 AM" }
+];
 window.teamChatData = teamChatData;
 let currentOrderSubTab = 'active';
 
@@ -2741,7 +2775,7 @@ function selectMachineSuggestion(targetInputId, encName, price) {
   if (pInput && !pInput.value) pInput.value = price;
 }
 
-/* WIDE HORIZONTAL DROPDOWN PRODUCT ITEM FIX[span_18](start_span)[span_18](end_span) */
+/* WIDE HORIZONTAL DROPDOWN PRODUCT ITEM FIX */
 function handleOrderItemInput(inputEl) {
   const val = (inputEl.value || '').toLowerCase().trim();
   const row = inputEl.closest('tr');
@@ -3983,7 +4017,7 @@ function downloadFile(content, fileName, mimeType) {
   document.body.removeChild(a);
 }
 
-/* TAB 6: WHATSAPP CHAT */
+/* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
 function renderChatMessages() {
   const container = document.getElementById('chatMessagesContainer');
   if(!container) return;
@@ -3994,8 +4028,12 @@ function renderChatMessages() {
   teamChatData.forEach(msg => {
     const isMine = myName && msg.sender === myName;
     const bubble = document.createElement('div');
-    bubble.className = `bubble ${isMine ? 'me' : 'other'}`;
-    bubble.innerHTML = `${!isMine ? `<div class="bubble-author">${msg.sender}</div>` : ''}<div>${msg.text}</div>`;
+    bubble.className = `messenger-bubble ${isMine ? 'outgoing' : 'incoming'}`;
+    bubble.innerHTML = `
+      ${!isMine ? `<span class="msg-author-tag">${esc(msg.sender)}</span>` : ''}
+      <div>${esc(msg.text)}</div>
+      <span class="msg-time-tag">${esc(msg.time)}</span>
+    `;
     container.appendChild(bubble);
   });
   container.scrollTop = container.scrollHeight;
