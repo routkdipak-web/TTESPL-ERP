@@ -114,39 +114,43 @@
   #pullToRefreshIndicator.visible { transform: translateY(0); }
 
   header {
-    background: rgba(10, 37, 64, 0.88);
+    background: rgba(10, 37, 64, 0.94);
     backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    color: white; padding: 12px 18px; position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center;
+    color: white; padding: 10px 12px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center; gap: 8px;
     border-bottom: 1px solid rgba(255,255,255,0.08);
   }
-  [data-theme="dark"] header { background: rgba(17, 24, 39, 0.88); border-bottom: 1px solid rgba(255,255,255,0.05); }
+  [data-theme="dark"] header { background: rgba(17, 24, 39, 0.94); border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-  .brand-area { display: flex; align-items: center; gap: 12px; }
+  .brand-area { display: flex; align-items: center; gap: 8px; min-width: 0; flex-shrink: 1; }
   .brand-logo-badge {
-    width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #ff6b35, #f59e0b);
-    display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 900;
-    color: white; box-shadow: 0 4px 12px rgba(255,107,53,0.45);
+    width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #ff6b35, #f59e0b);
+    display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900;
+    color: white; box-shadow: 0 4px 12px rgba(255,107,53,0.45); flex-shrink: 0;
   }
-  .brand-title { font-size: 14.5px; font-weight: 800; letter-spacing: 0.3px; line-height: 1.15; color: #ffffff; }
-  .brand-sub { font-size: 10px; color: #94a3b8; font-weight: 600; }
+  .brand-text-wrap { min-width: 0; }
+  .brand-title { font-size: 12.5px; font-weight: 800; letter-spacing: 0.2px; line-height: 1.15; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand-sub { font-size: 9px; color: #94a3b8; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  .header-actions { display: flex; align-items: center; gap: 8px; }
+  .header-actions { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
   .sync-badge {
-    font-size: 10.5px; padding: 4px 10px; border-radius: 20px; font-weight: 700;
-    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 9.5px; padding: 3px 7px; border-radius: 16px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 4px;
     background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff;
+    white-space: nowrap;
   }
-  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; }
-  .sync-dot.offline { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; }
+  .sync-dot.offline { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
 
   .user-badge {
-    background: rgba(255,255,255,0.15); font-size: 11.5px; padding: 5px 10px; border-radius: 20px;
-    display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.25); color: #fff;
+    background: rgba(255,255,255,0.15); font-size: 10.5px; padding: 3px 8px; border-radius: 16px;
+    display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.25); color: #fff;
+    white-space: nowrap; max-width: 130px; overflow: hidden; text-overflow: ellipsis;
   }
+  .user-badge span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; }
   .user-role-tag {
-    font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 8px;
-    background: #ff6b35; color: white; text-transform: uppercase;
+    font-size: 8.5px; font-weight: 800; padding: 1px 5px; border-radius: 6px;
+    background: #ff6b35; color: white; text-transform: uppercase; flex-shrink: 0;
   }
   .user-role-tag.admin { background: #00b4d8; }
 
@@ -277,9 +281,10 @@
   .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
 
   .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 10px 16px; border-radius: var(--radius-sm); font-size: 12.5px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+    padding: 5px 9px; border-radius: 8px; font-size: 11px; font-weight: 700;
     border: none; cursor: pointer; text-decoration: none; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
   }
   .btn:active { transform: scale(0.96); }
   .btn-primary { background: linear-gradient(135deg, #0a2540, #13395e); color: white; box-shadow: 0 4px 12px rgba(10,37,64,0.25); }
@@ -289,10 +294,10 @@
   .btn-wa { background: #25d366; color: white; }
   .btn-excel { background: #107c41; color: white; }
   .btn-print { background: #334155; color: white; }
-  .btn-sm { padding: 6px 12px; font-size: 11.5px; border-radius: 8px; }
+  .btn-sm { padding: 4px 8px; font-size: 10.5px; border-radius: 6px; }
   .btn-outline { background: var(--card); border: 1.5px solid var(--border); color: var(--text-main); }
   .btn-outline:hover { background: rgba(0,0,0,0.03); border-color: var(--cyan); }
-  .btn-danger-sm { background: var(--danger-bg); color: var(--danger); padding: 5px 10px; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; }
+  .btn-danger-sm { background: var(--danger-bg); color: var(--danger); padding: 4px 8px; border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; }
   .btn-block { width: 100%; }
 
   .sub-tabs { display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 1.5px solid var(--border); padding-bottom: 10px; overflow-x: auto; }
@@ -674,24 +679,24 @@
   <header>
     <div class="brand-area">
       <div class="brand-logo-badge">TT</div>
-      <div>
-        <div class="brand-title">TWIN TOWN EXPRESS SERVICES</div>
+      <div class="brand-text-wrap">
+        <div class="brand-title">TWIN TOWN EXPRESS</div>
         <div class="brand-sub">Rasulgarh Industrial Estate, BBSR</div>
       </div>
     </div>
     <div class="header-actions">
-      <button class="btn btn-outline btn-sm" onclick="openGlobalSearchModal()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Global Search">🔍 Search</button>
-      <button class="btn btn-outline btn-sm" onclick="requestAppSystemPermissions()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Request Camera & Notification Permissions">🔔 Perms</button>
-      <button class="btn btn-outline btn-sm" onclick="toggleThemeMode()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Toggle Dark/Light Mode">🌙/☀️</button>
+      <button class="btn btn-outline btn-sm" onclick="openGlobalSearchModal()" title="Global Search">🔍</button>
+      <button class="btn btn-outline btn-sm" onclick="requestAppSystemPermissions()" title="Permissions">🔔</button>
+      <button class="btn btn-outline btn-sm" onclick="toggleThemeMode()" title="Theme">🌙</button>
       <div class="sync-badge" id="cloudSyncStatus">
-        <span class="sync-dot" id="syncDot"></span> <span id="syncText">Live Cloud</span>
+        <span class="sync-dot" id="syncDot"></span> <span id="syncText">Cloud</span>
       </div>
-      <div class="user-badge">
+      <div class="user-badge" title="Dipak Rout">
         <span>👤</span> <strong id="activeStaffDisplay">Dipak Rout</strong>
         <span class="user-role-tag admin" id="activeStaffRoleTag">ADMIN</span>
       </div>
-      <button class="btn btn-outline btn-sm admin-only-btn" id="headerStaffManageBtn" onclick="openStaffManageModal()" style="display:none; color:white; border-color:rgba(255,255,255,0.4); padding:5px 9px;">👥 Staff</button>
-      <button class="btn btn-outline btn-sm" style="color:white; border-color:rgba(255,255,255,0.3); padding:5px 9px;" onclick="performFullLogout()">Logout</button>
+      <button class="btn btn-outline btn-sm admin-only-btn" id="headerStaffManageBtn" onclick="openStaffManageModal()" style="display:none;">👥</button>
+      <button class="btn btn-outline btn-sm" onclick="performFullLogout()">Logout</button>
     </div>
   </header>
 
