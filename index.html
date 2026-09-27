@@ -378,14 +378,7 @@
   }
   .inv-table th { background: #f1f5f9; font-weight: 700; color: #0f172a; }
 
-  /* ============================================================
-     PREMIUM iOS-STYLE POLISH LAYER — purely additive, additive-only.
-     Nothing above this block is changed; no JS function is touched.
-     ============================================================ */
-
-  /* Modal open + close spring animation (works via @starting-style,
-     triggers automatically whenever JS sets display:flex/none —
-     zero JS changes required) */
+  /* iOS Polish Layer */
   .auth-overlay {
     opacity: 1;
     transition: opacity 0.34s cubic-bezier(0.32,0.72,0,1),
@@ -402,16 +395,12 @@
   }
   @starting-style { .auth-card { transform: translateY(26px) scale(0.94); opacity: 0; } }
 
-  /* Tab switch — soft iOS push/fade instead of a flat fade */
-  .view-panel.active {
-    animation: panelFadeSlide 0.34s cubic-bezier(0.32,0.72,0,1);
-  }
+  .view-panel.active { animation: panelFadeSlide 0.34s cubic-bezier(0.32,0.72,0,1); }
   @keyframes panelFadeSlide {
     from { opacity: 0; transform: translateY(14px) scale(0.985); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
   }
 
-  /* Cards — gentle entrance so lists feel alive instead of snapping in */
   .card { animation: cardPopIn 0.3s cubic-bezier(0.32,0.72,0,1); }
   @keyframes cardPopIn {
     from { opacity: 0; transform: translateY(8px) scale(0.99); }
@@ -419,8 +408,6 @@
   }
   .card:active { transform: scale(0.985); }
 
-  /* Nav bar — sliding glow pill behind the active tab (positioned by JS,
-     purely cosmetic, does not affect switchTab's own logic) */
   .nav-bar { position: fixed; }
   #navActivePill {
     position: absolute; top: 6px; height: calc(100% - 12px);
@@ -429,27 +416,21 @@
     transition: left 0.32s cubic-bezier(0.32,0.72,0,1), width 0.32s cubic-bezier(0.32,0.72,0,1);
   }
   .nav-item { z-index: 1; }
-  .nav-item.active .nav-icon {
-    filter: drop-shadow(0 3px 8px rgba(255,107,53,0.4));
-  }
+  .nav-item.active .nav-icon { filter: drop-shadow(0 3px 8px rgba(255,107,53,0.4)); }
 
-  /* Buttons — soft iOS press feel with a subtle highlight ring */
   .btn { position: relative; overflow: hidden; }
   .btn:active { transform: scale(0.955); filter: brightness(0.97); }
   .btn-primary:active, .btn-accent:active { box-shadow: 0 2px 8px rgba(10,37,64,0.18); }
 
-  /* Header + sync badge — tiny breathing glow so "live" feels alive */
   .sync-dot { animation: syncPulse 2.2s ease-in-out infinite; }
   @keyframes syncPulse {
     0%, 100% { box-shadow: 0 0 6px currentColor; opacity: 1; }
     50% { box-shadow: 0 0 12px currentColor; opacity: 0.75; }
   }
 
-  /* Badges — soft pop whenever their content changes (re-triggers on re-render) */
   .badge { animation: badgePop 0.28s cubic-bezier(0.34,1.56,0.64,1); }
   @keyframes badgePop { from { transform: scale(0.85); opacity: 0.6; } to { transform: scale(1); opacity: 1; } }
 
-  /* FAB menu items — staggered pop instead of an instant appear */
   #fabMenu .fab-action-btn { animation: fabItemIn 0.26s cubic-bezier(0.32,0.72,0,1) backwards; }
   #fabMenu .fab-action-btn:nth-child(1) { animation-delay: 0.02s; }
   #fabMenu .fab-action-btn:nth-child(2) { animation-delay: 0.06s; }
@@ -458,14 +439,31 @@
   #fabMenu .fab-action-btn:nth-child(5) { animation-delay: 0.18s; }
   @keyframes fabItemIn { from { opacity: 0; transform: translateY(10px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-  /* Suggestion dropdown — slightly springier than the original popIn */
   .solid-suggestion-box { animation: popIn 0.22s cubic-bezier(0.32,0.72,0,1); }
-
-  /* Smooth cross-app scrolling */
   html { scroll-behavior: smooth; }
+
+  /* REALTIME TOAST BROADCAST NOTIFICATION POPUP */
+  #broadcastToastContainer {
+    position: fixed; top: 16px; right: 16px; left: 16px; max-width: 440px; margin: 0 auto;
+    z-index: 10000; pointer-events: none; display: flex; flex-direction: column; gap: 8px;
+  }
+  .broadcast-toast {
+    pointer-events: auto; background: rgba(10, 37, 64, 0.95); backdrop-filter: blur(12px);
+    color: white; border-radius: 14px; padding: 12px 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 1px solid rgba(0, 180, 216, 0.4); display: flex; align-items: flex-start; gap: 12px;
+    animation: toastSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes toastSlideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .toast-icon { font-size: 24px; }
+  .toast-content { flex: 1; }
+  .toast-title { font-size: 13px; font-weight: 800; color: var(--cyan); margin-bottom: 2px; }
+  .toast-body { font-size: 12px; opacity: 0.92; line-height: 1.35; }
+  .toast-close { background: none; border: none; color: #fff; font-size: 16px; cursor: pointer; opacity: 0.7; }
 </style>
 </head>
 <body data-theme="light">
+
+<div id="broadcastToastContainer"></div>
 
 <div id="pullToRefreshIndicator">
   <span>🔄</span> <span id="ptrText">Refreshing data from Cloud...</span>
@@ -473,6 +471,10 @@
 
 <input type="file" id="chatAttachmentInput" style="display:none;" accept="image/*,.pdf,.doc,.docx" onchange="handleChatFileUpload(event)">
 <input type="file" id="backupRestoreInput" style="display:none;" accept=".json" onchange="processRestoreJSON(event)">
+
+<!-- HIDDEN INPUTS FOR MANDATORY PHOTO PROOFS WITH DIRECT CAMERA SUPPORT -->
+<input type="file" id="deliveryPhotoFileInput" accept="image/*" capture="environment" style="display:none;" onchange="handleDeliveryPhotoCaptured(event)">
+<input type="file" id="paymentProofFileInput" accept="image/*" capture="environment" style="display:none;" onchange="handlePaymentProofCaptured(event)">
 
 <!-- AUTH SCREEN -->
 <div id="authScreen" class="auth-overlay" style="display:none;">
@@ -558,6 +560,48 @@
   </div>
 </div>
 
+<!-- MANDATORY DELIVERY PROOF MODAL -->
+<div id="deliveryProofModal" class="auth-overlay" style="display:none; z-index:3600;">
+  <div class="auth-card" style="max-width:440px;">
+    <div class="card-header">
+      <strong class="card-title">📸 Delivery Proof Photo (Mandatory)</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeDeliveryProofModal()">✕</button>
+    </div>
+    <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+      Order deliver karne se pehle product/package ya customer ke signature/handover ki kam se kam 1 photo lena zaroori hai.
+    </div>
+    <div id="deliveryPhotoPreviewWrap" style="text-align:center; margin-bottom:14px;">
+      <img id="deliveryPhotoPreview" src="" alt="Proof Preview" style="display:none; max-width:100%; max-height:220px; border-radius:10px; border:2px solid var(--success); margin:0 auto 10px;">
+      <button class="btn btn-accent btn-block" onclick="document.getElementById('deliveryPhotoFileInput').click()">📷 Open Camera / Gallery</button>
+    </div>
+    <input type="hidden" id="pendingDeliverOrderId">
+    <button class="btn btn-primary btn-block" id="confirmDeliveryBtn" disabled onclick="executeConfirmedDelivery()">✓ Confirm & Complete Delivery</button>
+  </div>
+</div>
+
+<!-- MANDATORY PAYMENT PROOF MODAL -->
+<div id="paymentProofModal" class="auth-overlay" style="display:none; z-index:3600;">
+  <div class="auth-card" style="max-width:440px;">
+    <div class="card-header">
+      <strong class="card-title">💵 Payment Receipt / Cash Proof (Mandatory)</strong>
+      <button class="btn btn-outline btn-sm" onclick="closePaymentProofModal()">✕</button>
+    </div>
+    <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+      Payment collection record karne ke liye UPI screenshot, Cheque photo, ya Cash voucher ka proof upload karna zaroori hai.
+    </div>
+    <div class="form-group">
+      <label class="form-label">Payment Amount Collected (₹):</label>
+      <input type="number" id="payCollectInputAmt" style="font-size:16px; font-weight:800;">
+    </div>
+    <div id="payProofPreviewWrap" style="text-align:center; margin-bottom:14px;">
+      <img id="payProofPreview" src="" alt="Proof Preview" style="display:none; max-width:100%; max-height:220px; border-radius:10px; border:2px solid var(--cyan); margin:0 auto 10px;">
+      <button class="btn btn-accent btn-block" onclick="document.getElementById('paymentProofFileInput').click()">📸 Take Payment Photo / Receipt</button>
+    </div>
+    <input type="hidden" id="pendingCollectOrderId">
+    <button class="btn btn-primary btn-block" id="confirmCollectPayBtn" disabled onclick="executeConfirmedPaymentCollection()">✓ Confirm Payment & Cloud Push</button>
+  </div>
+</div>
+
 <!-- MAIN APP WRAPPER -->
 <div id="mainAppWrapper">
 
@@ -578,6 +622,7 @@
       </div>
     </div>
     <div class="header-actions">
+      <button class="btn btn-outline btn-sm" onclick="requestAppSystemPermissions()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Request Camera & Notification Permissions">🔔 Perms</button>
       <button class="btn btn-outline btn-sm" onclick="toggleThemeMode()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Toggle Dark/Light Mode">🌙/☀️</button>
       <div class="sync-badge" id="cloudSyncStatus">
         <span class="sync-dot" id="syncDot"></span> <span id="syncText">Live Cloud</span>
@@ -1130,73 +1175,7 @@
   </div>
 </div>
 
-<!-- 3. Machine Installation Modal -->
-<div id="installationModal" class="auth-overlay" style="display:none;">
-  <div class="auth-card">
-    <div class="card-header">
-      <strong class="card-title">⚙️ Machine Installation & Warranty</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeInstallModal()">✕</button>
-    </div>
-    <div id="insCustHeading" style="font-size:12.5px; font-weight:bold; color:var(--text-main); margin-bottom:10px;"></div>
-    <div class="grid-2">
-      <div class="form-group">
-        <label class="form-label">Installation Date</label>
-        <input type="date" id="insDate">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Final Price (₹)</label>
-        <input type="number" id="insFinalPrice">
-      </div>
-    </div>
-    <div class="grid-3">
-      <div class="form-group">
-        <label class="form-label">Machine S/N</label>
-        <input type="text" id="insMachSN" placeholder="SN-2026-09">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Pump S/N</label>
-        <input type="text" id="insPumpSN" placeholder="AR-9812">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Invoice No</label>
-        <input type="text" id="insInvNo" placeholder="TTESPL/26/092">
-      </div>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveInstallationAction()" style="padding:12px;">✓ Confirm & Schedule 4 Free Services</button>
-  </div>
-</div>
-
-<!-- 4. Attend Free Service Modal -->
-<div id="attendFreeServiceModal" class="auth-overlay" style="display:none;">
-  <div class="auth-card">
-    <div class="card-header">
-      <strong class="card-title">🛠️ Attend Free Service Record</strong>
-      <button class="btn btn-outline btn-sm" onclick="closeAttendModal()">✕</button>
-    </div>
-    <div id="freeSrvHeading" style="font-size:12.5px; font-weight:bold; color:var(--text-main); margin-bottom:10px;"></div>
-    <div class="grid-2">
-      <div class="form-group">
-        <label class="form-label">Actual Attended Date</label>
-        <input type="date" id="freeSrvActDate">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Attended Engineer</label>
-        <select id="freeSrvStaff" class="emp-dropdown"></select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Action Taken / Service Summary</label>
-      <textarea id="freeSrvAction" rows="2" placeholder="Replaced oil, calibrated pressure..."></textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Spare Parts Replaced (If Any)</label>
-      <input type="text" id="freeSrvParts" placeholder="1L HPW Oil, 1x Seal kit">
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveFreeServiceAction()" style="padding:12px;">Save Free Service Slip</button>
-  </div>
-</div>
-
-<!-- 5. Order Modal (With IGST toggle & MRP Discount % column) -->
+<!-- 5. Order Modal -->
 <div id="orderModal" class="auth-overlay" style="display:none;">
   <div class="auth-card" style="max-width:680px;">
     <div class="card-header">
@@ -1504,7 +1483,7 @@
   </div>
 </div>
 
-<!-- 11. INVOICE PRINT MODAL (CORRECTED TTESPL OFFICE DETAILS) -->
+<!-- 11. INVOICE PRINT MODAL -->
 <div id="invoicePrintModal" class="auth-overlay" style="display:none; z-index:3000;">
   <div class="auth-card" style="max-width:740px; width:95%;">
     <div class="card-header no-print">
@@ -1611,6 +1590,7 @@
 </div>
 
 <script src="master-data.js?v=2"></script>
+<script src="live-sync.js?v=2"></script>
 
 <script>
 /* ENGINE LOGIC & FRESH STATE */
@@ -1745,6 +1725,7 @@ function processLogin() {
     currentUser = user;
     setStored("SESSION_USER", user);
     checkAuthSession();
+    requestAppSystemPermissions();
   } else {
     alert("Invalid Mobile Number or Password!");
   }
@@ -2588,7 +2569,7 @@ function editLeadPrompt(leadId) {
   if(l) openLeadModal(l);
 }
 
-/* TAB 2: ORDERS (MRP DISCOUNT COLUMN & IGST/CGST TOGGLE) */
+/* TAB 2: ORDERS */
 function switchOrderSubTab(sub) {
   currentOrderSubTab = sub;
   const btnAct = document.getElementById('btnSubTabActiveOrders');
@@ -2646,7 +2627,7 @@ function renderOrders() {
       </div>
       ${o.status === 'Pending' ? `
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="markOrderDelivered('${o.id}')">✓ Deliver & Bill</button>
+          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="openDeliveryProofModal('${o.id}')">📸 Deliver & Upload Proof</button>
           <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
           <button class="btn btn-wa btn-sm" style="flex:1;" onclick="shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
           <button class="btn btn-danger-sm btn-sm" style="flex:1;" onclick="cancelOrderAction('${o.id}')">🚫 Cancel</button>
@@ -2733,7 +2714,6 @@ function calcOrderTotals() {
     const mrp = parseFloat(r.querySelector('.item-mrp').value) || 0;
     const disc = parseFloat(r.querySelector('.item-disc').value) || 0;
     
-    // Automatic discount calculation (e.g. MRP 100 with 20% disc -> Rate 80)
     const discountedRate = mrp * (1 - (disc / 100));
     r.querySelector('.item-rate').value = discountedRate.toFixed(2);
     
@@ -2803,6 +2783,15 @@ function saveOrderAction() {
       status: "Pending", bookedBy: staff
     };
     ordersData.unshift(newO);
+
+    // PUSH NOTIFICATION: NEW ORDER PLACED
+    if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
+      window.cloudSync.pushLiveNotification({
+        title: "📦 New Order Placed!",
+        body: `${custName} - ₹${total.toLocaleString('en-IN')} (Booked by ${staff})`,
+        type: "order"
+      });
+    }
   }
 
   setStored("ORDERS", ordersData);
@@ -2813,22 +2802,134 @@ function saveOrderAction() {
   alert("Order saved successfully!");
 }
 
-function markOrderDelivered(ordId) {
+/* MANDATORY PHOTO PROOF WORKFLOW (DELIVERY & PAYMENT) */
+let currentDeliveryPhotoBase64 = "";
+function openDeliveryProofModal(ordId) {
+  document.getElementById('pendingDeliverOrderId').value = ordId;
+  currentDeliveryPhotoBase64 = "";
+  const preview = document.getElementById('deliveryPhotoPreview');
+  preview.src = "";
+  preview.style.display = 'none';
+  document.getElementById('confirmDeliveryBtn').disabled = true;
+  document.getElementById('deliveryProofModal').style.display = 'flex';
+}
+function closeDeliveryProofModal() {
+  document.getElementById('deliveryProofModal').style.display = 'none';
+}
+
+function handleDeliveryPhotoCaptured(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    currentDeliveryPhotoBase64 = e.target.result;
+    const preview = document.getElementById('deliveryPhotoPreview');
+    preview.src = currentDeliveryPhotoBase64;
+    preview.style.display = 'block';
+    document.getElementById('confirmDeliveryBtn').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+function executeConfirmedDelivery() {
+  const ordId = document.getElementById('pendingDeliverOrderId').value;
+  if (!currentDeliveryPhotoBase64) {
+    alert("Kripya delivery ka proof photo attach karein!");
+    return;
+  }
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
+
   o.items.forEach(it => {
     const p = sampleInventory.find(x => x.id === it.id || x.name === it.name);
     if(p) { p.stock = Math.max(0, p.stock - it.qty); }
   });
+
   o.status = "Delivered";
   o.deliveredDate = new Date().toISOString().split('T')[0];
+  o.deliveryProofPhoto = currentDeliveryPhotoBase64;
+
   setStored("ORDERS", ordersData);
   setStored("INVENTORY", sampleInventory);
+  closeDeliveryProofModal();
   renderOrders();
   renderStockList();
   renderBilling('all');
   renderDashboard();
-  alert("Order delivered and moved to financial ledger!");
+
+  // BROADCAST DELIVERY NOTIFICATION
+  if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
+    window.cloudSync.pushLiveNotification({
+      title: "✅ Order Delivered!",
+      body: `${o.customerName} - Ref ${o.id} marked Delivered with Photo Proof.`,
+      type: "delivery"
+    });
+  }
+
+  alert("Order successfully delivered with Photo Proof!");
+}
+
+/* PAYMENT COLLECTION WITH PROOF */
+let currentPaymentProofBase64 = "";
+function collectDuePayment(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if (!o) return;
+  document.getElementById('pendingCollectOrderId').value = ordId;
+  document.getElementById('payCollectInputAmt').value = o.dueAmount;
+  currentPaymentProofBase64 = "";
+  const preview = document.getElementById('payProofPreview');
+  preview.src = "";
+  preview.style.display = 'none';
+  document.getElementById('confirmCollectPayBtn').disabled = true;
+  document.getElementById('paymentProofModal').style.display = 'flex';
+}
+function closePaymentProofModal() {
+  document.getElementById('paymentProofModal').style.display = 'none';
+}
+
+function handlePaymentProofCaptured(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    currentPaymentProofBase64 = e.target.result;
+    const preview = document.getElementById('payProofPreview');
+    preview.src = currentPaymentProofBase64;
+    preview.style.display = 'block';
+    document.getElementById('confirmCollectPayBtn').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+function executeConfirmedPaymentCollection() {
+  const ordId = document.getElementById('pendingCollectOrderId').value;
+  const amt = parseFloat(document.getElementById('payCollectInputAmt').value) || 0;
+  if (amt <= 0) { alert("Valid amount daalein!"); return; }
+  if (!currentPaymentProofBase64) { alert("Payment receipt ya photo attach karna mandatory hai!"); return; }
+
+  const o = ordersData.find(x => x.id === ordId);
+  if (!o) return;
+
+  o.recvAmount = (o.recvAmount || 0) + amt;
+  o.dueAmount = Math.max(0, o.totalAmount - o.recvAmount);
+  o.lastPaymentProof = currentPaymentProofBase64;
+  o.lastPaymentDate = new Date().toISOString().split('T')[0];
+
+  setStored("ORDERS", ordersData);
+  closePaymentProofModal();
+  renderBilling('all');
+  renderDashboard();
+
+  // BROADCAST PAYMENT NOTIFICATION
+  if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
+    window.cloudSync.pushLiveNotification({
+      title: "💰 Payment Received!",
+      body: `₹${amt.toLocaleString('en-IN')} received for ${o.customerName} (Due: ₹${o.dueAmount})`,
+      type: "payment"
+    });
+  }
+
+  alert("Payment recorded with receipt proof and synced to cloud!");
 }
 
 function deleteOrderAction(id) {
@@ -2853,7 +2954,7 @@ function shareOrderWhatsApp(ordId) {
   window.open(o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`, '_blank');
 }
 
-/* GST INVOICE PRINT (CORRECTED OFFICE DETAILS) */
+/* GST INVOICE PRINT */
 function executeInvoicePrint() { window.focus(); setTimeout(() => { window.print(); }, 150); }
 
 function openInvoicePrintModal(ordId) {
@@ -3171,7 +3272,6 @@ function filterStockList(val) {
 
   let list = (activeInventoryCategory === 'CUSTOMERS') ? customerDatabase : sampleInventory;
 
-  // Catalog Equipment wale duplicate items ko search/list se hataane ke liye
   if (activeInventoryCategory !== 'Catalog Equipment' && activeInventoryCategory !== 'CUSTOMERS') {
     list = list.filter(i => i.category !== 'Catalog Equipment');
   }
@@ -3206,7 +3306,6 @@ function filterStockList(val) {
     c.appendChild(card);
   });
 }
-
 window.filterStockList = filterStockList;
 
 let activeStockDetailId = null;
@@ -3421,20 +3520,6 @@ function filterBillingByEmployee(empName) {
   renderBilling('due', empName);
 }
 
-function collectDuePayment(ordId) {
-  const o = ordersData.find(x => x.id === ordId);
-  if(!o) return;
-  const amt = prompt(`Collect payment for ${o.customerName} (Due: ₹${o.dueAmount}):`, o.dueAmount);
-  if(amt && !isNaN(amt) && parseFloat(amt) > 0) {
-    const p = parseFloat(amt);
-    o.recvAmount += p;
-    o.dueAmount = Math.max(0, o.totalAmount - o.recvAmount);
-    setStored("ORDERS", ordersData);
-    renderBilling('due');
-    renderDashboard();
-  }
-}
-
 function downloadFile(content, fileName, mimeType) {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([content], { type: mimeType }));
@@ -3512,532 +3597,85 @@ function switchTab(tab, el) {
   if(tab === 'chat') renderChatMessages();
 }
 
+/* REALTIME TOAST BROADCAST HANDLER WITH AUDIO CHIME */
+function showBroadcastToastAlert(notif) {
+  const container = document.getElementById('broadcastToastContainer');
+  if (!container) return;
+
+  // Web Audio Beep Chime
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.4);
+  } catch(e) {}
+
+  // Device vibration
+  if (navigator.vibrate) { try { navigator.vibrate([100, 50, 100]); } catch(e){} }
+
+  // System notification
+  if (window.Notification && Notification.permission === 'granted') {
+    try {
+      new Notification(notif.title, {
+        body: notif.body,
+        icon: 'https://cdn-icons-png.flaticon.com/512/9422/9422891.png'
+      });
+    } catch(e) {}
+  }
+
+  const icons = { order: '📦', delivery: '🚚', payment: '💰' };
+  const toast = document.createElement('div');
+  toast.className = 'broadcast-toast';
+  toast.innerHTML = `
+    <div class="toast-icon">${icons[notif.type] || '🔔'}</div>
+    <div class="toast-content">
+      <div class="toast-title">${notif.title}</div>
+      <div class="toast-body">${notif.body}</div>
+    </div>
+    <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+  `;
+  container.prepend(toast);
+
+  setTimeout(() => {
+    if (toast.parentElement) toast.remove();
+  }, 7000);
+}
+window.showBroadcastToastAlert = showBroadcastToastAlert;
+
+/* SYSTEM PERMISSIONS PROMPT (CAMERA & NOTIFICATIONS) */
+function requestAppSystemPermissions() {
+  if (window.Notification && Notification.permission !== 'granted') {
+    Notification.requestPermission().then(perm => {
+      if (perm === 'granted') {
+        alert("✓ Notification Alerts Active!");
+      }
+    });
+  }
+
+  // Camera Permission Check
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        stream.getTracks().forEach(t => t.stop());
+        alert("✓ Camera & File Picker Permission Verified!");
+      })
+      .catch(err => {
+        console.log("Camera access status:", err);
+      });
+  }
+}
+window.requestAppSystemPermissions = requestAppSystemPermissions;
+
 document.addEventListener('DOMContentLoaded', () => {
   checkAuthSession();
 });
-</script>
-
-<!-- ============================================================
-     PREMIUM UI POLISH SCRIPT — fully separate, additive-only.
-     Purely cosmetic: positions a sliding nav pill and adds a light
-     haptic tap. Does not read/write app data, does not call or
-     override any existing function above.
-     ============================================================ -->
-<script>
-(function() {
-  function ensureNavPill() {
-    const bar = document.querySelector('.nav-bar');
-    if (!bar || document.getElementById('navActivePill')) return;
-    const pill = document.createElement('div');
-    pill.id = 'navActivePill';
-    bar.prepend(pill);
-  }
-
-  function positionNavPill() {
-    const bar = document.querySelector('.nav-bar');
-    const pill = document.getElementById('navActivePill');
-    const active = document.querySelector('.nav-item.active');
-    if (!bar || !pill || !active) return;
-    const barRect = bar.getBoundingClientRect();
-    const itemRect = active.getBoundingClientRect();
-    pill.style.left = (itemRect.left - barRect.left + 6) + 'px';
-    pill.style.width = (itemRect.width - 12) + 'px';
-  }
-
-  function lightTap() {
-    if (navigator.vibrate) { try { navigator.vibrate(8); } catch(e) {} }
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    ensureNavPill();
-    setTimeout(positionNavPill, 60);
-  });
-
-  window.addEventListener('resize', positionNavPill);
-
-  // Passive listeners only — never blocks or alters the original onclick handlers
-  document.addEventListener('click', (e) => {
-    const navItem = e.target.closest('.nav-item');
-    if (navItem) { lightTap(); setTimeout(positionNavPill, 20); }
-    const btn = e.target.closest('.btn, .fab-action-btn, .sub-tab-btn');
-    if (btn) { lightTap(); }
-  }, { passive: true });
-})();
-</script>
-<!-- ============================================================
-     NEW FEATURES LAYER v2 — 100% additive.
-     - No existing function is modified or overridden — only
-       wrapped (original still runs first, unchanged) or extended.
-     - No existing data field, formula or calculation is touched.
-     - Safe to remove this whole block without affecting the app.
-     ============================================================ -->
-<style>
-  /* ---- Global Search ---- */
-  #globalSearchBtn {
-    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
-    color: #fff; width: 32px; height: 32px; border-radius: 50%; font-size: 14px;
-    display: flex; align-items: center; justify-content: center; cursor: pointer;
-  }
-  #globalSearchOverlay {
-    position: fixed; inset: 0; background: rgba(6,21,38,0.92); backdrop-filter: blur(10px);
-    z-index: 5000; display: none; flex-direction: column; padding: 16px;
-    padding-top: calc(16px + env(safe-area-inset-top, 0px));
-  }
-  #globalSearchOverlay.open { display: flex; animation: gsFade 0.22s cubic-bezier(0.32,0.72,0,1); }
-  @keyframes gsFade { from { opacity: 0; } to { opacity: 1; } }
-  .gs-input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
-  #globalSearchInput {
-    flex: 1; font-size: 15px !important; padding: 13px 16px !important; border-radius: 14px !important;
-    border: 1.5px solid rgba(255,255,255,0.25) !important; background: rgba(255,255,255,0.08) !important;
-    color: #fff !important;
-  }
-  #globalSearchInput::placeholder { color: rgba(255,255,255,0.55) !important; }
-  #gsCloseBtn { color: #fff; font-size: 22px; background: none; border: none; padding: 6px 10px; cursor: pointer; }
-  #globalSearchResults { flex: 1; overflow-y: auto; }
-  .gs-result {
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; cursor: pointer;
-    animation: cardPopIn 0.22s cubic-bezier(0.32,0.72,0,1); transition: transform 0.15s ease;
-  }
-  .gs-result:active { transform: scale(0.98); }
-  .gs-result-type { font-size: 9.5px; font-weight: 800; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.5px; }
-  .gs-result-title { font-size: 14px; font-weight: 700; color: #fff; margin: 3px 0; }
-  .gs-result-sub { font-size: 11.5px; color: rgba(255,255,255,0.6); }
-  .gs-empty { text-align: center; color: rgba(255,255,255,0.5); font-size: 12.5px; padding: 40px 10px; }
-
-  /* ---- Today's Work Widget ---- */
-  #todayWorkWidget {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-    border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; color: #fff;
-    box-shadow: var(--shadow-md); animation: cardPopIn 0.3s cubic-bezier(0.32,0.72,0,1);
-  }
-  .twk-title { font-size: 13.5px; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-  .twk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .twk-item { background: rgba(255,255,255,0.12); border-radius: 12px; padding: 10px 8px; text-align: center; cursor: pointer; transition: transform 0.15s ease; }
-  .twk-item:active { transform: scale(0.95); }
-  .twk-num { font-size: 20px; font-weight: 900; }
-  .twk-label { font-size: 9.5px; font-weight: 700; opacity: 0.85; margin-top: 2px; }
-
-  /* ---- Mic buttons ---- */
-  .voice-input-wrap { position: relative; }
-  .mic-btn {
-    position: absolute; right: 6px; bottom: 6px; width: 26px; height: 26px; border-radius: 50%;
-    background: var(--cyan); color: #fff; border: none; font-size: 12px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,180,216,0.4);
-    transition: transform 0.15s ease;
-  }
-  .mic-btn.listening { background: var(--danger); animation: micPulse 1s ease-in-out infinite; }
-  @keyframes micPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-
-  /* ---- Bottom-sheet drag handle (mobile) ---- */
-  @media (max-width: 640px) {
-    .sheet-drag-handle {
-      width: 40px; height: 5px; background: var(--border); border-radius: 4px;
-      margin: 0 auto 12px; cursor: grab;
-    }
-  }
-  .sheet-drag-handle { display: none; }
-  @media (max-width: 640px) { .sheet-drag-handle { display: block; } }
-
-  /* ---- QR / barcode stock scan ---- */
-  #qrScanOverlay {
-    position: fixed; inset: 0; background: #000; z-index: 5500; display: none;
-    flex-direction: column; align-items: center; justify-content: center;
-  }
-  #qrScanOverlay.open { display: flex; }
-  #qrScanVideo { width: 100%; max-width: 480px; border-radius: 16px; }
-  .qr-frame { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 220px; height: 220px; border: 3px solid var(--cyan); border-radius: 16px; box-shadow: 0 0 0 2000px rgba(0,0,0,0.5); }
-  #qrCloseBtn { position: absolute; top: calc(20px + env(safe-area-inset-top,0px)); right: 20px; color: #fff; font-size: 26px; background: none; border: none; z-index: 2; }
-  #qrScanHint { position: absolute; bottom: calc(40px + env(safe-area-inset-bottom,0px)); color: #fff; font-size: 12.5px; background: rgba(0,0,0,0.5); padding: 8px 16px; border-radius: 20px; }
-
-  /* ---- Export button style reuse (matches existing btn-outline) ---- */
-</style>
-
-<!-- Global search overlay -->
-<div id="globalSearchOverlay">
-  <div class="gs-input-row">
-    <input type="text" id="globalSearchInput" placeholder="🔍 Search customer, order, service, machine, stock..." oninput="runGlobalSearch(this.value)">
-    <button id="gsCloseBtn" onclick="closeGlobalSearch()">✕</button>
-  </div>
-  <div id="globalSearchResults"><div class="gs-empty">Customer name, order ID, machine, ya problem type karke dhoondo.</div></div>
-</div>
-
-<!-- QR / barcode scan overlay -->
-<div id="qrScanOverlay">
-  <button id="qrCloseBtn" onclick="closeQrScan()">✕</button>
-  <video id="qrScanVideo" autoplay playsinline muted></video>
-  <div class="qr-frame"></div>
-  <div id="qrScanHint">Item ke barcode/QR code ko frame ke andar rakho</div>
-</div>
-
-<script>
-(function() {
-
-  /* =========================================================
-     1. GLOBAL SEARCH
-     Reads existing global arrays read-only. Never mutates them.
-     ========================================================= */
-  function injectSearchButton() {
-    const actions = document.querySelector('.header-actions');
-    if (!actions || document.getElementById('globalSearchBtn')) return;
-    const btn = document.createElement('button');
-    btn.id = 'globalSearchBtn';
-    btn.innerHTML = '🔍';
-    btn.title = 'Search everything';
-    btn.onclick = openGlobalSearch;
-    actions.insertBefore(btn, actions.firstChild);
-  }
-
-  window.openGlobalSearch = function() {
-    document.getElementById('globalSearchOverlay').classList.add('open');
-    setTimeout(() => document.getElementById('globalSearchInput').focus(), 150);
-  };
-  window.closeGlobalSearch = function() {
-    document.getElementById('globalSearchOverlay').classList.remove('open');
-    document.getElementById('globalSearchInput').value = '';
-    document.getElementById('globalSearchResults').innerHTML = '<div class="gs-empty">Customer name, order ID, machine, ya problem type karke dhoondo.</div>';
-  };
-
-  window.runGlobalSearch = function(q) {
-    const box = document.getElementById('globalSearchResults');
-    q = (q || '').trim().toLowerCase();
-    if (q.length < 2) { box.innerHTML = '<div class="gs-empty">Kam se kam 2 letters type karo...</div>'; return; }
-
-    const results = [];
-    try {
-      (typeof customerDatabase !== 'undefined' ? customerDatabase : []).forEach(c => {
-        if ((c.name || '').toLowerCase().includes(q) || (c.phone || '').includes(q)) {
-          results.push({ type: 'Customer', icon: '👤', title: c.name, sub: c.phone || '', tab: 'inventory' });
-        }
-      });
-      (typeof leadsData !== 'undefined' ? leadsData : []).forEach(l => {
-        if ((l.customerName||'').toLowerCase().includes(q) || (l.machine||'').toLowerCase().includes(q) || (l.id||'').toLowerCase().includes(q)) {
-          results.push({ type: 'Lead', icon: '🎯', title: l.customerName, sub: `${l.machine || ''} • ${l.status || ''}`, tab: 'leads' });
-        }
-      });
-      (typeof ordersData !== 'undefined' ? ordersData : []).forEach(o => {
-        if ((o.customerName||'').toLowerCase().includes(q) || (o.id||'').toLowerCase().includes(q)) {
-          results.push({ type: 'Order', icon: '📦', title: o.customerName, sub: `${o.id} • ${o.status || ''}`, tab: 'orders' });
-        }
-      });
-      (typeof serviceCallsData !== 'undefined' ? serviceCallsData : []).forEach(s => {
-        if ((s.customerName||'').toLowerCase().includes(q) || (s.machine||'').toLowerCase().includes(q) || (s.problem||'').toLowerCase().includes(q)) {
-          results.push({ type: 'Service', icon: '🛠️', title: s.customerName, sub: `${s.machine || ''} • ${s.status || ''}`, tab: 'services' });
-        }
-      });
-      (typeof sampleInventory !== 'undefined' ? sampleInventory : []).forEach(it => {
-        if ((it.name||'').toLowerCase().includes(q) || (it.code||'').toLowerCase().includes(q)) {
-          results.push({ type: 'Stock', icon: '🏷️', title: it.name, sub: `${it.code || ''} • ${it.stock} in stock`, tab: 'inventory' });
-        }
-      });
-    } catch(e) { /* silent — search never breaks the app */ }
-
-    if (results.length === 0) { box.innerHTML = '<div class="gs-empty">Kuch nahi mila.</div>'; return; }
-    box.innerHTML = '';
-    results.slice(0, 40).forEach(r => {
-      const el = document.createElement('div');
-      el.className = 'gs-result';
-      el.innerHTML = `<div class="gs-result-type">${r.icon} ${r.type}</div><div class="gs-result-title">${r.title || '-'}</div><div class="gs-result-sub">${r.sub || ''}</div>`;
-      el.onclick = () => {
-        closeGlobalSearch();
-        const navItem = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + r.tab + "'"));
-        if (typeof switchTab === 'function') switchTab(r.tab, navItem || null);
-      };
-      box.appendChild(el);
-    });
-  };
-
-  /* =========================================================
-     2. TODAY'S WORK WIDGET (Aaj Ka Kaam)
-     Wraps renderDashboard — original function runs first and
-     completely unchanged, this only appends a summary on top.
-     ========================================================= */
-  function computeTodayWork() {
-    const today = new Date().toISOString().split('T')[0];
-    let deliveries = 0, services = 0, followups = 0;
-    try { deliveries = (ordersData||[]).filter(o => o.status === 'Pending' && o.deliveryDate <= today).length; } catch(e){}
-    try { services = (serviceCallsData||[]).filter(s => s.status !== 'Work Completed' && s.targetDate <= today).length; } catch(e){}
-    try { followups = (leadsData||[]).filter(l => l.status !== 'Installed' && l.followupDate <= today).length; } catch(e){}
-    return { deliveries, services, followups };
-  }
-
-  function renderTodayWidget() {
-    const dash = document.getElementById('view-dashboard');
-    if (!dash) return;
-    let widget = document.getElementById('todayWorkWidget');
-    if (!widget) {
-      widget = document.createElement('div');
-      widget.id = 'todayWorkWidget';
-      dash.insertBefore(widget, dash.firstChild);
-    }
-    const w = computeTodayWork();
-    widget.innerHTML = `
-      <div class="twk-title">🔔 Aaj Ka Kaam</div>
-      <div class="twk-grid">
-        <div class="twk-item" onclick="jumpToday('orders')"><div class="twk-num">${w.deliveries}</div><div class="twk-label">Deliveries Due</div></div>
-        <div class="twk-item" onclick="jumpToday('services')"><div class="twk-num">${w.services}</div><div class="twk-label">Repairs Due</div></div>
-        <div class="twk-item" onclick="jumpToday('leads')"><div class="twk-num">${w.followups}</div><div class="twk-label">Followups Due</div></div>
-      </div>`;
-  }
-  window.jumpToday = function(tab) {
-    const navItem = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + tab + "'"));
-    if (typeof switchTab === 'function') switchTab(tab, navItem || null);
-  };
-
-  /* =========================================================
-     3. CSV EXPORTS — new functions, reuse existing downloadFile()
-     ========================================================= */
-  window.exportLeadsCSV = function() {
-    let csv = "ID,Customer,Machine,Status,Quoted,Followup\n";
-    (leadsData||[]).forEach(l => { csv += `"${l.id}","${l.customerName}","${l.machine}","${l.status}","${l.quotedPrice||0}","${l.followupDate}"\n`; });
-    downloadFile(csv, "TTESPL_Leads.csv", "text/csv");
-  };
-  window.exportOrdersCSV = function() {
-    let csv = "ID,Customer,Status,OrderDate,DeliveryDate,Total,Due\n";
-    (ordersData||[]).forEach(o => { csv += `"${o.id}","${o.customerName}","${o.status}","${o.orderDate}","${o.deliveryDate}","${o.totalAmount||0}","${o.dueAmount||0}"\n`; });
-    downloadFile(csv, "TTESPL_Orders.csv", "text/csv");
-  };
-  window.exportServicesCSV = function() {
-    let csv = "ID,Customer,Machine,Status,ReceivedDate,TargetDate,Problem\n";
-    (serviceCallsData||[]).forEach(s => { csv += `"${s.id}","${s.customerName}","${s.machine}","${s.status}","${s.recvDate}","${s.targetDate}","${(s.problem||'').replace(/"/g,"'")}"\n`; });
-    downloadFile(csv, "TTESPL_Services.csv", "text/csv");
-  };
-  window.exportBillingCSV = function() {
-    let csv = "InvoiceID,Customer,DeliveredDate,Total,Received,Due\n";
-    (ordersData||[]).filter(o => o.status === 'Delivered').forEach(o => { csv += `"${o.id}","${o.customerName}","${o.deliveredDate||o.orderDate}","${o.totalAmount||0}","${o.recvAmount||0}","${o.dueAmount||0}"\n`; });
-    downloadFile(csv, "TTESPL_Billing.csv", "text/csv");
-  };
-
-  function makeExportBtn(fn) {
-    const btn = document.createElement('button');
-    btn.className = 'btn btn-outline btn-sm injected-export-btn';
-    btn.textContent = '📥 CSV';
-    btn.onclick = window[fn];
-    return btn;
-  }
-  function injectExportButtons() {
-    // Leads / Orders / Services: find their existing "+ New ..." accent button
-    // (stable anchor since these are wired via onclick=) and drop the export
-    // button in right next to it, wrapped so flex layout stays intact.
-    const anchors = [
-      { match: 'openLeadModal()', fn: 'exportLeadsCSV' },
-      { match: 'openOrderModal()', fn: 'exportOrdersCSV' },
-      { match: 'openServiceCallModal()', fn: 'exportServicesCSV' }
-    ];
-    anchors.forEach(a => {
-      if (document.getElementById('exp-' + a.fn)) return;
-      const src = document.querySelector(`button[onclick="${a.match}"]`);
-      if (!src || !src.parentElement) return;
-      const wrap = document.createElement('div');
-      wrap.style.cssText = 'display:flex; gap:8px; align-items:center;';
-      src.parentElement.insertBefore(wrap, src);
-      wrap.appendChild(src);
-      const btn = makeExportBtn(a.fn);
-      btn.id = 'exp-' + a.fn;
-      wrap.appendChild(btn);
-    });
-
-    // Billing: already has a flex-wrap button row — just append into it.
-    const cashBtn = document.querySelector('button[onclick="openDailyCashClosingModal()"]');
-    if (cashBtn && cashBtn.parentElement && !document.getElementById('exp-exportBillingCSV')) {
-      const btn = makeExportBtn('exportBillingCSV');
-      btn.id = 'exp-exportBillingCSV';
-      cashBtn.parentElement.appendChild(btn);
-    }
-  }
-
-  /* =========================================================
-     4. VOICE-TO-TEXT on all textareas (Web Speech API)
-     Graceful no-op if browser doesn't support it.
-     ========================================================= */
-  function attachMicButtons() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return;
-    document.querySelectorAll('textarea').forEach(ta => {
-      if (ta.dataset.micAttached) return;
-      ta.dataset.micAttached = '1';
-      if (getComputedStyle(ta.parentElement).position === 'static') {
-        ta.parentElement.style.position = 'relative';
-      }
-      const wrap = ta.parentElement;
-      wrap.classList.add('voice-input-wrap');
-      const mic = document.createElement('button');
-      mic.type = 'button';
-      mic.className = 'mic-btn';
-      mic.innerHTML = '🎤';
-      mic.title = 'Voice input';
-      wrap.appendChild(mic);
-      let rec = null, listening = false;
-      mic.onclick = function(e) {
-        e.preventDefault();
-        if (listening) { rec && rec.stop(); return; }
-        rec = new SR();
-        rec.lang = 'hi-IN';
-        rec.interimResults = false;
-        rec.onstart = () => { listening = true; mic.classList.add('listening'); };
-        rec.onend = () => { listening = false; mic.classList.remove('listening'); };
-        rec.onerror = () => { listening = false; mic.classList.remove('listening'); };
-        rec.onresult = (ev) => {
-          const text = ev.results[0][0].transcript;
-          ta.value = (ta.value ? ta.value + ' ' : '') + text;
-        };
-        rec.start();
-      };
-    });
-  }
-
-  /* =========================================================
-     5. LOCAL DUE REMINDERS (on-device notification, app open)
-     Note: true push notifications when the app is closed need a
-     backend server — not possible from a static HTML file. This
-     checks while the app is open/foregrounded, which covers the
-     common case of staff keeping the app open through the day.
-     ========================================================= */
-  let lastReminderKey = '';
-  function checkDueReminders() {
-    const w = computeTodayWork();
-    const key = `${w.deliveries}-${w.services}-${w.followups}`;
-    if (key === lastReminderKey) return;
-    lastReminderKey = key;
-    const total = w.deliveries + w.services + w.followups;
-    if (total > 0 && window.Notification && Notification.permission === 'granted') {
-      try {
-        new Notification('TTESPL ERP — Aaj Ka Kaam', {
-          body: `${w.deliveries} deliveries, ${w.services} repairs, ${w.followups} followups due today.`,
-          icon: 'https://cdn-icons-png.flaticon.com/512/9422/9422891.png'
-        });
-      } catch(e) {}
-    }
-  }
-  function initReminderPermissionPrompt() {
-    if (!window.Notification || Notification.permission !== 'default') return;
-    if (document.getElementById('notifPermBtn')) return;
-    const banner = document.getElementById('dailyReminderBanner');
-    if (!banner) return;
-    const btn = document.createElement('button');
-    btn.id = 'notifPermBtn';
-    btn.className = 'btn btn-outline btn-sm';
-    btn.style.cssText = 'padding:2px 8px; font-size:10px; margin-left:6px;';
-    btn.textContent = '🔔 Enable Alerts';
-    btn.onclick = () => Notification.requestPermission().then(() => btn.remove());
-    banner.insertBefore(btn, banner.lastElementChild);
-  }
-
-  /* =========================================================
-     6. BOTTOM-SHEET DRAG-TO-DISMISS (mobile only)
-     Generic: works on any .auth-overlay/.auth-card pair. Only
-     closes by setting the overlay's own display:none — same
-     effect every existing closeXModal() already produces.
-     ========================================================= */
-  function attachSheetDrag() {
-    document.querySelectorAll('.auth-card').forEach(card => {
-      if (card.dataset.dragAttached) return;
-      card.dataset.dragAttached = '1';
-      if (!card.querySelector('.sheet-drag-handle')) {
-        const handle = document.createElement('div');
-        handle.className = 'sheet-drag-handle';
-        card.insertBefore(handle, card.firstChild);
-      }
-      const handle = card.querySelector('.sheet-drag-handle');
-      let startY = 0, dy = 0, dragging = false;
-      handle.addEventListener('touchstart', (e) => { dragging = true; startY = e.touches[0].clientY; card.style.transition = 'none'; }, { passive: true });
-      handle.addEventListener('touchmove', (e) => {
-        if (!dragging) return;
-        dy = Math.max(0, e.touches[0].clientY - startY);
-        card.style.transform = `translateY(${dy}px)`;
-      }, { passive: true });
-      handle.addEventListener('touchend', () => {
-        dragging = false;
-        card.style.transition = '';
-        if (dy > 100) {
-          const overlay = card.closest('.auth-overlay');
-          if (overlay) overlay.style.display = 'none';
-        }
-        card.style.transform = '';
-        dy = 0;
-      });
-    });
-  }
-
-  /* =========================================================
-     7. QR / BARCODE SCAN for Stock lookup (jsQR via CDN)
-     ========================================================= */
-  let qrStream = null, qrRafId = null, jsQRLoaded = false;
-  function loadJsQR(cb) {
-    if (window.jsQR) { jsQRLoaded = true; cb(); return; }
-    const s = document.createElement('script');
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
-    s.onload = () => { jsQRLoaded = true; cb(); };
-    s.onerror = () => alert('Scanner load nahi ho paya — internet check karo.');
-    document.head.appendChild(s);
-  }
-  window.openQrScan = function() {
-    loadJsQR(async function() {
-      try {
-        qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        const video = document.getElementById('qrScanVideo');
-        video.srcObject = qrStream;
-        document.getElementById('qrScanOverlay').classList.add('open');
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        function tick() {
-          if (video.readyState === video.HAVE_ENOUGH_DATA) {
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const code = window.jsQR(img.data, img.width, img.height);
-            if (code && code.data) {
-              const match = (sampleInventory||[]).find(it => (it.code||'').toLowerCase() === code.data.toLowerCase() || String(it.id) === code.data);
-              closeQrScan();
-              if (match && typeof openStockDetailModal === 'function') openStockDetailModal(match.id);
-              else alert('Code scan hua: ' + code.data + ' — koi matching item nahi mila.');
-              return;
-            }
-          }
-          qrRafId = requestAnimationFrame(tick);
-        }
-        tick();
-      } catch(e) { alert('Camera access nahi mila.'); }
-    });
-  };
-  window.closeQrScan = function() {
-    document.getElementById('qrScanOverlay').classList.remove('open');
-    if (qrRafId) cancelAnimationFrame(qrRafId);
-    if (qrStream) qrStream.getTracks().forEach(t => t.stop());
-    qrStream = null;
-  };
-  function injectScanButton() {
-    const stockHeaderBtnRow = document.querySelector('#view-inventory div[style*="display:flex; gap:8px"]');
-    if (stockHeaderBtnRow && !document.getElementById('scanStockBtn')) {
-      const btn = document.createElement('button');
-      btn.id = 'scanStockBtn';
-      btn.className = 'btn btn-outline btn-sm';
-      btn.textContent = '📷 Scan';
-      btn.onclick = window.openQrScan;
-      stockHeaderBtnRow.appendChild(btn);
-    }
-  }
-
-  /* =========================================================
-     WIRE-UP — wraps existing globals without altering their body
-     ========================================================= */
-  const _origRenderDashboard = window.renderDashboard;
-  if (typeof _origRenderDashboard === 'function') {
-    window.renderDashboard = function() {
-      _origRenderDashboard.apply(this, arguments);
-      try { renderTodayWidget(); checkDueReminders(); } catch(e) {}
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    injectSearchButton();
-    injectExportButtons();
-    injectScanButton();
-    initReminderPermissionPrompt();
-    setInterval(() => { attachMicButtons(); attachSheetDrag(); }, 1200);
-    setInterval(checkDueReminders, 5 * 60 * 1000);
-  });
-})();
 </script>
 
 </body>
