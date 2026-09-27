@@ -113,59 +113,47 @@
   }
   #pullToRefreshIndicator.visible { transform: translateY(0); }
 
-  /* UPDATED MOBILE-RESPONSIVE HEADER CSS */
   header {
-    background: rgba(10, 37, 64, 0.94);
+    background: rgba(10, 37, 64, 0.88);
     backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    color: white; padding: 10px 14px; position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 8px;
+    color: white; padding: 12px 18px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center;
     border-bottom: 1px solid rgba(255,255,255,0.08);
   }
-  [data-theme="dark"] header { background: rgba(17, 24, 39, 0.94); border-bottom: 1px solid rgba(255,255,255,0.05); }
+  [data-theme="dark"] header { background: rgba(17, 24, 39, 0.88); border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-  .brand-area { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+  .brand-area { display: flex; align-items: center; gap: 12px; }
   .brand-logo-badge {
-    width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #ff6b35, #f59e0b);
-    display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900;
-    color: white; box-shadow: 0 4px 12px rgba(255,107,53,0.45); flex-shrink: 0;
+    width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #ff6b35, #f59e0b);
+    display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 900;
+    color: white; box-shadow: 0 4px 12px rgba(255,107,53,0.45);
   }
-  .brand-title { font-size: 13.5px; font-weight: 800; letter-spacing: 0.3px; line-height: 1.15; color: #ffffff; }
-  .brand-sub { font-size: 9.5px; color: #94a3b8; font-weight: 600; }
+  .brand-title { font-size: 14.5px; font-weight: 800; letter-spacing: 0.3px; line-height: 1.15; color: #ffffff; }
+  .brand-sub { font-size: 10px; color: #94a3b8; font-weight: 600; }
 
-  .header-actions { 
-    display: flex; align-items: center; gap: 6px; width: 100%; 
-    overflow-x: auto; white-space: nowrap; padding-bottom: 2px;
-    scrollbar-width: none;
-  }
-  .header-actions::-webkit-scrollbar { display: none; }
-
+  .header-actions { display: flex; align-items: center; gap: 8px; }
   .sync-badge {
-    font-size: 10px; padding: 4px 8px; border-radius: 20px; font-weight: 700;
-    display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+    font-size: 10.5px; padding: 4px 10px; border-radius: 20px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 6px;
     background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff;
   }
-  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; }
   .sync-dot.offline { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
 
   .user-badge {
-    background: rgba(255,255,255,0.15); font-size: 11px; padding: 4px 8px; border-radius: 20px;
-    display: inline-flex; align-items: center; gap: 5px; border: 1px solid rgba(255,255,255,0.25); color: #fff;
-    flex-shrink: 0;
-  }
-  .user-badge strong {
-    max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    background: rgba(255,255,255,0.15); font-size: 11.5px; padding: 5px 10px; border-radius: 20px;
+    display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.25); color: #fff;
   }
   .user-role-tag {
-    font-size: 8.5px; font-weight: 800; padding: 2px 5px; border-radius: 6px;
+    font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 8px;
     background: #ff6b35; color: white; text-transform: uppercase;
   }
   .user-role-tag.admin { background: #00b4d8; }
-  .btn-header-action { padding: 4px 8px !important; font-size: 11px !important; flex-shrink: 0; }
 
   .daily-reminder-banner {
     background: linear-gradient(90deg, #fffbeb, #fef3c7);
-    border-bottom: 1.5px solid #fde68a; padding: 8px 14px; font-size: 11.5px;
-    color: #92400e; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    border-bottom: 1.5px solid #fde68a; padding: 9px 16px; font-size: 12px;
+    color: #92400e; display: flex; align-items: center; justify-content: space-between; gap: 10px;
     font-weight: 600;
   }
   [data-theme="dark"] .daily-reminder-banner { background: #451a03; color: #fde68a; border-bottom-color: #78350f; }
@@ -192,16 +180,83 @@
     border-radius: 10px; padding: 1px 6px; min-width: 16px; height: 16px; line-height: 14px;
   }
 
-  .container { max-width: 960px; margin: 0 auto; padding: 14px; }
+  .container { max-width: 960px; margin: 0 auto; padding: 16px; }
   .view-panel { display: none; }
   .view-panel.active { display: block; animation: panelFade 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
   @keyframes panelFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
   .card {
     background: var(--card); border-radius: var(--radius-md); padding: 16px; margin-bottom: 14px;
-    border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s ease;
   }
-  .card:hover { box-shadow: var(--shadow-md); }
+  .card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+  /* Custom scrollbar polish */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.45); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.7); }
+
+  /* Dashboard stat cards */
+  .stat-card {
+    position: relative; overflow: hidden; isolation: isolate;
+  }
+  .stat-card::after {
+    content: attr(data-icon); position: absolute; right: -6px; bottom: -10px;
+    font-size: 46px; opacity: 0.14; z-index: -1; line-height: 1; transform: rotate(-8deg);
+    filter: saturate(0.6);
+  }
+  .stat-card:hover { transform: translateY(-3px) scale(1.01); }
+  .stat-card .stat-label { display: flex; align-items: center; gap: 5px; }
+  .stat-value { font-variant-numeric: tabular-nums; letter-spacing: -0.3px; display: inline-block; }
+  .stat-value.pulse-update { animation: statValuePulse 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes statValuePulse { 0% { transform: scale(1); } 45% { transform: scale(1.12); } 100% { transform: scale(1); } }
+
+  /* Button shine sweep on primary/accent */
+  .btn-primary, .btn-accent { position: relative; overflow: hidden; }
+  .btn-primary::before, .btn-accent::before {
+    content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.28), transparent);
+    transform: skewX(-20deg);
+  }
+  .btn-primary:hover::before, .btn-accent:hover::before { animation: btnShine 0.9s ease; }
+  @keyframes btnShine { from { left: -60%; } to { left: 130%; } }
+
+  /* Quick action tiles */
+  .qa-tile {
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 14px 10px; display: flex; flex-direction: column; align-items: center; gap: 7px;
+    cursor: pointer; transition: all 0.22s cubic-bezier(0.16,1,0.3,1); font-size: 11.5px; font-weight: 700; color: var(--text-main);
+  }
+  .qa-tile:hover { border-color: var(--cyan); background: rgba(0,180,216,0.06); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .qa-tile:active { transform: scale(0.96); }
+  .qa-icon-badge {
+    width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-size: 19px; background: linear-gradient(135deg, rgba(0,180,216,0.14), rgba(10,37,64,0.08));
+  }
+
+  /* Global search */
+  .search-result-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;
+    cursor: pointer; transition: all 0.18s ease; background: var(--card);
+  }
+  .search-result-row:hover { border-color: var(--cyan); background: rgba(0,180,216,0.06); transform: translateX(2px); }
+
+  /* Filter bar (Orders/Leads/Services) */
+  .filter-bar {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px; margin-bottom: 14px;
+  }
+  .filter-bar .form-group { margin-bottom: 0; flex: 1; min-width: 130px; }
+  .filter-bar .form-label { font-size: 10.5px; }
+
+  /* Empty state */
+  .empty-state { text-align: center; padding: 28px 14px; color: var(--text-muted); }
+  .empty-state .empty-icon { font-size: 34px; margin-bottom: 8px; display: block; }
+  .empty-state .empty-title { font-weight: 800; color: var(--success); font-size: 13px; }
+  .empty-state .empty-sub { font-size: 11.5px; margin-top: 3px; }
   .card-header {
     display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
     border-bottom: 1px solid var(--border); padding-bottom: 10px;
@@ -616,35 +671,27 @@
     <button class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:10px;" onclick="document.getElementById('dailyReminderBanner').style.display='none'">✕</button>
   </div>
 
-  <!-- FIXED 2-ROW NON-OVERFLOWING MOBILE HEADER -->
   <header>
     <div class="brand-area">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <div class="brand-logo-badge">TT</div>
-        <div>
-          <div class="brand-title">TWIN TOWN EXPRESS SERVICES</div>
-          <div class="brand-sub">Rasulgarh Industrial Estate, BBSR</div>
-        </div>
+      <div class="brand-logo-badge">TT</div>
+      <div>
+        <div class="brand-title">TWIN TOWN EXPRESS SERVICES</div>
+        <div class="brand-sub">Rasulgarh Industrial Estate, BBSR</div>
       </div>
-      <button class="btn btn-danger-sm btn-sm" onclick="performFullLogout()" style="padding:5px 10px; font-size:11.5px; font-weight:800; border-radius:8px; flex-shrink:0;">
-        🚪 Exit
-      </button>
     </div>
-
     <div class="header-actions">
-      <button class="btn btn-outline btn-sm btn-header-action" onclick="requestAppSystemPermissions()" style="color:white; border-color:rgba(255,255,255,0.3);" title="Request Camera & Notification Permissions">🔔 Perms</button>
-      <button class="btn btn-outline btn-sm btn-header-action" onclick="toggleThemeMode()" style="color:white; border-color:rgba(255,255,255,0.3);" title="Toggle Dark/Light Mode">🌙/☀️</button>
-      
+      <button class="btn btn-outline btn-sm" onclick="openGlobalSearchModal()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Global Search">🔍 Search</button>
+      <button class="btn btn-outline btn-sm" onclick="requestAppSystemPermissions()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Request Camera & Notification Permissions">🔔 Perms</button>
+      <button class="btn btn-outline btn-sm" onclick="toggleThemeMode()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Toggle Dark/Light Mode">🌙/☀️</button>
       <div class="sync-badge" id="cloudSyncStatus">
         <span class="sync-dot" id="syncDot"></span> <span id="syncText">Live Cloud</span>
       </div>
-
       <div class="user-badge">
-        <span>👤</span> <strong id="activeStaffDisplay">Dipak Kumar Rout</strong>
+        <span>👤</span> <strong id="activeStaffDisplay">Dipak Rout</strong>
         <span class="user-role-tag admin" id="activeStaffRoleTag">ADMIN</span>
       </div>
-
-      <button class="btn btn-outline btn-sm admin-only-btn btn-header-action" id="headerStaffManageBtn" onclick="openStaffManageModal()" style="display:none; color:white; border-color:rgba(255,255,255,0.4);">👥 Staff</button>
+      <button class="btn btn-outline btn-sm admin-only-btn" id="headerStaffManageBtn" onclick="openStaffManageModal()" style="display:none; color:white; border-color:rgba(255,255,255,0.4); padding:5px 9px;">👥 Staff</button>
+      <button class="btn btn-outline btn-sm" style="color:white; border-color:rgba(255,255,255,0.3); padding:5px 9px;" onclick="performFullLogout()">Logout</button>
     </div>
   </header>
 
@@ -661,24 +708,24 @@
       </div>
 
       <div class="grid-4" style="margin-bottom:14px;">
-        <div class="card" style="margin-bottom:0; background:linear-gradient(135deg, #0a2540, #13395e); color:white; border:none;">
-          <div style="font-size:10.5px; opacity:0.85; font-weight:700;">TODAY'S CASH & RECV</div>
-          <div style="font-size:20px; font-weight:900; margin-top:4px;" id="dashTodayRecv">₹0</div>
+        <div class="card stat-card" data-icon="💰" style="margin-bottom:0; background:linear-gradient(135deg, #0a2540, #13395e); color:white; border:none;">
+          <div class="stat-label" style="font-size:10.5px; opacity:0.85; font-weight:700;">TODAY'S CASH & RECV</div>
+          <div class="stat-value" style="font-size:21px; font-weight:900; margin-top:4px;" id="dashTodayRecv">₹0</div>
           <div style="font-size:10px; opacity:0.75; margin-top:2px;">Cleared Collections</div>
         </div>
-        <div class="card" style="margin-bottom:0; background:var(--danger-bg); border-top:4px solid var(--danger);">
-          <div style="font-size:10.5px; color:var(--danger); font-weight:800;">PENDING DUES</div>
-          <div style="font-size:20px; font-weight:900; color:var(--danger); margin-top:4px;" id="dashTotalDue">₹0</div>
+        <div class="card stat-card" data-icon="⏰" style="margin-bottom:0; background:var(--danger-bg); border-top:4px solid var(--danger);">
+          <div class="stat-label" style="font-size:10.5px; color:var(--danger); font-weight:800;">PENDING DUES</div>
+          <div class="stat-value" style="font-size:21px; font-weight:900; color:var(--danger); margin-top:4px;" id="dashTotalDue">₹0</div>
           <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Recoverable balance</div>
         </div>
-        <div class="card" style="margin-bottom:0; background:var(--success-bg); border-top:4px solid var(--success);">
-          <div style="font-size:10.5px; color:var(--success); font-weight:800;">SERVICE SCHEDULES</div>
-          <div style="font-size:20px; font-weight:900; color:var(--success); margin-top:4px;" id="dashActiveServices">0 Calls</div>
+        <div class="card stat-card" data-icon="🛠️" style="margin-bottom:0; background:var(--success-bg); border-top:4px solid var(--success);">
+          <div class="stat-label" style="font-size:10.5px; color:var(--success); font-weight:800;">SERVICE SCHEDULES</div>
+          <div class="stat-value" style="font-size:21px; font-weight:900; color:var(--success); margin-top:4px;" id="dashActiveServices">0 Calls</div>
           <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Pending & Warranty</div>
         </div>
-        <div class="card" style="margin-bottom:0; background:rgba(0,180,216,0.1); border-top:4px solid var(--cyan);">
-          <div style="font-size:10.5px; color:var(--cyan); font-weight:800;">STOCK INVENTORIES</div>
-          <div style="font-size:20px; font-weight:900; color:var(--cyan); margin-top:4px;" id="dashTotalItems">0 Items</div>
+        <div class="card stat-card" data-icon="🏷️" style="margin-bottom:0; background:rgba(0,180,216,0.1); border-top:4px solid var(--cyan);">
+          <div class="stat-label" style="font-size:10.5px; color:var(--cyan); font-weight:800;">STOCK INVENTORIES</div>
+          <div class="stat-value" style="font-size:21px; font-weight:900; color:var(--cyan); margin-top:4px;" id="dashTotalItems">0 Items</div>
           <div style="font-size:10px; color:var(--text-muted); margin-top:2px;" id="dashTotalClients">0 Clients</div>
         </div>
       </div>
@@ -689,22 +736,22 @@
           <span class="badge badge-info">1-Tap Fast Workflow</span>
         </div>
         <div class="grid-4">
-          <button class="btn btn-outline" onclick="openOrderModal()" style="padding:14px; flex-direction:column; gap:6px;">
-            <span style="font-size:22px;">📦</span>
+          <div class="qa-tile" onclick="openOrderModal()">
+            <div class="qa-icon-badge">📦</div>
             <span>Create Order</span>
-          </button>
-          <button class="btn btn-outline" onclick="openLeadModal()" style="padding:14px; flex-direction:column; gap:6px;">
-            <span style="font-size:22px;">🎯</span>
+          </div>
+          <div class="qa-tile" onclick="openLeadModal()">
+            <div class="qa-icon-badge">🎯</div>
             <span>Machine Inquiry</span>
-          </button>
-          <button class="btn btn-outline" onclick="openServiceCallModal()" style="padding:14px; flex-direction:column; gap:6px;">
-            <span style="font-size:22px;">🛠️</span>
+          </div>
+          <div class="qa-tile" onclick="openServiceCallModal()">
+            <div class="qa-icon-badge">🛠️</div>
             <span>Service Call</span>
-          </button>
-          <button class="btn btn-outline" onclick="openProfitCalculatorModal()" style="padding:14px; flex-direction:column; gap:6px;">
-            <span style="font-size:22px;">🧮</span>
+          </div>
+          <div class="qa-tile" onclick="openProfitCalculatorModal()">
+            <div class="qa-icon-badge">🧮</div>
             <span>Profit / Markup</span>
-          </button>
+          </div>
         </div>
       </div>
 
@@ -726,6 +773,25 @@
         </div>
         <button class="btn btn-accent btn-sm" onclick="openLeadModal()">+ New Lead</button>
       </div>
+
+      <div class="filter-bar">
+        <div class="form-group">
+          <label class="form-label">📅 Inquiry From</label>
+          <input type="date" id="leadsDateFrom" onchange="applyLeadsFilters()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">📅 Inquiry To</label>
+          <input type="date" id="leadsDateTo" onchange="applyLeadsFilters()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">👤 Staff</label>
+          <select id="leadsStaffFilter" class="all-staff-filter" onchange="applyLeadsFilters()">
+            <option value="ALL">All Staff</option>
+          </select>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="clearLeadsFilters()">✕ Clear</button>
+      </div>
+
       <div id="leadsListContainer"></div>
     </div>
 
@@ -744,6 +810,24 @@
         <button class="sub-tab-btn" id="btnSubTabCancelledOrders" onclick="switchOrderSubTab('cancelled')">🚫 Cancelled Orders (<span id="countCancelledOrders">0</span>)</button>
       </div>
 
+      <div class="filter-bar">
+        <div class="form-group">
+          <label class="form-label">📅 Order Date From</label>
+          <input type="date" id="ordersDateFrom" onchange="applyOrdersFilters()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">📅 Order Date To</label>
+          <input type="date" id="ordersDateTo" onchange="applyOrdersFilters()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">👤 Staff</label>
+          <select id="ordersStaffFilter" class="all-staff-filter" onchange="applyOrdersFilters()">
+            <option value="ALL">All Staff</option>
+          </select>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="clearOrdersFilters()">✕ Clear</button>
+      </div>
+
       <div id="ordersListContainer"></div>
     </div>
 
@@ -756,6 +840,25 @@
         </div>
         <button class="btn btn-accent btn-sm" onclick="openServiceCallModal()">+ New Service Call</button>
       </div>
+
+      <div class="filter-bar">
+        <div class="form-group">
+          <label class="form-label">📅 Call Date From</label>
+          <input type="date" id="servicesDateFrom" onchange="applyServicesFilters()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">📅 Call Date To</label>
+          <input type="date" id="servicesDateTo" onchange="applyServicesFilters()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">👤 Technician</label>
+          <select id="servicesStaffFilter" class="all-staff-filter" onchange="applyServicesFilters()">
+            <option value="ALL">All Staff</option>
+          </select>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="clearServicesFilters()">✕ Clear</button>
+      </div>
+
       <div id="serviceListContainer"></div>
     </div>
 
@@ -1139,6 +1242,19 @@
 </div>
 
 <!-- 2. Lead Modal -->
+<div id="globalSearchModal" class="auth-overlay" style="display:none; align-items:flex-start; padding-top:60px;">
+  <div class="auth-card" style="max-width:520px;">
+    <div class="card-header">
+      <strong class="card-title">🔍 Global Search</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeGlobalSearchModal()">✕</button>
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <input type="text" id="globalSearchInput" placeholder="Customer, order ref, machine, item code, phone type karein..." oninput="performGlobalSearch(this.value)">
+    </div>
+    <div id="globalSearchResults"></div>
+  </div>
+</div>
+
 <div id="leadModal" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="card-header">
@@ -1688,6 +1804,155 @@ window.ordersData = ordersData;
 let serviceCallsData = getStored("SERVICES", []);
 window.serviceCallsData = serviceCallsData;
 
+/* ADDITIVE: Date + Staff filter state for Orders / Leads / Services (does not affect stored data or totals) */
+let ordersFilterState = { staff: "ALL", from: "", to: "" };
+let leadsFilterState = { staff: "ALL", from: "", to: "" };
+let servicesFilterState = { staff: "ALL", from: "", to: "" };
+
+function applyOrdersFilters() {
+  ordersFilterState.staff = document.getElementById('ordersStaffFilter').value;
+  ordersFilterState.from = document.getElementById('ordersDateFrom').value;
+  ordersFilterState.to = document.getElementById('ordersDateTo').value;
+  renderOrders();
+}
+function clearOrdersFilters() {
+  ordersFilterState = { staff: "ALL", from: "", to: "" };
+  document.getElementById('ordersStaffFilter').value = "ALL";
+  document.getElementById('ordersDateFrom').value = "";
+  document.getElementById('ordersDateTo').value = "";
+  renderOrders();
+}
+window.applyOrdersFilters = applyOrdersFilters;
+window.clearOrdersFilters = clearOrdersFilters;
+
+function applyLeadsFilters() {
+  leadsFilterState.staff = document.getElementById('leadsStaffFilter').value;
+  leadsFilterState.from = document.getElementById('leadsDateFrom').value;
+  leadsFilterState.to = document.getElementById('leadsDateTo').value;
+  renderLeads();
+}
+function clearLeadsFilters() {
+  leadsFilterState = { staff: "ALL", from: "", to: "" };
+  document.getElementById('leadsStaffFilter').value = "ALL";
+  document.getElementById('leadsDateFrom').value = "";
+  document.getElementById('leadsDateTo').value = "";
+  renderLeads();
+}
+window.applyLeadsFilters = applyLeadsFilters;
+window.clearLeadsFilters = clearLeadsFilters;
+
+function applyServicesFilters() {
+  servicesFilterState.staff = document.getElementById('servicesStaffFilter').value;
+  servicesFilterState.from = document.getElementById('servicesDateFrom').value;
+  servicesFilterState.to = document.getElementById('servicesDateTo').value;
+  renderServices();
+}
+function clearServicesFilters() {
+  servicesFilterState = { staff: "ALL", from: "", to: "" };
+  document.getElementById('servicesStaffFilter').value = "ALL";
+  document.getElementById('servicesDateFrom').value = "";
+  document.getElementById('servicesDateTo').value = "";
+  renderServices();
+}
+window.applyServicesFilters = applyServicesFilters;
+window.clearServicesFilters = clearServicesFilters;
+
+/* ADDITIVE: Global Search across Orders, Leads, Services, Inventory & Customers (read-only, no data mutation) */
+function openGlobalSearchModal() {
+  document.getElementById('globalSearchModal').style.display = 'flex';
+  const inp = document.getElementById('globalSearchInput');
+  inp.value = "";
+  document.getElementById('globalSearchResults').innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Customer, order ref, machine, item code ya phone type karein...</div></div>`;
+  setTimeout(() => inp.focus(), 150);
+}
+function closeGlobalSearchModal() { document.getElementById('globalSearchModal').style.display = 'none'; }
+window.openGlobalSearchModal = openGlobalSearchModal;
+window.closeGlobalSearchModal = closeGlobalSearchModal;
+
+function performGlobalSearch(qRaw) {
+  const q = (qRaw || "").trim().toLowerCase();
+  const box = document.getElementById('globalSearchResults');
+  if (q.length < 2) {
+    box.innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Kam se kam 2 letters type karein...</div></div>`;
+    return;
+  }
+
+  const navItems = document.querySelectorAll('.nav-item');
+  let results = [];
+
+  ordersData.forEach(o => {
+    if ((o.customerName || "").toLowerCase().includes(q) || (o.id || "").toLowerCase().includes(q) || (o.phone || "").includes(q)) {
+      results.push({
+        type: "📦 Order", title: o.customerName,
+        sub: `${o.id} • ₹${Number(o.totalAmount || 0).toLocaleString('en-IN')} • ${o.status}`,
+        action: () => { closeGlobalSearchModal(); switchTab('orders', navItems[2]); setTimeout(() => editOrderPrompt(o.id), 220); }
+      });
+    }
+  });
+
+  leadsData.forEach(l => {
+    if ((l.customerName || "").toLowerCase().includes(q) || (l.machine || "").toLowerCase().includes(q)) {
+      results.push({
+        type: "🎯 Lead", title: l.customerName,
+        sub: `${l.machine || ''} • ${l.status || ''}`,
+        action: () => { closeGlobalSearchModal(); switchTab('leads', navItems[1]); setTimeout(() => editLeadPrompt(l.id), 220); }
+      });
+    }
+  });
+
+  serviceCallsData.forEach(s => {
+    if ((s.customerName || "").toLowerCase().includes(q) || (s.machine || "").toLowerCase().includes(q) || (s.problem || "").toLowerCase().includes(q)) {
+      results.push({
+        type: "🛠️ Service", title: s.customerName,
+        sub: `${s.machine || ''} • ${s.status || ''}`,
+        action: () => { closeGlobalSearchModal(); switchTab('services', navItems[3]); setTimeout(() => editServicePrompt(s.id), 220); }
+      });
+    }
+  });
+
+  sampleInventory.forEach(it => {
+    if ((it.name || "").toLowerCase().includes(q) || (it.code || "").toLowerCase().includes(q)) {
+      results.push({
+        type: "🏷️ Item", title: it.name,
+        sub: `Code: ${it.code || '-'} • Stock: ${it.stock}`,
+        action: () => { closeGlobalSearchModal(); switchTab('inventory', navItems[4]); setTimeout(() => editStockItemPrompt(it.id), 220); }
+      });
+    }
+  });
+
+  customerDatabase.forEach(c => {
+    if ((c.name || "").toLowerCase().includes(q) || (c.phone || "").includes(q)) {
+      results.push({
+        type: "👤 Customer", title: c.name,
+        sub: c.phone || "",
+        action: () => { closeGlobalSearchModal(); editCustomerPrompt(c.id); }
+      });
+    }
+  });
+
+  if (results.length === 0) {
+    box.innerHTML = `<div class="empty-state"><span class="empty-icon">🚫</span><div class="empty-sub">Kuch nahi mila "${esc(qRaw)}" ke liye.</div></div>`;
+    return;
+  }
+
+  box.innerHTML = results.slice(0, 30).map((r, idx) => `
+    <div class="search-result-row" data-idx="${idx}">
+      <div>
+        <span class="badge badge-info" style="margin-right:6px;">${r.type}</span>
+        <strong style="font-size:13px;">${esc(r.title)}</strong>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${esc(r.sub)}</div>
+      </div>
+      <span style="font-size:16px; color:var(--text-muted);">→</span>
+    </div>
+  `).join('');
+
+  results.slice(0, 30).forEach((r, idx) => {
+    const row = box.querySelector(`[data-idx="${idx}"]`);
+    if (row) row.onclick = r.action;
+  });
+}
+window.performGlobalSearch = performGlobalSearch;
+
 let teamChatData = [];
 window.teamChatData = teamChatData;
 
@@ -1824,6 +2089,12 @@ function populateDropdownsAndDatalists() {
     bFilter.innerHTML = `<option value="ALL">All Staff Combined</option>` + registeredEmployees.map(e => `<option value="${e.name}">${e.name} (${e.role})</option>`).join('');
     if(curB) bFilter.value = curB;
   }
+
+  document.querySelectorAll('.all-staff-filter').forEach(sel => {
+    const curVal = sel.value;
+    sel.innerHTML = `<option value="ALL">All Staff</option>` + registeredEmployees.map(e => `<option value="${e.name}">${e.name} (${e.role})</option>`).join('');
+    if(curVal) sel.value = curVal;
+  });
 }
 window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
 
@@ -2087,6 +2358,14 @@ function renderDashboard() {
   document.getElementById('dashTotalItems').textContent = `${sampleInventory.length} Items`;
   document.getElementById('dashTotalClients').textContent = `${customerDatabase.length} Clients`;
 
+  ['dashTodayRecv','dashTotalDue','dashActiveServices','dashTotalItems'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('pulse-update');
+    void el.offsetWidth;
+    el.classList.add('pulse-update');
+  });
+
   const priorityBox = document.getElementById('dashPriorityContainer');
   priorityBox.innerHTML = '';
 
@@ -2111,7 +2390,7 @@ function renderDashboard() {
   document.getElementById('dashPriorityCount').textContent = `${priorityItems.length} Pending`;
 
   if (priorityItems.length === 0) {
-    priorityBox.innerHTML = `<div style="text-align:center; padding:14px; color:var(--success); font-weight:700;">✅ Sabhi targets aur deliveries updated hain! Koi pending alert nahi hai.</div>`;
+    priorityBox.innerHTML = `<div class="empty-state"><span class="empty-icon">✅</span><div class="empty-title">Sabhi targets aur deliveries updated hain!</div><div class="empty-sub">Koi pending alert nahi hai.</div></div>`;
   } else {
     priorityItems.slice(0, 5).forEach(item => {
       const row = document.createElement('div');
@@ -2474,7 +2753,19 @@ function renderLeads() {
     return;
   }
 
-  leadsData.forEach(lead => {
+  /* ADDITIVE: date/staff filter applied only to displayed list */
+  let displayLeads = leadsData;
+  const leadsFiltersActive = leadsFilterState.staff !== "ALL" || leadsFilterState.from || leadsFilterState.to;
+  if (leadsFilterState.staff !== "ALL") displayLeads = displayLeads.filter(l => l.handledBy === leadsFilterState.staff);
+  if (leadsFilterState.from) displayLeads = displayLeads.filter(l => l.inquiryDate >= leadsFilterState.from);
+  if (leadsFilterState.to) displayLeads = displayLeads.filter(l => l.inquiryDate <= leadsFilterState.to);
+
+  if (displayLeads.length === 0 && leadsFiltersActive) {
+    c.innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Is filter ke liye koi inquiry nahi mili.</div></div>`;
+    return;
+  }
+
+  displayLeads.forEach(lead => {
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
@@ -2605,12 +2896,21 @@ function renderOrders() {
 
   const targetList = (currentOrderSubTab === 'active') ? pendingList : cancelledList;
 
-  if (targetList.length === 0) {
-    c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi active pending order nahi hai.</div>`;
+  /* ADDITIVE: apply date/staff filters only to what is displayed; counts above stay unaffected */
+  let displayList = targetList;
+  const filtersActive = ordersFilterState.staff !== "ALL" || ordersFilterState.from || ordersFilterState.to;
+  if (ordersFilterState.staff !== "ALL") displayList = displayList.filter(o => o.bookedBy === ordersFilterState.staff);
+  if (ordersFilterState.from) displayList = displayList.filter(o => o.orderDate >= ordersFilterState.from);
+  if (ordersFilterState.to) displayList = displayList.filter(o => o.orderDate <= ordersFilterState.to);
+
+  if (displayList.length === 0) {
+    c.innerHTML = filtersActive
+      ? `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Is filter ke liye koi order nahi mila.</div></div>`
+      : `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi active pending order nahi hai.</div>`;
     return;
   }
 
-  targetList.forEach(o => {
+  displayList.forEach(o => {
     let statusBadge = o.deliveryDate < today ? 'badge-danger' : 'badge-pending';
     let statusText = o.status === 'Pending' ? (o.deliveryDate < today ? '⚠️ Delayed' : '⏳ Pending Dispatch') : '🚫 Cancelled';
 
@@ -3077,7 +3377,19 @@ function renderServices() {
     return;
   }
 
-  serviceCallsData.forEach(s => {
+  /* ADDITIVE: date/staff filter applied only to displayed list */
+  let displayServices = serviceCallsData;
+  const servicesFiltersActive = servicesFilterState.staff !== "ALL" || servicesFilterState.from || servicesFilterState.to;
+  if (servicesFilterState.staff !== "ALL") displayServices = displayServices.filter(s => s.attendedBy === servicesFilterState.staff);
+  if (servicesFilterState.from) displayServices = displayServices.filter(s => s.recvDate >= servicesFilterState.from);
+  if (servicesFilterState.to) displayServices = displayServices.filter(s => s.recvDate <= servicesFilterState.to);
+
+  if (displayServices.length === 0 && servicesFiltersActive) {
+    c.innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Is filter ke liye koi service call nahi mila.</div></div>`;
+    return;
+  }
+
+  displayServices.forEach(s => {
     let statusBadge = s.status === 'Work Completed' ? 'badge-delivered' : (s.targetDate === today ? 'badge-today' : 'badge-pending');
     let statusText = s.status === 'Work Completed' ? '✓ Completed' : (s.targetDate === today ? '🔔 DUE TODAY' : `Target: ${s.targetDate}`);
 
