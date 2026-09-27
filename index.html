@@ -114,43 +114,50 @@
   #pullToRefreshIndicator.visible { transform: translateY(0); }
 
   header {
-    background: rgba(10, 37, 64, 0.95);
+    background: rgba(10, 37, 64, 0.88);
     backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    color: white; padding: 10px 12px; position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center; gap: 6px;
+    color: white; padding: 12px 18px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center;
     border-bottom: 1px solid rgba(255,255,255,0.08);
   }
-  [data-theme="dark"] header { background: rgba(17, 24, 39, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05); }
+  [data-theme="dark"] header { background: rgba(17, 24, 39, 0.88); border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-  .brand-area { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+  .brand-area { display: flex; align-items: center; gap: 12px; }
   .brand-logo-badge {
-    width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(135deg, #ff6b35, #f59e0b);
-    display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900;
-    color: white; box-shadow: 0 4px 12px rgba(255,107,53,0.45); flex-shrink: 0;
+    width: 42px; height: 42px; border-radius: 13px; background: linear-gradient(135deg, #ff6b35, #f59e0b 60%, #00b4d8);
+    background-size: 220% 220%; animation: brandGlowShift 6s ease-in-out infinite;
+    display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900;
+    color: white; box-shadow: 0 4px 16px rgba(255,107,53,0.55), 0 0 0 3px rgba(255,255,255,0.08);
+    letter-spacing: -0.5px;
   }
-  .brand-text-wrap { min-width: 0; flex: 1; }
-  .brand-title { font-size: 11px; font-weight: 800; letter-spacing: 0.1px; line-height: 1.15; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .brand-sub { font-size: 8.5px; color: #94a3b8; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  @keyframes brandGlowShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .brand-title {
+    font-size: 15.5px; font-weight: 800; letter-spacing: 0.3px; line-height: 1.2;
+    background: linear-gradient(90deg, #ffffff, #b9e7f7 45%, #ffffff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .brand-title-full { font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px; color: #7dd3fc; text-transform: uppercase; }
+  .brand-sub { font-size: 10px; color: #94a3b8; font-weight: 600; }
 
-  .header-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .header-actions { display: flex; align-items: center; gap: 8px; }
   .sync-badge {
-    font-size: 9px; padding: 3px 6px; border-radius: 14px; font-weight: 700;
-    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10.5px; padding: 4px 10px; border-radius: 20px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 6px;
     background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff;
-    white-space: nowrap;
   }
-  .sync-dot { width: 5px; height: 5px; border-radius: 50%; background: #10b981; box-shadow: 0 0 5px #10b981; }
-  .sync-dot.offline { background: #ef4444; box-shadow: 0 0 5px #ef4444; }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; }
+  .sync-dot.offline { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
 
   .user-badge {
-    background: rgba(255,255,255,0.15); font-size: 9.5px; padding: 3px 6px; border-radius: 14px;
-    display: flex; align-items: center; gap: 3px; border: 1px solid rgba(255,255,255,0.25); color: #fff;
-    white-space: nowrap; max-width: 100px; overflow: hidden; text-overflow: ellipsis;
+    background: rgba(255,255,255,0.15); font-size: 11.5px; padding: 5px 10px; border-radius: 20px;
+    display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.25); color: #fff;
   }
-  .user-badge span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; }
   .user-role-tag {
-    font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 5px;
-    background: #ff6b35; color: white; text-transform: uppercase; flex-shrink: 0;
+    font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 8px;
+    background: #ff6b35; color: white; text-transform: uppercase;
   }
   .user-role-tag.admin { background: #00b4d8; }
 
@@ -195,12 +202,16 @@
   }
   .card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
 
+  /* Custom scrollbar polish */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.45); border-radius: 10px; }
   ::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.7); }
 
-  .stat-card { position: relative; overflow: hidden; isolation: isolate; }
+  /* Dashboard stat cards */
+  .stat-card {
+    position: relative; overflow: hidden; isolation: isolate;
+  }
   .stat-card::after {
     content: attr(data-icon); position: absolute; right: -6px; bottom: -10px;
     font-size: 46px; opacity: 0.14; z-index: -1; line-height: 1; transform: rotate(-8deg);
@@ -212,6 +223,7 @@
   .stat-value.pulse-update { animation: statValuePulse 0.4s cubic-bezier(0.34,1.56,0.64,1); }
   @keyframes statValuePulse { 0% { transform: scale(1); } 45% { transform: scale(1.12); } 100% { transform: scale(1); } }
 
+  /* Button shine sweep on primary/accent */
   .btn-primary, .btn-accent { position: relative; overflow: hidden; }
   .btn-primary::before, .btn-accent::before {
     content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
@@ -221,6 +233,7 @@
   .btn-primary:hover::before, .btn-accent:hover::before { animation: btnShine 0.9s ease; }
   @keyframes btnShine { from { left: -60%; } to { left: 130%; } }
 
+  /* Quick action tiles */
   .qa-tile {
     background: var(--card); border: 1.5px solid var(--border); border-radius: 14px;
     padding: 14px 10px; display: flex; flex-direction: column; align-items: center; gap: 7px;
@@ -233,6 +246,7 @@
     font-size: 19px; background: linear-gradient(135deg, rgba(0,180,216,0.14), rgba(10,37,64,0.08));
   }
 
+  /* Global search */
   .search-result-row {
     display: flex; justify-content: space-between; align-items: center; gap: 10px;
     padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;
@@ -240,6 +254,7 @@
   }
   .search-result-row:hover { border-color: var(--cyan); background: rgba(0,180,216,0.06); transform: translateX(2px); }
 
+  /* Filter bar (Orders/Leads/Services) */
   .filter-bar {
     display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;
     background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
@@ -248,6 +263,7 @@
   .filter-bar .form-group { margin-bottom: 0; flex: 1; min-width: 130px; }
   .filter-bar .form-label { font-size: 10.5px; }
 
+  /* Empty state */
   .empty-state { text-align: center; padding: 28px 14px; color: var(--text-muted); }
   .empty-state .empty-icon { font-size: 34px; margin-bottom: 8px; display: block; }
   .empty-state .empty-title { font-weight: 800; color: var(--success); font-size: 13px; }
@@ -272,10 +288,9 @@
   .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
 
   .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-    padding: 5px 9px; border-radius: 8px; font-size: 11px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 16px; border-radius: var(--radius-sm); font-size: 12.5px; font-weight: 700;
     border: none; cursor: pointer; text-decoration: none; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    white-space: nowrap;
   }
   .btn:active { transform: scale(0.96); }
   .btn-primary { background: linear-gradient(135deg, #0a2540, #13395e); color: white; box-shadow: 0 4px 12px rgba(10,37,64,0.25); }
@@ -285,10 +300,12 @@
   .btn-wa { background: #25d366; color: white; }
   .btn-excel { background: #107c41; color: white; }
   .btn-print { background: #334155; color: white; }
-  .btn-sm { padding: 4px 8px; font-size: 10.5px; border-radius: 6px; }
+  .btn-sm { padding: 6px 12px; font-size: 11.5px; border-radius: 8px; }
   .btn-outline { background: var(--card); border: 1.5px solid var(--border); color: var(--text-main); }
   .btn-outline:hover { background: rgba(0,0,0,0.03); border-color: var(--cyan); }
-  .btn-danger-sm { background: var(--danger-bg); color: var(--danger); padding: 4px 8px; border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; }
+  .btn-danger-sm { background: var(--danger-bg); color: var(--danger); padding: 5px 10px; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; }
+  .btn-danger { background: var(--danger); color: #ffffff; border: 1px solid var(--danger); font-weight: 800; }
+  .btn-danger:hover { background: #dc2626; }
   .btn-block { width: 100%; }
 
   .sub-tabs { display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 1.5px solid var(--border); padding-bottom: 10px; overflow-x: auto; }
@@ -417,21 +434,20 @@
     .no-print { display: none !important; }
   }
 
-  /* TALLY INVOICE MATCHED STYLING */
   .invoice-box { 
-    border: 1.5px solid #0a2540; padding: 14px; border-radius: 8px; 
-    background: #ffffff; color: #111827; font-size: 11px; 
+    border: 1.5px solid #0a2540; padding: 18px; border-radius: 10px; 
+    background: #ffffff; color: #111827; font-size: 12px; 
     width: 100%; box-sizing: border-box; overflow-x: auto; 
   }
-  .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0a2540; padding-bottom: 10px; }
+  .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0a2540; padding-bottom: 12px; }
   .inv-table { 
-    width: 100%; border-collapse: collapse; margin: 10px 0; 
-    font-size: 10.5px; table-layout: fixed; word-wrap: break-word; 
+    width: 100%; border-collapse: collapse; margin: 14px 0; 
+    font-size: 11.5px; table-layout: fixed; word-wrap: break-word; 
   }
   .inv-table th, .inv-table td { 
-    border: 1px solid #cbd5e1; padding: 6px 4px; text-align: left; overflow: hidden; color: #111827;
+    border: 1px solid #cbd5e1; padding: 7px 6px; text-align: left; overflow: hidden; color: #111827;
   }
-  .inv-table th { background: #f1f5f9; font-weight: 700; color: #0f172a; text-align: center; }
+  .inv-table th { background: #f1f5f9; font-weight: 700; color: #0f172a; }
 
   /* iOS Polish Layer */
   .auth-overlay {
@@ -527,16 +543,17 @@
 <input type="file" id="chatAttachmentInput" style="display:none;" accept="image/*,.pdf,.doc,.docx" onchange="handleChatFileUpload(event)">
 <input type="file" id="backupRestoreInput" style="display:none;" accept=".json" onchange="processRestoreJSON(event)">
 
-<!-- HIDDEN INPUTS FOR PHOTO PROOFS (CAMERA & GALLERY SUPPORTED) -->
+<!-- HIDDEN INPUTS FOR MANDATORY PHOTO PROOFS WITH DIRECT CAMERA SUPPORT -->
 <input type="file" id="deliveryPhotoFileInput" accept="image/*" style="display:none;" onchange="handleDeliveryPhotoCaptured(event)">
 <input type="file" id="paymentProofFileInput" accept="image/*" style="display:none;" onchange="handlePaymentProofCaptured(event)">
 
-<!-- AUTH SCREEN (OPEN BY DEFAULT UNLESS LOGGED IN) -->
-<div id="authScreen" class="auth-overlay" style="display:flex;">
+<!-- AUTH SCREEN -->
+<div id="authScreen" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div style="text-align:center; margin-bottom:20px;">
       <div style="width:52px; height:52px; margin:0 auto 12px; border-radius:14px; background:linear-gradient(135deg, #0a2540, #ff6b35); display:flex; align-items:center; justify-content:center; color:white; font-size:26px; font-weight:900;">TT</div>
       <h2 style="font-size:17.5px; color:var(--text-main); font-weight:800;">TWIN TOWN EXPRESS SERVICES</h2>
+      <div style="font-size:10px; color:var(--cyan); font-weight:800; letter-spacing:0.6px; text-transform:uppercase; margin:2px 0 4px;">Pvt. Ltd.</div>
       <span style="font-size:11.5px; color:var(--text-muted); font-weight:600;">Authorised Detailing & Machinery Portal</span>
     </div>
 
@@ -615,26 +632,26 @@
   </div>
 </div>
 
-<!-- MANDATORY DELIVERY PROOF MODAL WITH MANUAL DATE -->
+<!-- MANDATORY DELIVERY PROOF MODAL -->
 <div id="deliveryProofModal" class="auth-overlay" style="display:none; z-index:3600;">
   <div class="auth-card" style="max-width:440px;">
     <div class="card-header">
-      <strong class="card-title">📸 Delivery Proof & Date</strong>
+      <strong class="card-title">📸 Delivery Proof Photo (Mandatory)</strong>
       <button class="btn btn-outline btn-sm" onclick="closeDeliveryProofModal()">✕</button>
     </div>
     <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-      Order deliver karne ki photo upload karein aur agar pehle deliver hua ho toh manual delivery date select karein.
-    </div>
-    <div class="form-group">
-      <label class="form-label">Actual Delivery Date:</label>
-      <input type="date" id="manualDeliveryDateInput">
+      Order deliver karne se pehle product/package ya customer ke signature/handover ki kam se kam 1 photo lena zaroori hai.
     </div>
     <div id="deliveryPhotoPreviewWrap" style="text-align:center; margin-bottom:14px;">
-      <img id="deliveryPhotoPreview" src="" alt="Proof Preview" style="display:none; max-width:100%; max-height:200px; border-radius:10px; border:2px solid var(--success); margin:0 auto 10px;">
-      <button class="btn btn-accent btn-block" onclick="document.getElementById('deliveryPhotoFileInput').click()">📁 Select Photo (Camera / Gallery)</button>
+      <img id="deliveryPhotoPreview" src="" alt="Proof Preview" style="display:none; max-width:100%; max-height:220px; border-radius:10px; border:2px solid var(--success); margin:0 auto 10px;">
+      <button class="btn btn-accent btn-block" onclick="document.getElementById('deliveryPhotoFileInput').click()">📷 Camera / Gallery se Photo Chunein</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Delivery Date (Purani delivery ke liye date badal sakte hain)</label>
+      <input type="date" id="deliveryManualDate">
     </div>
     <input type="hidden" id="pendingDeliverOrderId">
-    <button class="btn btn-primary btn-block" id="confirmDeliveryBtn" disabled onclick="executeConfirmedDelivery()">✓ Complete Delivery & Generate Bill</button>
+    <button class="btn btn-primary btn-block" id="confirmDeliveryBtn" disabled onclick="executeConfirmedDelivery()">✓ Confirm & Complete Delivery</button>
   </div>
 </div>
 
@@ -642,19 +659,19 @@
 <div id="paymentProofModal" class="auth-overlay" style="display:none; z-index:3600;">
   <div class="auth-card" style="max-width:440px;">
     <div class="card-header">
-      <strong class="card-title">💵 Payment Receipt / Cash Proof</strong>
+      <strong class="card-title">💵 Payment Receipt / Cash Proof (Mandatory)</strong>
       <button class="btn btn-outline btn-sm" onclick="closePaymentProofModal()">✕</button>
     </div>
     <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-      Payment collection record karne ke liye UPI screenshot ya cash voucher photo attach karein.
+      Payment collection record karne ke liye UPI screenshot, Cheque photo, ya Cash voucher ka proof upload karna zaroori hai.
     </div>
     <div class="form-group">
       <label class="form-label">Payment Amount Collected (₹):</label>
       <input type="number" id="payCollectInputAmt" style="font-size:16px; font-weight:800;">
     </div>
     <div id="payProofPreviewWrap" style="text-align:center; margin-bottom:14px;">
-      <img id="payProofPreview" src="" alt="Proof Preview" style="display:none; max-width:100%; max-height:200px; border-radius:10px; border:2px solid var(--cyan); margin:0 auto 10px;">
-      <button class="btn btn-accent btn-block" onclick="document.getElementById('paymentProofFileInput').click()">📁 Select Payment Proof (Camera / Gallery)</button>
+      <img id="payProofPreview" src="" alt="Proof Preview" style="display:none; max-width:100%; max-height:220px; border-radius:10px; border:2px solid var(--cyan); margin:0 auto 10px;">
+      <button class="btn btn-accent btn-block" onclick="document.getElementById('paymentProofFileInput').click()">📸 Take Payment Photo / Receipt</button>
     </div>
     <input type="hidden" id="pendingCollectOrderId">
     <button class="btn btn-primary btn-block" id="confirmCollectPayBtn" disabled onclick="executeConfirmedPaymentCollection()">✓ Confirm Payment & Cloud Push</button>
@@ -662,7 +679,7 @@
 </div>
 
 <!-- MAIN APP WRAPPER -->
-<div id="mainAppWrapper" style="display:none;">
+<div id="mainAppWrapper">
 
   <div class="daily-reminder-banner" id="dailyReminderBanner">
     <div>
@@ -675,24 +692,25 @@
   <header>
     <div class="brand-area">
       <div class="brand-logo-badge">TT</div>
-      <div class="brand-text-wrap">
-        <div class="brand-title">TWIN TOWN EXPRESS SERVICES PVT LTD</div>
-        <div class="brand-sub">Plot: 1270/8586, Satya Vihar, Rasulgarh, BBSR</div>
+      <div>
+        <div class="brand-title">TWIN TOWN EXPRESS SERVICES</div>
+        <div class="brand-title-full">Pvt. Ltd. · Detailing &amp; Machinery Portal</div>
+        <div class="brand-sub">Rasulgarh Industrial Estate, BBSR</div>
       </div>
     </div>
     <div class="header-actions">
-      <button class="btn btn-outline btn-sm" onclick="openGlobalSearchModal()" title="Global Search">🔍</button>
-      <button class="btn btn-outline btn-sm" onclick="requestAppSystemPermissions()" title="Permissions">🔔</button>
-      <button class="btn btn-outline btn-sm" onclick="toggleThemeMode()" title="Theme">🌙</button>
+      <button class="btn btn-outline btn-sm" onclick="openGlobalSearchModal()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Global Search">🔍 Search</button>
+      <button class="btn btn-outline btn-sm" onclick="requestAppSystemPermissions()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Request Camera & Notification Permissions">🔔 Perms</button>
+      <button class="btn btn-outline btn-sm" onclick="toggleThemeMode()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Toggle Dark/Light Mode">🌙/☀️</button>
       <div class="sync-badge" id="cloudSyncStatus">
-        <span class="sync-dot" id="syncDot"></span> <span id="syncText">Cloud</span>
+        <span class="sync-dot" id="syncDot"></span> <span id="syncText">Live Cloud</span>
       </div>
-      <div class="user-badge" title="Admin">
-        <span>👤</span> <strong id="activeStaffDisplay">Admin</strong>
+      <div class="user-badge">
+        <span>👤</span> <strong id="activeStaffDisplay">Dipak Rout</strong>
         <span class="user-role-tag admin" id="activeStaffRoleTag">ADMIN</span>
       </div>
-      <button class="btn btn-outline btn-sm admin-only-btn" id="headerStaffManageBtn" onclick="openStaffManageModal()" style="display:none;">👥</button>
-      <button class="btn btn-outline btn-sm" onclick="performFullLogout()">Logout</button>
+      <button class="btn btn-outline btn-sm admin-only-btn" id="headerStaffManageBtn" onclick="openStaffManageModal()" style="display:none; color:white; border-color:rgba(255,255,255,0.4); padding:5px 9px;">👥 Staff</button>
+      <button class="btn btn-outline btn-sm" style="color:white; border-color:rgba(255,255,255,0.3); padding:5px 9px;" onclick="performFullLogout()">Logout</button>
     </div>
   </header>
 
@@ -1085,6 +1103,15 @@
       Admin can update staff names, passwords, and assigned department roles.
     </div>
     <div id="staffManageList" style="max-height:360px; overflow-y:auto; margin-bottom:14px;"></div>
+
+    <div style="border:1.5px dashed var(--danger); border-radius:var(--radius-sm); padding:12px; margin-bottom:14px; background:var(--danger-bg);">
+      <div style="font-size:12.5px; font-weight:800; color:var(--danger); margin-bottom:4px;">⚠️ Danger Zone: Factory Reset</div>
+      <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px; line-height:1.5;">
+        Yeh Orders, Leads, Services, Ledger, Customers, Inventory, Staff Login aur Chat — sab kuch LOCAL aur CLOUD dono se permanently delete kar dega. App bilkul brand-new ho jayega, wapas Login/Create Account screen par aa jayega. Yeh action UNDO nahi ho sakta.
+      </div>
+      <button class="btn btn-danger btn-block" onclick="performFactoryReset()">🗑️ Factory Reset App (Sab Kuch Clear)</button>
+    </div>
+
     <button class="btn btn-outline btn-block" onclick="closeStaffManageModal()">Close</button>
   </div>
 </div>
@@ -1612,11 +1639,11 @@
   </div>
 </div>
 
-<!-- 11. INVOICE PRINT MODAL (TALLY LAYOUT MATCHED) -->
+<!-- 11. INVOICE PRINT MODAL -->
 <div id="invoicePrintModal" class="auth-overlay" style="display:none; z-index:3000;">
-  <div class="auth-card" style="max-width:760px; width:95%;">
+  <div class="auth-card" style="max-width:740px; width:95%;">
     <div class="card-header no-print">
-      <strong class="card-title">🖨️ Tally Tax Invoice Preview</strong>
+      <strong class="card-title">🖨️ GST Tax Invoice Preview</strong>
       <div style="display:flex; gap:8px;">
         <button class="btn btn-print btn-sm" onclick="executeInvoicePrint()">🖨️ Print / Save as PDF</button>
         <button class="btn btn-outline btn-sm" onclick="closeInvoicePrintModal()">✕ Close</button>
@@ -1627,96 +1654,89 @@
       <div class="invoice-box">
         <div class="invoice-header">
           <div>
-            <h2 style="color:#0a2540; font-size:15px; font-weight:900;">TWINTOWN EXPRESS SERVICES PVT LTD FY 26-27</h2>
-            <div style="font-size:9.5px; color:#475569; line-height:1.4; margin-top:2px;">
-              PLOT: 1270/8586, SATYA VIHAR, RASHULGARH, BHUBANESWAR-751010<br>
-              <strong>Ph:</strong> 8917465040 | <strong>GSTIN/UIN:</strong> 21AAICT0014E1ZT<br>
-              <strong>State Name:</strong> Odisha, Code: 21 | <strong>Email:</strong> info@ttespl.com
+            <h2 style="color:#0a2540; font-size:16.5px; font-weight:900;">TWIN TOWN EXPRESS SERVICES PVT LTD</h2>
+            <div style="font-size:11px; color:#475569; line-height:1.45; margin-top:4px;">
+              Plot: 1270/8586, Satya Vihar, Rasulgarh, Bhubaneswar-751010<br>
+              <strong>GSTIN:</strong> 21AAICT0014E1ZT | <strong>Email:</strong> info@ttespl.com<br>
+              <strong>Ph:</strong> +91 8917465040 / 0674-2580123
             </div>
           </div>
-          <div style="text-align:right; font-size:10px;">
-            <div style="font-size:13px; font-weight:800; color:#ff6b35;">Tax Invoice</div>
-            <div>Invoice No.: <strong id="invPrintId">ORD-901</strong></div>
-            <div>Dated: <strong id="invPrintDate">2026-09-26</strong></div>
-            <div>Mode/Terms of Payment: <strong id="invPrintPayMode">Cash</strong></div>
+          <div style="text-align:right;">
+            <div style="font-size:14.5px; font-weight:800; color:#ff6b35;">TAX INVOICE</div>
+            <div style="font-size:11.5px;">Invoice: <strong id="invPrintId">ORD-901</strong></div>
+            <div style="font-size:11.5px;">Date: <strong id="invPrintDate">2026-09-26</strong></div>
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; border-bottom:1px solid #cbd5e1; padding-bottom:8px; font-size:10px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; border-bottom:1px solid #cbd5e1; padding-bottom:10px;">
           <div>
-            <strong style="color:#0a2540;">Consignee (Ship to) / Buyer (Bill to):</strong>
-            <div style="font-size:11px; font-weight:700;" id="invPrintCustName">Client Name</div>
-            <div id="invPrintCustAddress">Address</div>
-            <div>Mobile: <span id="invPrintCustPhone">-</span></div>
-            <div>GSTIN/UIN: <strong id="invPrintCustGst">Unregistered</strong></div>
-            <div>State Name: Odisha, Code: 21</div>
+            <strong style="color:#0a2540; font-size:12px;">BILLED TO / CUSTOMER:</strong>
+            <div style="font-size:12.5px; font-weight:700;" id="invPrintCustName">Client Name</div>
+            <div style="font-size:11.5px;" id="invPrintCustAddress">Address</div>
+            <div style="font-size:11.5px;">Mobile: <span id="invPrintCustPhone">-</span></div>
+            <div style="font-size:11.5px;">GSTIN: <strong id="invPrintCustGst">Unregistered</strong></div>
           </div>
-          <div style="font-size:10px; border-left:1px solid #cbd5e1; padding-left:8px;">
-            <div>Buyer's Order No.: -</div>
-            <div>Dated: -</div>
-            <div>Dispatch Doc No.: -</div>
-            <div>Delivery Note Date: -</div>
-            <div>Dispatched through: -</div>
-            <div>Destination: Bhubaneswar</div>
+          <div style="text-align:right; font-size:11.5px;">
+            <div>Payment Mode: <strong id="invPrintPayMode">Cash</strong></div>
+            <div>Place of Supply: <strong id="invPrintSupplyState">21-Odisha</strong></div>
+            <div>Billed By: <strong id="invPrintStaff">Staff</strong></div>
           </div>
         </div>
 
         <table class="inv-table">
           <thead>
             <tr>
-              <th style="width:28px;">SI No.</th>
-              <th>Description of Goods</th>
-              <th style="width:65px;">HSN/SAC</th>
-              <th style="width:45px;">GST</th>
-              <th style="width:45px;">Quantity</th>
-              <th style="width:75px;">Rate (Incl. of Tax)</th>
-              <th style="width:70px;">Rate</th>
-              <th style="width:40px;">per</th>
-              <th style="width:40px;">Disc %</th>
-              <th style="width:75px;">Amount</th>
+              <th style="width:30px;">#</th>
+              <th>Description of Goods / Spares</th>
+              <th style="width:75px;">HSN/SAC</th>
+              <th style="width:45px;">Qty</th>
+              <th style="width:85px;">Rate (₹)</th>
+              <th style="width:90px;">Taxable (₹)</th>
             </tr>
           </thead>
           <tbody id="invPrintItemsTbody"></tbody>
         </table>
 
-        <!-- Tax Breakdown Summary Table as in Tally Invoice -->
-        <table class="inv-table" style="margin-top:6px;">
-          <thead>
-            <tr>
-              <th rowspan="2">HSN/SAC</th>
-              <th rowspan="2">Taxable Value</th>
-              <th colspan="2">Central Tax</th>
-              <th colspan="2">State Tax</th>
-              <th rowspan="2">Total Tax Amount</th>
-            </tr>
-            <tr>
-              <th>Rate</th>
-              <th>Amount</th>
-              <th>Rate</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody id="invPrintTaxBreakdownTbody"></tbody>
-        </table>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1.5px solid #0a2540; padding-top:6px; font-size:11.5px; font-weight:800; color:#0a2540; margin-top:6px;">
-          <span>Total</span>
-          <span id="invPrintGrandTotal">₹0</span>
-        </div>
-
-        <div style="font-size:10px; margin-top:4px;">
-          Amount Chargeable (in words): <strong id="invPrintAmountWords">INR Zero Only</strong>
-        </div>
-
-        <div style="margin-top:16px; border-top:1px solid #cbd5e1; padding-top:8px; display:flex; justify-content:space-between; align-items:flex-end; font-size:9.5px;">
-          <div style="color:#64748b; line-height:1.4;">
-            <strong>Declaration:</strong><br>
-            We declare that this invoice shows the actual price of the goods<br>
-            described and that all particulars are true and correct.
+        <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+          <div style="width:280px; font-size:11.5px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span>Total Taxable Amount:</span>
+              <strong id="invPrintTaxable">₹0</strong>
+            </div>
+            <div id="invPrintTaxRowsContainer">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:#475569;">
+                <span>CGST (9%):</span>
+                <span id="invPrintCgst">₹0</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:#475569;">
+                <span>SGST (9%):</span>
+                <span id="invPrintSgst">₹0</span>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-top:1.5px solid #0a2540; padding-top:6px; font-size:13.5px; font-weight:800; color:#0a2540;">
+              <span>Grand Total:</span>
+              <span id="invPrintGrandTotal">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:3px;">
+              <span>Amount Received:</span>
+              <span id="invPrintRecv">₹0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; color:#b91c1c; font-weight:700;">
+              <span>Balance Due:</span>
+              <span id="invPrintDue">₹0</span>
+            </div>
           </div>
-          <div style="text-align:right;">
+        </div>
+
+        <div style="margin-top:24px; border-top:1px solid #cbd5e1; padding-top:12px; display:flex; justify-content:space-between; align-items:flex-end;">
+          <div style="font-size:10px; color:#64748b; line-height:1.45;">
+            <strong>Declaration & Terms:</strong><br>
+            1. Goods once sold will not be taken back without original warranty seal.<br>
+            2. High-pressure machinery requires 3-phase stable voltage.
+          </div>
+          <div style="text-align:center; font-size:11.5px;">
             <div style="font-weight:700; color:#0a2540;">For TWIN TOWN EXPRESS SERVICES PVT LTD</div>
-            <div style="height:32px;"></div>
+            <div style="height:40px;"></div>
             <div>Authorised Signatory</div>
           </div>
         </div>
@@ -1750,9 +1770,29 @@ window.getStored = getStored;
 
 function setStored(key, val) {
   try {
+    // Capture what was there BEFORE overwriting, so we can detect deletions
+    const prevRaw = localStorage.getItem(DB_PREFIX + key);
+    const prevArr = prevRaw ? JSON.parse(prevRaw) : null;
+
     localStorage.setItem(DB_PREFIX + key, JSON.stringify(val));
+
     if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') {
       window.cloudSync.pushKey(key, val);
+
+      // BUGFIX: pushKey only ever ADDS/UPDATES docs in the cloud (merge:true).
+      // It never removed a doc for an item that was deleted locally, so the
+      // deleted record stayed alive in Firestore and would silently come
+      // back the next time the live listener refreshed. Here we diff the
+      // old array against the new one and explicitly delete from the cloud
+      // any id that is no longer present.
+      if (Array.isArray(prevArr) && Array.isArray(val) && window.cloudSync.deleteItem) {
+        const newIds = new Set(val.filter(it => it && it.id != null).map(it => String(it.id)));
+        prevArr.forEach(it => {
+          if (it && it.id != null && !newIds.has(String(it.id))) {
+            window.cloudSync.deleteItem(key, it.id);
+          }
+        });
+      }
     }
   } catch(e) {
     console.error("Storage error:", e);
@@ -1774,18 +1814,24 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.setAttribute('data-theme', savedTheme);
 });
 
-/* FRESH CLEAN INITIALIZATION WITH ONLY SPECIFIED ADMIN */
-let registeredEmployees = getStored("STAFF", [
-  { id: 1, name: "Admin", role: "Admin", mobile: "9776000261", pass: "123456", pin: "1234" }
-]);
+/* Clean Production Initialization */
+// NOTE: no hardcoded default account anymore — a brand-new / freshly-reset
+// app starts with zero staff, so the very first person must use
+// "+ Create New Account" on the login screen to register (as Admin) before
+// anyone can log in.
+let registeredEmployees = getStored("STAFF", []);
 window.registeredEmployees = registeredEmployees;
 
 let currentUser = getStored("SESSION_USER", null);
 
-let customerDatabase = getStored("CUSTOMERS", (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.customers) || []);
+let customerDatabase = getStored("CUSTOMERS", (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.customers) || [
+  { id: 1, name: "Trinity Techno Solution", person: "Trinity Techno Solution", phone: "6371256123", email: "", address: "Plot No-1159/2782, Behind Debaki Tower, Bomikhal, Khordha", gst: "21DDTPM0058K1ZC" }
+]);
 window.customerDatabase = customerDatabase;
 
-let sampleInventory = getStored("INVENTORY", (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.inventory) || []);
+let sampleInventory = getStored("INVENTORY", (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.inventory) || [
+  { id: 1001, name: "valve kit -A,", code: "2186", category: "Machine Spares", machine: "HRC", stock: 10, dealerPrice: 1205.96, rate: 1608.34, hsn: "84139190", desc: "Spare part for HRC. Code: 2186", specs: "Machine Model: HRC | Part Code: 2186" }
+]);
 window.sampleInventory = sampleInventory;
 
 let machineryDatabase = getStored("MACHINERY", [
@@ -1793,7 +1839,9 @@ let machineryDatabase = getStored("MACHINERY", [
   { id: 202, name: "AR 680 (1Φ) Compact Washer", pump: "AR Triplex", motor: "3 HP Single-Phase", bar: 150, price: 64834 },
   { id: 203, name: "HRC PRO 11.11 ET (1Φ)", pump: "AR Commercial", motor: "4 HP Single-Phase", bar: 110, price: 114263 },
   { id: 204, name: "HRR Pro Three-Phase Washer", pump: "AR 1450 RPM", motor: "5.5 HP 3-Phase", bar: 140, price: 132660 },
-  { id: 205, name: "HRG Pro High-Flow LCV/HCV", pump: "AR Heavy Flow", motor: "7.5 HP 3-Phase", bar: 150, price: 150754 }
+  { id: 205, name: "HRG Pro High-Flow LCV/HCV", pump: "AR Heavy Flow", motor: "7.5 HP 3-Phase", bar: 150, price: 150754 },
+  { id: 206, name: "FX-1D Single Hose Steamjet", pump: "Kyong Dong Burner DC", motor: "CPU 200W + Burner", bar: 9, price: 509110 },
+  { id: 207, name: "EXCEL M 77/2 Double Motor Vacuum", pump: "Dual By-pass Motor", motor: "2600W (2x 1300W)", bar: 0, price: 55213 }
 ]);
 window.machineryDatabase = machineryDatabase;
 
@@ -1806,7 +1854,7 @@ window.ordersData = ordersData;
 let serviceCallsData = getStored("SERVICES", []);
 window.serviceCallsData = serviceCallsData;
 
-/* ADDITIVE: Date + Staff filter state for Orders / Leads / Services */
+/* ADDITIVE: Date + Staff filter state for Orders / Leads / Services (does not affect stored data or totals) */
 let ordersFilterState = { staff: "ALL", from: "", to: "" };
 let leadsFilterState = { staff: "ALL", from: "", to: "" };
 let servicesFilterState = { staff: "ALL", from: "", to: "" };
@@ -1859,7 +1907,7 @@ function clearServicesFilters() {
 window.applyServicesFilters = applyServicesFilters;
 window.clearServicesFilters = clearServicesFilters;
 
-/* GLOBAL SEARCH */
+/* ADDITIVE: Global Search across Orders, Leads, Services, Inventory & Customers (read-only, no data mutation) */
 function openGlobalSearchModal() {
   document.getElementById('globalSearchModal').style.display = 'flex';
   const inp = document.getElementById('globalSearchInput');
@@ -2059,6 +2107,45 @@ function performFullLogout() {
   }
 }
 
+/* FACTORY RESET — wipes Orders/Leads/Services/Ledger/Customers/Inventory/
+   Staff/Chat from BOTH localStorage and the cloud, then reloads the app
+   fresh onto the Login / Create Account screen. Admin-only, double
+   confirmation required since this cannot be undone. */
+async function performFactoryReset() {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Sirf Admin hi Factory Reset kar sakte hain!");
+    return;
+  }
+  const typed = prompt("⚠️ Yeh SAARA data (Orders, Leads, Services, Ledger, Customers, Inventory, Staff Login, Chat) LOCAL aur CLOUD dono se PERMANENTLY delete kar dega.\n\nConfirm karne ke liye neeche RESET likhein:");
+  if (typed !== 'RESET') {
+    alert("Factory Reset cancel ho gaya — kuch bhi delete nahi hua.");
+    return;
+  }
+  if (!confirm("Aakhri confirmation: Kya aap sach me SAB KUCH permanently delete karna chahte hain? Yeh action UNDO nahi ho sakta!")) {
+    return;
+  }
+
+  try {
+    // 1) Wipe everything this app ever wrote to localStorage
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith(DB_PREFIX)) localStorage.removeItem(k);
+    });
+
+    // 2) Wipe every collection in the cloud (orders, leads, services,
+    //    inventory, customers, machinery, staff, chat, notifications)
+    if (window.cloudSync && typeof window.cloudSync.wipeAll === 'function') {
+      await window.cloudSync.wipeAll();
+    }
+
+    alert("✓ Factory Reset complete. App ab brand-new hai — restart ho raha hai...");
+    location.reload();
+  } catch (e) {
+    console.error("Factory Reset Error:", e);
+    alert("Reset karte samay error aaya: " + e.message + "\n\nDubara try karein ya internet connection check karein.");
+  }
+}
+window.performFactoryReset = performFactoryReset;
+
 function getNowStr() {
   const d = new Date();
   return d.toISOString().split('T')[0] + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -2100,7 +2187,7 @@ function populateDropdownsAndDatalists() {
 }
 window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
 
-/* PROFIT CALCULATOR */
+/* PROFIT MARGIN & MARKUP CALCULATOR */
 function openProfitCalculatorModal() {
   document.getElementById('calcCostPrice').value = "";
   document.getElementById('calcSellPrice').value = "";
@@ -2109,7 +2196,9 @@ function openProfitCalculatorModal() {
   document.getElementById('calcMarkupPct').textContent = "0%";
   document.getElementById('profitCalculatorModal').style.display = 'flex';
 }
-function closeProfitCalculatorModal() { document.getElementById('profitCalculatorModal').style.display = 'none'; }
+function closeProfitCalculatorModal() {
+  document.getElementById('profitCalculatorModal').style.display = 'none';
+}
 function calculateProfitMargins() {
   const cost = parseFloat(document.getElementById('calcCostPrice').value) || 0;
   const sell = parseFloat(document.getElementById('calcSellPrice').value) || 0;
@@ -2122,6 +2211,7 @@ function calculateProfitMargins() {
   const profit = sell - cost;
   const margin = (profit / sell) * 100;
   const markup = (profit / cost) * 100;
+
   document.getElementById('calcProfitAmt').textContent = '₹' + profit.toLocaleString('en-IN', {maximumFractionDigits: 2});
   document.getElementById('calcProfitMargin').textContent = margin.toFixed(2) + '%';
   document.getElementById('calcMarkupPct').textContent = markup.toFixed(2) + '%';
@@ -2131,16 +2221,19 @@ function calculateProfitMargins() {
 function openAgeingAnalysisModal() {
   const container = document.getElementById('ageingReportContainer');
   const today = new Date();
+  
   let buckets = { '0-30 Days': 0, '31-60 Days': 0, '61-90 Days': 0, '90+ Days': 0 };
   let details = { '0-30 Days': [], '31-60 Days': [], '61-90 Days': [], '90+ Days': [] };
 
   ordersData.filter(o => o.status === 'Delivered' && o.dueAmount > 0).forEach(o => {
     const invDate = new Date(o.deliveredDate || o.orderDate);
     const diffDays = Math.floor((today - invDate) / (1000 * 60 * 60 * 24));
+    
     let bucketKey = '90+ Days';
     if (diffDays <= 30) bucketKey = '0-30 Days';
     else if (diffDays <= 60) bucketKey = '31-60 Days';
     else if (diffDays <= 90) bucketKey = '61-90 Days';
+
     buckets[bucketKey] += o.dueAmount;
     details[bucketKey].push(o);
   });
@@ -2157,20 +2250,28 @@ function openAgeingAnalysisModal() {
       </div>
     `;
   });
+
   container.innerHTML = html;
   document.getElementById('ageingAnalysisModal').style.display = 'flex';
 }
-function closeAgeingAnalysisModal() { document.getElementById('ageingAnalysisModal').style.display = 'none'; }
+function closeAgeingAnalysisModal() {
+  document.getElementById('ageingAnalysisModal').style.display = 'none';
+}
 
-/* SALES PERFORMANCE */
+/* EMPLOYEE-WISE MONTH-WISE SALES PERFORMANCE REPORT */
 function openPerformanceReportModal() {
   const container = document.getElementById('performanceReportContainer');
   const reportMap = {};
-  registeredEmployees.forEach(emp => { reportMap[emp.name] = { role: emp.role, totalBilled: 0, totalCollected: 0, orderCount: 0 }; });
+
+  registeredEmployees.forEach(emp => {
+    reportMap[emp.name] = { role: emp.role, totalBilled: 0, totalCollected: 0, orderCount: 0 };
+  });
 
   ordersData.filter(o => o.status === 'Delivered').forEach(o => {
     const staffName = o.bookedBy || "Unassigned";
-    if (!reportMap[staffName]) { reportMap[staffName] = { role: "Staff", totalBilled: 0, totalCollected: 0, orderCount: 0 }; }
+    if (!reportMap[staffName]) {
+      reportMap[staffName] = { role: "Staff", totalBilled: 0, totalCollected: 0, orderCount: 0 };
+    }
     reportMap[staffName].totalBilled += (o.totalAmount || 0);
     reportMap[staffName].totalCollected += (o.recvAmount || 0);
     reportMap[staffName].orderCount += 1;
@@ -2193,14 +2294,20 @@ function openPerformanceReportModal() {
       </div>
     `;
   });
+
   container.innerHTML = html;
   document.getElementById('performanceReportModal').style.display = 'flex';
 }
-function closePerformanceReportModal() { document.getElementById('performanceReportModal').style.display = 'none'; }
+function closePerformanceReportModal() {
+  document.getElementById('performanceReportModal').style.display = 'none';
+}
 
-/* STAFF MANAGEMENT */
+/* ADMIN STAFF MANAGEMENT */
 function openStaffManageModal() {
-  if (!currentUser || currentUser.role !== 'Admin') { alert("Permission Denied: Only Admin."); return; }
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Only Admin can manage staff.");
+    return;
+  }
   const box = document.getElementById('staffManageList');
   box.innerHTML = registeredEmployees.map(emp => `
     <div style="background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:10px;">
@@ -2217,39 +2324,53 @@ function openStaffManageModal() {
   `).join('');
   document.getElementById('staffManageModal').style.display = 'flex';
 }
-function closeStaffManageModal() { document.getElementById('staffManageModal').style.display = 'none'; }
+function closeStaffManageModal() {
+  document.getElementById('staffManageModal').style.display = 'none';
+}
 
 function editStaffDetailsPrompt(empId) {
   const emp = registeredEmployees.find(e => e.id === empId);
   if (!emp) return;
+
   const newName = prompt("Update Staff Full Name:", emp.name);
   if (!newName) return;
-  const newRole = prompt("Update Role:", emp.role);
-  const newPass = prompt("Update Password (blank to keep):", emp.pass);
+
+  const newRole = prompt("Update Role (Admin / Machinery Specialist / Field Technician / Sales & Support / Store Manager):", emp.role);
+  const newPass = prompt("Update Password (or leave blank to keep same):", emp.pass);
+
   emp.name = newName.trim();
   if (newRole) emp.role = newRole.trim();
   if (newPass && newPass.trim().length >= 4) emp.pass = newPass.trim();
+
   setStored("STAFF", registeredEmployees);
-  if (currentUser.id === emp.id) { currentUser = emp; setStored("SESSION_USER", emp); }
+  if (currentUser.id === emp.id) {
+    currentUser = emp;
+    setStored("SESSION_USER", emp);
+  }
   openStaffManageModal();
   refreshAllData();
-  alert("Staff updated!");
+  alert("Staff profile successfully updated!");
 }
 
 function deleteStaffPrompt(empId) {
-  if (confirm("Confirm staff removal?")) {
+  if (confirm("Confirm permanent removal of this staff account?")) {
     registeredEmployees = registeredEmployees.filter(e => e.id !== empId);
     setStored("STAFF", registeredEmployees);
     openStaffManageModal();
     refreshAllData();
+    alert("Staff permanently deleted.");
   }
 }
 
-/* ADMIN LEDGER EDIT */
+/* ADMIN LEDGER INVOICE EDIT */
 function openAdminEditLedgerModal(ordId) {
-  if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Sirf Admin hi ledger invoice modify kar sakte hain!");
+    return;
+  }
   const o = ordersData.find(x => x.id === ordId);
   if (!o) return;
+
   document.getElementById('editLedgerInvId').value = o.id;
   document.getElementById('editLedgerCustName').value = o.customerName;
   document.getElementById('editLedgerTotalAmt').value = o.totalAmount;
@@ -2257,63 +2378,88 @@ function openAdminEditLedgerModal(ordId) {
   document.getElementById('editLedgerDueAmt').value = o.dueAmount;
   document.getElementById('editLedgerPayMode').value = o.payMode;
   document.getElementById('editLedgerStaffSelect').value = o.bookedBy;
+
   document.getElementById('editLedgerModal').style.display = 'flex';
 }
-function closeEditLedgerModal() { document.getElementById('editLedgerModal').style.display = 'none'; }
+function closeEditLedgerModal() {
+  document.getElementById('editLedgerModal').style.display = 'none';
+}
+
 function calcEditLedgerBalance() {
   const tot = parseFloat(document.getElementById('editLedgerTotalAmt').value) || 0;
   const recv = parseFloat(document.getElementById('editLedgerRecvAmt').value) || 0;
   document.getElementById('editLedgerDueAmt').value = Math.max(0, tot - recv);
 }
+
 function saveAdminLedgerInvoice() {
   const invId = document.getElementById('editLedgerInvId').value;
   const o = ordersData.find(x => x.id === invId);
   if (!o) return;
+
   o.customerName = document.getElementById('editLedgerCustName').value.trim();
   o.totalAmount = parseFloat(document.getElementById('editLedgerTotalAmt').value) || 0;
   o.recvAmount = parseFloat(document.getElementById('editLedgerRecvAmt').value) || 0;
   o.dueAmount = parseFloat(document.getElementById('editLedgerDueAmt').value) || 0;
   o.payMode = document.getElementById('editLedgerPayMode').value;
   o.bookedBy = document.getElementById('editLedgerStaffSelect').value;
+
+  o.auditTrail = o.auditTrail || [];
+  o.auditTrail.unshift({ by: currentUser.name + " (Admin)", time: getNowStr(), note: "Modified billing numbers in ledger" });
+
   setStored("ORDERS", ordersData);
-  if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') { window.cloudSync.saveDoc('ORDERS', o); }
   closeEditLedgerModal();
   renderBilling('all');
   renderDashboard();
-  alert("Invoice updated!");
+  alert("Ledger invoice successfully updated!");
 }
 
 function deleteAdminLedgerInvoice(ordId) {
-  if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
-  if (confirm(`Confirm permanent deletion of Invoice ${ordId}?`)) {
+  if (!currentUser || currentUser.role !== 'Admin') {
+    alert("Permission Denied: Sirf Admin hi bill ledger se delete kar sakte hain!");
+    return;
+  }
+  if (confirm(`Confirm permanent deletion of Invoice ${ordId} from ledger?`)) {
     ordersData = ordersData.filter(x => x.id !== ordId);
     setStored("ORDERS", ordersData);
-    if (window.cloudSync && typeof window.cloudSync.deleteItem === 'function') { window.cloudSync.deleteItem('ORDERS', ordId); }
     renderBilling('all');
     renderDashboard();
     renderOrders();
-    alert(`Invoice ${ordId} deleted.`);
+    alert(`Invoice ${ordId} deleted successfully.`);
   }
 }
 
-/* DASHBOARD */
+/* EXECUTIVE DASHBOARD */
 function renderDashboard() {
   const today = new Date().toISOString().split('T')[0];
-  let todayRecv = 0, totalDue = 0;
+  let todayRecv = 0;
+  let totalDue = 0;
+
   ordersData.filter(o => o.status === 'Delivered').forEach(o => {
-    if ((o.deliveredDate || o.orderDate) === today) todayRecv += (o.recvAmount || 0);
+    if (o.orderDate === today) todayRecv += (o.recvAmount || 0);
     totalDue += (o.dueAmount || 0);
   });
+
   const activeServices = serviceCallsData.filter(s => s.status !== 'Work Completed').length;
+
   document.getElementById('dashTodayRecv').textContent = '₹' + todayRecv.toLocaleString('en-IN');
   document.getElementById('dashTotalDue').textContent = '₹' + totalDue.toLocaleString('en-IN');
   document.getElementById('dashActiveServices').textContent = `${activeServices} Active`;
   document.getElementById('dashTotalItems').textContent = `${sampleInventory.length} Items`;
   document.getElementById('dashTotalClients').textContent = `${customerDatabase.length} Clients`;
 
+  ['dashTodayRecv','dashTotalDue','dashActiveServices','dashTotalItems'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('pulse-update');
+    void el.offsetWidth;
+    el.classList.add('pulse-update');
+  });
+
   const priorityBox = document.getElementById('dashPriorityContainer');
   priorityBox.innerHTML = '';
+
   let priorityItems = [];
+
   ordersData.filter(o => o.status === 'Pending' && o.deliveryDate <= today).forEach(o => {
     priorityItems.push({
       title: `📦 Order Due: ${o.customerName} (₹${o.totalAmount})`,
@@ -2321,15 +2467,31 @@ function renderDashboard() {
       action: () => { switchTab('orders', document.querySelectorAll('.nav-item')[2]); }
     });
   });
+
+  serviceCallsData.filter(s => s.status !== 'Work Completed' && s.targetDate <= today).forEach(s => {
+    priorityItems.push({
+      title: `🛠️ Machine Service: ${s.customerName}`,
+      sub: `Target: ${s.targetDate} | Machine: ${s.machine}`,
+      action: () => { switchTab('services', document.querySelectorAll('.nav-item')[3]); }
+    });
+  });
+
   document.getElementById('dashPriorityCount').textContent = `${priorityItems.length} Pending`;
+
   if (priorityItems.length === 0) {
-    priorityBox.innerHTML = `<div class="empty-state"><span class="empty-icon">✅</span><div class="empty-title">Sabhi targets aur deliveries updated hain!</div></div>`;
+    priorityBox.innerHTML = `<div class="empty-state"><span class="empty-icon">✅</span><div class="empty-title">Sabhi targets aur deliveries updated hain!</div><div class="empty-sub">Koi pending alert nahi hai.</div></div>`;
   } else {
     priorityItems.slice(0, 5).forEach(item => {
       const row = document.createElement('div');
       row.style.cssText = 'background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:10px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;';
       row.onclick = item.action;
-      row.innerHTML = `<div><strong style="font-size:13px;">${item.title}</strong><div style="font-size:11px; color:var(--text-muted);">${item.sub}</div></div><button class="btn btn-outline btn-sm">View →</button>`;
+      row.innerHTML = `
+        <div>
+          <strong style="color:var(--text-main); font-size:13px;">${item.title}</strong>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${item.sub}</div>
+        </div>
+        <button class="btn btn-outline btn-sm">View →</button>
+      `;
       priorityBox.appendChild(row);
     });
   }
@@ -2338,20 +2500,39 @@ function renderDashboard() {
 function toggleFabMenu() {
   const menu = document.getElementById('fabMenu');
   const btn = document.getElementById('fabMainBtn');
-  if (menu.style.display === 'flex') { menu.style.display = 'none'; btn.style.transform = 'rotate(0deg)'; }
-  else { menu.style.display = 'flex'; btn.style.transform = 'rotate(45deg)'; }
+  if (menu.style.display === 'flex') {
+    menu.style.display = 'none';
+    btn.style.transform = 'rotate(0deg)';
+  } else {
+    menu.style.display = 'flex';
+    btn.style.transform = 'rotate(45deg)';
+  }
 }
 
+/* ICICI MERCHANT UPI QR */
 function openUpiModal(customerName, amount) {
-  if (!amount || amount <= 0) { alert("Invalid amount."); return; }
+  if (!amount || amount <= 0) {
+    alert("Amount zero ya invalid nahi ho sakta.");
+    return;
+  }
   document.getElementById('upiCustName').textContent = customerName || "Customer";
   document.getElementById('upiAmountText').textContent = '₹' + Number(amount).toLocaleString('en-IN');
-  const upiPayload = `upi://pay?pa=eazypay.574099310@icici&pn=TWINTOWN%20EXPRESS%20SERVICES%20PVT%20LTD&am=${parseFloat(amount).toFixed(2)}&cu=INR&tn=TTESPL Invoice`;
-  document.getElementById('upiQrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=6&data=${encodeURIComponent(upiPayload)}`;
+
+  const merchantUpi = "eazypay.574099310@icici";
+  const merchantName = "TWINTOWN EXPRESS SERVICES PVT LTD";
+  const formattedAmt = parseFloat(amount).toFixed(2);
+
+  const upiPayload = `upi://pay?pa=${encodeURIComponent(merchantUpi)}&pn=${encodeURIComponent(merchantName)}&am=${formattedAmt}&cu=INR&tn=TTESPL Invoice Settlement`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=6&data=${encodeURIComponent(upiPayload)}`;
+
+  document.getElementById('upiQrImage').src = qrUrl;
   document.getElementById('upiModal').style.display = 'flex';
 }
-function closeUpiModal() { document.getElementById('upiModal').style.display = 'none'; }
+function closeUpiModal() {
+  document.getElementById('upiModal').style.display = 'none';
+}
 
+/* DIGITAL SIGNATURE PAD */
 let signatureCanvas, sigCtx, isDrawing = false;
 function initSignatureCanvas() {
   signatureCanvas = document.getElementById('signCanvas');
@@ -2360,15 +2541,18 @@ function initSignatureCanvas() {
   sigCtx.strokeStyle = "#0a2540";
   sigCtx.lineWidth = 2.5;
   sigCtx.lineCap = "round";
+
   const getPos = (e) => {
     const rect = signatureCanvas.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     return { x: clientX - rect.left, y: clientY - rect.top };
   };
+
   const startDraw = (e) => { isDrawing = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); };
   const draw = (e) => { if (!isDrawing) return; const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); };
   const stopDraw = () => { isDrawing = false; };
+
   signatureCanvas.addEventListener('mousedown', startDraw);
   signatureCanvas.addEventListener('mousemove', draw);
   signatureCanvas.addEventListener('mouseup', stopDraw);
@@ -2376,23 +2560,37 @@ function initSignatureCanvas() {
   signatureCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); }, { passive: false });
   signatureCanvas.addEventListener('touchend', stopDraw);
 }
-function openSignatureModal() { document.getElementById('signatureModal').style.display = 'flex'; setTimeout(initSignatureCanvas, 100); }
+function openSignatureModal() {
+  document.getElementById('signatureModal').style.display = 'flex';
+  setTimeout(initSignatureCanvas, 100);
+}
 function closeSignModal() { document.getElementById('signatureModal').style.display = 'none'; }
 function clearSignCanvas() { if (sigCtx) sigCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height); }
 function saveCustomerSignature() {
   const statusEl = document.getElementById('srvSignStatus');
-  if (statusEl) { statusEl.textContent = "Customer Sign: ✓ Attached"; statusEl.style.color = "var(--success)"; }
+  if (statusEl) {
+    statusEl.textContent = "Customer Sign: ✓ Attached";
+    statusEl.style.color = "var(--success)";
+  }
   closeSignModal();
-  alert("Signature verified!");
+  alert("Customer signature verify ho gaya!");
 }
 
+/* BACKUP & RESTORE */
 function triggerFullBackupDownload() {
   const fullBackup = {
-    staff: registeredEmployees, customers: customerDatabase, inventory: sampleInventory,
-    machinery: machineryDatabase, leads: leadsData, orders: ordersData, services: serviceCallsData,
-    backupDate: new Date().toISOString(), version: "2026.2"
+    staff: registeredEmployees,
+    customers: customerDatabase,
+    inventory: sampleInventory,
+    machinery: machineryDatabase,
+    leads: leadsData,
+    orders: ordersData,
+    services: serviceCallsData,
+    backupDate: new Date().toISOString(),
+    version: "2026.2"
   };
-  downloadFile(JSON.stringify(fullBackup, null, 2), `TTESPL_Backup_${new Date().toISOString().split('T')[0]}.json`, "application/json");
+  const str = JSON.stringify(fullBackup, null, 2);
+  downloadFile(str, `TTESPL_Full_ERP_Backup_${new Date().toISOString().split('T')[0]}.json`, "application/json");
 }
 
 function processRestoreJSON(event) {
@@ -2402,16 +2600,18 @@ function processRestoreJSON(event) {
   reader.onload = function(e) {
     try {
       const data = JSON.parse(e.target.result);
-      if (confirm("Restore data?")) {
+      if (confirm("Restore karne se current memory update ho jayegi. Continue karein?")) {
         if (data.customers) { customerDatabase = data.customers; setStored("CUSTOMERS", customerDatabase); }
         if (data.inventory) { sampleInventory = data.inventory; setStored("INVENTORY", sampleInventory); }
         if (data.orders) { ordersData = data.orders; setStored("ORDERS", ordersData); }
         if (data.services) { serviceCallsData = data.services; setStored("SERVICES", serviceCallsData); }
         if (data.leads) { leadsData = data.leads; setStored("LEADS", leadsData); }
         refreshAllData();
-        alert("Restored successfully!");
+        alert("Success: Pura ERP data successfully restore ho gaya!");
       }
-    } catch(err) { alert("Invalid file."); }
+    } catch(err) {
+      alert("Invalid backup file.");
+    }
   };
   reader.readAsText(file);
   event.target.value = '';
@@ -2423,16 +2623,31 @@ function handleCustomerAutocomplete(inputEl, targetInputId) {
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
   if (!box) return;
   if (!val || val.length < 1) { box.style.display = 'none'; return; }
+
   const matches = (customerDatabase || []).filter(c => {
-    return (c.name && c.name.toLowerCase().includes(val)) || (c.phone && String(c.phone).includes(val));
+    const nameMatch = c.name && c.name.toLowerCase().includes(val);
+    const phoneMatch = c.phone && String(c.phone).includes(val);
+    const personMatch = c.person && c.person.toLowerCase().includes(val);
+    return nameMatch || phoneMatch || personMatch;
   }).slice(0, 10);
+
   let html = matches.map(c => `
     <div class="suggestion-item" onmousedown="selectCustomerSuggestion('${targetInputId}', '${encodeURIComponent(c.name || '')}', '${c.phone || ''}')">
-      <div><strong>${c.name || ''}</strong><div class="suggestion-sub">📍 ${c.address || ''}</div></div>
+      <div>
+        <strong>${c.name || ''}</strong>
+        <div class="suggestion-sub">${(c.person && c.person !== c.name) ? c.person + ' | ' : ''}📍 ${c.address || ''}</div>
+      </div>
       <span class="badge badge-info" style="font-size:9.5px;">${c.phone || ''}</span>
     </div>
   `).join('');
-  html += `<div class="suggestion-item" onmousedown="openAddCustomerModal(); document.querySelectorAll('.solid-suggestion-box').forEach(b => b.style.display='none');" style="background:var(--success-bg) !important; color:var(--success); font-weight:800; border-top:1px solid var(--border);"><div>➕ Register New Customer: "${esc(val)}"</div></div>`;
+
+  html += `
+    <div class="suggestion-item" onmousedown="openAddCustomerModal(); document.querySelectorAll('.solid-suggestion-box').forEach(b => b.style.display='none');" style="background:var(--success-bg) !important; color:var(--success); font-weight:800; border-top:1px solid var(--border);">
+      <div>➕ Register New Customer: "${esc(val)}"</div>
+      <span class="badge badge-delivered" style="font-size:9.5px;">Add New</span>
+    </div>
+  `;
+
   box.innerHTML = html;
   box.style.display = 'block';
 }
@@ -2452,11 +2667,25 @@ function handleMachineAutocomplete(inputEl, targetInputId) {
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
   if (!box) return;
   if (!val) { box.style.display = 'none'; return; }
-  const matches = (machineryDatabase || []).filter(m => (m.name && m.name.toLowerCase().includes(val))).slice(0, 10);
-  if (matches.length === 0) { box.style.display = 'none'; return; }
-  box.innerHTML = matches.map(m => `
+
+  const inventoryMachines = (sampleInventory || []).filter(item => 
+    item.category === 'Machines & Equipment' &&
+    ((item.name && item.name.toLowerCase().includes(val)) || (item.code && item.code.toLowerCase().includes(val)))
+  ).map(item => ({ name: item.name, sub: `Code: ${item.code || 'N/A'}`, price: item.rate || 0 }));
+
+  const catalogMachines = (machineryDatabase || []).filter(m =>
+    (m.name && m.name.toLowerCase().includes(val)) || (m.pump && m.pump.toLowerCase().includes(val))
+  ).map(m => ({ name: m.name, sub: `${m.pump || ''} | ${m.bar || 0} Bar`, price: m.price || 0 }));
+
+  const combined = [...inventoryMachines, ...catalogMachines].slice(0, 10);
+  if (combined.length === 0) { box.style.display = 'none'; return; }
+
+  box.innerHTML = combined.map(m => `
     <div class="suggestion-item" onmousedown="selectMachineSuggestion('${targetInputId}', '${encodeURIComponent(m.name || '')}', ${m.price || 0})">
-      <div><strong>🚜 ${m.name}</strong></div>
+      <div>
+        <strong>🚜 ${m.name}</strong>
+        <div class="suggestion-sub">${m.sub}</div>
+      </div>
       <strong style="color:var(--primary); font-size:12px;">₹${Number(m.price || 0).toLocaleString('en-IN')}</strong>
     </div>
   `).join('');
@@ -2466,7 +2695,11 @@ function handleMachineAutocomplete(inputEl, targetInputId) {
 function selectMachineSuggestion(targetInputId, encName, price) {
   const name = decodeURIComponent(encName);
   const input = document.getElementById(targetInputId);
-  if (input) { input.value = name; const box = input.parentElement.querySelector('.solid-suggestion-box'); if (box) box.style.display = 'none'; }
+  if (input) {
+    input.value = name;
+    const box = input.parentElement.querySelector('.solid-suggestion-box');
+    if (box) box.style.display = 'none';
+  }
   const pInput = document.getElementById('leadPrice');
   if (pInput && !pInput.value) pInput.value = price;
 }
@@ -2478,13 +2711,22 @@ function handleOrderItemInput(inputEl) {
   const box = row.querySelector('.solid-suggestion-box');
   if(!box) return;
   if(!val) { box.style.display = 'none'; return; }
-  const matches = (sampleInventory || []).filter(p => (p.name && p.name.toLowerCase().includes(val)) || (p.code && p.code.toLowerCase().includes(val))).slice(0, 8);
+
+  const matches = (sampleInventory || []).filter(p =>
+    p.category !== 'Catalog Equipment' &&
+    ((p.name && p.name.toLowerCase().includes(val)) || (p.code && p.code.toLowerCase().includes(val)))
+  ).slice(0, 8);
+
   let html = matches.map(p => `
     <div class="suggestion-item" onmousedown="selectOrderItemSuggestion(this, '${encodeURIComponent(p.name || '')}', '${p.code || ''}', ${p.rate || 0}, ${p.stock || 0})">
-      <div><strong>${p.name}</strong><div class="suggestion-sub">Code: ${p.code || ''} | Stock: ${p.stock || 0}</div></div>
+      <div>
+        <strong>${p.name}</strong>
+        <div class="suggestion-sub">Code: ${p.code || 'N/A'} | Stock: ${p.stock || 0}</div>
+      </div>
       <strong style="color:var(--accent);">₹${p.rate || 0}</strong>
     </div>
   `).join('');
+
   box.innerHTML = html;
   box.style.display = matches.length ? 'block' : 'none';
 }
@@ -2493,7 +2735,8 @@ function selectOrderItemSuggestion(el, encName, code, rate, stock) {
   const name = decodeURIComponent(encName);
   const row = el.closest('tr');
   if (!row) return;
-  row.querySelector('.item-product-input').value = code ? `${name} [${code}]` : name;
+  const input = row.querySelector('.item-product-input');
+  input.value = code ? `${name} [${code}]` : name;
   row.querySelector('.item-mrp').value = rate || 0;
   row.querySelector('.item-disc').value = 0;
   row.querySelector('.item-rate').value = rate || 0;
@@ -2508,11 +2751,19 @@ function handlePartAutocomplete(inputEl, targetInputId) {
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
   if (!box) return;
   if (!val) { box.style.display = 'none'; return; }
-  const matches = (sampleInventory || []).filter(p => (p.name && p.name.toLowerCase().includes(val))).slice(0, 10);
+
+  const matches = (sampleInventory || []).filter(p =>
+    (p.name && p.name.toLowerCase().includes(val)) || (p.code && p.code.toLowerCase().includes(val))
+  ).slice(0, 10);
+
   if (matches.length === 0) { box.style.display = 'none'; return; }
+
   box.innerHTML = matches.map(p => `
     <div class="suggestion-item" onmousedown="selectPartSuggestion('${targetInputId}', '${encodeURIComponent(p.name || '')}', '${p.code || ''}')">
-      <div><strong>${p.name}</strong><div class="suggestion-sub">Stock: ${p.stock || 0}</div></div>
+      <div>
+        <strong>${p.name}</strong>
+        <div class="suggestion-sub">Code: ${p.code || 'N/A'} | Stock: ${p.stock || 0}</div>
+      </div>
       <strong style="color:var(--accent);">₹${p.rate || 0}</strong>
     </div>
   `).join('');
@@ -2522,7 +2773,11 @@ function handlePartAutocomplete(inputEl, targetInputId) {
 function selectPartSuggestion(targetInputId, encName, code) {
   const name = decodeURIComponent(encName);
   const input = document.getElementById(targetInputId);
-  if (input) { input.value = code ? `${name} [${code}]` : name; const box = input.parentElement.querySelector('.solid-suggestion-box'); if (box) box.style.display = 'none'; }
+  if (input) {
+    input.value = code ? `${name} [${code}]` : name;
+    const box = input.parentElement.querySelector('.solid-suggestion-box');
+    if (box) box.style.display = 'none';
+  }
 }
 
 document.addEventListener('click', function(e) {
@@ -2536,7 +2791,7 @@ function resolveCustomerFromSearch(text) {
   const match = text.match(/\((\d{10})\)/);
   if(match) return customerDatabase.find(c => c.phone === match[1]);
   const t = text.toLowerCase().trim();
-  return customerDatabase.find(c => (c.name && c.name.toLowerCase() === t));
+  return customerDatabase.find(c => (c.name && c.name.toLowerCase() === t) || (c.phone && String(c.phone) === t));
 }
 
 function resolvePartFromSearch(text) {
@@ -2553,7 +2808,11 @@ async function getMasterDataPayload() {
   }
   try {
     const res = await fetch('ttespl_master_data.json?v=' + Date.now());
-    if (res.ok) { const data = await res.json(); window.TTESPL_MASTER_DATA = data; return data; }
+    if (res.ok) {
+      const data = await res.json();
+      window.TTESPL_MASTER_DATA = data;
+      return data;
+    }
   } catch (err) {}
   return null;
 }
@@ -2561,26 +2820,39 @@ async function getMasterDataPayload() {
 async function loadMasterCatalogAction() {
   const payload = await getMasterDataPayload();
   if (payload && payload.inventory && payload.inventory.length > 0) {
-    if (confirm(`Load ${payload.inventory.length} items from Master Catalog?`)) {
+    if (confirm(`Master catalog se sabhi ${payload.inventory.length} items load karein?`)) {
       sampleInventory = payload.inventory;
       setStored("INVENTORY", sampleInventory);
       renderStockList();
-      alert(`Loaded successfully!`);
+      alert(`Success: ${sampleInventory.length} items loaded!`);
     }
-  } else { alert("Master catalog file not found."); }
+  } else {
+    alert("Error: Master catalog file not found.");
+  }
 }
 
-/* LEADS */
+/* TAB 1: LEADS */
 function renderLeads() {
   const c = document.getElementById('leadsListContainer');
   c.innerHTML = '';
   const isAdmin = currentUser && (currentUser.role === 'Admin');
-  if (leadsData.length === 0) { c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">No active leads.</div>`; return; }
-  
+
+  if (leadsData.length === 0) {
+    c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Abhi koi active inquiry nahi hai.</div>`;
+    return;
+  }
+
+  /* ADDITIVE: date/staff filter applied only to displayed list */
   let displayLeads = leadsData;
+  const leadsFiltersActive = leadsFilterState.staff !== "ALL" || leadsFilterState.from || leadsFilterState.to;
   if (leadsFilterState.staff !== "ALL") displayLeads = displayLeads.filter(l => l.handledBy === leadsFilterState.staff);
   if (leadsFilterState.from) displayLeads = displayLeads.filter(l => l.inquiryDate >= leadsFilterState.from);
   if (leadsFilterState.to) displayLeads = displayLeads.filter(l => l.inquiryDate <= leadsFilterState.to);
+
+  if (displayLeads.length === 0 && leadsFiltersActive) {
+    c.innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Is filter ke liye koi inquiry nahi mili.</div></div>`;
+    return;
+  }
 
   displayLeads.forEach(lead => {
     const card = document.createElement('div');
@@ -2588,16 +2860,20 @@ function renderLeads() {
     card.innerHTML = `
       <div class="card-header">
         <div>
-          <strong style="font-size:15px;">${lead.customerName}</strong>
-          <div style="font-size:11.5px; color:var(--text-muted);">Inquiry: ${lead.inquiryDate} | Eng: <strong>${lead.handledBy}</strong></div>
+          <strong style="font-size:15px; color:var(--text-main);">${lead.customerName}</strong>
+          <div style="font-size:11.5px; color:var(--text-muted);">Inquiry: ${lead.inquiryDate} | Lead Eng: <strong>${lead.handledBy}</strong></div>
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
-          <span class="badge badge-pending">${lead.status}</span>
+          <span class="badge ${lead.status === 'Installed' ? 'badge-delivered' : 'badge-pending'}">${lead.status}</span>
           <button class="btn btn-outline btn-sm" onclick="editLeadPrompt('${lead.id}')">✏️ Edit</button>
           ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteLeadAction('${lead.id}')">🗑️</button>` : ''}
         </div>
       </div>
       <div style="font-size:12.5px; margin-bottom:6px;">Machine: <strong>${lead.machine}</strong> | Quoted: <strong>₹${Number(lead.quotedPrice || 0).toLocaleString('en-IN')}</strong></div>
+      <div style="background:var(--bg); padding:10px; border-radius:8px; font-size:12px;">
+        💬 <strong>Remarks:</strong> ${lead.remarks} <br>
+        <span style="color:var(--danger); font-weight:800;">Next Followup: ${lead.followupDate}</span>
+      </div>
     `;
     c.appendChild(card);
   });
@@ -2607,8 +2883,10 @@ window.renderLeads = renderLeads;
 function openLeadModal(leadObj = null) {
   const title = document.getElementById('leadModalTitle');
   const editId = document.getElementById('editLeadId');
+
   if(leadObj) {
-    title.textContent = "Edit Lead"; editId.value = leadObj.id;
+    title.textContent = "Edit Machine Lead & Followup";
+    editId.value = leadObj.id;
     document.getElementById('leadCustSearchInput').value = `${leadObj.customerName} (${leadObj.phone || ''})`;
     document.getElementById('leadInqDate').value = leadObj.inquiryDate;
     document.getElementById('leadStaffSelect').value = leadObj.handledBy;
@@ -2617,7 +2895,8 @@ function openLeadModal(leadObj = null) {
     document.getElementById('leadFollowupDate').value = leadObj.followupDate;
     document.getElementById('leadRemarks').value = leadObj.remarks;
   } else {
-    title.textContent = "New Lead Entry"; editId.value = "";
+    title.textContent = "New Machine Inquiry Entry";
+    editId.value = "";
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('leadCustSearchInput').value = "";
     document.getElementById('leadInqDate').value = today;
@@ -2641,34 +2920,48 @@ function saveLeadAction() {
   const followup = document.getElementById('leadFollowupDate').value;
   const rem = document.getElementById('leadRemarks').value.trim();
 
-  if(!custSearch || !mach) { alert("Select Customer and Machine!"); return; }
+  if(!custSearch || !mach) { alert("Please select a Customer and Machine Model!"); return; }
+
   const custName = cust ? cust.name : custSearch.split('(')[0].trim();
   const phone = cust ? cust.phone : "";
 
   if(editId) {
     const l = leadsData.find(x => x.id === editId);
-    if(l) { l.customerName = custName; l.phone = phone; l.inquiryDate = inqDate; l.handledBy = staff; l.machine = mach; l.quotedPrice = price; l.followupDate = followup; l.remarks = rem; }
+    if(l) {
+      l.customerName = custName; l.phone = phone; l.inquiryDate = inqDate; l.handledBy = staff;
+      l.machine = mach; l.quotedPrice = price; l.followupDate = followup; l.remarks = rem;
+    }
   } else {
-    const newL = { id: "LEAD-" + Math.floor(100 + Math.random() * 900), customerName: custName, phone, inquiryDate: inqDate, handledBy: staff, machine: mach, quotedPrice: price, status: "Active", followupDate: followup, remarks: rem };
+    const newL = {
+      id: "LEAD-" + Math.floor(100 + Math.random() * 900),
+      customerName: custName, phone, inquiryDate: inqDate, handledBy: staff, machine: mach,
+      quotedPrice: price, status: "Active Inquiry", followupDate: followup, remarks: rem || "Lead registered"
+    };
     leadsData.unshift(newL);
   }
+
   setStored("LEADS", leadsData);
-  if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') { window.cloudSync.pushKey('LEADS', leadsData); }
-  closeLeadModal(); renderLeads(); renderDashboard(); alert("Saved!");
+  closeLeadModal();
+  renderLeads();
+  renderDashboard();
+  alert("Lead saved successfully!");
 }
 
 function deleteLeadAction(id) {
   if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
-  if(confirm("Delete lead?")) {
+  if(confirm("Confirm DELETE this Lead?")) {
     leadsData = leadsData.filter(x => x.id !== id);
     setStored("LEADS", leadsData);
-    if (window.cloudSync && typeof window.cloudSync.deleteItem === 'function') { window.cloudSync.deleteItem('LEADS', id); }
-    renderLeads(); renderDashboard();
+    renderLeads();
+    renderDashboard();
   }
 }
-function editLeadPrompt(id) { const l = leadsData.find(x => x.id === id); if(l) openLeadModal(l); }
+function editLeadPrompt(leadId) {
+  const l = leadsData.find(x => x.id === leadId);
+  if(l) openLeadModal(l);
+}
 
-/* ORDERS */
+/* TAB 2: ORDERS */
 function switchOrderSubTab(sub) {
   currentOrderSubTab = sub;
   const btnAct = document.getElementById('btnSubTabActiveOrders');
@@ -2686,31 +2979,42 @@ function renderOrders() {
 
   const pendingList = ordersData.filter(o => o.status === 'Pending');
   const cancelledList = ordersData.filter(o => o.status === 'Cancelled');
+
   document.getElementById('countActiveOrders').textContent = pendingList.length;
   document.getElementById('countCancelledOrders').textContent = cancelledList.length;
 
-  let displayList = (currentOrderSubTab === 'active') ? pendingList : cancelledList;
+  const targetList = (currentOrderSubTab === 'active') ? pendingList : cancelledList;
+
+  /* ADDITIVE: apply date/staff filters only to what is displayed; counts above stay unaffected */
+  let displayList = targetList;
+  const filtersActive = ordersFilterState.staff !== "ALL" || ordersFilterState.from || ordersFilterState.to;
   if (ordersFilterState.staff !== "ALL") displayList = displayList.filter(o => o.bookedBy === ordersFilterState.staff);
   if (ordersFilterState.from) displayList = displayList.filter(o => o.orderDate >= ordersFilterState.from);
   if (ordersFilterState.to) displayList = displayList.filter(o => o.orderDate <= ordersFilterState.to);
 
   if (displayList.length === 0) {
-    c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">No active orders.</div>`;
+    c.innerHTML = filtersActive
+      ? `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Is filter ke liye koi order nahi mila.</div></div>`
+      : `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi active pending order nahi hai.</div>`;
     return;
   }
 
   displayList.forEach(o => {
-    let itemsHtml = o.items.map(i => `<div>• ${i.name} (Qty: ${i.qty}) = ₹${i.total}</div>`).join('');
+    let statusBadge = o.deliveryDate < today ? 'badge-danger' : 'badge-pending';
+    let statusText = o.status === 'Pending' ? (o.deliveryDate < today ? '⚠️ Delayed' : '⏳ Pending Dispatch') : '🚫 Cancelled';
+
+    let itemsHtml = o.items.map(i => `<div>• ${i.name} (Qty: ${i.qty}, Disc: ${i.disc || 0}%) = ₹${i.total}</div>`).join('');
+
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
       <div class="card-header">
         <div>
-          <strong style="font-size:15px;">${o.customerName}</strong>
+          <strong style="font-size:15px; color:var(--text-main);">${o.customerName}</strong>
           <div style="font-size:11.5px; color:var(--text-muted);">Ref: ${o.id} | Date: ${o.orderDate} | Staff: <strong>${o.bookedBy}</strong></div>
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
-          <span class="badge badge-pending">${o.status}</span>
+          <span class="badge ${statusBadge}">${statusText}</span>
           ${o.status === 'Pending' ? `<button class="btn btn-outline btn-sm" onclick="editOrderPrompt('${o.id}')">✏️ Edit</button>` : ''}
           ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteOrderAction('${o.id}')">🗑️</button>` : ''}
         </div>
@@ -2724,7 +3028,7 @@ function renderOrders() {
       </div>
       ${o.status === 'Pending' ? `
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="openDeliveryProofModal('${o.id}')">📸 Deliver & Generate Bill</button>
+          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="openDeliveryProofModal('${o.id}')">📸 Deliver & Upload Proof</button>
           <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
           <button class="btn btn-wa btn-sm" style="flex:1;" onclick="shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
           <button class="btn btn-danger-sm btn-sm" style="flex:1;" onclick="cancelOrderAction('${o.id}')">🚫 Cancel</button>
@@ -2739,12 +3043,13 @@ window.renderOrders = renderOrders;
 function cancelOrderAction(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if (!o) return;
-  const reason = prompt("Reason for cancellation:", "Customer cancelled");
+  const reason = prompt("Cancel karne ka kaaran:", "Customer cancelled");
   if (reason === null) return;
-  o.status = "Cancelled"; o.cancelReason = reason;
+  o.status = "Cancelled";
+  o.cancelReason = reason;
   setStored("ORDERS", ordersData);
-  if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') { window.cloudSync.saveDoc('ORDERS', o); }
-  renderOrders(); renderDashboard();
+  renderOrders();
+  renderDashboard();
 }
 
 function openOrderModal(orderObj = null) {
@@ -2752,8 +3057,10 @@ function openOrderModal(orderObj = null) {
   tbody.innerHTML = '';
   const title = document.getElementById('orderModalTitle');
   const editId = document.getElementById('editOrderId');
+
   if(orderObj) {
-    title.textContent = "Edit Order"; editId.value = orderObj.id;
+    title.textContent = "Edit Order & Items";
+    editId.value = orderObj.id;
     document.getElementById('ordCustSearchInput').value = `${orderObj.customerName} (${orderObj.phone || ''})`;
     document.getElementById('ordStaffSelect').value = orderObj.bookedBy;
     document.getElementById('ordDate').value = orderObj.orderDate;
@@ -2763,7 +3070,8 @@ function openOrderModal(orderObj = null) {
     document.getElementById('ordTaxType').value = orderObj.taxType || 'INTRA';
     orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.mrp || it.rate, it.disc || 0));
   } else {
-    title.textContent = "New Order"; editId.value = "";
+    title.textContent = "New Multi-Item Product Order";
+    editId.value = "";
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('ordCustSearchInput').value = "";
     document.getElementById('ordDate').value = today;
@@ -2781,9 +3089,10 @@ function closeOrderModal() { document.getElementById('orderModal').style.display
 function addOrderItemRow(itemName = "", qty = 1, mrp = 0, disc = 0) {
   const tbody = document.getElementById('orderItemsTbody');
   const tr = document.createElement('tr');
+
   tr.innerHTML = `
     <td class="autocomplete-wrapper">
-      <input type="text" class="item-product-input" value="${itemName}" placeholder="Type item..." oninput="handleOrderItemInput(this)">
+      <input type="text" class="item-product-input" value="${itemName}" placeholder="Type item name..." oninput="handleOrderItemInput(this)">
       <div class="solid-suggestion-box"></div>
       <div class="item-stock-warning" style="font-size:10px; color:var(--text-muted); margin-top:2px;"></div>
     </td>
@@ -2794,6 +3103,7 @@ function addOrderItemRow(itemName = "", qty = 1, mrp = 0, disc = 0) {
     <td class="item-row-total" style="font-weight:bold; font-size:12.5px;">₹0</td>
     <td><button class="btn btn-danger-sm" onclick="this.closest('tr').remove(); calcOrderTotals();">✕</button></td>
   `;
+
   tbody.appendChild(tr);
   calcOrderTotals();
 }
@@ -2804,8 +3114,10 @@ function calcOrderTotals() {
     const q = parseFloat(r.querySelector('.item-qty').value) || 0;
     const mrp = parseFloat(r.querySelector('.item-mrp').value) || 0;
     const disc = parseFloat(r.querySelector('.item-disc').value) || 0;
+    
     const discountedRate = mrp * (1 - (disc / 100));
     r.querySelector('.item-rate').value = discountedRate.toFixed(2);
+    
     const sub = q * discountedRate;
     r.querySelector('.item-row-total').textContent = '₹' + sub.toLocaleString('en-IN', {maximumFractionDigits: 2});
     total += sub;
@@ -2841,99 +3153,127 @@ function saveOrderAction() {
     const disc = parseFloat(r.querySelector('.item-disc').value) || 0;
     const rate = parseFloat(r.querySelector('.item-rate').value) || 0;
     const part = resolvePartFromSearch(pName);
+
     if(pName && qty > 0) {
-      items.push({ id: part ? part.id : Date.now(), name: part ? part.name : pName, hsn: part ? (part.hsn || "84139190") : "84139190", qty, mrp, disc, rate, total: qty * rate });
+      items.push({
+        id: part ? part.id : Date.now(),
+        name: part ? part.name : pName,
+        hsn: part ? (part.hsn || "84139190") : "84139190",
+        qty, mrp, disc, rate, total: qty * rate
+      });
     }
   });
 
-  if(!custSearch || items.length === 0) { alert("Select Customer and add items!"); return; }
+  if(!custSearch || items.length === 0) { alert("Please select a Customer and add at least one item!"); return; }
+
   const custName = cust ? cust.name : custSearch.split('(')[0].trim();
   const phone = cust ? cust.phone : "";
 
   if(editId) {
     const o = ordersData.find(x => x.id === editId);
-    if(o) { o.customerName = custName; o.phone = phone; o.bookedBy = staff; o.orderDate = ordDate; o.deliveryDate = delDate; o.items = items; o.totalAmount = total; o.recvAmount = recv; o.dueAmount = due; o.payMode = payMode; o.taxType = taxType; }
+    if(o) {
+      o.customerName = custName; o.phone = phone; o.bookedBy = staff; o.orderDate = ordDate;
+      o.deliveryDate = delDate; o.items = items; o.totalAmount = total; o.recvAmount = recv;
+      o.dueAmount = due; o.payMode = payMode; o.taxType = taxType;
+    }
   } else {
-    const newO = { id: "ORD-" + Math.floor(100 + Math.random() * 900), customerName: custName, phone, orderDate: ordDate, deliveryDate: delDate, items, totalAmount: total, recvAmount: recv, dueAmount: due, payMode, taxType, status: "Pending", bookedBy: staff };
+    const newO = {
+      id: "ORD-" + Math.floor(100 + Math.random() * 900),
+      customerName: custName, phone, orderDate: ordDate, deliveryDate: delDate,
+      items, totalAmount: total, recvAmount: recv, dueAmount: due, payMode, taxType,
+      status: "Pending", bookedBy: staff
+    };
     ordersData.unshift(newO);
+
+    // PUSH NOTIFICATION: NEW ORDER PLACED
+    if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
+      window.cloudSync.pushLiveNotification({
+        title: "📦 New Order Placed!",
+        body: `${custName} - ₹${total.toLocaleString('en-IN')} (Booked by ${staff})`,
+        type: "order"
+      });
+    }
   }
+
   setStored("ORDERS", ordersData);
-  if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') { window.cloudSync.pushKey('ORDERS', ordersData); }
-  closeOrderModal(); renderOrders(); renderBilling('all'); renderDashboard(); alert("Order saved!");
+  closeOrderModal();
+  renderOrders();
+  renderBilling('all');
+  renderDashboard();
+  alert("Order saved successfully!");
 }
 
-/* DELIVERY PROOF & AUTO STOCK REDUCTION & LEDGER SHIFT */
+/* MANDATORY PHOTO PROOF WORKFLOW (DELIVERY & PAYMENT) */
 let currentDeliveryPhotoBase64 = "";
 function openDeliveryProofModal(ordId) {
   document.getElementById('pendingDeliverOrderId').value = ordId;
   currentDeliveryPhotoBase64 = "";
-  document.getElementById('manualDeliveryDateInput').value = new Date().toISOString().split('T')[0];
   const preview = document.getElementById('deliveryPhotoPreview');
-  preview.src = ""; preview.style.display = 'none';
+  preview.src = "";
+  preview.style.display = 'none';
   document.getElementById('confirmDeliveryBtn').disabled = true;
+  // Default the manual date field to today, but staff can change it for backdated deliveries
+  document.getElementById('deliveryManualDate').value = new Date().toISOString().split('T')[0];
   document.getElementById('deliveryProofModal').style.display = 'flex';
 }
-function closeDeliveryProofModal() { document.getElementById('deliveryProofModal').style.display = 'none'; }
+function closeDeliveryProofModal() {
+  document.getElementById('deliveryProofModal').style.display = 'none';
+}
 
 function handleDeliveryPhotoCaptured(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    const img = new Image();
-    img.onload = function() {
-      const canvas = document.createElement('canvas');
-      const MAX_W = 800; const MAX_H = 800;
-      let w = img.width, h = img.height;
-      if (w > h) { if (w > MAX_W) { h *= MAX_W / w; w = MAX_W; } }
-      else { if (h > MAX_H) { w *= MAX_H / h; h = MAX_H; } }
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      currentDeliveryPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
-      const preview = document.getElementById('deliveryPhotoPreview');
-      preview.src = currentDeliveryPhotoBase64; preview.style.display = 'block';
-      document.getElementById('confirmDeliveryBtn').disabled = false;
-    };
-    img.src = e.target.result;
+    currentDeliveryPhotoBase64 = e.target.result;
+    const preview = document.getElementById('deliveryPhotoPreview');
+    preview.src = currentDeliveryPhotoBase64;
+    preview.style.display = 'block';
+    document.getElementById('confirmDeliveryBtn').disabled = false;
   };
   reader.readAsDataURL(file);
 }
 
 function executeConfirmedDelivery() {
   const ordId = document.getElementById('pendingDeliverOrderId').value;
-  const manualDate = document.getElementById('manualDeliveryDateInput').value || new Date().toISOString().split('T')[0];
+  if (!currentDeliveryPhotoBase64) {
+    alert("Kripya delivery ka proof photo attach karein!");
+    return;
+  }
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
 
-  // Deduct Inventory Stock
   o.items.forEach(it => {
     const p = sampleInventory.find(x => x.id === it.id || x.name === it.name);
-    if(p) { 
-      p.stock = Math.max(0, p.stock - it.qty); 
-      if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') { window.cloudSync.saveDoc('INVENTORY', p); }
-    }
+    if(p) { p.stock = Math.max(0, p.stock - it.qty); }
   });
 
+  const chosenDate = document.getElementById('deliveryManualDate').value;
   o.status = "Delivered";
-  o.deliveredDate = manualDate;
+  o.deliveredDate = chosenDate || new Date().toISOString().split('T')[0];
   o.deliveryProofPhoto = currentDeliveryPhotoBase64;
 
-  try {
-    localStorage.setItem(DB_PREFIX + "ORDERS", JSON.stringify(ordersData));
-    localStorage.setItem(DB_PREFIX + "INVENTORY", JSON.stringify(sampleInventory));
-  } catch(e) {}
+  setStored("ORDERS", ordersData);
+  setStored("INVENTORY", sampleInventory);
+  closeDeliveryProofModal();
+  renderOrders();
+  renderStockList();
+  renderBilling('all');
+  renderDashboard();
 
-  if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
-    window.cloudSync.saveDoc('ORDERS', o);
+  // BROADCAST DELIVERY NOTIFICATION
+  if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
+    window.cloudSync.pushLiveNotification({
+      title: "✅ Order Delivered!",
+      body: `${o.customerName} - Ref ${o.id} marked Delivered with Photo Proof.`,
+      type: "delivery"
+    });
   }
 
-  closeDeliveryProofModal();
-  renderOrders(); renderStockList(); renderBilling('all'); renderDashboard();
-  alert("Order delivered, stock updated, and bill moved to Ledger!");
+  alert("Order successfully delivered with Photo Proof!");
 }
 
-/* PAYMENT COLLECTION */
+/* PAYMENT COLLECTION WITH PROOF */
 let currentPaymentProofBase64 = "";
 function collectDuePayment(ordId) {
   const o = ordersData.find(x => x.id === ordId);
@@ -2942,33 +3282,25 @@ function collectDuePayment(ordId) {
   document.getElementById('payCollectInputAmt').value = o.dueAmount;
   currentPaymentProofBase64 = "";
   const preview = document.getElementById('payProofPreview');
-  preview.src = ""; preview.style.display = 'none';
+  preview.src = "";
+  preview.style.display = 'none';
   document.getElementById('confirmCollectPayBtn').disabled = true;
   document.getElementById('paymentProofModal').style.display = 'flex';
 }
-function closePaymentProofModal() { document.getElementById('paymentProofModal').style.display = 'none'; }
+function closePaymentProofModal() {
+  document.getElementById('paymentProofModal').style.display = 'none';
+}
 
 function handlePaymentProofCaptured(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    const img = new Image();
-    img.onload = function() {
-      const canvas = document.createElement('canvas');
-      const MAX_W = 800; const MAX_H = 800;
-      let w = img.width, h = img.height;
-      if (w > h) { if (w > MAX_W) { h *= MAX_W / w; w = MAX_W; } }
-      else { if (h > MAX_H) { w *= MAX_H / h; h = MAX_H; } }
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      currentPaymentProofBase64 = canvas.toDataURL('image/jpeg', 0.7);
-      const preview = document.getElementById('payProofPreview');
-      preview.src = currentPaymentProofBase64; preview.style.display = 'block';
-      document.getElementById('confirmCollectPayBtn').disabled = false;
-    };
-    img.src = e.target.result;
+    currentPaymentProofBase64 = e.target.result;
+    const preview = document.getElementById('payProofPreview');
+    preview.src = currentPaymentProofBase64;
+    preview.style.display = 'block';
+    document.getElementById('confirmCollectPayBtn').disabled = false;
   };
   reader.readAsDataURL(file);
 }
@@ -2976,58 +3308,57 @@ function handlePaymentProofCaptured(event) {
 function executeConfirmedPaymentCollection() {
   const ordId = document.getElementById('pendingCollectOrderId').value;
   const amt = parseFloat(document.getElementById('payCollectInputAmt').value) || 0;
-  if (amt <= 0) { alert("Enter valid amount!"); return; }
+  if (amt <= 0) { alert("Valid amount daalein!"); return; }
+  if (!currentPaymentProofBase64) { alert("Payment receipt ya photo attach karna mandatory hai!"); return; }
+
   const o = ordersData.find(x => x.id === ordId);
   if (!o) return;
+
   o.recvAmount = (o.recvAmount || 0) + amt;
   o.dueAmount = Math.max(0, o.totalAmount - o.recvAmount);
   o.lastPaymentProof = currentPaymentProofBase64;
   o.lastPaymentDate = new Date().toISOString().split('T')[0];
+
   setStored("ORDERS", ordersData);
-  if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') { window.cloudSync.saveDoc('ORDERS', o); }
-  closePaymentProofModal(); renderBilling('all'); renderDashboard(); alert("Payment recorded!");
+  closePaymentProofModal();
+  renderBilling('all');
+  renderDashboard();
+
+  // BROADCAST PAYMENT NOTIFICATION
+  if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
+    window.cloudSync.pushLiveNotification({
+      title: "💰 Payment Received!",
+      body: `₹${amt.toLocaleString('en-IN')} received for ${o.customerName} (Due: ₹${o.dueAmount})`,
+      type: "payment"
+    });
+  }
+
+  alert("Payment recorded with receipt proof and synced to cloud!");
 }
 
 function deleteOrderAction(id) {
   if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
-  if(confirm("Delete order?")) {
+  if(confirm("Confirm DELETE order?")) {
     ordersData = ordersData.filter(x => x.id !== id);
     setStored("ORDERS", ordersData);
-    if (window.cloudSync && typeof window.cloudSync.deleteItem === 'function') { window.cloudSync.deleteItem('ORDERS', id); }
-    renderOrders(); renderBilling('all');
+    renderOrders();
+    renderBilling('all');
   }
 }
-function editOrderPrompt(ordId) { const o = ordersData.find(x => x.id === ordId); if(o) openOrderModal(o); }
+function editOrderPrompt(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if(o) openOrderModal(o);
+}
 
 function shareOrderWhatsApp(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
-  const itemsText = o.items.map(i => `${i.name} (x${i.qty}) - ₹${i.total}`).join('%0A');
-  const msg = `*TWIN TOWN EXPRESS SERVICES PVT LTD*%0A*Invoice:* ${o.id}%0A*Customer:* ${o.customerName}%0A-----------------------%0A*Items:*%0A${itemsText}%0A-----------------------%0A*Total Bill:* ₹${o.totalAmount}%0A*Paid:* ₹${o.recvAmount}%0A*Due:* ₹${o.dueAmount}`;
+  const itemsText = o.items.map(i => `${i.name} (x${i.qty}, Disc:${i.disc || 0}%) - Rs.${i.total}`).join('%0A');
+  const msg = `*TWIN TOWN EXPRESS SERVICES PVT LTD*%0A*Invoice:* ${o.id}%0A*Customer:* ${o.customerName}%0A-----------------------%0A*Items:*%0A${itemsText}%0A-----------------------%0A*Total Bill:* Rs.${o.totalAmount}%0A*Paid:* Rs.${o.recvAmount}%0A*Due:* Rs.${o.dueAmount}%0A%0A_Rasulgarh, Bhubaneswar_`;
   window.open(o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`, '_blank');
 }
 
-/* NUMBER TO WORDS CONVERTER */
-function numberToWords(num) {
-  if (num === 0) return 'Zero Only';
-  const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-  const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-  function inWords(n) {
-    if ((n = n.toString()).length > 9) return 'Overflow';
-    let nArr = ('000000000' + n).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-    if (!nArr) return '';
-    let str = '';
-    str += (nArr[1] != 0) ? (a[Number(nArr[1])] || b[nArr[1][0]] + ' ' + a[nArr[1][1]]) + ' Crore ' : '';
-    str += (nArr[2] != 0) ? (a[Number(nArr[2])] || b[nArr[2][0]] + ' ' + a[nArr[2][1]]) + ' Lakh ' : '';
-    str += (nArr[3] != 0) ? (a[Number(nArr[3])] || b[nArr[3][0]] + ' ' + a[nArr[3][1]]) + ' Thousand ' : '';
-    str += (nArr[4] != 0) ? (a[Number(nArr[4])] || b[nArr[4][0]] + ' ' + a[nArr[4][1]]) + ' Hundred ' : '';
-    str += (nArr[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(nArr[5])] || b[nArr[5][0]] + ' ' + a[nArr[5][1]]) + ' ' : '';
-    return str.trim();
-  }
-  return 'INR ' + inWords(Math.floor(num)) + ' Only';
-}
-
-/* TALLY INVOICE PREVIEW */
+/* GST INVOICE PRINT */
 function executeInvoicePrint() { window.focus(); setTimeout(() => { window.print(); }, 150); }
 
 function openInvoicePrintModal(ordId) {
@@ -3042,68 +3373,75 @@ function openInvoicePrintModal(ordId) {
   document.getElementById('invPrintCustAddress').textContent = cust ? cust.address : 'Bhubaneswar, Odisha';
   document.getElementById('invPrintCustGst').textContent = cust ? (cust.gst || 'Unregistered') : 'Unregistered';
   document.getElementById('invPrintPayMode').textContent = o.payMode;
+  document.getElementById('invPrintStaff').textContent = o.bookedBy;
+
+  const taxType = o.taxType || 'INTRA';
+  const taxable = Math.round((o.totalAmount / 1.18) * 100) / 100;
+  const tax = Math.round((o.totalAmount - taxable) * 100) / 100;
+
+  const taxRowsContainer = document.getElementById('invPrintTaxRowsContainer');
+  if (taxType === 'INTER') {
+    taxRowsContainer.innerHTML = `
+      <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:#475569;">
+        <span>IGST (18%):</span>
+        <span>₹${tax.toFixed(2)}</span>
+      </div>
+    `;
+    document.getElementById('invPrintSupplyState').textContent = 'Inter-State (IGST)';
+  } else {
+    const halfTax = Math.round((tax / 2) * 100) / 100;
+    taxRowsContainer.innerHTML = `
+      <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:#475569;">
+        <span>CGST (9%):</span>
+        <span>₹${halfTax.toFixed(2)}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:#475569;">
+        <span>SGST (9%):</span>
+        <span>₹${halfTax.toFixed(2)}</span>
+      </div>
+    `;
+    document.getElementById('invPrintSupplyState').textContent = '21-Odisha';
+  }
 
   const tbody = document.getElementById('invPrintItemsTbody');
   tbody.innerHTML = (o.items || []).map((it, idx) => {
-    const rateIncl = it.rate || 0;
-    const taxableRate = Math.round((rateIncl / 1.18) * 100) / 100;
+    const itTaxable = Math.round((it.total / 1.18) * 100) / 100;
     return `
       <tr>
-        <td style="text-align:center;">${idx + 1}</td>
+        <td>${idx + 1}</td>
         <td><strong>${it.name}</strong>${it.disc ? ' (Disc: '+it.disc+'%)' : ''}</td>
-        <td style="text-align:center;">${it.hsn || '84139190'}</td>
-        <td style="text-align:center;">18%</td>
-        <td style="text-align:center;">${it.qty} PICES</td>
-        <td style="text-align:right;">₹${Number(rateIncl).toLocaleString('en-IN', {minimumFractionDigits:2})}</td>
-        <td style="text-align:right;">₹${taxableRate.toLocaleString('en-IN', {minimumFractionDigits:2})}</td>
-        <td style="text-align:center;">PICES</td>
-        <td style="text-align:center;">${it.disc || 0}%</td>
-        <td style="text-align:right;">₹${Number(it.total).toLocaleString('en-IN', {minimumFractionDigits:2})}</td>
+        <td>${it.hsn || '84139190'}</td>
+        <td>${it.qty}</td>
+        <td>₹${Number(it.rate).toLocaleString('en-IN')}</td>
+        <td>₹${itTaxable.toFixed(2)}</td>
       </tr>
     `;
   }).join('');
 
-  // Tax Breakdown Calculation
-  let totalTaxable = 0, totalTax = 0;
-  (o.items || []).forEach(it => {
-    totalTaxable += (it.total / 1.18);
-    totalTax += (it.total - (it.total / 1.18));
-  });
-  const halfTax = totalTax / 2;
-
-  const tBodyTax = document.getElementById('invPrintTaxBreakdownTbody');
-  tBodyTax.innerHTML = `
-    <tr>
-      <td style="text-align:center;">84139190</td>
-      <td style="text-align:right;">₹${totalTaxable.toFixed(2)}</td>
-      <td style="text-align:center;">9%</td>
-      <td style="text-align:right;">₹${halfTax.toFixed(2)}</td>
-      <td style="text-align:center;">9%</td>
-      <td style="text-align:right;">₹${halfTax.toFixed(2)}</td>
-      <td style="text-align:right;">₹${totalTax.toFixed(2)}</td>
-    </tr>
-  `;
-
-  document.getElementById('invPrintGrandTotal').textContent = '₹' + Number(o.totalAmount).toLocaleString('en-IN', {minimumFractionDigits:2});
-  document.getElementById('invPrintAmountWords').textContent = numberToWords(o.totalAmount);
+  document.getElementById('invPrintTaxable').textContent = '₹' + taxable.toFixed(2);
+  document.getElementById('invPrintGrandTotal').textContent = '₹' + Number(o.totalAmount).toLocaleString('en-IN');
+  document.getElementById('invPrintRecv').textContent = '₹' + Number(o.recvAmount).toLocaleString('en-IN');
+  document.getElementById('invPrintDue').textContent = '₹' + Number(o.dueAmount).toLocaleString('en-IN');
 
   document.getElementById('invoicePrintModal').style.display = 'flex';
 }
 function closeInvoicePrintModal() { document.getElementById('invoicePrintModal').style.display = 'none'; }
 
-/* CASH CLOSING */
+/* DAILY CASH CLOSING */
 function openDailyCashClosingModal() {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('closeSummaryDate').textContent = today;
-  document.getElementById('closeSummaryStaff').textContent = currentUser ? currentUser.name : "Admin";
+  document.getElementById('closeSummaryStaff').textContent = currentUser ? currentUser.name : "Staff";
+
   let cashTotal = 0, upiTotal = 0, bankTotal = 0;
   ordersData.forEach(o => {
-    if((o.deliveredDate || o.orderDate) === today && o.recvAmount > 0 && o.status !== 'Cancelled') {
+    if(o.orderDate === today && o.recvAmount > 0 && o.status !== 'Cancelled') {
       if(o.payMode === 'Cash') cashTotal += o.recvAmount;
       else if(o.payMode.includes('UPI')) upiTotal += o.recvAmount;
       else bankTotal += o.recvAmount;
     }
   });
+
   document.getElementById('closeCashAmt').textContent = '₹' + cashTotal.toLocaleString('en-IN');
   document.getElementById('closeUpiAmt').textContent = '₹' + upiTotal.toLocaleString('en-IN');
   document.getElementById('closeBankAmt').textContent = '₹' + bankTotal.toLocaleString('en-IN');
@@ -3115,39 +3453,55 @@ function calcCashDenominations() {
   document.getElementById('denomTotalDisplay').textContent = '₹' + total.toLocaleString('en-IN');
 }
 function sendClosingSummaryWhatsApp() {
-  const msg = `*DAILY CASH CLOSING*%0ACash: ${document.getElementById('closeCashAmt').textContent}%0AUPI: ${document.getElementById('closeUpiAmt').textContent}`;
+  const msg = `*DAILY CASH & SALES CLOSING REPORT*%0A*Company:* TTESPL Rasulgarh, BBSR%0A*Cash:* ${document.getElementById('closeCashAmt').textContent}%0A*UPI:* ${document.getElementById('closeUpiAmt').textContent}`;
   window.open(`https://wa.me/?text=${msg}`, '_blank');
 }
 
-/* SERVICES */
+/* TAB 3: SERVICES */
 function renderServices() {
   const c = document.getElementById('serviceListContainer');
   c.innerHTML = '';
   const today = new Date().toISOString().split('T')[0];
   const isAdmin = currentUser && (currentUser.role === 'Admin');
-  if (serviceCallsData.length === 0) { c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">No service calls.</div>`; return; }
 
+  if (serviceCallsData.length === 0) {
+    c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi repair call pending nahi hai.</div>`;
+    return;
+  }
+
+  /* ADDITIVE: date/staff filter applied only to displayed list */
   let displayServices = serviceCallsData;
+  const servicesFiltersActive = servicesFilterState.staff !== "ALL" || servicesFilterState.from || servicesFilterState.to;
   if (servicesFilterState.staff !== "ALL") displayServices = displayServices.filter(s => s.attendedBy === servicesFilterState.staff);
   if (servicesFilterState.from) displayServices = displayServices.filter(s => s.recvDate >= servicesFilterState.from);
   if (servicesFilterState.to) displayServices = displayServices.filter(s => s.recvDate <= servicesFilterState.to);
 
+  if (displayServices.length === 0 && servicesFiltersActive) {
+    c.innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Is filter ke liye koi service call nahi mila.</div></div>`;
+    return;
+  }
+
   displayServices.forEach(s => {
+    let statusBadge = s.status === 'Work Completed' ? 'badge-delivered' : (s.targetDate === today ? 'badge-today' : 'badge-pending');
+    let statusText = s.status === 'Work Completed' ? '✓ Completed' : (s.targetDate === today ? '🔔 DUE TODAY' : `Target: ${s.targetDate}`);
+
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
       <div class="card-header">
         <div>
-          <strong style="font-size:15px;">${s.customerName}</strong>
+          <strong style="font-size:15px; color:var(--text-main);">${s.customerName}</strong>
           <div style="font-size:11.5px; color:var(--text-muted);">Call: ${s.recvDate} | Tech: <strong>${s.attendedBy}</strong></div>
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
-          <span class="badge ${s.status === 'Work Completed' ? 'badge-delivered' : 'badge-pending'}">${s.status}</span>
+          <span class="badge ${statusBadge}">${statusText}</span>
           <button class="btn btn-outline btn-sm" onclick="editServicePrompt('${s.id}')">✏️ Edit</button>
           ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteServiceAction('${s.id}')">🗑️</button>` : ''}
         </div>
       </div>
-      <div style="font-size:12.5px; margin-bottom:6px;">Machine: ${s.machine} | Issue: ${s.problem}</div>
+      <div style="font-size:12.5px; margin-bottom:6px;"><strong>Machine:</strong> ${s.machine}</div>
+      <div style="font-size:12px; margin-bottom:10px;"><strong>Issue:</strong> ${s.problem}</div>
+      ${s.status === 'Work Completed' ? `<div style="background:var(--success-bg); padding:8px; border-radius:8px; font-size:11.5px;">✅ <strong>Done:</strong> ${s.actionDone}</div>` : `<button class="btn btn-primary btn-sm btn-block" onclick="openExecuteServiceModal('${s.id}')">🛠️ Attend & Complete</button>`}
     `;
     c.appendChild(card);
   });
@@ -3158,7 +3512,8 @@ function openServiceCallModal(srvObj = null) {
   const title = document.getElementById('serviceModalTitle');
   const editId = document.getElementById('editServiceId');
   if(srvObj) {
-    title.textContent = "Edit Service"; editId.value = srvObj.id;
+    title.textContent = "Edit Service Call";
+    editId.value = srvObj.id;
     document.getElementById('srvCustSearchInput').value = `${srvObj.customerName} (${srvObj.phone || ''})`;
     document.getElementById('srvStaffSelect').value = srvObj.attendedBy;
     document.getElementById('srvMachine').value = srvObj.machine;
@@ -3166,8 +3521,10 @@ function openServiceCallModal(srvObj = null) {
     document.getElementById('srvTargetDate').value = srvObj.targetDate;
     document.getElementById('srvStatusSelect').value = srvObj.status;
     document.getElementById('srvProblem').value = srvObj.problem;
+    toggleServiceCompletionFields(srvObj.status);
   } else {
-    title.textContent = "New Service Call"; editId.value = "";
+    title.textContent = "New Service / Repair Call";
+    editId.value = "";
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('srvCustSearchInput').value = "";
     document.getElementById('srvRecvDate').value = today;
@@ -3175,11 +3532,14 @@ function openServiceCallModal(srvObj = null) {
     document.getElementById('srvMachine').value = "";
     document.getElementById('srvProblem').value = "";
     document.getElementById('srvStatusSelect').value = "Pending / Scheduled";
+    toggleServiceCompletionFields("Pending / Scheduled");
   }
   document.getElementById('serviceModal').style.display = 'flex';
 }
 function closeServiceModal() { document.getElementById('serviceModal').style.display = 'none'; }
-function toggleServiceCompletionFields(val) { document.getElementById('srvCompletedFields').style.display = (val === 'Work Completed') ? 'block' : 'none'; }
+function toggleServiceCompletionFields(statusVal) {
+  document.getElementById('srvCompletedFields').style.display = (statusVal === 'Work Completed') ? 'block' : 'none';
+}
 
 function saveServiceAction() {
   const editId = document.getElementById('editServiceId').value;
@@ -3192,34 +3552,52 @@ function saveServiceAction() {
   const status = document.getElementById('srvStatusSelect').value;
   const prob = document.getElementById('srvProblem').value.trim();
 
-  if(!custSearch) { alert("Select Customer!"); return; }
+  let actDone = "";
+  if(status === 'Work Completed') { actDone = document.getElementById('srvActionDone').value.trim(); }
+
   const custName = cust ? cust.name : custSearch.split('(')[0].trim();
   const phone = cust ? cust.phone : "";
 
   if(editId) {
     const s = serviceCallsData.find(x => x.id === editId);
-    if(s) { s.customerName = custName; s.phone = phone; s.attendedBy = staff; s.machine = mach; s.recvDate = rDate; s.targetDate = tDate; s.status = status; s.problem = prob; }
+    if(s) {
+      s.customerName = custName; s.phone = phone; s.attendedBy = staff; s.machine = mach;
+      s.recvDate = rDate; s.targetDate = tDate; s.status = status; s.problem = prob; s.actionDone = actDone;
+    }
   } else {
-    const newS = { id: "SRV-" + Math.floor(100 + Math.random() * 900), customerName: custName, phone, machine: mach || "HPW", recvDate: rDate, targetDate: tDate, status, problem: prob, attendedBy: staff };
+    const newS = {
+      id: "SRV-" + Math.floor(100 + Math.random() * 900),
+      customerName: custName, phone, machine: mach || "HPW Pump", recvDate: rDate,
+      targetDate: tDate, status, problem: prob, attendedBy: staff, actionDone: actDone
+    };
     serviceCallsData.unshift(newS);
   }
+
   setStored("SERVICES", serviceCallsData);
-  if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') { window.cloudSync.pushKey('SERVICES', serviceCallsData); }
-  closeServiceModal(); renderServices(); renderDashboard(); alert("Saved!");
+  closeServiceModal();
+  renderServices();
+  renderDashboard();
+  alert("Service record saved!");
 }
 
 function deleteServiceAction(id) {
   if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
-  if(confirm("Delete service?")) {
+  if(confirm("Confirm DELETE service?")) {
     serviceCallsData = serviceCallsData.filter(x => x.id !== id);
     setStored("SERVICES", serviceCallsData);
-    if (window.cloudSync && typeof window.cloudSync.deleteItem === 'function') { window.cloudSync.deleteItem('SERVICES', id); }
     renderServices();
   }
 }
-function editServicePrompt(id) { const s = serviceCallsData.find(x => x.id === id); if(s) openServiceCallModal(s); }
+function openExecuteServiceModal(srvId) {
+  const s = serviceCallsData.find(x => x.id === srvId);
+  if(s) { openServiceCallModal(s); document.getElementById('srvStatusSelect').value = "Work Completed"; toggleServiceCompletionFields("Work Completed"); }
+}
+function editServicePrompt(srvId) {
+  const s = serviceCallsData.find(x => x.id === srvId);
+  if(s) openServiceCallModal(s);
+}
 
-/* INVENTORY */
+/* TAB 4: INVENTORY */
 let activeInventoryCategory = 'ALL';
 const STOCK_RENDER_CAP = 60;
 
@@ -3265,7 +3643,7 @@ function renderStockList() {
           <div><strong>${cust.name}</strong><div style="font-size:11px; color:var(--text-muted);">${cust.phone}</div></div>
           <button class="btn btn-outline btn-sm" onclick="editCustomerPrompt(${cust.id})">✏️ Edit</button>
         </div>
-        <div style="font-size:11.5px; color:var(--text-muted);">📍 ${cust.address || 'Odisha'}</div>
+        <div style="font-size:11.5px; color:var(--text-muted);">📍 ${cust.address || 'Odisha'} | GSTIN: ${cust.gst || 'Unregistered'}</div>
       `;
       c.appendChild(card);
     });
@@ -3278,21 +3656,23 @@ function renderStockList() {
   list.slice(0, STOCK_RENDER_CAP).forEach(item => {
     const card = document.createElement('div');
     card.className = 'card';
+    card.style.cursor = 'pointer';
+    card.onclick = () => openStockDetailModal(item.id);
     card.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:flex-start;">
         <div>
           <span style="font-size:11px; font-weight:700; color:var(--cyan);">${item.code || ''}</span>
-          <strong style="font-size:14px; display:block;">${item.name}</strong>
+          <strong style="font-size:14px; color:var(--text-main); display:block;">${item.name}</strong>
           <div style="font-size:11px; color:var(--text-muted);">${item.category}</div>
         </div>
         <div style="text-align:right;">
           <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}">${item.stock} in stock</span>
-          <div style="font-size:13.5px; font-weight:800; margin-top:4px;">MRP: ₹${item.rate || 0}</div>
+          <div style="font-size:13.5px; font-weight:800; color:var(--text-main); margin-top:4px;">MRP: ₹${item.rate || 0}</div>
         </div>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px; border-top:1px solid var(--border); padding-top:6px;">
-        <button class="btn btn-outline btn-sm" onclick="editStockItemPrompt(${item.id})">✏️ Edit</button>
-        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteStockItem(${item.id})">🗑️</button>` : ''}
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); editStockItemPrompt(${item.id})">✏️ Edit</button>
+        ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="event.stopPropagation(); deleteStockItem(${item.id})">🗑️</button>` : ''}
       </div>
     `;
     c.appendChild(card);
@@ -3305,23 +3685,73 @@ function filterStockList(val) {
   const c = document.getElementById('stockListContainer');
   if(!c) return;
   c.innerHTML = '';
+
   let list = (activeInventoryCategory === 'CUSTOMERS') ? customerDatabase : sampleInventory;
+
+  if (activeInventoryCategory !== 'Catalog Equipment' && activeInventoryCategory !== 'CUSTOMERS') {
+    list = list.filter(i => i.category !== 'Catalog Equipment');
+  }
+
   const results = q ? list.filter(i => (i.name && i.name.toLowerCase().includes(q)) || (i.code && i.code.toLowerCase().includes(q))) : list;
+
   document.getElementById('totalPartsBadge').textContent = `${results.length} Matches`;
   results.slice(0, 60).forEach(item => {
     const card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = `<div style="display:flex; justify-content:space-between;"><strong>${item.name}</strong><span>Stock: ${item.stock !== undefined ? item.stock : '-'}</span></div>`;
+    card.style.cursor = 'pointer';
+    card.onclick = () => {
+      if (activeInventoryCategory === 'CUSTOMERS') {
+        editCustomerPrompt(item.id);
+      } else {
+        openStockDetailModal(item.id);
+      }
+    };
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <span style="font-size:11px; font-weight:700; color:var(--cyan);">${item.code || ''}</span>
+          <strong style="font-size:14px; color:var(--text-main); display:block;">${item.name}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">${item.category || item.phone || ''}</div>
+        </div>
+        <div style="text-align:right;">
+          ${item.stock !== undefined ? `<span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}">${item.stock} in stock</span>` : ''}
+          <div style="font-size:13.5px; font-weight:800; color:var(--text-main); margin-top:4px;">${item.rate ? 'MRP: ₹' + item.rate : (item.address || '')}</div>
+        </div>
+      </div>
+    `;
     c.appendChild(card);
   });
 }
 window.filterStockList = filterStockList;
 
+let activeStockDetailId = null;
+function openStockDetailModal(id) {
+  const item = sampleInventory.find(x => x.id === id);
+  if (!item) return;
+  activeStockDetailId = id;
+  document.getElementById('detName').textContent = item.name;
+  document.getElementById('detMeta').textContent = `${item.category} • Code: ${item.code || 'N/A'}`;
+  document.getElementById('detDealer').textContent = '₹' + Number(item.dealerPrice || 0).toLocaleString('en-IN');
+  document.getElementById('detMrp').textContent = '₹' + Number(item.rate || 0).toLocaleString('en-IN');
+  document.getElementById('detStock').textContent = item.stock;
+  document.getElementById('stockDetailModal').style.display = 'flex';
+}
+function closeStockDetailModal() { document.getElementById('stockDetailModal').style.display = 'none'; }
+function editFromDetailModal() {
+  const item = sampleInventory.find(x => x.id === activeStockDetailId);
+  closeStockDetailModal();
+  if (item) openAddPartModal(item);
+}
+window.openStockDetailModal = openStockDetailModal;
+window.closeStockDetailModal = closeStockDetailModal;
+window.editFromDetailModal = editFromDetailModal;
+
 function openAddPartModal(partObj = null) {
   const title = document.getElementById('stockModalTitle');
   const editId = document.getElementById('editStockId');
   if(partObj) {
-    title.textContent = "Edit Item"; editId.value = partObj.id;
+    title.textContent = "Edit Inventory Item";
+    editId.value = partObj.id;
     document.getElementById('stkName').value = partObj.name;
     document.getElementById('stkCode').value = partObj.code;
     document.getElementById('stkCategory').value = partObj.category || "";
@@ -3330,14 +3760,19 @@ function openAddPartModal(partObj = null) {
     document.getElementById('stkQty').value = partObj.stock;
     document.getElementById('stkDealerRate').value = partObj.dealerPrice || 0;
     document.getElementById('stkRate').value = partObj.rate;
+    document.getElementById('stkDesc').value = partObj.desc || "";
   } else {
-    title.textContent = "Add Item"; editId.value = "";
+    title.textContent = "Add New Item";
+    editId.value = "";
     document.getElementById('stkName').value = "";
     document.getElementById('stkCode').value = "";
     document.getElementById('stkCategory').value = "Machine Spares";
+    document.getElementById('stkMachine').value = "";
+    document.getElementById('stkHsn').value = "84139190";
     document.getElementById('stkQty').value = "0";
     document.getElementById('stkDealerRate').value = "";
     document.getElementById('stkRate').value = "";
+    document.getElementById('stkDesc').value = "";
   }
   document.getElementById('stockItemModal').style.display = 'flex';
 }
@@ -3351,7 +3786,8 @@ function saveStockItemAction() {
   const stock = parseInt(document.getElementById('stkQty').value) || 0;
   const dealerPrice = parseFloat(document.getElementById('stkDealerRate').value) || 0;
   const rate = parseFloat(document.getElementById('stkRate').value) || 0;
-  if(!name || !code) { alert("Name & Code required!"); return; }
+
+  if(!name || !code) { alert("Please enter name and code!"); return; }
 
   if(editId) {
     const item = sampleInventory.find(x => x.id === parseInt(editId));
@@ -3359,17 +3795,19 @@ function saveStockItemAction() {
   } else {
     sampleInventory.unshift({ id: Date.now(), name, code, category: cat, stock, dealerPrice, rate });
   }
+
   setStored("INVENTORY", sampleInventory);
-  if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') { window.cloudSync.pushKey('INVENTORY', sampleInventory); }
-  closeStockModal(); renderStockList(); alert("Saved!");
+  closeStockModal();
+  renderStockList();
+  alert("Item saved!");
 }
+
 function editStockItemPrompt(id) { const it = sampleInventory.find(x => x.id === id); if(it) openAddPartModal(it); }
 function deleteStockItem(id) {
   if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
-  if(confirm("Delete item?")) {
+  if(confirm("Confirm DELETE item?")) {
     sampleInventory = sampleInventory.filter(x => x.id !== id);
     setStored("INVENTORY", sampleInventory);
-    if (window.cloudSync && typeof window.cloudSync.deleteItem === 'function') { window.cloudSync.deleteItem('INVENTORY', id); }
     renderStockList();
   }
 }
@@ -3384,17 +3822,23 @@ function openAddCustomerModal(cObj = null) {
   const title = document.getElementById('custModalTitle');
   const editId = document.getElementById('editCustId');
   if(cObj) {
-    title.textContent = "Edit Customer"; editId.value = cObj.id;
+    title.textContent = "Edit Customer";
+    editId.value = cObj.id;
     document.getElementById('cName').value = cObj.name;
     document.getElementById('cPhone').value = cObj.phone;
+    document.getElementById('cEmail').value = cObj.email;
     document.getElementById('cAddress').value = cObj.address;
     document.getElementById('cGst').value = cObj.gst;
+    document.getElementById('cPerson').value = cObj.person;
   } else {
-    title.textContent = "Register Client"; editId.value = "";
+    title.textContent = "Register Client";
+    editId.value = "";
     document.getElementById('cName').value = "";
     document.getElementById('cPhone').value = "";
+    document.getElementById('cEmail').value = "";
     document.getElementById('cAddress').value = "";
     document.getElementById('cGst').value = "";
+    document.getElementById('cPerson').value = "";
   }
   document.getElementById('customerModal').style.display = 'flex';
 }
@@ -3407,6 +3851,7 @@ function saveCustomerAction() {
   const phone = document.getElementById('cPhone').value.trim();
   const addr = document.getElementById('cAddress').value.trim();
   const gst = document.getElementById('cGst').value.trim();
+
   if(!name || !phone) { alert("Name & Phone required!"); return; }
 
   if(editId) {
@@ -3415,16 +3860,23 @@ function saveCustomerAction() {
   } else {
     customerDatabase.unshift({ id: Date.now(), name, phone, address: addr, gst: gst || "Unregistered" });
   }
+
   setStored("CUSTOMERS", customerDatabase);
-  if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') { window.cloudSync.pushKey('CUSTOMERS', customerDatabase); }
-  closeCustomerModal(); renderStockList(); alert("Customer saved!");
+  closeCustomerModal();
+  renderStockList();
+  alert("Customer saved!");
 }
 
-/* BILLING & LEDGER */
+/* TAB 5: BILLING & LEDGER */
 function renderBilling(filterType, empFilter = "ALL") {
   let totalBilled = 0, totalRecv = 0, totalDue = 0;
   const ledgerList = ordersData.filter(o => o.status === 'Delivered');
-  ledgerList.forEach(o => { totalBilled += o.totalAmount; totalRecv += o.recvAmount; totalDue += o.dueAmount; });
+
+  ledgerList.forEach(o => {
+    totalBilled += o.totalAmount;
+    totalRecv += o.recvAmount;
+    totalDue += o.dueAmount;
+  });
 
   document.getElementById('metricTotalBilled').textContent = '₹' + totalBilled.toLocaleString('en-IN');
   document.getElementById('metricTotalRecv').textContent = '₹' + totalRecv.toLocaleString('en-IN');
@@ -3436,10 +3888,21 @@ function renderBilling(filterType, empFilter = "ALL") {
 
   let list = ledgerList;
   if(empFilter !== "ALL") list = list.filter(o => o.bookedBy === empFilter);
-  if(filterType === 'due') { list = list.filter(o => o.dueAmount > 0); }
-  else if(filterType === 'received') { list = list.filter(o => o.dueAmount === 0); }
 
-  if (list.length === 0) { container.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">No invoices found.</div>`; return; }
+  if(filterType === 'due') {
+    list = list.filter(o => o.dueAmount > 0);
+    document.getElementById('billingFilterTitle').innerHTML = `🔴 Due Customers Only (${list.length})`;
+  } else if(filterType === 'received') {
+    list = list.filter(o => o.dueAmount === 0);
+    document.getElementById('billingFilterTitle').innerHTML = `🟢 Fully Paid (${list.length})`;
+  } else {
+    document.getElementById('billingFilterTitle').textContent = `Showing Delivered Tax Invoices (${list.length})`;
+  }
+
+  if (list.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi invoice nahi mili.</div>`;
+    return;
+  }
 
   list.forEach(o => {
     const card = document.createElement('div');
@@ -3447,13 +3910,12 @@ function renderBilling(filterType, empFilter = "ALL") {
     card.innerHTML = `
       <div class="card-header">
         <div>
-          <strong style="font-size:15px;">${o.customerName}</strong>
+          <strong style="font-size:15px; color:var(--text-main);">${o.customerName}</strong>
           <div style="font-size:11.5px; color:var(--text-muted);">Invoice: ${o.id} | Delivered: ${o.deliveredDate || o.orderDate}</div>
         </div>
         <div style="display:flex; align-items:center; gap:6px;">
           <span class="badge ${o.dueAmount > 0 ? 'badge-danger' : 'badge-delivered'}">${o.dueAmount > 0 ? 'Due: ₹' + o.dueAmount : 'Paid'}</span>
           ${isAdmin ? `<button class="btn btn-outline btn-sm admin-only-btn" onclick="openAdminEditLedgerModal('${o.id}')">✏️</button>` : ''}
-          ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="deleteAdminLedgerInvoice('${o.id}')">🗑️</button>` : ''}
         </div>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
@@ -3467,10 +3929,169 @@ function renderBilling(filterType, empFilter = "ALL") {
 }
 window.renderBilling = renderBilling;
 
-function filterBilling(type) { renderBilling(type, document.getElementById('billingEmployeeFilter').value); }
-function filterBillingByEmployee(empName) { renderBilling('due', empName); }
+function filterBilling(type) {
+  renderBilling(type, document.getElementById('billingEmployeeFilter').value);
+}
+function filterBillingByEmployee(empName) {
+  renderBilling('due', empName);
+}
 
-document.addEventListener('DOMContentLoaded', () => { checkAuthSession(); });
+function downloadFile(content, fileName, mimeType) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], { type: mimeType }));
+  a.setAttribute('download', fileName);
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+/* WHATSAPP CHAT */
+let typingTimeout = null;
+function handleTypingEvent() {}
+function renderChatMessages() {
+  const container = document.getElementById('chatMessagesContainer');
+  if(!container) return;
+  container.innerHTML = '';
+  document.getElementById('chatCountBadge').textContent = `${teamChatData.length} msgs`;
+  const myName = currentUser ? currentUser.name : '';
+
+  teamChatData.forEach(msg => {
+    const isMine = myName && msg.sender === myName;
+    const bubble = document.createElement('div');
+    bubble.className = `bubble ${isMine ? 'me' : 'other'}`;
+    bubble.innerHTML = `${!isMine ? `<div class="bubble-author">${msg.sender}</div>` : ''}<div>${msg.text}</div>`;
+    container.appendChild(bubble);
+  });
+  container.scrollTop = container.scrollHeight;
+}
+window.renderChatMessages = renderChatMessages;
+
+function sendLiveChatMessage(fileObj = null) {
+  const input = document.getElementById('chatInputMessage');
+  const txt = input.value.trim();
+  if(!txt && !fileObj) return;
+
+  const newMsg = {
+    sender: currentUser ? currentUser.name : "Staff",
+    text: txt,
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  };
+  input.value = '';
+  teamChatData.push(newMsg);
+  renderChatMessages();
+}
+
+function handleChatFileUpload(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result });
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateGlobalReminders() {
+  const today = new Date().toISOString().split('T')[0];
+  let delDue = ordersData.filter(o => o.status === 'Pending' && o.deliveryDate <= today).length;
+  let srvDue = serviceCallsData.filter(s => s.status !== 'Work Completed' && s.targetDate <= today).length;
+  document.getElementById('dailyReminderText').textContent = `${delDue} Product Orders Due | ${srvDue} Machine Repairs Due`;
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  if (el) el.classList.add('active');
+
+  if(tab === 'dashboard') renderDashboard();
+  if(tab === 'leads') renderLeads();
+  if(tab === 'orders') renderOrders();
+  if(tab === 'services') renderServices();
+  if(tab === 'inventory') renderStockList();
+  if(tab === 'billing') renderBilling('all');
+  if(tab === 'chat') renderChatMessages();
+}
+
+/* REALTIME TOAST BROADCAST HANDLER WITH AUDIO CHIME */
+function showBroadcastToastAlert(notif) {
+  const container = document.getElementById('broadcastToastContainer');
+  if (!container) return;
+
+  // Web Audio Beep Chime
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.4);
+  } catch(e) {}
+
+  // Device vibration
+  if (navigator.vibrate) { try { navigator.vibrate([100, 50, 100]); } catch(e){} }
+
+  // System notification
+  if (window.Notification && Notification.permission === 'granted') {
+    try {
+      new Notification(notif.title, {
+        body: notif.body,
+        icon: 'https://cdn-icons-png.flaticon.com/512/9422/9422891.png'
+      });
+    } catch(e) {}
+  }
+
+  const icons = { order: '📦', delivery: '🚚', payment: '💰' };
+  const toast = document.createElement('div');
+  toast.className = 'broadcast-toast';
+  toast.innerHTML = `
+    <div class="toast-icon">${icons[notif.type] || '🔔'}</div>
+    <div class="toast-content">
+      <div class="toast-title">${notif.title}</div>
+      <div class="toast-body">${notif.body}</div>
+    </div>
+    <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+  `;
+  container.prepend(toast);
+
+  setTimeout(() => {
+    if (toast.parentElement) toast.remove();
+  }, 7000);
+}
+window.showBroadcastToastAlert = showBroadcastToastAlert;
+
+/* SYSTEM PERMISSIONS PROMPT (CAMERA & NOTIFICATIONS) */
+function requestAppSystemPermissions() {
+  if (window.Notification && Notification.permission !== 'granted') {
+    Notification.requestPermission().then(perm => {
+      if (perm === 'granted') {
+        alert("✓ Notification Alerts Active!");
+      }
+    });
+  }
+
+  // Camera Permission Check
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        stream.getTracks().forEach(t => t.stop());
+        alert("✓ Camera & File Picker Permission Verified!");
+      })
+      .catch(err => {
+        console.log("Camera access status:", err);
+      });
+  }
+}
+window.requestAppSystemPermissions = requestAppSystemPermissions;
+
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuthSession();
+});
 </script>
 
 </body>
