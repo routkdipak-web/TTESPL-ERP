@@ -3176,10 +3176,31 @@ function filterStockList(val) {
   results.slice(0, 60).forEach(item => {
     const card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = `<strong>${item.name}</strong> <span style="font-size:11px; color:var(--text-muted);">(${item.code || item.phone || ''})</span>`;
+    card.style.cursor = 'pointer';
+    card.onclick = () => {
+      if (activeInventoryCategory === 'CUSTOMERS') {
+        editCustomerPrompt(item.id);
+      } else {
+        openStockDetailModal(item.id);
+      }
+    };
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <span style="font-size:11px; font-weight:700; color:var(--cyan);">${item.code || ''}</span>
+          <strong style="font-size:14px; color:var(--text-main); display:block;">${item.name}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">${item.category || item.phone || ''}</div>
+        </div>
+        <div style="text-align:right;">
+          ${item.stock !== undefined ? `<span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}">${item.stock} in stock</span>` : ''}
+          <div style="font-size:13.5px; font-weight:800; color:var(--text-main); margin-top:4px;">${item.rate ? 'MRP: ₹' + item.rate : (item.address || '')}</div>
+        </div>
+      </div>
+    `;
     c.appendChild(card);
   });
 }
+
 window.filterStockList = filterStockList;
 
 let activeStockDetailId = null;
