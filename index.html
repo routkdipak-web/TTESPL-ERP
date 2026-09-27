@@ -113,57 +113,144 @@
   }
   #pullToRefreshIndicator.visible { transform: translateY(0); }
 
+  /* ------------------- SLIM PREMIUM HEADER & CAR WASH ANIMATION ------------------- */
   header {
-    background: rgba(10, 37, 64, 0.88);
-    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    color: white; padding: 12px 18px; position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    background: linear-gradient(135deg, rgba(8, 26, 46, 0.94), rgba(12, 38, 64, 0.92));
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    color: white; padding: 7px 12px; position: sticky; top: 0; z-index: 1000;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.22); display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(0, 180, 216, 0.25);
+    height: 52px; overflow: hidden;
   }
-  [data-theme="dark"] header { background: rgba(17, 24, 39, 0.88); border-bottom: 1px solid rgba(255,255,255,0.05); }
+  [data-theme="dark"] header { 
+    background: linear-gradient(135deg, rgba(10, 15, 26, 0.96), rgba(17, 24, 39, 0.94)); 
+    border-bottom: 1px solid rgba(56, 189, 248, 0.2); 
+  }
 
-  .brand-area { display: flex; align-items: center; gap: 12px; }
-  .brand-logo-badge {
-    width: 42px; height: 42px; border-radius: 13px; background: linear-gradient(135deg, #ff6b35, #f59e0b 60%, #00b4d8);
-    background-size: 220% 220%; animation: brandGlowShift 6s ease-in-out infinite;
-    display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900;
-    color: white; box-shadow: 0 4px 16px rgba(255,107,53,0.55), 0 0 0 3px rgba(255,255,255,0.08);
-    letter-spacing: -0.5px;
+  /* Animated Car Wash Scene Background */
+  .carwash-bg-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.24; overflow: hidden;
   }
-  @keyframes brandGlowShift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+  .car-silhouette {
+    position: absolute; right: 18%; bottom: 4px; width: 150px; height: 38px;
+    animation: carSlightHover 4s ease-in-out infinite alternate;
+  }
+  @keyframes carSlightHover {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-2px); }
+  }
+  .water-spray {
+    position: absolute; right: 16%; top: 0; width: 180px; height: 100%;
+    background: radial-gradient(circle at 50% 20%, rgba(0, 212, 255, 0.45), transparent 70%);
+    opacity: 0.7; animation: sprayPulse 2s ease-in-out infinite alternate;
+  }
+  @keyframes sprayPulse {
+    0% { opacity: 0.3; transform: scaleX(0.95); }
+    100% { opacity: 0.85; transform: scaleX(1.05); }
+  }
+  .bubbles-container {
+    position: absolute; inset: 0; overflow: hidden;
+  }
+  .wash-bubble {
+    position: absolute; background: radial-gradient(circle at 30% 30%, #ffffff, rgba(0, 212, 255, 0.6) 60%, transparent 90%);
+    border-radius: 50%; opacity: 0.6; animation: washBubbleFly 3.5s linear infinite;
+  }
+  .wb1 { width: 7px; height: 7px; left: 45%; bottom: -5px; animation-duration: 2.8s; animation-delay: 0.2s; }
+  .wb2 { width: 11px; height: 11px; left: 58%; bottom: -10px; animation-duration: 3.4s; animation-delay: 0.8s; }
+  .wb3 { width: 6px; height: 6px; left: 70%; bottom: -5px; animation-duration: 2.4s; animation-delay: 1.4s; }
+  .wb4 { width: 14px; height: 14px; left: 82%; bottom: -12px; animation-duration: 4.1s; animation-delay: 0.5s; }
+  @keyframes washBubbleFly {
+    0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+    20% { opacity: 0.85; }
+    100% { transform: translate(-30px, -60px) scale(1.3); opacity: 0; }
+  }
+
+  .brand-area { display: flex; align-items: center; gap: 8px; position: relative; z-index: 2; max-width: calc(100% - 80px); }
+  .brand-logo-badge {
+    width: 34px; height: 34px; min-width: 34px; border-radius: 9px;
+    background: linear-gradient(135deg, #ff6b35, #f59e0b 60%, #00b4d8);
+    display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900;
+    color: white; box-shadow: 0 2px 10px rgba(255,107,53,0.5); letter-spacing: -0.2px;
+  }
+  .brand-text-row {
+    display: flex; flex-direction: column; justify-content: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  }
+  .brand-title-line {
+    display: flex; align-items: baseline; gap: 5px; overflow: hidden;
   }
   .brand-title {
-    font-size: 15.5px; font-weight: 800; letter-spacing: 0.3px; line-height: 1.2;
-    background: linear-gradient(90deg, #ffffff, #b9e7f7 45%, #ffffff);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
+    font-size: 12.5px; font-weight: 800; letter-spacing: 0.2px; line-height: 1.1;
+    color: #ffffff; white-space: nowrap;
   }
-  .brand-title-full { font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px; color: #7dd3fc; text-transform: uppercase; }
-  .brand-sub { font-size: 10px; color: #94a3b8; font-weight: 600; }
+  .brand-title-full { 
+    font-size: 9px; font-weight: 700; color: #7dd3fc; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap;
+  }
+  .brand-sub-horizontal {
+    font-size: 9px; color: #94a3b8; font-weight: 600; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .header-cloud-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block; box-shadow: 0 0 6px #10b981;
+  }
 
-  .header-actions { display: flex; align-items: center; gap: 8px; }
-  .sync-badge {
-    font-size: 10.5px; padding: 4px 10px; border-radius: 20px; font-weight: 700;
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff;
+  /* Profile Avatar Pill & Menu */
+  .profile-menu-wrapper { position: relative; z-index: 10; }
+  .profile-avatar-btn {
+    display: flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.12);
+    border: 1.5px solid rgba(0, 180, 216, 0.5); padding: 3px 6px 3px 3px; border-radius: 24px;
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; }
-  .sync-dot.offline { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+  .profile-avatar-btn:active { transform: scale(0.94); }
+  .profile-avatar-img {
+    width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #00b4d8, #0077b6);
+    color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+  .profile-avatar-role-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #ff6b35; border: 1.5px solid #fff;
+    position: absolute; top: 1px; left: 22px;
+  }
+  .profile-avatar-role-dot.admin { background: #00b4d8; }
 
-  .user-badge {
-    background: rgba(255,255,255,0.15); font-size: 11.5px; padding: 5px 10px; border-radius: 20px;
-    display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.25); color: #fff;
+  /* Dropdown Modal/Drawer for Profile */
+  .profile-dropdown-card {
+    position: absolute; top: calc(100% + 10px); right: 0; width: 280px;
+    background: rgba(10, 37, 64, 0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(0, 180, 216, 0.35); border-radius: 18px;
+    box-shadow: 0 16px 38px rgba(0,0,0,0.45); padding: 14px;
+    display: none; animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    color: #ffffff; z-index: 2000;
   }
-  .user-role-tag {
-    font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 8px;
-    background: #ff6b35; color: white; text-transform: uppercase;
+  [data-theme="dark"] .profile-dropdown-card {
+    background: rgba(17, 24, 39, 0.96); border-color: rgba(56, 189, 248, 0.35);
   }
-  .user-role-tag.admin { background: #00b4d8; }
+  .profile-header-info {
+    text-align: center; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.12); margin-bottom: 10px;
+  }
+  .profile-header-name { font-size: 15px; font-weight: 800; color: #fff; }
+  .profile-header-role {
+    display: inline-block; margin-top: 4px; font-size: 9.5px; font-weight: 800;
+    padding: 2px 8px; border-radius: 10px; background: #ff6b35; text-transform: uppercase; color: #fff;
+  }
+  .profile-header-role.admin { background: #00b4d8; }
+
+  .profile-menu-list { display: flex; flex-direction: column; gap: 6px; }
+  .profile-menu-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 12px; border-radius: 10px; background: rgba(255,255,255,0.06);
+    font-size: 12.5px; font-weight: 700; color: #e2e8f0; cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease; text-decoration: none; border: none; width: 100%;
+    text-align: left;
+  }
+  .profile-menu-item:hover, .profile-menu-item:active {
+    background: rgba(0, 180, 216, 0.2); color: #fff; transform: translateX(2px);
+  }
+  .profile-menu-icon { font-size: 15px; width: 22px; text-align: center; margin-right: 8px; }
+  .profile-menu-item-left { display: flex; align-items: center; }
 
   .daily-reminder-banner {
     background: linear-gradient(90deg, #fffbeb, #fef3c7);
-    border-bottom: 1.5px solid #fde68a; padding: 9px 16px; font-size: 12px;
+    border-bottom: 1.5px solid #fde68a; padding: 7px 14px; font-size: 11.5px;
     color: #92400e; display: flex; align-items: center; justify-content: space-between; gap: 10px;
     font-weight: 600;
   }
@@ -191,7 +278,7 @@
     border-radius: 10px; padding: 1px 6px; min-width: 16px; height: 16px; line-height: 14px;
   }
 
-  .container { max-width: 960px; margin: 0 auto; padding: 16px; }
+  .container { max-width: 960px; margin: 0 auto; padding: 14px; }
   .view-panel { display: none; }
   .view-panel.active { display: block; animation: panelFade 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
   @keyframes panelFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -208,10 +295,7 @@
   ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.45); border-radius: 10px; }
   ::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.7); }
 
-  /* Dashboard stat cards */
-  .stat-card {
-    position: relative; overflow: hidden; isolation: isolate;
-  }
+  .stat-card { position: relative; overflow: hidden; isolation: isolate; }
   .stat-card::after {
     content: attr(data-icon); position: absolute; right: -6px; bottom: -10px;
     font-size: 46px; opacity: 0.14; z-index: -1; line-height: 1; transform: rotate(-8deg);
@@ -223,7 +307,6 @@
   .stat-value.pulse-update { animation: statValuePulse 0.4s cubic-bezier(0.34,1.56,0.64,1); }
   @keyframes statValuePulse { 0% { transform: scale(1); } 45% { transform: scale(1.12); } 100% { transform: scale(1); } }
 
-  /* Button shine sweep on primary/accent */
   .btn-primary, .btn-accent { position: relative; overflow: hidden; }
   .btn-primary::before, .btn-accent::before {
     content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
@@ -233,7 +316,6 @@
   .btn-primary:hover::before, .btn-accent:hover::before { animation: btnShine 0.9s ease; }
   @keyframes btnShine { from { left: -60%; } to { left: 130%; } }
 
-  /* Quick action tiles */
   .qa-tile {
     background: var(--card); border: 1.5px solid var(--border); border-radius: 14px;
     padding: 14px 10px; display: flex; flex-direction: column; align-items: center; gap: 7px;
@@ -246,7 +328,6 @@
     font-size: 19px; background: linear-gradient(135deg, rgba(0,180,216,0.14), rgba(10,37,64,0.08));
   }
 
-  /* Global search */
   .search-result-row {
     display: flex; justify-content: space-between; align-items: center; gap: 10px;
     padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;
@@ -254,7 +335,6 @@
   }
   .search-result-row:hover { border-color: var(--cyan); background: rgba(0,180,216,0.06); transform: translateX(2px); }
 
-  /* Filter bar (Orders/Leads/Services) */
   .filter-bar {
     display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;
     background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
@@ -263,7 +343,6 @@
   .filter-bar .form-group { margin-bottom: 0; flex: 1; min-width: 130px; }
   .filter-bar .form-label { font-size: 10.5px; }
 
-  /* Empty state */
   .empty-state { text-align: center; padding: 28px 14px; color: var(--text-muted); }
   .empty-state .empty-icon { font-size: 34px; margin-bottom: 8px; display: block; }
   .empty-state .empty-title { font-weight: 800; color: var(--success); font-size: 13px; }
@@ -360,15 +439,6 @@
     font-size: 10.5px; color: #667781; text-align: right; margin-top: 3px;
     display: flex; justify-content: flex-end; align-items: center; gap: 3px;
   }
-  .bubble-file-link {
-    display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.05);
-    padding: 8px 12px; border-radius: 8px; text-decoration: none; color: inherit;
-    font-weight: 700; font-size: 12px; margin-top: 6px;
-  }
-  .bubble-img-preview {
-    max-width: 100%; max-height: 260px; border-radius: 8px; margin-top: 6px;
-    cursor: pointer; object-fit: cover; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
   .chat-input-bar {
     background: var(--card); padding: 10px 14px; display: flex; align-items: center; gap: 10px;
     border-top: 1px solid var(--border);
@@ -402,12 +472,6 @@
   .items-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
   .items-table th { background: var(--bg); padding: 8px 6px; font-size: 11.5px; text-align: left; color: var(--text-muted); font-weight: 700; }
   .items-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); font-size: 12.5px; }
-
-  .audit-log-box {
-    background: var(--bg); border-top: 1px dashed var(--border); padding: 8px 12px;
-    margin-top: 10px; border-radius: 8px; font-size: 11px; color: var(--text-muted);
-  }
-  .audit-item { margin-bottom: 3px; }
 
   #fabMainBtn {
     position: fixed; bottom: 82px; right: 20px; width: 52px; height: 52px;
@@ -449,71 +513,6 @@
   }
   .inv-table th { background: #f1f5f9; font-weight: 700; color: #0f172a; }
 
-  /* iOS Polish Layer */
-  .auth-overlay {
-    opacity: 1;
-    transition: opacity 0.34s cubic-bezier(0.32,0.72,0,1),
-                overlay 0.34s allow-discrete,
-                display 0.34s allow-discrete;
-  }
-  @starting-style { .auth-overlay { opacity: 0; } }
-
-  .auth-card {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-    transition: transform 0.34s cubic-bezier(0.32,0.72,0,1),
-                opacity 0.34s cubic-bezier(0.32,0.72,0,1);
-  }
-  @starting-style { .auth-card { transform: translateY(26px) scale(0.94); opacity: 0; } }
-
-  .view-panel.active { animation: panelFadeSlide 0.34s cubic-bezier(0.32,0.72,0,1); }
-  @keyframes panelFadeSlide {
-    from { opacity: 0; transform: translateY(14px) scale(0.985); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .card { animation: cardPopIn 0.3s cubic-bezier(0.32,0.72,0,1); }
-  @keyframes cardPopIn {
-    from { opacity: 0; transform: translateY(8px) scale(0.99); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  .card:active { transform: scale(0.985); }
-
-  .nav-bar { position: fixed; }
-  #navActivePill {
-    position: absolute; top: 6px; height: calc(100% - 12px);
-    background: linear-gradient(135deg, rgba(255,107,53,0.14), rgba(255,157,61,0.08));
-    border-radius: 16px; z-index: 0; pointer-events: none;
-    transition: left 0.32s cubic-bezier(0.32,0.72,0,1), width 0.32s cubic-bezier(0.32,0.72,0,1);
-  }
-  .nav-item { z-index: 1; }
-  .nav-item.active .nav-icon { filter: drop-shadow(0 3px 8px rgba(255,107,53,0.4)); }
-
-  .btn { position: relative; overflow: hidden; }
-  .btn:active { transform: scale(0.955); filter: brightness(0.97); }
-  .btn-primary:active, .btn-accent:active { box-shadow: 0 2px 8px rgba(10,37,64,0.18); }
-
-  .sync-dot { animation: syncPulse 2.2s ease-in-out infinite; }
-  @keyframes syncPulse {
-    0%, 100% { box-shadow: 0 0 6px currentColor; opacity: 1; }
-    50% { box-shadow: 0 0 12px currentColor; opacity: 0.75; }
-  }
-
-  .badge { animation: badgePop 0.28s cubic-bezier(0.34,1.56,0.64,1); }
-  @keyframes badgePop { from { transform: scale(0.85); opacity: 0.6; } to { transform: scale(1); opacity: 1; } }
-
-  #fabMenu .fab-action-btn { animation: fabItemIn 0.26s cubic-bezier(0.32,0.72,0,1) backwards; }
-  #fabMenu .fab-action-btn:nth-child(1) { animation-delay: 0.02s; }
-  #fabMenu .fab-action-btn:nth-child(2) { animation-delay: 0.06s; }
-  #fabMenu .fab-action-btn:nth-child(3) { animation-delay: 0.10s; }
-  #fabMenu .fab-action-btn:nth-child(4) { animation-delay: 0.14s; }
-  #fabMenu .fab-action-btn:nth-child(5) { animation-delay: 0.18s; }
-  @keyframes fabItemIn { from { opacity: 0; transform: translateY(10px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-
-  .solid-suggestion-box { animation: popIn 0.22s cubic-bezier(0.32,0.72,0,1); }
-  html { scroll-behavior: smooth; }
-
-  /* REALTIME TOAST BROADCAST NOTIFICATION POPUP */
   #broadcastToastContainer {
     position: fixed; top: 16px; right: 16px; left: 16px; max-width: 440px; margin: 0 auto;
     z-index: 10000; pointer-events: none; display: flex; flex-direction: column; gap: 8px;
@@ -543,7 +542,6 @@
 <input type="file" id="chatAttachmentInput" style="display:none;" accept="image/*,.pdf,.doc,.docx" onchange="handleChatFileUpload(event)">
 <input type="file" id="backupRestoreInput" style="display:none;" accept=".json" onchange="processRestoreJSON(event)">
 
-<!-- HIDDEN INPUTS FOR MANDATORY PHOTO PROOFS WITH DIRECT CAMERA SUPPORT -->
 <input type="file" id="deliveryPhotoFileInput" accept="image/*" style="display:none;" onchange="handleDeliveryPhotoCaptured(event)">
 <input type="file" id="paymentProofFileInput" accept="image/*" style="display:none;" onchange="handlePaymentProofCaptured(event)">
 
@@ -640,14 +638,14 @@
       <button class="btn btn-outline btn-sm" onclick="closeDeliveryProofModal()">✕</button>
     </div>
     <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-      Order deliver karne se pehle product/package ya customer ke signature/handover ki kam se kam 1 photo lena zaroori hai.
+      Order deliver karne se pehle product/package ya customer ke handover ki photo lena zaroori hai.
     </div>
     <div id="deliveryPhotoPreviewWrap" style="text-align:center; margin-bottom:14px;">
       <img id="deliveryPhotoPreview" src="" alt="Proof Preview" style="display:none; max-width:100%; max-height:220px; border-radius:10px; border:2px solid var(--success); margin:0 auto 10px;">
       <button class="btn btn-accent btn-block" onclick="document.getElementById('deliveryPhotoFileInput').click()">📷 Camera / Gallery se Photo Chunein</button>
     </div>
     <div class="form-group">
-      <label class="form-label">Delivery Date (Purani delivery ke liye date badal sakte hain)</label>
+      <label class="form-label">Delivery Date</label>
       <input type="date" id="deliveryManualDate">
     </div>
     <input type="hidden" id="pendingDeliverOrderId">
@@ -659,11 +657,8 @@
 <div id="paymentProofModal" class="auth-overlay" style="display:none; z-index:3600;">
   <div class="auth-card" style="max-width:440px;">
     <div class="card-header">
-      <strong class="card-title">💵 Payment Receipt / Cash Proof (Mandatory)</strong>
+      <strong class="card-title">💵 Payment Receipt Proof</strong>
       <button class="btn btn-outline btn-sm" onclick="closePaymentProofModal()">✕</button>
-    </div>
-    <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-      Payment collection record karne ke liye UPI screenshot, Cheque photo, ya Cash voucher ka proof upload karna zaroori hai.
     </div>
     <div class="form-group">
       <label class="form-label">Payment Amount Collected (₹):</label>
@@ -674,7 +669,7 @@
       <button class="btn btn-accent btn-block" onclick="document.getElementById('paymentProofFileInput').click()">📸 Take Payment Photo / Receipt</button>
     </div>
     <input type="hidden" id="pendingCollectOrderId">
-    <button class="btn btn-primary btn-block" id="confirmCollectPayBtn" disabled onclick="executeConfirmedPaymentCollection()">✓ Confirm Payment & Cloud Push</button>
+    <button class="btn btn-primary btn-block" id="confirmCollectPayBtn" disabled onclick="executeConfirmedPaymentCollection()">✓ Confirm Payment</button>
   </div>
 </div>
 
@@ -683,34 +678,116 @@
 
   <div class="daily-reminder-banner" id="dailyReminderBanner">
     <div>
-      <strong>📅 SCHEDULE TODAY:</strong>
+      <strong>📅 SCHEDULE:</strong>
       <span id="dailyReminderText">Checking schedules...</span>
     </div>
     <button class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:10px;" onclick="document.getElementById('dailyReminderBanner').style.display='none'">✕</button>
   </div>
 
+  <!-- SLIM PREMIUM HEADER WITH CAR WASH ANIMATION & PROFILE DRAWER -->
   <header>
+    <!-- Background Animated Luxury Car Wash Simulation -->
+    <div class="carwash-bg-canvas">
+      <!-- Water Spray Effect -->
+      <div class="water-spray"></div>
+      
+      <!-- Moving Soap Foam Bubbles -->
+      <div class="bubbles-container">
+        <div class="wash-bubble wb1"></div>
+        <div class="wash-bubble wb2"></div>
+        <div class="wash-bubble wb3"></div>
+        <div class="wash-bubble wb4"></div>
+      </div>
+
+      <!-- Luxury Car Design Silhouette -->
+      <svg class="car-silhouette" viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 28 C20 28, 25 18, 45 15 C65 12, 105 12, 125 18 C140 22, 150 25, 156 28 C158 29, 160 31, 158 33 C154 35, 140 35, 134 35 C132 31, 126 28, 120 28 C114 28, 108 31, 106 35 L52 35 C50 31, 44 28, 38 28 C32 28, 26 31, 24 35 L6 35 C2 35, 0 32, 2 30 Z" fill="rgba(0, 180, 216, 0.45)"/>
+        <!-- Car Wheels -->
+        <circle cx="38" cy="33" r="6" fill="#061526" stroke="#00b4d8" stroke-width="1.8"/>
+        <circle cx="120" cy="33" r="6" fill="#061526" stroke="#00b4d8" stroke-width="1.8"/>
+        <!-- Wash Jet Water Streamlines -->
+        <path d="M80 0 L90 20 M100 0 L105 22 M70 0 L82 22" stroke="rgba(255,255,255,0.4)" stroke-width="1.2" stroke-dasharray="3 3"/>
+      </svg>
+    </div>
+
+    <!-- Left: Horizontal Branding with TTESPL Logo -->
     <div class="brand-area">
-      <div class="brand-logo-badge">TT</div>
-      <div>
-        <div class="brand-title">TWIN TOWN EXPRESS SERVICES</div>
-        <div class="brand-title-full">Pvt. Ltd. · Detailing &amp; Machinery Portal</div>
-        <div class="brand-sub">Rasulgarh Industrial Estate, BBSR</div>
+      <div class="brand-logo-badge">TTESPL</div>
+      <div class="brand-text-row">
+        <div class="brand-title-line">
+          <span class="brand-title">TWIN TOWN EXPRESS SERVICES</span>
+          <span class="brand-title-full">PVT. LTD.</span>
+        </div>
+        <div class="brand-sub-horizontal">
+          <span class="header-cloud-dot" title="Cloud Active"></span>
+          <span>Detailing &amp; Machinery Portal · Rasulgarh, BBSR</span>
+        </div>
       </div>
     </div>
-    <div class="header-actions">
-      <button class="btn btn-outline btn-sm" onclick="openGlobalSearchModal()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Global Search">🔍 Search</button>
-      <button class="btn btn-outline btn-sm" onclick="requestAppSystemPermissions()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Request Camera & Notification Permissions">🔔 Perms</button>
-      <button class="btn btn-outline btn-sm" onclick="toggleThemeMode()" style="padding:5px 9px; color:white; border-color:rgba(255,255,255,0.3);" title="Toggle Dark/Light Mode">🌙/☀️</button>
-      <div class="sync-badge" id="cloudSyncStatus">
-        <span class="sync-dot" id="syncDot"></span> <span id="syncText">Live Cloud</span>
+
+    <!-- Right: Single Profile Avatar Touch Button -->
+    <div class="profile-menu-wrapper">
+      <div class="profile-avatar-btn" onclick="toggleProfileDrawer(event)" title="Profile & App Menu">
+        <div class="profile-avatar-img" id="headerProfileAvatarInitial">D</div>
+        <div class="profile-avatar-role-dot admin" id="headerProfileDot"></div>
+        <span style="font-size:11px; font-weight:800; margin:0 2px;">▾</span>
       </div>
-      <div class="user-badge">
-        <span>👤</span> <strong id="activeStaffDisplay">Dipak Rout</strong>
-        <span class="user-role-tag admin" id="activeStaffRoleTag">ADMIN</span>
+
+      <!-- Single Profile Popup Menu -->
+      <div class="profile-dropdown-card" id="profileDropdownCard">
+        <div class="profile-header-info">
+          <div class="profile-header-name" id="menuStaffName">Dipak Kumar Rout</div>
+          <span class="profile-header-role admin" id="menuStaffRole">ADMIN</span>
+          <div style="font-size:10px; color:#94a3b8; margin-top:4px;" id="menuStaffPhone">Mob: Active Staff</div>
+        </div>
+
+        <div class="profile-menu-list">
+          <!-- Day/Night Theme -->
+          <div class="profile-menu-item" onclick="toggleThemeMode(); toggleProfileDrawer();">
+            <div class="profile-menu-item-left">
+              <span class="profile-menu-icon">🌙</span>
+              <span>Day / Night Theme</span>
+            </div>
+            <span style="font-size:11px; opacity:0.75;" id="currentThemeTag">Light/Dark</span>
+          </div>
+
+          <!-- App Permissions -->
+          <div class="profile-menu-item" onclick="requestAppSystemPermissions(); toggleProfileDrawer();">
+            <div class="profile-menu-item-left">
+              <span class="profile-menu-icon">🔔</span>
+              <span>App Permissions</span>
+            </div>
+            <span style="font-size:10px; color:#10b981;">Camera/Alerts</span>
+          </div>
+
+          <!-- Master Search -->
+          <div class="profile-menu-item" onclick="openGlobalSearchModal(); toggleProfileDrawer();">
+            <div class="profile-menu-item-left">
+              <span class="profile-menu-icon">🔍</span>
+              <span>Master Search</span>
+            </div>
+            <span style="font-size:11px; opacity:0.7;">1-Tap</span>
+          </div>
+
+          <!-- ADMIN ONLY: All Employees / Staff Control -->
+          <div class="profile-menu-item admin-only-item" id="menuAdminStaffBtn" onclick="openStaffManageModal(); toggleProfileDrawer();" style="display:none; background:rgba(0,180,216,0.14);">
+            <div class="profile-menu-item-left">
+              <span class="profile-menu-icon">👥</span>
+              <span style="color:#38bdf8;">All Employees (Admin)</span>
+            </div>
+            <span class="badge badge-info" style="font-size:9.5px; padding:2px 6px;">Manage</span>
+          </div>
+
+          <!-- Logout -->
+          <div class="profile-menu-item" onclick="performFullLogout(); toggleProfileDrawer();" style="color:#ef4444; border-top:1px solid rgba(255,255,255,0.1); margin-top:4px;">
+            <div class="profile-menu-item-left">
+              <span class="profile-menu-icon">🚪</span>
+              <span>Logout Session</span>
+            </div>
+            <span>→</span>
+          </div>
+        </div>
       </div>
-      <button class="btn btn-outline btn-sm admin-only-btn" id="headerStaffManageBtn" onclick="openStaffManageModal()" style="display:none; color:white; border-color:rgba(255,255,255,0.4); padding:5px 9px;">👥 Staff</button>
-      <button class="btn btn-outline btn-sm" style="color:white; border-color:rgba(255,255,255,0.3); padding:5px 9px;" onclick="performFullLogout()">Logout</button>
     </div>
   </header>
 
@@ -958,7 +1035,7 @@
       <div id="billingListContainer"></div>
     </div>
 
-    <!-- TAB 6: WHATSAPP PREMIUM LIVE GROUP CHAT -->
+    <!-- TAB 6: WHATSAPP CHAT -->
     <div id="view-chat" class="view-panel">
       <div class="chat-box-card">
         <div class="chat-header-bar">
@@ -966,16 +1043,10 @@
             <div class="wa-group-avatar">TT</div>
             <div>
               <div style="font-size:14.5px; font-weight:800; line-height:1.2;">TTESPL Team Live Hub</div>
-              <div id="liveTypingStatus" style="font-size:11.5px; opacity:0.92; font-weight:600;">Tap to view team discussion</div>
+              <div style="font-size:11.5px; opacity:0.92; font-weight:600;">Team discussion portal</div>
             </div>
           </div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <span class="badge" id="chatCountBadge" style="background:rgba(255,255,255,0.22); color:#fff; border:none; font-size:11px;">0 msgs</span>
-          </div>
-        </div>
-
-        <div id="chatCompressBar" style="display:none; background:#dcfce7; color:#166534; font-size:12px; font-weight:700; padding:8px 14px; text-align:center;">
-          📷 Photo compress ho rahi hai...
+          <span class="badge" id="chatCountBadge" style="background:rgba(255,255,255,0.22); color:#fff; border:none; font-size:11px;">0 msgs</span>
         </div>
 
         <div class="chat-stream" id="chatMessagesContainer"></div>
@@ -983,8 +1054,8 @@
         <div class="chat-input-bar">
           <div class="wa-input-pill">
             <span style="font-size:20px; cursor:pointer;" onclick="document.getElementById('chatInputMessage').focus()">😊</span>
-            <input type="text" id="chatInputMessage" placeholder="Message..." oninput="handleTypingEvent()" onkeydown="if(event.key==='Enter') sendLiveChatMessage()">
-            <button class="btn btn-outline btn-sm" onclick="document.getElementById('chatAttachmentInput').click()" style="padding:6px 10px; border:none; background:transparent; font-size:20px; color:var(--text-muted);" title="Attach Photo / Document">📎</button>
+            <input type="text" id="chatInputMessage" placeholder="Message..." onkeydown="if(event.key==='Enter') sendLiveChatMessage()">
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('chatAttachmentInput').click()" style="padding:6px 10px; border:none; background:transparent; font-size:20px; color:var(--text-muted);" title="Attach Document">📎</button>
           </div>
           <button class="wa-send-round-btn" onclick="sendLiveChatMessage()" title="Send">
             <span style="margin-left:2px; font-size:18px;">➤</span>
@@ -1107,7 +1178,7 @@
     <div style="border:1.5px dashed var(--danger); border-radius:var(--radius-sm); padding:12px; margin-bottom:14px; background:var(--danger-bg);">
       <div style="font-size:12.5px; font-weight:800; color:var(--danger); margin-bottom:4px;">⚠️ Danger Zone: Factory Reset</div>
       <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px; line-height:1.5;">
-        Yeh Orders, Leads, Services, Ledger, Customers, Inventory, Staff Login aur Chat — sab kuch LOCAL aur CLOUD dono se permanently delete kar dega. App bilkul brand-new ho jayega, wapas Login/Create Account screen par aa jayega. Yeh action UNDO nahi ho sakta.
+        Yeh Orders, Leads, Services, Ledger, Customers, Inventory, Staff Login aur Chat — sab kuch LOCAL aur CLOUD dono se permanently delete kar dega.
       </div>
       <button class="btn btn-danger btn-block" onclick="performFactoryReset()">🗑️ Factory Reset App (Sab Kuch Clear)</button>
     </div>
@@ -1169,9 +1240,6 @@
       <strong class="card-title">🧮 Profit Margin & Markup Calculator</strong>
       <button class="btn btn-outline btn-sm" onclick="closeProfitCalculatorModal()">✕</button>
     </div>
-    <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-      Dealer Cost price aur Selling price daalkar instant profit margin, markup % aur net earnings nikalein.
-    </div>
     <div class="grid-2">
       <div class="form-group">
         <label class="form-label">Dealer / Purchase Cost (₹)</label>
@@ -1207,9 +1275,6 @@
       <strong class="card-title">⏳ Receivables Ageing Analysis</strong>
       <button class="btn btn-outline btn-sm" onclick="closeAgeingAnalysisModal()">✕</button>
     </div>
-    <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-      Pending dues ko 30, 60, 90 aur 90+ days ke buckets me analyze karein.
-    </div>
     <div id="ageingReportContainer" style="max-height:360px; overflow-y:auto; margin-bottom:14px;"></div>
     <button class="btn btn-outline btn-block" onclick="closeAgeingAnalysisModal()">Close</button>
   </div>
@@ -1219,11 +1284,8 @@
 <div id="performanceReportModal" class="auth-overlay" style="display:none; z-index:3500;">
   <div class="auth-card" style="max-width:620px;">
     <div class="card-header">
-      <strong class="card-title">📈 Employee-wise Month-wise Sales Performance</strong>
+      <strong class="card-title">📈 Employee-wise Sales Performance</strong>
       <button class="btn btn-outline btn-sm" onclick="closePerformanceReportModal()">✕</button>
-    </div>
-    <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-      Har staff member ki mahine ki total sales, collections aur closed invoices ka breakdown.
     </div>
     <div id="performanceReportContainer" style="max-height:380px; overflow-y:auto; margin-bottom:14px;"></div>
     <button class="btn btn-outline btn-block" onclick="closePerformanceReportModal()">Close</button>
@@ -1269,20 +1331,21 @@
   </div>
 </div>
 
-<!-- 2. Lead Modal -->
+<!-- 2. Global Search Modal -->
 <div id="globalSearchModal" class="auth-overlay" style="display:none; align-items:flex-start; padding-top:60px;">
   <div class="auth-card" style="max-width:520px;">
     <div class="card-header">
-      <strong class="card-title">🔍 Global Search</strong>
+      <strong class="card-title">🔍 Master Search</strong>
       <button class="btn btn-outline btn-sm" onclick="closeGlobalSearchModal()">✕</button>
     </div>
     <div class="form-group" style="margin-bottom:10px;">
-      <input type="text" id="globalSearchInput" placeholder="Customer, order ref, machine, item code, phone type karein..." oninput="performGlobalSearch(this.value)">
+      <input type="text" id="globalSearchInput" placeholder="Customer, order ref, machine, item code, phone..." oninput="performGlobalSearch(this.value)">
     </div>
     <div id="globalSearchResults"></div>
   </div>
 </div>
 
+<!-- 3. Lead Modal -->
 <div id="leadModal" class="auth-overlay" style="display:none;">
   <div class="auth-card">
     <div class="card-header">
@@ -1370,7 +1433,7 @@
       </div>
     </div>
 
-    <label class="form-label">Order Items (MRP mein Discount % daalein, rate automatically calculate hoga):</label>
+    <label class="form-label">Order Items:</label>
     <table class="items-table">
       <thead>
         <tr>
@@ -1770,21 +1833,12 @@ window.getStored = getStored;
 
 function setStored(key, val) {
   try {
-    // Capture what was there BEFORE overwriting, so we can detect deletions
     const prevRaw = localStorage.getItem(DB_PREFIX + key);
     const prevArr = prevRaw ? JSON.parse(prevRaw) : null;
-
     localStorage.setItem(DB_PREFIX + key, JSON.stringify(val));
 
     if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') {
       window.cloudSync.pushKey(key, val);
-
-      // BUGFIX: pushKey only ever ADDS/UPDATES docs in the cloud (merge:true).
-      // It never removed a doc for an item that was deleted locally, so the
-      // deleted record stayed alive in Firestore and would silently come
-      // back the next time the live listener refreshed. Here we diff the
-      // old array against the new one and explicitly delete from the cloud
-      // any id that is no longer present.
       if (Array.isArray(prevArr) && Array.isArray(val) && window.cloudSync.deleteItem) {
         const newIds = new Set(val.filter(it => it && it.id != null).map(it => String(it.id)));
         prevArr.forEach(it => {
@@ -1807,18 +1861,36 @@ function toggleThemeMode() {
   const next = current === 'dark' ? 'light' : 'dark';
   body.setAttribute('data-theme', next);
   setStored("THEME_MODE", next);
+  updateThemeMenuLabel(next);
+}
+
+function updateThemeMenuLabel(mode) {
+  const el = document.getElementById('currentThemeTag');
+  if (el) el.textContent = (mode === 'dark') ? 'Dark 🌙' : 'Light ☀️';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = getStored("THEME_MODE", "light");
   document.body.setAttribute('data-theme', savedTheme);
+  updateThemeMenuLabel(savedTheme);
 });
 
-/* Clean Production Initialization */
-// NOTE: no hardcoded default account anymore — a brand-new / freshly-reset
-// app starts with zero staff, so the very first person must use
-// "+ Create New Account" on the login screen to register (as Admin) before
-// anyone can log in.
+/* SINGLE PROFILE DRAWER TOGGLE */
+function toggleProfileDrawer(e) {
+  if (e) e.stopPropagation();
+  const card = document.getElementById('profileDropdownCard');
+  if (!card) return;
+  card.style.display = (card.style.display === 'block') ? 'none' : 'block';
+}
+window.toggleProfileDrawer = toggleProfileDrawer;
+
+document.addEventListener('click', function(e) {
+  const card = document.getElementById('profileDropdownCard');
+  if (card && !e.target.closest('.profile-menu-wrapper')) {
+    card.style.display = 'none';
+  }
+});
+
 let registeredEmployees = getStored("STAFF", []);
 window.registeredEmployees = registeredEmployees;
 
@@ -1854,7 +1926,6 @@ window.ordersData = ordersData;
 let serviceCallsData = getStored("SERVICES", []);
 window.serviceCallsData = serviceCallsData;
 
-/* ADDITIVE: Date + Staff filter state for Orders / Leads / Services (does not affect stored data or totals) */
 let ordersFilterState = { staff: "ALL", from: "", to: "" };
 let leadsFilterState = { staff: "ALL", from: "", to: "" };
 let servicesFilterState = { staff: "ALL", from: "", to: "" };
@@ -1907,7 +1978,6 @@ function clearServicesFilters() {
 window.applyServicesFilters = applyServicesFilters;
 window.clearServicesFilters = clearServicesFilters;
 
-/* ADDITIVE: Global Search across Orders, Leads, Services, Inventory & Customers (read-only, no data mutation) */
 function openGlobalSearchModal() {
   document.getElementById('globalSearchModal').style.display = 'flex';
   const inp = document.getElementById('globalSearchInput');
@@ -2005,7 +2075,6 @@ window.performGlobalSearch = performGlobalSearch;
 
 let teamChatData = [];
 window.teamChatData = teamChatData;
-
 let currentOrderSubTab = 'active';
 
 /* AUTH & SESSION */
@@ -2016,13 +2085,31 @@ function checkAuthSession() {
   } else {
     document.getElementById('authScreen').style.display = 'none';
     document.getElementById('mainAppWrapper').style.display = 'block';
-    document.getElementById('activeStaffDisplay').textContent = currentUser.name;
-    const roleTag = document.getElementById('activeStaffRoleTag');
-    if (roleTag) {
-      roleTag.textContent = currentUser.role || 'STAFF';
-      if (currentUser.role === 'Admin') roleTag.classList.add('admin');
-      else roleTag.classList.remove('admin');
+    
+    // Update Header Avatar Initial & Menu Details
+    const initial = (currentUser.name && currentUser.name.trim().length > 0) ? currentUser.name.trim().charAt(0).toUpperCase() : 'U';
+    const avatarEl = document.getElementById('headerProfileAvatarInitial');
+    if (avatarEl) avatarEl.textContent = initial;
+
+    const dotEl = document.getElementById('headerProfileDot');
+    if (dotEl) {
+      if (currentUser.role === 'Admin') dotEl.classList.add('admin');
+      else dotEl.classList.remove('admin');
     }
+
+    const mName = document.getElementById('menuStaffName');
+    if (mName) mName.textContent = currentUser.name;
+
+    const mRole = document.getElementById('menuStaffRole');
+    if (mRole) {
+      mRole.textContent = currentUser.role || 'STAFF';
+      if (currentUser.role === 'Admin') mRole.classList.add('admin');
+      else mRole.classList.remove('admin');
+    }
+
+    const mPhone = document.getElementById('menuStaffPhone');
+    if (mPhone) mPhone.textContent = `Mob: ${currentUser.mobile || 'Verified'}`;
+
     updateAdminDeleteVisibility();
     refreshAllData();
   }
@@ -2033,8 +2120,8 @@ function updateAdminDeleteVisibility() {
   document.querySelectorAll('.admin-only-btn').forEach(btn => {
     btn.style.display = isAdmin ? 'inline-flex' : 'none';
   });
-  const staffBtn = document.getElementById('headerStaffManageBtn');
-  if (staffBtn) staffBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+  const staffMenuBtn = document.getElementById('menuAdminStaffBtn');
+  if (staffMenuBtn) staffMenuBtn.style.display = isAdmin ? 'flex' : 'none';
 }
 window.updateAdminDeleteVisibility = updateAdminDeleteVisibility;
 
@@ -2107,41 +2194,32 @@ function performFullLogout() {
   }
 }
 
-/* FACTORY RESET — wipes Orders/Leads/Services/Ledger/Customers/Inventory/
-   Staff/Chat from BOTH localStorage and the cloud, then reloads the app
-   fresh onto the Login / Create Account screen. Admin-only, double
-   confirmation required since this cannot be undone. */
 async function performFactoryReset() {
   if (!currentUser || currentUser.role !== 'Admin') {
     alert("Permission Denied: Sirf Admin hi Factory Reset kar sakte hain!");
     return;
   }
-  const typed = prompt("⚠️ Yeh SAARA data (Orders, Leads, Services, Ledger, Customers, Inventory, Staff Login, Chat) LOCAL aur CLOUD dono se PERMANENTLY delete kar dega.\n\nConfirm karne ke liye neeche RESET likhein:");
+  const typed = prompt("⚠️ Yeh SAARA data LOCAL aur CLOUD dono se PERMANENTLY delete kar dega.\n\nConfirm karne ke liye neeche RESET likhein:");
   if (typed !== 'RESET') {
-    alert("Factory Reset cancel ho gaya — kuch bhi delete nahi hua.");
+    alert("Factory Reset cancel ho gaya.");
     return;
   }
-  if (!confirm("Aakhri confirmation: Kya aap sach me SAB KUCH permanently delete karna chahte hain? Yeh action UNDO nahi ho sakta!")) {
+  if (!confirm("Aakhri confirmation: Kya aap sach me SAB KUCH permanently delete karna chahte hain?")) {
     return;
   }
 
   try {
-    // 1) Wipe everything this app ever wrote to localStorage
     Object.keys(localStorage).forEach(k => {
       if (k.startsWith(DB_PREFIX)) localStorage.removeItem(k);
     });
-
-    // 2) Wipe every collection in the cloud (orders, leads, services,
-    //    inventory, customers, machinery, staff, chat, notifications)
     if (window.cloudSync && typeof window.cloudSync.wipeAll === 'function') {
       await window.cloudSync.wipeAll();
     }
-
-    alert("✓ Factory Reset complete. App ab brand-new hai — restart ho raha hai...");
+    alert("✓ Factory Reset complete. App restart ho raha hai...");
     location.reload();
   } catch (e) {
     console.error("Factory Reset Error:", e);
-    alert("Reset karte samay error aaya: " + e.message + "\n\nDubara try karein ya internet connection check karein.");
+    alert("Reset error: " + e.message);
   }
 }
 window.performFactoryReset = performFactoryReset;
@@ -2187,7 +2265,6 @@ function populateDropdownsAndDatalists() {
 }
 window.populateDropdownsAndDatalists = populateDropdownsAndDatalists;
 
-/* PROFIT MARGIN & MARKUP CALCULATOR */
 function openProfitCalculatorModal() {
   document.getElementById('calcCostPrice').value = "";
   document.getElementById('calcSellPrice').value = "";
@@ -2217,7 +2294,6 @@ function calculateProfitMargins() {
   document.getElementById('calcMarkupPct').textContent = markup.toFixed(2) + '%';
 }
 
-/* AGEING ANALYSIS */
 function openAgeingAnalysisModal() {
   const container = document.getElementById('ageingReportContainer');
   const today = new Date();
@@ -2258,7 +2334,6 @@ function closeAgeingAnalysisModal() {
   document.getElementById('ageingAnalysisModal').style.display = 'none';
 }
 
-/* EMPLOYEE-WISE MONTH-WISE SALES PERFORMANCE REPORT */
 function openPerformanceReportModal() {
   const container = document.getElementById('performanceReportContainer');
   const reportMap = {};
@@ -2302,7 +2377,6 @@ function closePerformanceReportModal() {
   document.getElementById('performanceReportModal').style.display = 'none';
 }
 
-/* ADMIN STAFF MANAGEMENT */
 function openStaffManageModal() {
   if (!currentUser || currentUser.role !== 'Admin') {
     alert("Permission Denied: Only Admin can manage staff.");
@@ -2362,7 +2436,6 @@ function deleteStaffPrompt(empId) {
   }
 }
 
-/* ADMIN LEDGER INVOICE EDIT */
 function openAdminEditLedgerModal(ordId) {
   if (!currentUser || currentUser.role !== 'Admin') {
     alert("Permission Denied: Sirf Admin hi ledger invoice modify kar sakte hain!");
@@ -2428,7 +2501,6 @@ function deleteAdminLedgerInvoice(ordId) {
   }
 }
 
-/* EXECUTIVE DASHBOARD */
 function renderDashboard() {
   const today = new Date().toISOString().split('T')[0];
   let todayRecv = 0;
@@ -2509,10 +2581,9 @@ function toggleFabMenu() {
   }
 }
 
-/* ICICI MERCHANT UPI QR */
 function openUpiModal(customerName, amount) {
   if (!amount || amount <= 0) {
-    alert("Amount zero ya invalid nahi ho sakta.");
+    alert("Amount invalid nahi ho sakta.");
     return;
   }
   document.getElementById('upiCustName').textContent = customerName || "Customer";
@@ -2532,7 +2603,6 @@ function closeUpiModal() {
   document.getElementById('upiModal').style.display = 'none';
 }
 
-/* DIGITAL SIGNATURE PAD */
 let signatureCanvas, sigCtx, isDrawing = false;
 function initSignatureCanvas() {
   signatureCanvas = document.getElementById('signCanvas');
@@ -2576,7 +2646,6 @@ function saveCustomerSignature() {
   alert("Customer signature verify ho gaya!");
 }
 
-/* BACKUP & RESTORE */
 function triggerFullBackupDownload() {
   const fullBackup = {
     staff: registeredEmployees,
@@ -2617,7 +2686,6 @@ function processRestoreJSON(event) {
   event.target.value = '';
 }
 
-/* AUTOCOMPLETE */
 function handleCustomerAutocomplete(inputEl, targetInputId) {
   const val = (inputEl.value || '').toLowerCase().trim();
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
@@ -2842,7 +2910,6 @@ function renderLeads() {
     return;
   }
 
-  /* ADDITIVE: date/staff filter applied only to displayed list */
   let displayLeads = leadsData;
   const leadsFiltersActive = leadsFilterState.staff !== "ALL" || leadsFilterState.from || leadsFilterState.to;
   if (leadsFilterState.staff !== "ALL") displayLeads = displayLeads.filter(l => l.handledBy === leadsFilterState.staff);
@@ -2985,7 +3052,6 @@ function renderOrders() {
 
   const targetList = (currentOrderSubTab === 'active') ? pendingList : cancelledList;
 
-  /* ADDITIVE: apply date/staff filters only to what is displayed; counts above stay unaffected */
   let displayList = targetList;
   const filtersActive = ordersFilterState.staff !== "ALL" || ordersFilterState.from || ordersFilterState.to;
   if (ordersFilterState.staff !== "ALL") displayList = displayList.filter(o => o.bookedBy === ordersFilterState.staff);
@@ -3185,7 +3251,6 @@ function saveOrderAction() {
     };
     ordersData.unshift(newO);
 
-    // PUSH NOTIFICATION: NEW ORDER PLACED
     if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
       window.cloudSync.pushLiveNotification({
         title: "📦 New Order Placed!",
@@ -3203,7 +3268,6 @@ function saveOrderAction() {
   alert("Order saved successfully!");
 }
 
-/* MANDATORY PHOTO PROOF WORKFLOW (DELIVERY & PAYMENT) */
 let currentDeliveryPhotoBase64 = "";
 function openDeliveryProofModal(ordId) {
   document.getElementById('pendingDeliverOrderId').value = ordId;
@@ -3212,7 +3276,6 @@ function openDeliveryProofModal(ordId) {
   preview.src = "";
   preview.style.display = 'none';
   document.getElementById('confirmDeliveryBtn').disabled = true;
-  // Default the manual date field to today, but staff can change it for backdated deliveries
   document.getElementById('deliveryManualDate').value = new Date().toISOString().split('T')[0];
   document.getElementById('deliveryProofModal').style.display = 'flex';
 }
@@ -3261,19 +3324,17 @@ function executeConfirmedDelivery() {
   renderBilling('all');
   renderDashboard();
 
-  // BROADCAST DELIVERY NOTIFICATION
   if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
     window.cloudSync.pushLiveNotification({
       title: "✅ Order Delivered!",
-      body: `${o.customerName} - Ref ${o.id} marked Delivered with Photo Proof.`,
+      body: `${o.customerName} - Ref ${o.id} marked Delivered.`,
       type: "delivery"
     });
   }
 
-  alert("Order successfully delivered with Photo Proof!");
+  alert("Order successfully delivered!");
 }
 
-/* PAYMENT COLLECTION WITH PROOF */
 let currentPaymentProofBase64 = "";
 function collectDuePayment(ordId) {
   const o = ordersData.find(x => x.id === ordId);
@@ -3309,7 +3370,7 @@ function executeConfirmedPaymentCollection() {
   const ordId = document.getElementById('pendingCollectOrderId').value;
   const amt = parseFloat(document.getElementById('payCollectInputAmt').value) || 0;
   if (amt <= 0) { alert("Valid amount daalein!"); return; }
-  if (!currentPaymentProofBase64) { alert("Payment receipt ya photo attach karna mandatory hai!"); return; }
+  if (!currentPaymentProofBase64) { alert("Payment receipt photo attach karein!"); return; }
 
   const o = ordersData.find(x => x.id === ordId);
   if (!o) return;
@@ -3324,16 +3385,15 @@ function executeConfirmedPaymentCollection() {
   renderBilling('all');
   renderDashboard();
 
-  // BROADCAST PAYMENT NOTIFICATION
   if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
     window.cloudSync.pushLiveNotification({
       title: "💰 Payment Received!",
-      body: `₹${amt.toLocaleString('en-IN')} received for ${o.customerName} (Due: ₹${o.dueAmount})`,
+      body: `₹${amt.toLocaleString('en-IN')} received for ${o.customerName}`,
       type: "payment"
     });
   }
 
-  alert("Payment recorded with receipt proof and synced to cloud!");
+  alert("Payment recorded successfully!");
 }
 
 function deleteOrderAction(id) {
@@ -3358,7 +3418,6 @@ function shareOrderWhatsApp(ordId) {
   window.open(o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`, '_blank');
 }
 
-/* GST INVOICE PRINT */
 function executeInvoicePrint() { window.focus(); setTimeout(() => { window.print(); }, 150); }
 
 function openInvoicePrintModal(ordId) {
@@ -3427,7 +3486,6 @@ function openInvoicePrintModal(ordId) {
 }
 function closeInvoicePrintModal() { document.getElementById('invoicePrintModal').style.display = 'none'; }
 
-/* DAILY CASH CLOSING */
 function openDailyCashClosingModal() {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('closeSummaryDate').textContent = today;
@@ -3469,7 +3527,6 @@ function renderServices() {
     return;
   }
 
-  /* ADDITIVE: date/staff filter applied only to displayed list */
   let displayServices = serviceCallsData;
   const servicesFiltersActive = servicesFilterState.staff !== "ALL" || servicesFilterState.from || servicesFilterState.to;
   if (servicesFilterState.staff !== "ALL") displayServices = displayServices.filter(s => s.attendedBy === servicesFilterState.staff);
@@ -3945,9 +4002,7 @@ function downloadFile(content, fileName, mimeType) {
   document.body.removeChild(a);
 }
 
-/* WHATSAPP CHAT */
-let typingTimeout = null;
-function handleTypingEvent() {}
+/* TAB 6: WHATSAPP CHAT */
 function renderChatMessages() {
   const container = document.getElementById('chatMessagesContainer');
   if(!container) return;
@@ -3995,7 +4050,7 @@ function updateGlobalReminders() {
   const today = new Date().toISOString().split('T')[0];
   let delDue = ordersData.filter(o => o.status === 'Pending' && o.deliveryDate <= today).length;
   let srvDue = serviceCallsData.filter(s => s.status !== 'Work Completed' && s.targetDate <= today).length;
-  document.getElementById('dailyReminderText').textContent = `${delDue} Product Orders Due | ${srvDue} Machine Repairs Due`;
+  document.getElementById('dailyReminderText').textContent = `${delDue} Orders Due | ${srvDue} Services Due`;
 }
 
 function switchTab(tab, el) {
@@ -4013,18 +4068,16 @@ function switchTab(tab, el) {
   if(tab === 'chat') renderChatMessages();
 }
 
-/* REALTIME TOAST BROADCAST HANDLER WITH AUDIO CHIME */
 function showBroadcastToastAlert(notif) {
   const container = document.getElementById('broadcastToastContainer');
   if (!container) return;
 
-  // Web Audio Beep Chime
   try {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
     gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
     osc.connect(gain);
@@ -4033,18 +4086,7 @@ function showBroadcastToastAlert(notif) {
     osc.stop(audioCtx.currentTime + 0.4);
   } catch(e) {}
 
-  // Device vibration
   if (navigator.vibrate) { try { navigator.vibrate([100, 50, 100]); } catch(e){} }
-
-  // System notification
-  if (window.Notification && Notification.permission === 'granted') {
-    try {
-      new Notification(notif.title, {
-        body: notif.body,
-        icon: 'https://cdn-icons-png.flaticon.com/512/9422/9422891.png'
-      });
-    } catch(e) {}
-  }
 
   const icons = { order: '📦', delivery: '🚚', payment: '💰' };
   const toast = document.createElement('div');
@@ -4065,17 +4107,13 @@ function showBroadcastToastAlert(notif) {
 }
 window.showBroadcastToastAlert = showBroadcastToastAlert;
 
-/* SYSTEM PERMISSIONS PROMPT (CAMERA & NOTIFICATIONS) */
 function requestAppSystemPermissions() {
   if (window.Notification && Notification.permission !== 'granted') {
     Notification.requestPermission().then(perm => {
-      if (perm === 'granted') {
-        alert("✓ Notification Alerts Active!");
-      }
+      if (perm === 'granted') alert("✓ Notification Alerts Active!");
     });
   }
 
-  // Camera Permission Check
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => {
@@ -4083,7 +4121,7 @@ function requestAppSystemPermissions() {
         alert("✓ Camera & File Picker Permission Verified!");
       })
       .catch(err => {
-        console.log("Camera access status:", err);
+        console.log("Camera access:", err);
       });
   }
 }
