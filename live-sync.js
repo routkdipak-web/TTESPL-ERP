@@ -87,6 +87,19 @@
       setTypingStatus: function (user, isTyping) {
         var id = 'typing_' + String(user).replace(/[^a-zA-Z0-9]/g, '_');
         return F.setDoc(F.doc(db, 'chat_status', id), { user: user, isTyping: isTyping, updatedAt: Date.now() }, { merge: true });
+      },
+
+      // REALTIME BROADCAST NOTIFICATIONS
+      pushLiveNotification: function (notif) {
+        var notifDoc = {
+          title: notif.title || 'TTESPL Alert',
+          body: notif.body || '',
+          type: notif.type || 'info', // order, delivery, payment
+          by: me() || 'Staff',
+          timestamp: Date.now(),
+          photo: notif.photo || ''
+        };
+        return F.addDoc(F.collection(db, 'app_notifications'), notifDoc);
       }
     };
 
@@ -137,6 +150,22 @@
       msgs.reverse();
       teamChatData = msgs;
       if (typeof renderChatMessages === 'function') renderChatMessages();
+    });
+
+    // REALTIME LIVE NOTIFICATIONS LISTENER
+    var startTimestamp = Date.now() - 60000; // ignore older than 1 minute on boot
+    var notifQuery = F.query(F.collection(db, 'app_notifications'), F.orderBy('timestamp', 'desc'), F.limit(15));
+    F.onSnapshot(notifQuery, function (snap) {
+      snap.docChanges().forEach(function (change) {
+        if (change.type === 'added') {
+          var n = change.doc.data();
+          if (n.timestamp > startTimestamp) {
+            if (typeof window.showBroadcastToastAlert === 'function') {
+              window.showBroadcastToastAlert(n);
+            }
+          }
+        }
+      });
     });
 
   }).catch(function (e) {
