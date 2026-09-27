@@ -3170,6 +3170,12 @@ function filterStockList(val) {
   c.innerHTML = '';
 
   let list = (activeInventoryCategory === 'CUSTOMERS') ? customerDatabase : sampleInventory;
+
+  // Catalog Equipment wale duplicate items ko search/list se hataane ke liye
+  if (activeInventoryCategory !== 'Catalog Equipment' && activeInventoryCategory !== 'CUSTOMERS') {
+    list = list.filter(i => i.category !== 'Catalog Equipment');
+  }
+
   const results = q ? list.filter(i => (i.name && i.name.toLowerCase().includes(q)) || (i.code && i.code.toLowerCase().includes(q))) : list;
 
   document.getElementById('totalPartsBadge').textContent = `${results.length} Matches`;
