@@ -3564,5 +3564,481 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { passive: true });
 })();
 </script>
+<!-- ============================================================
+     NEW FEATURES LAYER v2 — 100% additive.
+     - No existing function is modified or overridden — only
+       wrapped (original still runs first, unchanged) or extended.
+     - No existing data field, formula or calculation is touched.
+     - Safe to remove this whole block without affecting the app.
+     ============================================================ -->
+<style>
+  /* ---- Global Search ---- */
+  #globalSearchBtn {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+    color: #fff; width: 32px; height: 32px; border-radius: 50%; font-size: 14px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  #globalSearchOverlay {
+    position: fixed; inset: 0; background: rgba(6,21,38,0.92); backdrop-filter: blur(10px);
+    z-index: 5000; display: none; flex-direction: column; padding: 16px;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+  }
+  #globalSearchOverlay.open { display: flex; animation: gsFade 0.22s cubic-bezier(0.32,0.72,0,1); }
+  @keyframes gsFade { from { opacity: 0; } to { opacity: 1; } }
+  .gs-input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
+  #globalSearchInput {
+    flex: 1; font-size: 15px !important; padding: 13px 16px !important; border-radius: 14px !important;
+    border: 1.5px solid rgba(255,255,255,0.25) !important; background: rgba(255,255,255,0.08) !important;
+    color: #fff !important;
+  }
+  #globalSearchInput::placeholder { color: rgba(255,255,255,0.55) !important; }
+  #gsCloseBtn { color: #fff; font-size: 22px; background: none; border: none; padding: 6px 10px; cursor: pointer; }
+  #globalSearchResults { flex: 1; overflow-y: auto; }
+  .gs-result {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; cursor: pointer;
+    animation: cardPopIn 0.22s cubic-bezier(0.32,0.72,0,1); transition: transform 0.15s ease;
+  }
+  .gs-result:active { transform: scale(0.98); }
+  .gs-result-type { font-size: 9.5px; font-weight: 800; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.5px; }
+  .gs-result-title { font-size: 14px; font-weight: 700; color: #fff; margin: 3px 0; }
+  .gs-result-sub { font-size: 11.5px; color: rgba(255,255,255,0.6); }
+  .gs-empty { text-align: center; color: rgba(255,255,255,0.5); font-size: 12.5px; padding: 40px 10px; }
+
+  /* ---- Today's Work Widget ---- */
+  #todayWorkWidget {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; color: #fff;
+    box-shadow: var(--shadow-md); animation: cardPopIn 0.3s cubic-bezier(0.32,0.72,0,1);
+  }
+  .twk-title { font-size: 13.5px; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .twk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .twk-item { background: rgba(255,255,255,0.12); border-radius: 12px; padding: 10px 8px; text-align: center; cursor: pointer; transition: transform 0.15s ease; }
+  .twk-item:active { transform: scale(0.95); }
+  .twk-num { font-size: 20px; font-weight: 900; }
+  .twk-label { font-size: 9.5px; font-weight: 700; opacity: 0.85; margin-top: 2px; }
+
+  /* ---- Mic buttons ---- */
+  .voice-input-wrap { position: relative; }
+  .mic-btn {
+    position: absolute; right: 6px; bottom: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--cyan); color: #fff; border: none; font-size: 12px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,180,216,0.4);
+    transition: transform 0.15s ease;
+  }
+  .mic-btn.listening { background: var(--danger); animation: micPulse 1s ease-in-out infinite; }
+  @keyframes micPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+  /* ---- Bottom-sheet drag handle (mobile) ---- */
+  @media (max-width: 640px) {
+    .sheet-drag-handle {
+      width: 40px; height: 5px; background: var(--border); border-radius: 4px;
+      margin: 0 auto 12px; cursor: grab;
+    }
+  }
+  .sheet-drag-handle { display: none; }
+  @media (max-width: 640px) { .sheet-drag-handle { display: block; } }
+
+  /* ---- QR / barcode stock scan ---- */
+  #qrScanOverlay {
+    position: fixed; inset: 0; background: #000; z-index: 5500; display: none;
+    flex-direction: column; align-items: center; justify-content: center;
+  }
+  #qrScanOverlay.open { display: flex; }
+  #qrScanVideo { width: 100%; max-width: 480px; border-radius: 16px; }
+  .qr-frame { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 220px; height: 220px; border: 3px solid var(--cyan); border-radius: 16px; box-shadow: 0 0 0 2000px rgba(0,0,0,0.5); }
+  #qrCloseBtn { position: absolute; top: calc(20px + env(safe-area-inset-top,0px)); right: 20px; color: #fff; font-size: 26px; background: none; border: none; z-index: 2; }
+  #qrScanHint { position: absolute; bottom: calc(40px + env(safe-area-inset-bottom,0px)); color: #fff; font-size: 12.5px; background: rgba(0,0,0,0.5); padding: 8px 16px; border-radius: 20px; }
+
+  /* ---- Export button style reuse (matches existing btn-outline) ---- */
+</style>
+
+<!-- Global search overlay -->
+<div id="globalSearchOverlay">
+  <div class="gs-input-row">
+    <input type="text" id="globalSearchInput" placeholder="🔍 Search customer, order, service, machine, stock..." oninput="runGlobalSearch(this.value)">
+    <button id="gsCloseBtn" onclick="closeGlobalSearch()">✕</button>
+  </div>
+  <div id="globalSearchResults"><div class="gs-empty">Customer name, order ID, machine, ya problem type karke dhoondo.</div></div>
+</div>
+
+<!-- QR / barcode scan overlay -->
+<div id="qrScanOverlay">
+  <button id="qrCloseBtn" onclick="closeQrScan()">✕</button>
+  <video id="qrScanVideo" autoplay playsinline muted></video>
+  <div class="qr-frame"></div>
+  <div id="qrScanHint">Item ke barcode/QR code ko frame ke andar rakho</div>
+</div>
+
+<script>
+(function() {
+
+  /* =========================================================
+     1. GLOBAL SEARCH
+     Reads existing global arrays read-only. Never mutates them.
+     ========================================================= */
+  function injectSearchButton() {
+    const actions = document.querySelector('.header-actions');
+    if (!actions || document.getElementById('globalSearchBtn')) return;
+    const btn = document.createElement('button');
+    btn.id = 'globalSearchBtn';
+    btn.innerHTML = '🔍';
+    btn.title = 'Search everything';
+    btn.onclick = openGlobalSearch;
+    actions.insertBefore(btn, actions.firstChild);
+  }
+
+  window.openGlobalSearch = function() {
+    document.getElementById('globalSearchOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('globalSearchInput').focus(), 150);
+  };
+  window.closeGlobalSearch = function() {
+    document.getElementById('globalSearchOverlay').classList.remove('open');
+    document.getElementById('globalSearchInput').value = '';
+    document.getElementById('globalSearchResults').innerHTML = '<div class="gs-empty">Customer name, order ID, machine, ya problem type karke dhoondo.</div>';
+  };
+
+  window.runGlobalSearch = function(q) {
+    const box = document.getElementById('globalSearchResults');
+    q = (q || '').trim().toLowerCase();
+    if (q.length < 2) { box.innerHTML = '<div class="gs-empty">Kam se kam 2 letters type karo...</div>'; return; }
+
+    const results = [];
+    try {
+      (typeof customerDatabase !== 'undefined' ? customerDatabase : []).forEach(c => {
+        if ((c.name || '').toLowerCase().includes(q) || (c.phone || '').includes(q)) {
+          results.push({ type: 'Customer', icon: '👤', title: c.name, sub: c.phone || '', tab: 'inventory' });
+        }
+      });
+      (typeof leadsData !== 'undefined' ? leadsData : []).forEach(l => {
+        if ((l.customerName||'').toLowerCase().includes(q) || (l.machine||'').toLowerCase().includes(q) || (l.id||'').toLowerCase().includes(q)) {
+          results.push({ type: 'Lead', icon: '🎯', title: l.customerName, sub: `${l.machine || ''} • ${l.status || ''}`, tab: 'leads' });
+        }
+      });
+      (typeof ordersData !== 'undefined' ? ordersData : []).forEach(o => {
+        if ((o.customerName||'').toLowerCase().includes(q) || (o.id||'').toLowerCase().includes(q)) {
+          results.push({ type: 'Order', icon: '📦', title: o.customerName, sub: `${o.id} • ${o.status || ''}`, tab: 'orders' });
+        }
+      });
+      (typeof serviceCallsData !== 'undefined' ? serviceCallsData : []).forEach(s => {
+        if ((s.customerName||'').toLowerCase().includes(q) || (s.machine||'').toLowerCase().includes(q) || (s.problem||'').toLowerCase().includes(q)) {
+          results.push({ type: 'Service', icon: '🛠️', title: s.customerName, sub: `${s.machine || ''} • ${s.status || ''}`, tab: 'services' });
+        }
+      });
+      (typeof sampleInventory !== 'undefined' ? sampleInventory : []).forEach(it => {
+        if ((it.name||'').toLowerCase().includes(q) || (it.code||'').toLowerCase().includes(q)) {
+          results.push({ type: 'Stock', icon: '🏷️', title: it.name, sub: `${it.code || ''} • ${it.stock} in stock`, tab: 'inventory' });
+        }
+      });
+    } catch(e) { /* silent — search never breaks the app */ }
+
+    if (results.length === 0) { box.innerHTML = '<div class="gs-empty">Kuch nahi mila.</div>'; return; }
+    box.innerHTML = '';
+    results.slice(0, 40).forEach(r => {
+      const el = document.createElement('div');
+      el.className = 'gs-result';
+      el.innerHTML = `<div class="gs-result-type">${r.icon} ${r.type}</div><div class="gs-result-title">${r.title || '-'}</div><div class="gs-result-sub">${r.sub || ''}</div>`;
+      el.onclick = () => {
+        closeGlobalSearch();
+        const navItem = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + r.tab + "'"));
+        if (typeof switchTab === 'function') switchTab(r.tab, navItem || null);
+      };
+      box.appendChild(el);
+    });
+  };
+
+  /* =========================================================
+     2. TODAY'S WORK WIDGET (Aaj Ka Kaam)
+     Wraps renderDashboard — original function runs first and
+     completely unchanged, this only appends a summary on top.
+     ========================================================= */
+  function computeTodayWork() {
+    const today = new Date().toISOString().split('T')[0];
+    let deliveries = 0, services = 0, followups = 0;
+    try { deliveries = (ordersData||[]).filter(o => o.status === 'Pending' && o.deliveryDate <= today).length; } catch(e){}
+    try { services = (serviceCallsData||[]).filter(s => s.status !== 'Work Completed' && s.targetDate <= today).length; } catch(e){}
+    try { followups = (leadsData||[]).filter(l => l.status !== 'Installed' && l.followupDate <= today).length; } catch(e){}
+    return { deliveries, services, followups };
+  }
+
+  function renderTodayWidget() {
+    const dash = document.getElementById('view-dashboard');
+    if (!dash) return;
+    let widget = document.getElementById('todayWorkWidget');
+    if (!widget) {
+      widget = document.createElement('div');
+      widget.id = 'todayWorkWidget';
+      dash.insertBefore(widget, dash.firstChild);
+    }
+    const w = computeTodayWork();
+    widget.innerHTML = `
+      <div class="twk-title">🔔 Aaj Ka Kaam</div>
+      <div class="twk-grid">
+        <div class="twk-item" onclick="jumpToday('orders')"><div class="twk-num">${w.deliveries}</div><div class="twk-label">Deliveries Due</div></div>
+        <div class="twk-item" onclick="jumpToday('services')"><div class="twk-num">${w.services}</div><div class="twk-label">Repairs Due</div></div>
+        <div class="twk-item" onclick="jumpToday('leads')"><div class="twk-num">${w.followups}</div><div class="twk-label">Followups Due</div></div>
+      </div>`;
+  }
+  window.jumpToday = function(tab) {
+    const navItem = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + tab + "'"));
+    if (typeof switchTab === 'function') switchTab(tab, navItem || null);
+  };
+
+  /* =========================================================
+     3. CSV EXPORTS — new functions, reuse existing downloadFile()
+     ========================================================= */
+  window.exportLeadsCSV = function() {
+    let csv = "ID,Customer,Machine,Status,Quoted,Followup\n";
+    (leadsData||[]).forEach(l => { csv += `"${l.id}","${l.customerName}","${l.machine}","${l.status}","${l.quotedPrice||0}","${l.followupDate}"\n`; });
+    downloadFile(csv, "TTESPL_Leads.csv", "text/csv");
+  };
+  window.exportOrdersCSV = function() {
+    let csv = "ID,Customer,Status,OrderDate,DeliveryDate,Total,Due\n";
+    (ordersData||[]).forEach(o => { csv += `"${o.id}","${o.customerName}","${o.status}","${o.orderDate}","${o.deliveryDate}","${o.totalAmount||0}","${o.dueAmount||0}"\n`; });
+    downloadFile(csv, "TTESPL_Orders.csv", "text/csv");
+  };
+  window.exportServicesCSV = function() {
+    let csv = "ID,Customer,Machine,Status,ReceivedDate,TargetDate,Problem\n";
+    (serviceCallsData||[]).forEach(s => { csv += `"${s.id}","${s.customerName}","${s.machine}","${s.status}","${s.recvDate}","${s.targetDate}","${(s.problem||'').replace(/"/g,"'")}"\n`; });
+    downloadFile(csv, "TTESPL_Services.csv", "text/csv");
+  };
+  window.exportBillingCSV = function() {
+    let csv = "InvoiceID,Customer,DeliveredDate,Total,Received,Due\n";
+    (ordersData||[]).filter(o => o.status === 'Delivered').forEach(o => { csv += `"${o.id}","${o.customerName}","${o.deliveredDate||o.orderDate}","${o.totalAmount||0}","${o.recvAmount||0}","${o.dueAmount||0}"\n`; });
+    downloadFile(csv, "TTESPL_Billing.csv", "text/csv");
+  };
+
+  function makeExportBtn(fn) {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-outline btn-sm injected-export-btn';
+    btn.textContent = '📥 CSV';
+    btn.onclick = window[fn];
+    return btn;
+  }
+  function injectExportButtons() {
+    // Leads / Orders / Services: find their existing "+ New ..." accent button
+    // (stable anchor since these are wired via onclick=) and drop the export
+    // button in right next to it, wrapped so flex layout stays intact.
+    const anchors = [
+      { match: 'openLeadModal()', fn: 'exportLeadsCSV' },
+      { match: 'openOrderModal()', fn: 'exportOrdersCSV' },
+      { match: 'openServiceCallModal()', fn: 'exportServicesCSV' }
+    ];
+    anchors.forEach(a => {
+      if (document.getElementById('exp-' + a.fn)) return;
+      const src = document.querySelector(`button[onclick="${a.match}"]`);
+      if (!src || !src.parentElement) return;
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'display:flex; gap:8px; align-items:center;';
+      src.parentElement.insertBefore(wrap, src);
+      wrap.appendChild(src);
+      const btn = makeExportBtn(a.fn);
+      btn.id = 'exp-' + a.fn;
+      wrap.appendChild(btn);
+    });
+
+    // Billing: already has a flex-wrap button row — just append into it.
+    const cashBtn = document.querySelector('button[onclick="openDailyCashClosingModal()"]');
+    if (cashBtn && cashBtn.parentElement && !document.getElementById('exp-exportBillingCSV')) {
+      const btn = makeExportBtn('exportBillingCSV');
+      btn.id = 'exp-exportBillingCSV';
+      cashBtn.parentElement.appendChild(btn);
+    }
+  }
+
+  /* =========================================================
+     4. VOICE-TO-TEXT on all textareas (Web Speech API)
+     Graceful no-op if browser doesn't support it.
+     ========================================================= */
+  function attachMicButtons() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    document.querySelectorAll('textarea').forEach(ta => {
+      if (ta.dataset.micAttached) return;
+      ta.dataset.micAttached = '1';
+      if (getComputedStyle(ta.parentElement).position === 'static') {
+        ta.parentElement.style.position = 'relative';
+      }
+      const wrap = ta.parentElement;
+      wrap.classList.add('voice-input-wrap');
+      const mic = document.createElement('button');
+      mic.type = 'button';
+      mic.className = 'mic-btn';
+      mic.innerHTML = '🎤';
+      mic.title = 'Voice input';
+      wrap.appendChild(mic);
+      let rec = null, listening = false;
+      mic.onclick = function(e) {
+        e.preventDefault();
+        if (listening) { rec && rec.stop(); return; }
+        rec = new SR();
+        rec.lang = 'hi-IN';
+        rec.interimResults = false;
+        rec.onstart = () => { listening = true; mic.classList.add('listening'); };
+        rec.onend = () => { listening = false; mic.classList.remove('listening'); };
+        rec.onerror = () => { listening = false; mic.classList.remove('listening'); };
+        rec.onresult = (ev) => {
+          const text = ev.results[0][0].transcript;
+          ta.value = (ta.value ? ta.value + ' ' : '') + text;
+        };
+        rec.start();
+      };
+    });
+  }
+
+  /* =========================================================
+     5. LOCAL DUE REMINDERS (on-device notification, app open)
+     Note: true push notifications when the app is closed need a
+     backend server — not possible from a static HTML file. This
+     checks while the app is open/foregrounded, which covers the
+     common case of staff keeping the app open through the day.
+     ========================================================= */
+  let lastReminderKey = '';
+  function checkDueReminders() {
+    const w = computeTodayWork();
+    const key = `${w.deliveries}-${w.services}-${w.followups}`;
+    if (key === lastReminderKey) return;
+    lastReminderKey = key;
+    const total = w.deliveries + w.services + w.followups;
+    if (total > 0 && window.Notification && Notification.permission === 'granted') {
+      try {
+        new Notification('TTESPL ERP — Aaj Ka Kaam', {
+          body: `${w.deliveries} deliveries, ${w.services} repairs, ${w.followups} followups due today.`,
+          icon: 'https://cdn-icons-png.flaticon.com/512/9422/9422891.png'
+        });
+      } catch(e) {}
+    }
+  }
+  function initReminderPermissionPrompt() {
+    if (!window.Notification || Notification.permission !== 'default') return;
+    if (document.getElementById('notifPermBtn')) return;
+    const banner = document.getElementById('dailyReminderBanner');
+    if (!banner) return;
+    const btn = document.createElement('button');
+    btn.id = 'notifPermBtn';
+    btn.className = 'btn btn-outline btn-sm';
+    btn.style.cssText = 'padding:2px 8px; font-size:10px; margin-left:6px;';
+    btn.textContent = '🔔 Enable Alerts';
+    btn.onclick = () => Notification.requestPermission().then(() => btn.remove());
+    banner.insertBefore(btn, banner.lastElementChild);
+  }
+
+  /* =========================================================
+     6. BOTTOM-SHEET DRAG-TO-DISMISS (mobile only)
+     Generic: works on any .auth-overlay/.auth-card pair. Only
+     closes by setting the overlay's own display:none — same
+     effect every existing closeXModal() already produces.
+     ========================================================= */
+  function attachSheetDrag() {
+    document.querySelectorAll('.auth-card').forEach(card => {
+      if (card.dataset.dragAttached) return;
+      card.dataset.dragAttached = '1';
+      if (!card.querySelector('.sheet-drag-handle')) {
+        const handle = document.createElement('div');
+        handle.className = 'sheet-drag-handle';
+        card.insertBefore(handle, card.firstChild);
+      }
+      const handle = card.querySelector('.sheet-drag-handle');
+      let startY = 0, dy = 0, dragging = false;
+      handle.addEventListener('touchstart', (e) => { dragging = true; startY = e.touches[0].clientY; card.style.transition = 'none'; }, { passive: true });
+      handle.addEventListener('touchmove', (e) => {
+        if (!dragging) return;
+        dy = Math.max(0, e.touches[0].clientY - startY);
+        card.style.transform = `translateY(${dy}px)`;
+      }, { passive: true });
+      handle.addEventListener('touchend', () => {
+        dragging = false;
+        card.style.transition = '';
+        if (dy > 100) {
+          const overlay = card.closest('.auth-overlay');
+          if (overlay) overlay.style.display = 'none';
+        }
+        card.style.transform = '';
+        dy = 0;
+      });
+    });
+  }
+
+  /* =========================================================
+     7. QR / BARCODE SCAN for Stock lookup (jsQR via CDN)
+     ========================================================= */
+  let qrStream = null, qrRafId = null, jsQRLoaded = false;
+  function loadJsQR(cb) {
+    if (window.jsQR) { jsQRLoaded = true; cb(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
+    s.onload = () => { jsQRLoaded = true; cb(); };
+    s.onerror = () => alert('Scanner load nahi ho paya — internet check karo.');
+    document.head.appendChild(s);
+  }
+  window.openQrScan = function() {
+    loadJsQR(async function() {
+      try {
+        qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        const video = document.getElementById('qrScanVideo');
+        video.srcObject = qrStream;
+        document.getElementById('qrScanOverlay').classList.add('open');
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        function tick() {
+          if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = window.jsQR(img.data, img.width, img.height);
+            if (code && code.data) {
+              const match = (sampleInventory||[]).find(it => (it.code||'').toLowerCase() === code.data.toLowerCase() || String(it.id) === code.data);
+              closeQrScan();
+              if (match && typeof openStockDetailModal === 'function') openStockDetailModal(match.id);
+              else alert('Code scan hua: ' + code.data + ' — koi matching item nahi mila.');
+              return;
+            }
+          }
+          qrRafId = requestAnimationFrame(tick);
+        }
+        tick();
+      } catch(e) { alert('Camera access nahi mila.'); }
+    });
+  };
+  window.closeQrScan = function() {
+    document.getElementById('qrScanOverlay').classList.remove('open');
+    if (qrRafId) cancelAnimationFrame(qrRafId);
+    if (qrStream) qrStream.getTracks().forEach(t => t.stop());
+    qrStream = null;
+  };
+  function injectScanButton() {
+    const stockHeaderBtnRow = document.querySelector('#view-inventory div[style*="display:flex; gap:8px"]');
+    if (stockHeaderBtnRow && !document.getElementById('scanStockBtn')) {
+      const btn = document.createElement('button');
+      btn.id = 'scanStockBtn';
+      btn.className = 'btn btn-outline btn-sm';
+      btn.textContent = '📷 Scan';
+      btn.onclick = window.openQrScan;
+      stockHeaderBtnRow.appendChild(btn);
+    }
+  }
+
+  /* =========================================================
+     WIRE-UP — wraps existing globals without altering their body
+     ========================================================= */
+  const _origRenderDashboard = window.renderDashboard;
+  if (typeof _origRenderDashboard === 'function') {
+    window.renderDashboard = function() {
+      _origRenderDashboard.apply(this, arguments);
+      try { renderTodayWidget(); checkDueReminders(); } catch(e) {}
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    injectSearchButton();
+    injectExportButtons();
+    injectScanButton();
+    initReminderPermissionPrompt();
+    setInterval(() => { attachMicButtons(); attachSheetDrag(); }, 1200);
+    setInterval(checkDueReminders, 5 * 60 * 1000);
+  });
+})();
+</script>
+
 </body>
 </html>
