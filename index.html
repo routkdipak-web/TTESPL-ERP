@@ -377,6 +377,92 @@
     border: 1px solid #cbd5e1; padding: 7px 6px; text-align: left; overflow: hidden; color: #111827;
   }
   .inv-table th { background: #f1f5f9; font-weight: 700; color: #0f172a; }
+
+  /* ============================================================
+     PREMIUM iOS-STYLE POLISH LAYER — purely additive, additive-only.
+     Nothing above this block is changed; no JS function is touched.
+     ============================================================ */
+
+  /* Modal open + close spring animation (works via @starting-style,
+     triggers automatically whenever JS sets display:flex/none —
+     zero JS changes required) */
+  .auth-overlay {
+    opacity: 1;
+    transition: opacity 0.34s cubic-bezier(0.32,0.72,0,1),
+                overlay 0.34s allow-discrete,
+                display 0.34s allow-discrete;
+  }
+  @starting-style { .auth-overlay { opacity: 0; } }
+
+  .auth-card {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    transition: transform 0.34s cubic-bezier(0.32,0.72,0,1),
+                opacity 0.34s cubic-bezier(0.32,0.72,0,1);
+  }
+  @starting-style { .auth-card { transform: translateY(26px) scale(0.94); opacity: 0; } }
+
+  /* Tab switch — soft iOS push/fade instead of a flat fade */
+  .view-panel.active {
+    animation: panelFadeSlide 0.34s cubic-bezier(0.32,0.72,0,1);
+  }
+  @keyframes panelFadeSlide {
+    from { opacity: 0; transform: translateY(14px) scale(0.985); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Cards — gentle entrance so lists feel alive instead of snapping in */
+  .card { animation: cardPopIn 0.3s cubic-bezier(0.32,0.72,0,1); }
+  @keyframes cardPopIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.99); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .card:active { transform: scale(0.985); }
+
+  /* Nav bar — sliding glow pill behind the active tab (positioned by JS,
+     purely cosmetic, does not affect switchTab's own logic) */
+  .nav-bar { position: fixed; }
+  #navActivePill {
+    position: absolute; top: 6px; height: calc(100% - 12px);
+    background: linear-gradient(135deg, rgba(255,107,53,0.14), rgba(255,157,61,0.08));
+    border-radius: 16px; z-index: 0; pointer-events: none;
+    transition: left 0.32s cubic-bezier(0.32,0.72,0,1), width 0.32s cubic-bezier(0.32,0.72,0,1);
+  }
+  .nav-item { z-index: 1; }
+  .nav-item.active .nav-icon {
+    filter: drop-shadow(0 3px 8px rgba(255,107,53,0.4));
+  }
+
+  /* Buttons — soft iOS press feel with a subtle highlight ring */
+  .btn { position: relative; overflow: hidden; }
+  .btn:active { transform: scale(0.955); filter: brightness(0.97); }
+  .btn-primary:active, .btn-accent:active { box-shadow: 0 2px 8px rgba(10,37,64,0.18); }
+
+  /* Header + sync badge — tiny breathing glow so "live" feels alive */
+  .sync-dot { animation: syncPulse 2.2s ease-in-out infinite; }
+  @keyframes syncPulse {
+    0%, 100% { box-shadow: 0 0 6px currentColor; opacity: 1; }
+    50% { box-shadow: 0 0 12px currentColor; opacity: 0.75; }
+  }
+
+  /* Badges — soft pop whenever their content changes (re-triggers on re-render) */
+  .badge { animation: badgePop 0.28s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes badgePop { from { transform: scale(0.85); opacity: 0.6; } to { transform: scale(1); opacity: 1; } }
+
+  /* FAB menu items — staggered pop instead of an instant appear */
+  #fabMenu .fab-action-btn { animation: fabItemIn 0.26s cubic-bezier(0.32,0.72,0,1) backwards; }
+  #fabMenu .fab-action-btn:nth-child(1) { animation-delay: 0.02s; }
+  #fabMenu .fab-action-btn:nth-child(2) { animation-delay: 0.06s; }
+  #fabMenu .fab-action-btn:nth-child(3) { animation-delay: 0.10s; }
+  #fabMenu .fab-action-btn:nth-child(4) { animation-delay: 0.14s; }
+  #fabMenu .fab-action-btn:nth-child(5) { animation-delay: 0.18s; }
+  @keyframes fabItemIn { from { opacity: 0; transform: translateY(10px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+  /* Suggestion dropdown — slightly springier than the original popIn */
+  .solid-suggestion-box { animation: popIn 0.22s cubic-bezier(0.32,0.72,0,1); }
+
+  /* Smooth cross-app scrolling */
+  html { scroll-behavior: smooth; }
 </style>
 </head>
 <body data-theme="light">
@@ -3402,6 +3488,54 @@ function switchTab(tab, el) {
 document.addEventListener('DOMContentLoaded', () => {
   checkAuthSession();
 });
+</script>
+
+<!-- ============================================================
+     PREMIUM UI POLISH SCRIPT — fully separate, additive-only.
+     Purely cosmetic: positions a sliding nav pill and adds a light
+     haptic tap. Does not read/write app data, does not call or
+     override any existing function above.
+     ============================================================ -->
+<script>
+(function() {
+  function ensureNavPill() {
+    const bar = document.querySelector('.nav-bar');
+    if (!bar || document.getElementById('navActivePill')) return;
+    const pill = document.createElement('div');
+    pill.id = 'navActivePill';
+    bar.prepend(pill);
+  }
+
+  function positionNavPill() {
+    const bar = document.querySelector('.nav-bar');
+    const pill = document.getElementById('navActivePill');
+    const active = document.querySelector('.nav-item.active');
+    if (!bar || !pill || !active) return;
+    const barRect = bar.getBoundingClientRect();
+    const itemRect = active.getBoundingClientRect();
+    pill.style.left = (itemRect.left - barRect.left + 6) + 'px';
+    pill.style.width = (itemRect.width - 12) + 'px';
+  }
+
+  function lightTap() {
+    if (navigator.vibrate) { try { navigator.vibrate(8); } catch(e) {} }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ensureNavPill();
+    setTimeout(positionNavPill, 60);
+  });
+
+  window.addEventListener('resize', positionNavPill);
+
+  // Passive listeners only — never blocks or alters the original onclick handlers
+  document.addEventListener('click', (e) => {
+    const navItem = e.target.closest('.nav-item');
+    if (navItem) { lightTap(); setTimeout(positionNavPill, 20); }
+    const btn = e.target.closest('.btn, .fab-action-btn, .sub-tab-btn');
+    if (btn) { lightTap(); }
+  }, { passive: true });
+})();
 </script>
 </body>
 </html>
