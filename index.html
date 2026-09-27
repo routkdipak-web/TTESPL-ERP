@@ -3119,7 +3119,7 @@ function saveOrderAction() {
   alert("Order saved successfully!");
 }
 
-/* MANDATORY PHOTO PROOF WORKFLOW (DELIVERY & PAYMENT) */
+/* MANDATORY PHOTO PROOF WORKFLOW (DELIVERY & PAYMENT) WITH AUTO COMPRESSION */
 let currentDeliveryPhotoBase64 = "";
 function openDeliveryProofModal(ordId) {
   document.getElementById('pendingDeliverOrderId').value = ordId;
@@ -3137,13 +3137,35 @@ function closeDeliveryProofModal() {
 function handleDeliveryPhotoCaptured(event) {
   const file = event.target.files[0];
   if (!file) return;
+  
   const reader = new FileReader();
   reader.onload = function(e) {
-    currentDeliveryPhotoBase64 = e.target.result;
-    const preview = document.getElementById('deliveryPhotoPreview');
-    preview.src = currentDeliveryPhotoBase64;
-    preview.style.display = 'block';
-    document.getElementById('confirmDeliveryBtn').disabled = false;
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const MAX_WIDTH = 800;
+      const MAX_HEIGHT = 800;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+      } else {
+        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      currentDeliveryPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+      const preview = document.getElementById('deliveryPhotoPreview');
+      preview.src = currentDeliveryPhotoBase64;
+      preview.style.display = 'block';
+      document.getElementById('confirmDeliveryBtn').disabled = false;
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -3221,11 +3243,32 @@ function handlePaymentProofCaptured(event) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    currentPaymentProofBase64 = e.target.result;
-    const preview = document.getElementById('payProofPreview');
-    preview.src = currentPaymentProofBase64;
-    preview.style.display = 'block';
-    document.getElementById('confirmCollectPayBtn').disabled = false;
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const MAX_WIDTH = 800;
+      const MAX_HEIGHT = 800;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+      } else {
+        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      currentPaymentProofBase64 = canvas.toDataURL('image/jpeg', 0.7);
+      const preview = document.getElementById('payProofPreview');
+      preview.src = currentPaymentProofBase64;
+      preview.style.display = 'block';
+      document.getElementById('confirmCollectPayBtn').disabled = false;
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
