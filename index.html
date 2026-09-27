@@ -3159,15 +3159,27 @@ function executeConfirmedDelivery() {
 
   o.items.forEach(it => {
     const p = sampleInventory.find(x => x.id === it.id || x.name === it.name);
-    if(p) { p.stock = Math.max(0, p.stock - it.qty); }
+    if(p) { 
+      p.stock = Math.max(0, p.stock - it.qty); 
+      if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
+        window.cloudSync.saveDoc('INVENTORY', p);
+      }
+    }
   });
 
   o.status = "Delivered";
   o.deliveredDate = new Date().toISOString().split('T')[0];
   o.deliveryProofPhoto = currentDeliveryPhotoBase64;
 
-  setStored("ORDERS", ordersData);
-  setStored("INVENTORY", sampleInventory);
+  try {
+    localStorage.setItem(DB_PREFIX + "ORDERS", JSON.stringify(ordersData));
+    localStorage.setItem(DB_PREFIX + "INVENTORY", JSON.stringify(sampleInventory));
+  } catch(e) {}
+
+  if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
+    window.cloudSync.saveDoc('ORDERS', o);
+  }
+
   closeDeliveryProofModal();
   renderOrders();
   renderStockList();
@@ -3183,7 +3195,7 @@ function executeConfirmedDelivery() {
     });
   }
 
-  alert("Order successfully delivered with Photo Proof!");
+  alert("Order successfully delivered, inventory updated, and bill added to ledger!");
 }
 
 /* PAYMENT COLLECTION WITH PROOF */
@@ -3232,7 +3244,14 @@ function executeConfirmedPaymentCollection() {
   o.lastPaymentProof = currentPaymentProofBase64;
   o.lastPaymentDate = new Date().toISOString().split('T')[0];
 
-  setStored("ORDERS", ordersData);
+  try {
+    localStorage.setItem(DB_PREFIX + "ORDERS", JSON.stringify(ordersData));
+  } catch(e) {}
+
+  if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
+    window.cloudSync.saveDoc('ORDERS', o);
+  }
+
   closePaymentProofModal();
   renderBilling('all');
   renderDashboard();
