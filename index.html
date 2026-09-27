@@ -532,7 +532,7 @@
 <input type="file" id="paymentProofFileInput" accept="image/*" style="display:none;" onchange="handlePaymentProofCaptured(event)">
 
 <!-- AUTH SCREEN -->
-<div id="authScreen" class="auth-overlay" style="display:none;">
+<div id="authScreen" class="auth-overlay" style="display:flex;">
   <div class="auth-card">
     <div style="text-align:center; margin-bottom:20px;">
       <div style="width:52px; height:52px; margin:0 auto 12px; border-radius:14px; background:linear-gradient(135deg, #0a2540, #ff6b35); display:flex; align-items:center; justify-content:center; color:white; font-size:26px; font-weight:900;">TT</div>
@@ -662,7 +662,7 @@
 </div>
 
 <!-- MAIN APP WRAPPER -->
-<div id="mainAppWrapper">
+<div id="mainAppWrapper" style="display:none;">
 
   <div class="daily-reminder-banner" id="dailyReminderBanner">
     <div>
@@ -3469,89 +3469,6 @@ window.renderBilling = renderBilling;
 
 function filterBilling(type) { renderBilling(type, document.getElementById('billingEmployeeFilter').value); }
 function filterBillingByEmployee(empName) { renderBilling('due', empName); }
-
-function downloadFile(content, fileName, mimeType) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([content], { type: mimeType }));
-  a.setAttribute('download', fileName);
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-}
-
-/* CHAT */
-let teamChatData = [];
-window.teamChatData = teamChatData;
-function handleTypingEvent() {}
-function renderChatMessages() {
-  const container = document.getElementById('chatMessagesContainer');
-  if(!container) return;
-  container.innerHTML = '';
-  document.getElementById('chatCountBadge').textContent = `${teamChatData.length} msgs`;
-  const myName = currentUser ? currentUser.name : '';
-  teamChatData.forEach(msg => {
-    const isMine = myName && msg.sender === myName;
-    const bubble = document.createElement('div');
-    bubble.className = `bubble ${isMine ? 'me' : 'other'}`;
-    bubble.innerHTML = `${!isMine ? `<div class="bubble-author">${msg.sender}</div>` : ''}<div>${msg.text}</div>`;
-    container.appendChild(bubble);
-  });
-  container.scrollTop = container.scrollHeight;
-}
-window.renderChatMessages = renderChatMessages;
-
-function sendLiveChatMessage(fileObj = null) {
-  const input = document.getElementById('chatInputMessage');
-  const txt = input.value.trim();
-  if(!txt && !fileObj) return;
-  const newMsg = { sender: currentUser ? currentUser.name : "Admin", text: txt, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-  input.value = '';
-  teamChatData.push(newMsg);
-  renderChatMessages();
-}
-
-function handleChatFileUpload(event) {
-  const file = event.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) { sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result }); };
-  reader.readAsDataURL(file);
-}
-
-function updateGlobalReminders() {
-  const today = new Date().toISOString().split('T')[0];
-  let delDue = ordersData.filter(o => o.status === 'Pending' && o.deliveryDate <= today).length;
-  let srvDue = serviceCallsData.filter(s => s.status !== 'Work Completed' && s.targetDate <= today).length;
-  document.getElementById('dailyReminderText').textContent = `${delDue} Orders Due | ${srvDue} Repairs Due`;
-}
-
-function switchTab(tab, el) {
-  document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('view-' + tab).classList.add('active');
-  if (el) el.classList.add('active');
-  if(tab === 'dashboard') renderDashboard();
-  if(tab === 'leads') renderLeads();
-  if(tab === 'orders') renderOrders();
-  if(tab === 'services') renderServices();
-  if(tab === 'inventory') renderStockList();
-  if(tab === 'billing') renderBilling('all');
-  if(tab === 'chat') renderChatMessages();
-}
-
-function showBroadcastToastAlert(notif) {
-  const container = document.getElementById('broadcastToastContainer');
-  if (!container) return;
-  const toast = document.createElement('div');
-  toast.className = 'broadcast-toast';
-  toast.innerHTML = `<div class="toast-icon">🔔</div><div class="toast-content"><div class="toast-title">${notif.title}</div><div class="toast-body">${notif.body}</div></div><button class="toast-close" onclick="this.parentElement.remove()">✕</button>`;
-  container.prepend(toast);
-  setTimeout(() => { if (toast.parentElement) toast.remove(); }, 7000);
-}
-window.showBroadcastToastAlert = showBroadcastToastAlert;
-
-function requestAppSystemPermissions() {
-  if (window.Notification && Notification.permission !== 'granted') { Notification.requestPermission(); }
-}
-window.requestAppSystemPermissions = requestAppSystemPermissions;
 
 document.addEventListener('DOMContentLoaded', () => { checkAuthSession(); });
 </script>
