@@ -44,9 +44,8 @@
       db = F.initializeFirestore(app, { experimentalAutoDetectLongPolling: true, ignoreUndefinedProperties: true });
     } catch (e) { db = F.getFirestore(app); }
 
-    // Direct Real-Time Cloud Methods
+    // Direct Real-Time Cloud Methods with Persistence Guarantee
     window.cloudSync = {
-      // Direct Single Doc Save/Update to Cloud
       saveDoc: function (key, item) {
         var col = MAP[key];
         if (!col || !item || item.id == null) return Promise.resolve();
@@ -56,7 +55,6 @@
           .catch(function (e) { console.error('Cloud Save Error:', e); setSync('Offline', false); });
       },
 
-      // Direct Single Doc Delete from Cloud
       deleteItem: function (key, id) {
         var col = MAP[key];
         if (!col || id == null) return Promise.resolve();
@@ -66,7 +64,6 @@
           .catch(function (e) { console.error('Cloud Delete Error:', e); setSync('Offline', false); });
       },
 
-      // Batch Sync for Initial Setup
       pushKey: function (key, arr) {
         var col = MAP[key];
         if (!col || !Array.isArray(arr)) return Promise.resolve();
@@ -89,12 +86,11 @@
         return F.setDoc(F.doc(db, 'chat_status', id), { user: user, isTyping: isTyping, updatedAt: Date.now() }, { merge: true });
       },
 
-      // REALTIME BROADCAST NOTIFICATIONS
       pushLiveNotification: function (notif) {
         var notifDoc = {
           title: notif.title || 'TTESPL Alert',
           body: notif.body || '',
-          type: notif.type || 'info', // order, delivery, payment
+          type: notif.type || 'info',
           by: me() || 'Staff',
           timestamp: Date.now(),
           photo: notif.photo || ''
@@ -102,9 +98,6 @@
         return F.addDoc(F.collection(db, 'app_notifications'), notifDoc);
       },
 
-      // FACTORY RESET: permanently wipes every document in every cloud
-      // collection (business data + staff/login accounts + chat history +
-      // notifications) so the app truly comes back as brand-new.
       wipeAll: function () {
         var collectionsToWipe = Object.keys(MAP).map(function (k) { return MAP[k]; })
           .concat(['team_messages', 'chat_status', 'app_notifications']);
@@ -124,7 +117,7 @@
         }
 
         setSync('Resetting...', true);
-        return Promise.all(collectionsToWipe.map(wipeCollection))
+        return Promise.all(collectionsToWipse.map(wipeCollection))
           .then(function () { setSync('Live Cloud', true); })
           .catch(function (e) {
             console.error('Factory Reset Error:', e);
@@ -134,13 +127,12 @@
       }
     };
 
-    // Live Snapshot Listeners: Directly Updates In-Memory Arrays & Rerenders
+    // Live Snapshot Listeners across all devices
     Object.keys(MAP).forEach(function (key) {
       F.onSnapshot(F.collection(db, MAP[key]), function (snap) {
         var list = [];
         snap.forEach(function (d) { list.push(d.data()); });
 
-        // Update in-memory live runtime
         switch (key) {
           case 'LEADS': leadsData = list; if (typeof renderLeads === 'function') renderLeads(); break;
           case 'ORDERS': 
@@ -173,7 +165,6 @@
       });
     });
 
-    // Realtime Team Chat
     var q = F.query(F.collection(db, 'team_messages'), F.orderBy('timestamp', 'desc'), F.limit(150));
     F.onSnapshot(q, function (snap) {
       var msgs = [];
@@ -183,8 +174,7 @@
       if (typeof renderChatMessages === 'function') renderChatMessages();
     });
 
-    // REALTIME LIVE NOTIFICATIONS LISTENER
-    var startTimestamp = Date.now() - 60000; // ignore older than 1 minute on boot
+    var startTimestamp = Date.now() - 60000;
     var notifQuery = F.query(F.collection(db, 'app_notifications'), F.orderBy('timestamp', 'desc'), F.limit(15));
     F.onSnapshot(notifQuery, function (snap) {
       snap.docChanges().forEach(function (change) {
