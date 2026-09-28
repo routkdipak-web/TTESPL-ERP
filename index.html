@@ -1890,8 +1890,8 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
   </div>
 </div>
 
-<script src="master-data.js?v=2"></script>
-<script src="live-sync.js?v=2"></script>
+<script src="master-data.js?v=3"></script>
+<script src="live-sync.js?v=3"></script>
 
 <script>
 /* ==========================================================================
@@ -4205,27 +4205,69 @@ function downloadFile(content, fileName, mimeType) {
 }
 
 /* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
+const TT_APP_VERSION = 'v3';
+let pendingChat = [];
+window.pendingChat = pendingChat;
+
 function renderChatMessages() {
   const container = document.getElementById('chatMessagesContainer');
   if(!container) return;
   container.innerHTML = '';
-  document.getElementById('chatCountBadge').textContent = `${teamChatData.length} msgs`;
   const myName = currentUser ? currentUser.name : '';
 
-  teamChatData.forEach(msg => {
+  // Cloud messages (duplicate cid ek hi baar) + jo abhi cloud tak confirm nahi hue (pending/failed)
+  const seen = new Set();
+  const cloudList = [];
+  teamChatData.forEach(m => {
+    if (m && m.cid) { if (seen.has(m.cid)) return; seen.add(m.cid); }
+    cloudList.push(m);
+  });
+  pendingChat = pendingChat.filter(p => !seen.has(p.cid));
+  window.pendingChat = pendingChat;
+  const all = cloudList.concat(pendingChat);
+  document.getElementById('chatCountBadge').textContent = `${all.length} msgs`;
+  const badge = document.getElementById('chatCountBadge');
+  if (badge) badge.title = 'App ' + TT_APP_VERSION;
+
+  all.forEach(msg => {
     const isMine = myName && msg.sender === myName;
     const bubble = document.createElement('div');
     bubble.className = `messenger-bubble ${isMine ? 'outgoing' : 'incoming'}`;
+    let status = '';
+    if (msg._state === 'sending') status = ' ⏳';
+    if (msg._state === 'failed') { status = ' ⚠️ Send nahi hua - tap karke retry'; bubble.style.cursor = 'pointer'; bubble.onclick = () => retryChatMessage(msg.cid); }
     bubble.innerHTML = `
       ${!isMine ? `<span class="msg-author-tag">${esc(msg.sender)}</span>` : ''}
       <div>${esc(msg.text)}</div>
-      <span class="msg-time-tag">${esc(msg.time)}</span>
+      <span class="msg-time-tag">${esc(msg.time)}${status}</span>
     `;
     container.appendChild(bubble);
   });
   container.scrollTop = container.scrollHeight;
 }
 window.renderChatMessages = renderChatMessages;
+
+function pushChatToCloud(msg) {
+  const clean = { sender: msg.sender, text: msg.text, time: msg.time, timestamp: msg.timestamp, cid: msg.cid };
+  const mark = (state) => { const p = pendingChat.find(x => x.cid === msg.cid); if (p) { p._state = state; renderChatMessages(); } };
+  if (!(window.cloudSync && typeof window.cloudSync.sendChatMessage === 'function')) { mark('failed'); return; }
+  msg._state = 'sending';
+  const timer = setTimeout(() => mark('failed'), 20000);
+  window.cloudSync.sendChatMessage(clean).then(() => { clearTimeout(timer); }).catch(e => {
+    clearTimeout(timer);
+    console.error('Chat send failed', e);
+    mark('failed');
+  });
+}
+
+function retryChatMessage(cid) {
+  const p = pendingChat.find(x => x.cid === cid);
+  if (!p) return;
+  p._state = 'sending';
+  renderChatMessages();
+  pushChatToCloud(p);
+}
+window.retryChatMessage = retryChatMessage;
 
 function sendLiveChatMessage(fileObj = null) {
   const input = document.getElementById('chatInputMessage');
@@ -4237,19 +4279,14 @@ function sendLiveChatMessage(fileObj = null) {
     sender: currentUser ? currentUser.name : "Staff",
     text: txt,
     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    cid: 'c' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+    _state: 'sending'
   };
   input.value = '';
-  if (window.cloudSync && typeof window.cloudSync.sendChatMessage === 'function') {
-    // Cloud listener (live-sync) sabhi devices par message dikhayega
-    window.cloudSync.sendChatMessage(newMsg).catch(function(e){
-      console.error('Chat send failed', e);
-      alert('Message cloud par nahi gaya. Internet ya Firebase rules check karein.');
-    });
-  } else {
-    teamChatData.push(newMsg);
-    renderChatMessages();
-  }
+  pendingChat.push(newMsg);
+  renderChatMessages();
+  pushChatToCloud(newMsg);
 }
 
 function handleChatFileUpload(event) {
