@@ -1094,6 +1094,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
         <div style="display:flex; gap:6px; flex-wrap:wrap;">
           <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openDailyCashClosingModal()">💰 Cash Closing</button>
           <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); openAgeingAnalysisModal()">⏳ Ageing Analysis</button>
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); importLedgerFromJson()">📥 Import Ledger</button>
         </div>
       </div>
 
@@ -4177,10 +4178,12 @@ function renderBilling(filterType, empFilter = "ALL") {
           ${isAdmin ? `<button class="btn btn-outline btn-sm admin-only-btn" onclick="triggerAppHaptic(); openAdminEditLedgerModal('${o.id}')">✏️</button>` : ''}
         </div>
       </div>
+      ${(o.dueAmount > 0 && o.payFollowupDate) ? `<div style="margin-top:8px; font-size:12px; font-weight:800; color:${o.payFollowupDate <= new Date().toISOString().split('T')[0] ? 'var(--danger)' : 'var(--warning, #d97706)'};">📅 Payment follow-up: ${o.payFollowupDate}${o.payFollowupNote ? ' — ' + esc(o.payFollowupNote) : ''}</div>` : ''}
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
         <button class="btn btn-print btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice</button>
         <button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
         ${o.dueAmount > 0 ? `<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); collectDuePayment('${o.id}')">💵 Collect Due</button>` : ''}
+        ${o.dueAmount > 0 ? `<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openPayFollowupModal('${o.id}')">📅 Payment Follow-up</button>` : ''}
       </div>
     `;
     container.appendChild(card);
@@ -4299,11 +4302,39 @@ function handleChatFileUpload(event) {
   reader.readAsDataURL(file);
 }
 
+function getPaymentFollowupsDue() {
+  const today = new Date().toISOString().split('T')[0];
+  return ordersData.filter(o => o.dueAmount > 0 && o.payFollowupDate && o.payFollowupDate <= today);
+}
+
 function updateGlobalReminders() {
   const today = new Date().toISOString().split('T')[0];
   let delDue = ordersData.filter(o => o.status === 'Pending' && o.deliveryDate <= today).length;
   let srvDue = serviceCallsData.filter(s => s.status !== 'Work Completed' && s.targetDate <= today).length;
-  document.getElementById('dailyReminderText').textContent = `${delDue} Orders Due | ${srvDue} Services Due`;
+  const payFu = getPaymentFollowupsDue();
+  let txt = `${delDue} Orders Due | ${srvDue} Services Due`;
+  if (payFu.length > 0) {
+    const names = payFu.slice(0, 2).map(o => o.customerName).join(', ') + (payFu.length > 2 ? ` +${payFu.length - 2} more` : '');
+    txt += ` | 📞 Today follow up ${names} for due payment`;
+  }
+  document.getElementById('dailyReminderText').textContent = txt;
+
+  // Daily notification (ek device par din me ek hi baar, sirf Admin login par)
+  try {
+    if (payFu.length > 0 && currentUser && currentUser.role === 'Admin') {
+      const key = 'TT_PAYFU_NOTIF_' + today;
+      if (!localStorage.getItem(key)) {
+        localStorage.setItem(key, '1');
+        if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
+          window.cloudSync.pushLiveNotification({
+            title: "📞 Payment Follow-up Today",
+            body: payFu.slice(0, 3).map(o => `Today follow up ${o.customerName} for due payment (₹${Number(o.dueAmount).toLocaleString('en-IN')})`).join('\n'),
+            type: "payment"
+          });
+        }
+      }
+    }
+  } catch (e) { console.warn('payment follow-up notif skipped', e); }
 }
 
 function switchTab(tab, el) {
@@ -4430,6 +4461,229 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   frame();
 })();
+
+/* ===== PAYMENT FOLLOW-UP + LEDGER IMPORT (added) ===== */
+function openPayFollowupModal(ordId) {
+  const o = ordersData.find(x => x.id === ordId);
+  if (!o) return;
+  let m = document.getElementById('payFollowupModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'payFollowupModal';
+    m.className = 'auth-overlay';
+    m.style.display = 'none';
+    m.innerHTML = `<div class="auth-card">
+      <div class="card-header"><span class="card-title">📅 Payment Follow-up</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('payFollowupModal').style.display='none'">✕</button></div>
+      <div id="pfuInfo" style="font-size:12.5px; margin-bottom:10px; color:var(--text-muted);"></div>
+      <input type="hidden" id="pfuOrdId">
+      <label class="form-label">Customer kis date ko payment karega?</label>
+      <input type="date" id="pfuDate" style="width:100%; margin-bottom:10px;">
+      <label class="form-label">Note (kisne bola / kitna dega)</label>
+      <input type="text" id="pfuNote" placeholder="e.g. Owner ne bola Friday ko 20000 dega" style="width:100%; margin-bottom:14px;">
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary" style="flex:2;" onclick="savePayFollowup()">💾 Save Follow-up</button>
+        <button class="btn btn-outline" style="flex:1;" onclick="clearPayFollowup()">Clear</button>
+      </div>
+    </div>`;
+    document.body.appendChild(m);
+  }
+  document.getElementById('pfuOrdId').value = ordId;
+  document.getElementById('pfuInfo').innerHTML = `<strong>${esc(o.customerName)}</strong> — Invoice ${esc(o.id)} — Due ₹${Number(o.dueAmount).toLocaleString('en-IN')}`;
+  const d = new Date(); d.setDate(d.getDate() + 3);
+  document.getElementById('pfuDate').value = o.payFollowupDate || d.toISOString().split('T')[0];
+  document.getElementById('pfuNote').value = o.payFollowupNote || '';
+  m.style.display = 'flex';
+}
+
+function savePayFollowup() {
+  const id = document.getElementById('pfuOrdId').value;
+  const o = ordersData.find(x => x.id === id);
+  if (!o) return;
+  const date = document.getElementById('pfuDate').value;
+  if (!date) { alert('Follow-up date select karein!'); return; }
+  o.payFollowupDate = date;
+  o.payFollowupNote = document.getElementById('pfuNote').value.trim();
+  o.auditTrail = o.auditTrail || [];
+  o.auditTrail.unshift({ by: currentUser ? currentUser.name : 'Staff', time: getNowStr(), note: 'Payment follow-up set for ' + date });
+  setStored("ORDERS", ordersData);
+  document.getElementById('payFollowupModal').style.display = 'none';
+  renderBilling('due');
+  updateGlobalReminders();
+  if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
+    window.cloudSync.pushLiveNotification({ title: "📅 Payment Follow-up Set", body: `${o.customerName} - ${date} (Due ₹${Number(o.dueAmount).toLocaleString('en-IN')})`, type: "payment" });
+  }
+}
+
+function clearPayFollowup() {
+  const id = document.getElementById('pfuOrdId').value;
+  const o = ordersData.find(x => x.id === id);
+  if (!o) return;
+  delete o.payFollowupDate; delete o.payFollowupNote;
+  setStored("ORDERS", ordersData);
+  document.getElementById('payFollowupModal').style.display = 'none';
+  renderBilling('due');
+  updateGlobalReminders();
+}
+window.openPayFollowupModal = openPayFollowupModal;
+window.savePayFollowup = savePayFollowup;
+window.clearPayFollowup = clearPayFollowup;
+
+/* ---- Ledger import: ledger-import.json (Excel se convert) ---- */
+function ttNormKey(k) { return String(k || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+function ttNum(v) {
+  if (v === null || v === undefined || v === '') return null;
+  const n = parseFloat(String(v).replace(/[₹,\s]/g, ''));
+  return isNaN(n) ? null : n;
+}
+function ttDate(v) {
+  const today = new Date().toISOString().split('T')[0];
+  if (v === null || v === undefined || v === '') return today;
+  if (typeof v === 'number' || /^\d{5}$/.test(String(v).trim())) {
+    const d = new Date(Math.round((Number(v) - 25569) * 86400 * 1000));
+    return isNaN(d) ? today : d.toISOString().split('T')[0];
+  }
+  const s = String(v).trim();
+  let m = s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/);
+  if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+  m = s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+  if (m) return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+  const d = new Date(s);
+  return isNaN(d) ? today : d.toISOString().split('T')[0];
+}
+const TT_LEDGER_ALIASES = {
+  inv: ['invoicenumber', 'invoiceno', 'invoice', 'billno', 'billnumber', 'invno'],
+  date: ['invoicedate', 'date', 'billdate'],
+  name: ['customername', 'name', 'customer', 'partyname', 'party'],
+  phone: ['mobileno', 'mobilenumber', 'mobile', 'phone', 'phoneno', 'contact'],
+  email: ['email', 'emailid', 'emailaddress'],
+  address: ['address', 'customeraddress'],
+  gst: ['customergstno', 'gstno', 'gstin', 'gst', 'gstnumber'],
+  item: ['itemname', 'item', 'items', 'product', 'particulars', 'description'],
+  qty: ['qty', 'quantity'],
+  amt: ['itemamountwithgst', 'itemamount', 'amountwithgst', 'amount', 'total'],
+  paid: ['paymentreceived', 'payment', 'paid', 'received', 'receivedamount'],
+  due: ['dueamount', 'duepayment', 'due', 'balance'],
+  staff: ['salesby', 'salesbystaffname', 'staffname', 'staff', 'soldby']
+};
+function ttPick(nrow, key) {
+  for (const a of TT_LEDGER_ALIASES[key]) {
+    if (nrow[a] !== undefined && String(nrow[a]).trim() !== '') return nrow[a];
+  }
+  return '';
+}
+function ttLast10(p) { return String(p || '').replace(/\D/g, '').slice(-10); }
+
+async function importLedgerFromJson() {
+  if (!currentUser || currentUser.role !== 'Admin') { alert('Permission Denied: Sirf Admin ledger import kar sakte hain!'); return; }
+  let data;
+  try {
+    const res = await fetch('ledger-import.json?v=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    data = await res.json();
+  } catch (e) {
+    alert('ledger-import.json file nahi mili ya padh nahi paye. GitHub me index.html ke saath wahi file upload karein.\n(' + e.message + ')');
+    return;
+  }
+  const rows = Array.isArray(data) ? data : (data && (data.rows || data.data || data.ledger)) || [];
+  if (!rows.length) { alert('File me koi row nahi mili.'); return; }
+
+  // Invoice number ke hisab se group
+  const groups = new Map();
+  let noInvCounter = 0;
+  rows.forEach(r => {
+    const nrow = {};
+    Object.keys(r).forEach(k => nrow[ttNormKey(k)] = r[k]);
+    let inv = String(ttPick(nrow, 'inv')).trim();
+    if (!inv) { inv = 'NOINV-' + (++noInvCounter); }
+    if (!groups.has(inv)) groups.set(inv, []);
+    groups.get(inv).push(nrow);
+  });
+
+  if (!confirm(`${rows.length} rows me se ${groups.size} bills mile. Ledger me import karein?\n(Jo invoice number pehle se app me hai use skip kiya jayega.)`)) return;
+
+  const existingIds = new Set(ordersData.map(o => String(o.id)));
+  const customers = Array.isArray(customerDatabase) ? customerDatabase.slice() : [];
+  const byPhone = new Map(), byName = new Map();
+  customers.forEach(c => {
+    const p = ttLast10(c.phone); if (p.length === 10) byPhone.set(p, c);
+    const n = String(c.name || '').trim().toLowerCase(); if (n) byName.set(n, c);
+  });
+
+  let imported = 0, skipped = 0, matched = 0, added = 0, bad = 0, idSeq = 0;
+  const newOrders = [];
+
+  groups.forEach((list, inv) => {
+    if (existingIds.has(inv)) { skipped++; return; }
+    const first = (key) => { for (const r of list) { const v = ttPick(r, key); if (v !== '') return v; } return ''; };
+
+    const name = String(first('name')).trim();
+    const phone = String(first('phone')).replace(/\D/g, '');
+    if (!name && !phone) { bad++; return; }
+
+    // Customer match: phone ya name kuch bhi mile to usi ke naam se bill
+    let cust = null;
+    const p10 = ttLast10(phone);
+    if (p10.length === 10 && byPhone.has(p10)) cust = byPhone.get(p10);
+    if (!cust && name && byName.has(name.toLowerCase())) cust = byName.get(name.toLowerCase());
+    if (cust) {
+      matched++;
+    } else {
+      cust = {
+        id: 'IMP' + Date.now() + '_' + (++idSeq),
+        name: name || phone, person: name || phone, phone: phone,
+        email: String(first('email')).trim(), address: String(first('address')).trim(), gst: String(first('gst')).trim()
+      };
+      customers.push(cust);
+      if (p10.length === 10) byPhone.set(p10, cust);
+      if (cust.name) byName.set(String(cust.name).trim().toLowerCase(), cust);
+      added++;
+    }
+
+    // Items - sirf bill me, products list me koi entry nahi
+    const items = [];
+    list.forEach((r, i) => {
+      const iname = String(ttPick(r, 'item')).trim();
+      const amt = ttNum(ttPick(r, 'amt'));
+      if (!iname && amt === null) return;
+      const qty = Math.max(1, parseInt(ttNum(ttPick(r, 'qty'))) || 1);
+      const total = amt || 0;
+      items.push({ id: 'IMPITEM' + Date.now() + '_' + (++idSeq), name: iname || 'Item', hsn: '84139190', qty, mrp: total / qty, disc: 0, rate: total / qty, total });
+    });
+    if (!items.length) { bad++; return; }
+
+    const totalAmount = Math.round(items.reduce((s, it) => s + it.total, 0) * 100) / 100;
+    let recv = ttNum(first('paid')), due = ttNum(first('due'));
+    if (recv === null && due === null) { recv = totalAmount; due = 0; }
+    else if (recv === null) { recv = Math.max(0, totalAmount - due); }
+    else if (due === null) { due = Math.max(0, totalAmount - recv); }
+
+    const dt = ttDate(first('date'));
+    const gstNo = cust.gst || '';
+    newOrders.push({
+      id: inv, customerName: cust.name, phone: cust.phone || phone,
+      orderDate: dt, deliveryDate: dt, deliveredDate: dt,
+      items, totalAmount, recvAmount: recv, dueAmount: due, payMode: 'Imported',
+      taxType: (gstNo && !gstNo.startsWith('21')) ? 'INTER' : 'INTRA',
+      status: 'Delivered', bookedBy: String(first('staff')).trim() || 'Imported',
+      auditTrail: [{ by: currentUser.name + ' (Admin)', time: getNowStr(), note: 'Imported from Excel ledger' }]
+    });
+    imported++;
+  });
+
+  if (imported > 0) {
+    ordersData.push(...newOrders);
+    customerDatabase = customers;
+    window.customerDatabase = customerDatabase;
+    setStored("CUSTOMERS", customerDatabase);
+    setStored("ORDERS", ordersData);
+  }
+  renderBilling('all');
+  renderDashboard();
+  if (typeof renderOrders === 'function') renderOrders();
+  updateGlobalReminders();
+  alert(`Import complete!\n✅ ${imported} bills ledger me add hue\n👤 ${matched} bills purane customer ke naam par\n🆕 ${added} naye customers auto add hue\n⏭️ ${skipped} bills pehle se the (skip)\n⚠️ ${bad} rows adhoori thi (skip)`);
+}
+window.importLedgerFromJson = importLedgerFromJson;
 </script>
 
 </body>
