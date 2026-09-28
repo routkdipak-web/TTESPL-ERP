@@ -57,11 +57,14 @@
     --wa-bg: #0b141a;
   }
 
-  html { color-scheme: light dark; height: 100%; width: 100%; }
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+  * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
   body { 
     background: radial-gradient(circle at 5% 0%, rgba(0,180,216,0.08), transparent 30%), radial-gradient(circle at 95% 5%, rgba(255,107,53,0.08), transparent 28%), var(--bg);
-    color: var(--text-main); min-height: 100vh; min-height: 100dvh; padding-top: env(safe-area-inset-top); padding-bottom: calc(75px + env(safe-area-inset-bottom)); overflow-x: hidden; -webkit-font-smoothing: antialiased; 
+    color: var(--text-main); min-height: 100vh; min-height: 100dvh; 
+    padding-top: env(safe-area-inset-top); 
+    padding-bottom: calc(72px + env(safe-area-inset-bottom)); 
+    -webkit-font-smoothing: antialiased; 
     transition: background 0.3s ease, color 0.3s ease;
   }
 
@@ -115,14 +118,14 @@
   }
   #pullToRefreshIndicator.visible { transform: translateY(0); }
 
-  /* ------------------- SLIM IMMERSIVE HEADER & LOGO ANIMATION ------------------- */
+  /* ------------------- SLIM TRUE FULL-PAGE HEADER & LOGO ANIMATION ------------------- */
   header {
     background: linear-gradient(135deg, rgba(6, 19, 36, 0.98), rgba(10, 37, 64, 0.96));
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     color: white; padding: 6px 12px; position: sticky; top: 0; z-index: 1000;
-    box-shadow: 0 4px 22px rgba(0,0,0,0.4); display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4); display: flex; justify-content: space-between; align-items: center;
     border-bottom: 1px solid rgba(0, 180, 216, 0.4);
-    height: 54px; overflow: visible; width: 100%;
+    height: 52px; width: 100%; margin: 0;
   }
   [data-theme="dark"] header { 
     background: linear-gradient(135deg, rgba(5, 10, 20, 0.99), rgba(15, 23, 42, 0.97)); 
@@ -154,35 +157,34 @@
 
   .brand-area { display: flex; align-items: center; gap: 9px; position: relative; z-index: 2; max-width: calc(100% - 60px); cursor: pointer; }
   
-  /* EXACT OFFICIAL ROUND LOGO REPLICA WITH ROTATING NEON RING & RACING CAR */
+  /* EXACT OFFICIAL LOGO EMBLEM REPLICA WITH GLOW & ROTATING BORDER */
   .brand-logo-round {
-    width: 40px; height: 40px; min-width: 40px; border-radius: 50%;
+    width: 38px; height: 38px; min-width: 38px; border-radius: 50%;
     background: radial-gradient(circle at 40% 30%, #1e3a8a, #061526 85%);
-    border: 2.2px solid #facc15;
-    box-shadow: 0 0 14px rgba(250, 204, 21, 0.7), inset 0 0 8px rgba(0, 180, 216, 0.8);
+    border: 2px solid #eab308;
+    box-shadow: 0 0 12px rgba(234, 179, 8, 0.7), inset 0 0 6px rgba(0, 180, 216, 0.8);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     position: relative; overflow: hidden;
   }
   .brand-logo-round::after {
     content: ""; position: absolute; inset: -50%;
     background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-    transform: rotate(35deg); animation: emblemSweep 2.8s infinite;
+    transform: rotate(35deg); animation: emblemSweep 2.5s infinite;
   }
   @keyframes emblemSweep { 0% { transform: translateX(-120%) rotate(35deg); } 100% { transform: translateX(120%) rotate(35deg); } }
-  .emblem-car-icon { font-size: 16px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)); animation: carBounce 2s ease-in-out infinite; }
-  @keyframes carBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
-  .emblem-txt { font-size: 7.5px; font-weight: 900; color: #facc15; letter-spacing: 0.6px; line-height: 1; margin-top: 1px; text-shadow: 0 0 5px rgba(250,204,21,0.8); }
+  .emblem-car-icon { font-size: 15px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)); }
+  .emblem-txt { font-size: 7.5px; font-weight: 900; color: #facc15; letter-spacing: 0.6px; line-height: 1; margin-top: 1px; text-shadow: 0 0 6px rgba(250,204,21,0.8); }
 
   .brand-text-row { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
   .brand-title-line { display: flex; align-items: baseline; gap: 4px; overflow: hidden; }
   
   .brand-title-glow {
-    font-size: 12px; font-weight: 900; letter-spacing: 0.4px; line-height: 1.1;
+    font-size: 11.5px; font-weight: 900; letter-spacing: 0.4px; line-height: 1.1;
     background: linear-gradient(90deg, #ffffff 0%, #38bdf8 30%, #ff9d3d 60%, #ffffff 100%);
     background-size: 250% auto;
     -webkit-background-clip: text; background-clip: text; color: transparent;
-    animation: textNeonShimmer 3.5s linear infinite;
-    text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+    animation: textNeonShimmer 3s linear infinite;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
     white-space: nowrap;
   }
   @keyframes textNeonShimmer {
@@ -190,10 +192,10 @@
     100% { background-position: 250% center; }
   }
   .brand-title-pvt {
-    font-size: 9px; font-weight: 800; color: #ff6b35; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap;
+    font-size: 8.5px; font-weight: 800; color: #ff6b35; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap;
   }
   .brand-sub-horizontal {
-    font-size: 8.5px; color: #cbd5e1; font-weight: 600; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: 8px; color: #cbd5e1; font-weight: 600; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     display: flex; align-items: center; gap: 4px; margin-top: 1px;
   }
   .header-cloud-dot {
@@ -211,8 +213,8 @@
   }
   .profile-avatar-btn:active { transform: scale(0.92); }
   .profile-avatar-img {
-    width: 29px; height: 29px; border-radius: 50%; background: linear-gradient(135deg, #00b4d8, #0a2540);
-    color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #00b4d8, #0a2540);
+    color: #fff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
   .profile-avatar-role-dot {
@@ -222,7 +224,7 @@
   .profile-avatar-role-dot.admin { background: #00b4d8; }
 
   .profile-dropdown-card {
-    position: fixed; top: 58px; right: 12px; width: 290px;
+    position: fixed; top: 56px; right: 12px; width: 290px;
     background: rgba(10, 25, 47, 0.97) !important; backdrop-filter: blur(25px) !important; -webkit-backdrop-filter: blur(25px);
     border: 1.8px solid rgba(0, 180, 216, 0.45); border-radius: 20px;
     box-shadow: 0 20px 48px rgba(0,0,0,0.65); padding: 16px;
@@ -277,49 +279,48 @@
     background: linear-gradient(90deg, #fffbeb, #fef3c7);
     border-bottom: 1.5px solid #fde68a; padding: 7px 14px; font-size: 11.5px;
     color: #92400e; display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    font-weight: 600;
+    font-weight: 600; margin: 0;
   }
   [data-theme="dark"] .daily-reminder-banner { background: #451a03; color: #fde68a; border-bottom-color: #78350f; }
 
-  /* ------------------- IMMERSIVE FULL-WIDTH FOOTER WITH FAST RACING SPORTS CAR & FLYING DUST ------------------- */
+  /* ------------------- IMMERSIVE FULL-WIDTH FOOTER WITH FAST RACING SPORTS CAR & DUST ------------------- */
   .nav-bar {
-    position: fixed; bottom: 0; left: 0; right: 0; width: 100%;
-    background: linear-gradient(135deg, rgba(6, 19, 36, 0.96), rgba(10, 37, 64, 0.98));
+    position: fixed; bottom: 0; left: 0; right: 0; width: 100%; margin: 0;
+    background: linear-gradient(135deg, rgba(6, 19, 36, 0.98), rgba(10, 37, 64, 0.99));
     backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
     display: flex; border-top: 1.5px solid rgba(0, 180, 216, 0.4); z-index: 1000;
-    box-shadow: 0 -8px 30px rgba(0,0,0,0.4); height: 70px; padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -8px 30px rgba(0,0,0,0.4); height: 68px; padding-bottom: env(safe-area-inset-bottom);
     overflow: hidden;
   }
   [data-theme="dark"] .nav-bar {
-    background: linear-gradient(135deg, rgba(5, 10, 20, 0.98), rgba(15, 23, 42, 0.99));
+    background: linear-gradient(135deg, rgba(5, 10, 20, 0.99), rgba(15, 23, 42, 1));
     border-top: 1.5px solid rgba(56, 189, 248, 0.35);
   }
   .footer-carwash-canvas {
     position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.35; overflow: hidden;
   }
-  /* FAST RACING SPORTS CAR WITH REPEAT ZOOM & FLYING DUST EFFECT */
+  /* FAST RACING SPORTS CAR REPEAT WITH FLYING DUST */
   .footer-car {
-    position: absolute; left: -140px; bottom: 5px; width: 130px; height: 36px;
-    animation: fastRacingCar 4.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+    position: absolute; left: -150px; bottom: 4px; width: 125px; height: 35px;
+    animation: fastRacingCar 4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
     filter: drop-shadow(0 0 10px #00b4d8);
   }
   @keyframes fastRacingCar {
     0% { transform: translateX(0px) scaleX(1); opacity: 0; }
-    10% { opacity: 1; }
-    85% { opacity: 1; }
+    12% { opacity: 1; }
+    88% { opacity: 1; }
     100% { transform: translateX(115vw) scaleX(1); opacity: 0; }
   }
-  /* FLYING DUST PARTICLES BEHIND THE RACING CAR */
   .racing-dust {
-    position: absolute; bottom: 6px; left: 10%; width: 100%; height: 20px; pointer-events: none;
+    position: absolute; bottom: 5px; left: 5%; width: 100%; height: 20px; pointer-events: none;
   }
   .dust-particle {
-    position: absolute; background: rgba(255, 255, 255, 0.45); border-radius: 50%;
-    animation: dustFly 0.8s linear infinite;
+    position: absolute; background: rgba(255, 255, 255, 0.5); border-radius: 50%;
+    animation: dustFly 0.7s linear infinite;
   }
   @keyframes dustFly {
-    0% { transform: translate(0, 0) scale(0.5); opacity: 0.8; }
-    100% { transform: translate(-45px, -12px) scale(1.6); opacity: 0; }
+    0% { transform: translate(0, 0) scale(0.4); opacity: 0.85; }
+    100% { transform: translate(-40px, -10px) scale(1.5); opacity: 0; }
   }
 
   .nav-item {
@@ -342,7 +343,7 @@
     box-shadow: 0 0 8px rgba(239,68,68,0.7);
   }
 
-  /* ------------------- iOS-STYLE PAGE TRANSITION & TOP GLOWING BANNER ------------------- */
+  /* ------------------- iOS-STYLE PAGE TRANSITION & CONTAINER ------------------- */
   .container { max-width: 960px; margin: 0 auto; padding: 14px; }
   .view-panel { display: none; }
   .view-panel.active {
@@ -447,7 +448,7 @@
 
   /* ------------------- STAGGERED LIVE ANIMATION FOR FAB 5-OPTIONS ------------------- */
   #fabMainBtn {
-    position: fixed; bottom: 86px; right: 20px; width: 52px; height: 52px;
+    position: fixed; bottom: 78px; right: 20px; width: 50px; height: 50px;
     background: linear-gradient(135deg, var(--accent), #ff9d3d);
     color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
     box-shadow: 0 8px 24px rgba(255,107,53,0.55); font-size: 26px; font-weight: 800;
@@ -455,7 +456,7 @@
   }
   #fabMainBtn:active { transform: scale(0.92); }
   #fabMenu {
-    position: fixed; bottom: 148px; right: 20px; display: none; flex-direction: column; gap: 10px; z-index: 99;
+    position: fixed; bottom: 140px; right: 20px; display: none; flex-direction: column; gap: 10px; z-index: 99;
   }
   .fab-action-btn {
     background: rgba(10, 37, 64, 0.94); backdrop-filter: blur(16px);
@@ -474,7 +475,7 @@
   /* ------------------- PREMIUM MESSENGER CHAT UI (WHATSAPP / FB STYLE) ------------------- */
   .chat-messenger-container {
     background: var(--card); border-radius: var(--radius-md); border: 1px solid var(--border);
-    box-shadow: var(--shadow-md); display: flex; flex-direction: column; height: calc(100vh - 195px); min-height: 480px;
+    box-shadow: var(--shadow-md); display: flex; flex-direction: column; height: calc(100vh - 170px); min-height: 480px;
     overflow: hidden; position: relative;
   }
   .chat-messenger-header {
@@ -755,7 +756,7 @@
     <button class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:10px;" onclick="triggerAppHaptic(); document.getElementById('dailyReminderBanner').style.display='none'">✕</button>
   </div>
 
-  <!-- SLIM IMMERSIVE HEADER -->
+  <!-- SLIM TRUE FULL-PAGE HEADER -->
   <header>
     <div class="carwash-bg-canvas">
       <div class="water-spray"></div>
@@ -978,8 +979,11 @@
         </div>
       </div>
 
-      <div style="margin-bottom:12px;">
-        <input type="text" id="stockFilterInput" placeholder="🔍 Master Search: Type ANY product, machine, chemical, spare, polisher, code..." oninput="filterStockList(this.value)" style="font-size:14px; padding:12px 16px; border-width:2px; box-shadow:var(--shadow-sm);">
+      <div style="margin-bottom:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <input type="text" id="stockFilterInput" placeholder="🔍 Master Search: Type ANY product, machine, chemical, spare, polisher, code..." oninput="filterStockList(this.value)" style="flex:1; font-size:14px; padding:12px 16px; border-width:2px; box-shadow:var(--shadow-sm);">
+        <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; cursor:pointer; background:var(--card); padding:10px 14px; border-radius:10px; border:1.5px solid var(--border);">
+          <input type="checkbox" id="onlyAvailableStockCheck" onchange="renderStockList()" style="width:18px; height:18px; accent-color:var(--success);"> Only Available Stock (>0)
+        </label>
       </div>
 
       <div class="sub-tabs" id="inventoryCategoryTabs" style="padding-bottom:10px; margin-bottom:14px; gap:8px;">
@@ -1093,7 +1097,7 @@
   </div>
   <div id="fabMainBtn" onclick="triggerAppHaptic(); toggleFabMenu()">+</div>
 
-  <!-- IMMERSIVE FULL-WIDTH FOOTER WITH RACING SPORTS CAR & FLYING DUST -->
+  <!-- TRUE FULL-PAGE FOOTER WITH FAST RACING SPORTS CAR & DUST -->
   <div class="nav-bar">
     <div class="footer-carwash-canvas">
       <div class="water-spray" style="right:auto; left:15%; width:200px;"></div>
@@ -1801,10 +1805,13 @@
             1. Goods once sold will not be taken back without original warranty seal.<br>
             2. High-pressure machinery requires 3-phase stable voltage.
           </div>
-          <div style="text-align:center; font-size:11.5px;">
-            <div style="font-weight:700; color:#0a2540;">For TWIN TOWN EXPRESS SERVICES PVT LTD</div>
-            <div style="height:40px;"></div>
-            <div>Authorised Signatory</div>
+          <div style="text-align:center; font-size:11.5px; position:relative;">
+            <div style="font-weight:700; color:#0a2540; margin-bottom:4px;">For TWIN TOWN EXPRESS SERVICES PVT LTD</div>
+            <!-- AUTHORIZED STAMP OVERLAY -->
+            <div style="position:relative; display:inline-block; margin:6px 0;">
+              <img src="https://i.ibb.co/3s03657/1000390843.png" alt="Company Stamp" style="width:90px; height:90px; opacity:0.85; transform:rotate(-8deg); pointer-events:none;">
+            </div>
+            <div style="font-weight:700; color:#0a2540;">Authorised Signatory</div>
           </div>
         </div>
       </div>
@@ -3779,6 +3786,7 @@ function renderStockList() {
   c.innerHTML = '';
   updateCategoryCounts();
   const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const onlyAvailable = document.getElementById('onlyAvailableStockCheck').checked;
 
   if (activeInventoryCategory === 'CUSTOMERS') {
     document.getElementById('totalPartsBadge').textContent = `${customerDatabase.length} Clients`;
@@ -3798,6 +3806,11 @@ function renderStockList() {
   }
 
   let list = (activeInventoryCategory === 'ALL') ? sampleInventory : sampleInventory.filter(i => i.category === activeInventoryCategory);
+  
+  if (onlyAvailable) {
+    list = list.filter(i => i.stock > 0);
+  }
+
   document.getElementById('totalPartsBadge').textContent = `${list.length} Items`;
 
   list.slice(0, STOCK_RENDER_CAP).forEach(item => {
@@ -3832,10 +3845,15 @@ function filterStockList(val) {
   const c = document.getElementById('stockListContainer');
   if(!c) return;
   c.innerHTML = '';
+  const onlyAvailable = document.getElementById('onlyAvailableStockCheck').checked;
 
   let list = (activeInventoryCategory === 'CUSTOMERS') ? customerDatabase : sampleInventory;
   if (activeInventoryCategory !== 'Catalog Equipment' && activeInventoryCategory !== 'CUSTOMERS') {
     list = list.filter(i => i.category !== 'Catalog Equipment');
+  }
+
+  if (onlyAvailable && activeInventoryCategory !== 'CUSTOMERS') {
+    list = list.filter(i => i.stock > 0);
   }
 
   const results = q ? list.filter(i => (i.name && i.name.toLowerCase().includes(q)) || (i.code && i.code.toLowerCase().includes(q))) : list;
