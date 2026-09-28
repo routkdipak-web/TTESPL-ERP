@@ -3022,12 +3022,41 @@ async function getMasterDataPayload() {
 
 async function loadMasterCatalogAction() {
   const payload = await getMasterDataPayload();
-  if (payload && payload.inventory && payload.inventory.length > 0) {
-    if (confirm(`Master catalog se sabhi ${payload.inventory.length} items load karein?`)) {
-      sampleInventory = payload.inventory;
-      setStored("INVENTORY", sampleInventory);
+  const invList = (payload && Array.isArray(payload.inventory)) ? payload.inventory : [];
+  const custList = (payload && Array.isArray(payload.customers)) ? payload.customers : [];
+  if (invList.length > 0 || custList.length > 0) {
+    if (confirm(`Master catalog se ${invList.length} items aur ${custList.length} customers load karein?`)) {
+      if (invList.length > 0) {
+        sampleInventory = invList;
+        setStored("INVENTORY", sampleInventory);
+      }
+      let addedCust = 0;
+      if (custList.length > 0) {
+        // Purane/naye customers safe rahenge - sirf missing customers add honge (phone ya naam se match)
+        const existing = Array.isArray(customerDatabase) ? customerDatabase.slice() : [];
+        const seenPhone = new Set(existing.map(c => c && c.phone ? String(c.phone).trim() : '').filter(Boolean));
+        const seenName = new Set(existing.map(c => c && c.name ? String(c.name).trim().toLowerCase() : '').filter(Boolean));
+        const usedIds = new Set(existing.map(c => c && c.id != null ? String(c.id) : ''));
+        custList.forEach(c => {
+          if (!c || !c.name) return;
+          const ph = c.phone ? String(c.phone).trim() : '';
+          const nm = String(c.name).trim().toLowerCase();
+          if ((ph && seenPhone.has(ph)) || seenName.has(nm)) return;
+          let cid = c.id;
+          if (cid == null || usedIds.has(String(cid))) cid = 'MC' + Date.now() + '_' + addedCust;
+          existing.push(Object.assign({}, c, { id: cid }));
+          usedIds.add(String(cid));
+          if (ph) seenPhone.add(ph);
+          seenName.add(nm);
+          addedCust++;
+        });
+        customerDatabase = existing;
+        window.customerDatabase = customerDatabase;
+        setStored("CUSTOMERS", customerDatabase);
+      }
       renderStockList();
-      alert(`Success: ${sampleInventory.length} items loaded!`);
+      if (typeof populateDropdownsAndDatalists === 'function') { try { populateDropdownsAndDatalists(); } catch(e) {} }
+      alert(`Success: ${invList.length > 0 ? sampleInventory.length : 0} items loaded, ${addedCust} naye customers add hue (total ${Array.isArray(customerDatabase) ? customerDatabase.length : 0})!`);
     }
   } else {
     alert("Error: Master catalog file not found.");
