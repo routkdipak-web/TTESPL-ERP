@@ -1092,7 +1092,7 @@
 
   </div>
 
-  <!-- FLOATING QUICK ACTION BUTTON WITH 5 LIVE ANIMATED ITEMS -->
+  <!-- FLOATING QUICK ACTION BUTTON WITH 5 LIVE ANIMATED ITEMS (HIDDEN AUTOMATICALLY ON CHAT TAB) -->
   <div id="fabMenu">
     <div class="fab-action-btn" onclick="triggerAppHaptic(); openOrderModal(); toggleFabMenu();">📦 New Order</div>
     <div class="fab-action-btn" onclick="triggerAppHaptic(); openLeadModal(); toggleFabMenu();">🎯 New Lead</div>
@@ -4169,6 +4169,15 @@ function switchTab(tab, el) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('view-' + tab).classList.add('active');
   if (el) el.classList.add('active');
+
+  const fabBtn = document.getElementById('fabMainBtn');
+  const fabMenu = document.getElementById('fabMenu');
+  if (tab === 'chat') {
+    if (fabBtn) fabBtn.style.display = 'none';
+    if (fabMenu) fabMenu.style.display = 'none';
+  } else {
+    if (fabBtn) fabBtn.style.display = 'flex';
+  }
 
   if(tab === 'dashboard') renderDashboard();
   if(tab === 'leads') renderLeads();
