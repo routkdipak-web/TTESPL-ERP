@@ -57,11 +57,11 @@
     --wa-bg: #0b141a;
   }
 
-  html { color-scheme: light dark; }
+  html { color-scheme: light dark; height: 100%; width: 100%; }
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
   body { 
     background: radial-gradient(circle at 5% 0%, rgba(0,180,216,0.08), transparent 30%), radial-gradient(circle at 95% 5%, rgba(255,107,53,0.08), transparent 28%), var(--bg);
-    color: var(--text-main); padding-bottom: 90px; overflow-x: hidden; -webkit-font-smoothing: antialiased; 
+    color: var(--text-main); min-height: 100vh; min-height: 100dvh; padding-top: env(safe-area-inset-top); padding-bottom: calc(75px + env(safe-area-inset-bottom)); overflow-x: hidden; -webkit-font-smoothing: antialiased; 
     transition: background 0.3s ease, color 0.3s ease;
   }
 
@@ -115,18 +115,18 @@
   }
   #pullToRefreshIndicator.visible { transform: translateY(0); }
 
-  /* ------------------- SLIM HEADER & LIVE NEON GLOW ------------------- */
+  /* ------------------- SLIM IMMERSIVE HEADER & LOGO ANIMATION ------------------- */
   header {
-    background: linear-gradient(135deg, rgba(6, 19, 36, 0.96), rgba(10, 37, 64, 0.94));
+    background: linear-gradient(135deg, rgba(6, 19, 36, 0.98), rgba(10, 37, 64, 0.96));
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     color: white; padding: 6px 12px; position: sticky; top: 0; z-index: 1000;
-    box-shadow: 0 4px 22px rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 1px solid rgba(0, 180, 216, 0.35);
-    height: 52px; overflow: visible;
+    box-shadow: 0 4px 22px rgba(0,0,0,0.4); display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(0, 180, 216, 0.4);
+    height: 54px; overflow: visible; width: 100%;
   }
   [data-theme="dark"] header { 
-    background: linear-gradient(135deg, rgba(5, 10, 20, 0.98), rgba(15, 23, 42, 0.95)); 
-    border-bottom: 1px solid rgba(56, 189, 248, 0.3); 
+    background: linear-gradient(135deg, rgba(5, 10, 20, 0.99), rgba(15, 23, 42, 0.97)); 
+    border-bottom: 1px solid rgba(56, 189, 248, 0.35); 
   }
 
   .carwash-bg-canvas {
@@ -152,36 +152,37 @@
     100% { transform: translate(-35px, -55px) scale(1.3); opacity: 0; }
   }
 
-  .brand-area { display: flex; align-items: center; gap: 9px; position: relative; z-index: 2; max-width: calc(100% - 60px); }
+  .brand-area { display: flex; align-items: center; gap: 9px; position: relative; z-index: 2; max-width: calc(100% - 60px); cursor: pointer; }
   
-  /* REAL TTESPL ROUND CAR EMBLEM BADGE */
+  /* EXACT OFFICIAL ROUND LOGO REPLICA WITH ROTATING NEON RING & RACING CAR */
   .brand-logo-round {
-    width: 38px; height: 38px; min-width: 38px; border-radius: 50%;
-    background: radial-gradient(circle at 40% 30%, #1e3a8a, #061526 80%);
-    border: 2px solid #eab308;
-    box-shadow: 0 0 12px rgba(234, 179, 8, 0.55), inset 0 0 6px rgba(0, 180, 216, 0.6);
+    width: 40px; height: 40px; min-width: 40px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 30%, #1e3a8a, #061526 85%);
+    border: 2.2px solid #facc15;
+    box-shadow: 0 0 14px rgba(250, 204, 21, 0.7), inset 0 0 8px rgba(0, 180, 216, 0.8);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     position: relative; overflow: hidden;
   }
   .brand-logo-round::after {
-    content: ""; position: absolute; inset: -40%;
-    background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-    transform: rotate(35deg); animation: emblemSweep 3.2s infinite;
+    content: ""; position: absolute; inset: -50%;
+    background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transform: rotate(35deg); animation: emblemSweep 2.8s infinite;
   }
-  @keyframes emblemSweep { 0% { transform: translateX(-110%) rotate(35deg); } 100% { transform: translateX(110%) rotate(35deg); } }
-  .emblem-car-icon { font-size: 15px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); }
-  .emblem-txt { font-size: 7.5px; font-weight: 900; color: #facc15; letter-spacing: 0.6px; line-height: 1; margin-top: 1px; }
+  @keyframes emblemSweep { 0% { transform: translateX(-120%) rotate(35deg); } 100% { transform: translateX(120%) rotate(35deg); } }
+  .emblem-car-icon { font-size: 16px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)); animation: carBounce 2s ease-in-out infinite; }
+  @keyframes carBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+  .emblem-txt { font-size: 7.5px; font-weight: 900; color: #facc15; letter-spacing: 0.6px; line-height: 1; margin-top: 1px; text-shadow: 0 0 5px rgba(250,204,21,0.8); }
 
   .brand-text-row { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
   .brand-title-line { display: flex; align-items: baseline; gap: 4px; overflow: hidden; }
   
   .brand-title-glow {
-    font-size: 12px; font-weight: 900; letter-spacing: 0.3px; line-height: 1.1;
+    font-size: 12px; font-weight: 900; letter-spacing: 0.4px; line-height: 1.1;
     background: linear-gradient(90deg, #ffffff 0%, #38bdf8 30%, #ff9d3d 60%, #ffffff 100%);
     background-size: 250% auto;
     -webkit-background-clip: text; background-clip: text; color: transparent;
-    animation: textNeonShimmer 4s linear infinite;
-    text-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+    animation: textNeonShimmer 3.5s linear infinite;
+    text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
     white-space: nowrap;
   }
   @keyframes textNeonShimmer {
@@ -280,31 +281,45 @@
   }
   [data-theme="dark"] .daily-reminder-banner { background: #451a03; color: #fde68a; border-bottom-color: #78350f; }
 
-  /* ------------------- LIVE ANIMATED FOOTER (SPORTS CAR RACING) ------------------- */
+  /* ------------------- IMMERSIVE FULL-WIDTH FOOTER WITH FAST RACING SPORTS CAR & FLYING DUST ------------------- */
   .nav-bar {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: linear-gradient(135deg, rgba(6, 19, 36, 0.94), rgba(10, 37, 64, 0.96));
+    position: fixed; bottom: 0; left: 0; right: 0; width: 100%;
+    background: linear-gradient(135deg, rgba(6, 19, 36, 0.96), rgba(10, 37, 64, 0.98));
     backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-    display: flex; border-top: 1.5px solid rgba(0, 180, 216, 0.35); z-index: 1000;
-    box-shadow: 0 -8px 30px rgba(0,0,0,0.35); height: 68px; padding-bottom: env(safe-area-inset-bottom);
+    display: flex; border-top: 1.5px solid rgba(0, 180, 216, 0.4); z-index: 1000;
+    box-shadow: 0 -8px 30px rgba(0,0,0,0.4); height: 70px; padding-bottom: env(safe-area-inset-bottom);
     overflow: hidden;
   }
   [data-theme="dark"] .nav-bar {
-    background: linear-gradient(135deg, rgba(5, 10, 20, 0.96), rgba(15, 23, 42, 0.97));
-    border-top: 1.5px solid rgba(56, 189, 248, 0.3);
+    background: linear-gradient(135deg, rgba(5, 10, 20, 0.98), rgba(15, 23, 42, 0.99));
+    border-top: 1.5px solid rgba(56, 189, 248, 0.35);
   }
   .footer-carwash-canvas {
-    position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.25; overflow: hidden;
+    position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.35; overflow: hidden;
   }
+  /* FAST RACING SPORTS CAR WITH REPEAT ZOOM & FLYING DUST EFFECT */
   .footer-car {
-    position: absolute; left: 5%; bottom: 6px; width: 110px; height: 32px;
-    animation: footerCarDrive 12s linear infinite; filter: drop-shadow(0 0 8px #00b4d8);
+    position: absolute; left: -140px; bottom: 5px; width: 130px; height: 36px;
+    animation: fastRacingCar 4.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+    filter: drop-shadow(0 0 10px #00b4d8);
   }
-  @keyframes footerCarDrive {
-    0% { transform: translateX(-150px) scaleX(1); }
-    50% { transform: translateX(105vw) scaleX(1); }
-    50.1% { transform: translateX(105vw) scaleX(-1); }
-    100% { transform: translateX(-150px) scaleX(-1); }
+  @keyframes fastRacingCar {
+    0% { transform: translateX(0px) scaleX(1); opacity: 0; }
+    10% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translateX(115vw) scaleX(1); opacity: 0; }
+  }
+  /* FLYING DUST PARTICLES BEHIND THE RACING CAR */
+  .racing-dust {
+    position: absolute; bottom: 6px; left: 10%; width: 100%; height: 20px; pointer-events: none;
+  }
+  .dust-particle {
+    position: absolute; background: rgba(255, 255, 255, 0.45); border-radius: 50%;
+    animation: dustFly 0.8s linear infinite;
+  }
+  @keyframes dustFly {
+    0% { transform: translate(0, 0) scale(0.5); opacity: 0.8; }
+    100% { transform: translate(-45px, -12px) scale(1.6); opacity: 0; }
   }
 
   .nav-item {
@@ -432,7 +447,7 @@
 
   /* ------------------- STAGGERED LIVE ANIMATION FOR FAB 5-OPTIONS ------------------- */
   #fabMainBtn {
-    position: fixed; bottom: 82px; right: 20px; width: 52px; height: 52px;
+    position: fixed; bottom: 86px; right: 20px; width: 52px; height: 52px;
     background: linear-gradient(135deg, var(--accent), #ff9d3d);
     color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
     box-shadow: 0 8px 24px rgba(255,107,53,0.55); font-size: 26px; font-weight: 800;
@@ -440,7 +455,7 @@
   }
   #fabMainBtn:active { transform: scale(0.92); }
   #fabMenu {
-    position: fixed; bottom: 144px; right: 20px; display: none; flex-direction: column; gap: 10px; z-index: 99;
+    position: fixed; bottom: 148px; right: 20px; display: none; flex-direction: column; gap: 10px; z-index: 99;
   }
   .fab-action-btn {
     background: rgba(10, 37, 64, 0.94); backdrop-filter: blur(16px);
@@ -459,7 +474,7 @@
   /* ------------------- PREMIUM MESSENGER CHAT UI (WHATSAPP / FB STYLE) ------------------- */
   .chat-messenger-container {
     background: var(--card); border-radius: var(--radius-md); border: 1px solid var(--border);
-    box-shadow: var(--shadow-md); display: flex; flex-direction: column; height: calc(100vh - 190px); min-height: 480px;
+    box-shadow: var(--shadow-md); display: flex; flex-direction: column; height: calc(100vh - 195px); min-height: 480px;
     overflow: hidden; position: relative;
   }
   .chat-messenger-header {
@@ -546,6 +561,41 @@
   <div style="display:flex; gap:8px; margin-top:14px;">
     <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); applyModalFilter()">✓ Apply Filter</button>
     <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); resetModalFilter()">Reset</button>
+  </div>
+</div>
+
+<!-- COMPANY DETAILS POPUP MODAL -->
+<div id="companyDetailsModal" class="auth-overlay" style="display:none; z-index:4000;">
+  <div class="auth-card" style="max-width:500px;">
+    <div class="card-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="brand-logo-round" style="width:34px; height:34px;"><span class="emblem-car-icon" style="font-size:13px;">🏎️</span><span class="emblem-txt" style="font-size:6.5px;">TTESPL</span></div>
+        <strong class="card-title" style="font-size:15px;">Twin Town Express Services Pvt. Ltd.</strong>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="closeCompanyDetailsModal()">✕</button>
+    </div>
+    <div style="font-size:12.5px; line-height:1.6; color:var(--text-main); margin-top:10px;">
+      <div style="background:var(--bg); padding:12px; border-radius:12px; border:1px solid var(--border); margin-bottom:12px;">
+        <div>📍 <strong>Registered Address:</strong> Plot No-1270/8586, Satya Vihar, Rasulgarh, Bhubaneswar, Khordha, Odisha - 751010</div>
+        <div style="margin-top:6px;">🏢 <strong>Branch / Work Center:</strong> Cuttack Road & Rasulgarh, BBSR</div>
+        <div style="margin-top:6px;">📞 <strong>Contact No:</strong> +91 8917465040 / 0674-2580123</div>
+        <div style="margin-top:6px;">✉️ <strong>Email ID:</strong> info@ttespl.com / support@twintown.in</div>
+      </div>
+      <div style="background:rgba(0,180,216,0.1); padding:12px; border-radius:12px; border:1.5px solid var(--cyan); margin-bottom:12px;">
+        <strong style="color:var(--cyan); display:block; margin-bottom:4px;">🛡️ Statutory & Tax Registrations:</strong>
+        <div><strong>GSTIN:</strong> <span style="font-family:monospace; font-weight:800;">21AAICT0014E1ZT</span></div>
+        <div><strong>CIN:</strong> U50200OR2022PTC039210</div>
+        <div><strong>Authorized Brand Partner:</strong> Ma-Fra, MaxShine, Annovi Reverberi, Airtek</div>
+      </div>
+      <div style="background:var(--card); padding:12px; border-radius:12px; border:1px solid var(--border);">
+        <strong style="color:var(--primary); display:block; margin-bottom:4px;">🏦 Official Bank & UPI Details:</strong>
+        <div><strong>Bank Name:</strong> ICICI Bank (Cuttack Road Branch, BBSR)</div>
+        <div><strong>Account No:</strong> <span style="font-family:monospace; font-weight:800;">150005501249</span></div>
+        <div><strong>IFSC Code:</strong> <span style="font-family:monospace; font-weight:800;">ICIC0001500</span></div>
+        <div><strong>UPI ID:</strong> <span style="color:var(--cyan); font-weight:800;">eazypay.574099310@icici</span></div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:14px;" onclick="closeCompanyDetailsModal()">✓ Close Details</button>
   </div>
 </div>
 
@@ -705,7 +755,7 @@
     <button class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:10px;" onclick="triggerAppHaptic(); document.getElementById('dailyReminderBanner').style.display='none'">✕</button>
   </div>
 
-  <!-- SLIM PREMIUM HEADER -->
+  <!-- SLIM IMMERSIVE HEADER -->
   <header>
     <div class="carwash-bg-canvas">
       <div class="water-spray"></div>
@@ -715,8 +765,8 @@
       <div class="wash-bubble wb4"></div>
     </div>
 
-    <!-- Left: Branding with TTESPL Logo & Glowing Animated Title -->
-    <div class="brand-area">
+    <!-- Left: Branding with TTESPL Logo & Glowing Animated Title (Clickable for Company Details) -->
+    <div class="brand-area" onclick="triggerAppHaptic(); openCompanyDetailsModal()" title="Tap for Company & Bank Details">
       <!-- 3D LIVE ANIMATED CIRCULAR CAR EMBLEM -->
       <div class="brand-logo-round">
         <span class="emblem-car-icon">🏎️</span>
@@ -1043,7 +1093,7 @@
   </div>
   <div id="fabMainBtn" onclick="triggerAppHaptic(); toggleFabMenu()">+</div>
 
-  <!-- LIVE ANIMATED FOOTER WITH RACING SPORTS CAR -->
+  <!-- IMMERSIVE FULL-WIDTH FOOTER WITH RACING SPORTS CAR & FLYING DUST -->
   <div class="nav-bar">
     <div class="footer-carwash-canvas">
       <div class="water-spray" style="right:auto; left:15%; width:200px;"></div>
@@ -1051,17 +1101,27 @@
       <div class="wash-bubble wb2" style="left:40%;"></div>
       <div class="wash-bubble wb3" style="left:60%;"></div>
       <div class="wash-bubble wb4" style="left:80%;"></div>
-      <!-- ANIMATED RACING SPORTS CAR SVG -->
+      
+      <!-- FLYING DUST PARTICLES -->
+      <div class="racing-dust">
+        <div class="dust-particle" style="width:5px; height:5px; left:10%; animation-delay:0.1s;"></div>
+        <div class="dust-particle" style="width:8px; height:8px; left:25%; animation-delay:0.3s;"></div>
+        <div class="dust-particle" style="width:4px; height:4px; left:40%; animation-delay:0.2s;"></div>
+        <div class="dust-particle" style="width:7px; height:7px; left:60%; animation-delay:0.5s;"></div>
+        <div class="dust-particle" style="width:5px; height:5px; left:80%; animation-delay:0.4s;"></div>
+      </div>
+
+      <!-- EXACT EMBLEM MATCHED SPORTS CAR RACING SVG -->
       <svg class="footer-car" viewBox="0 0 180 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M15 35 L30 22 C35 18, 55 15, 95 15 C135 15, 150 20, 162 30 C168 35, 175 37, 175 40 C175 43, 165 44, 155 44 C145 44, 140 38, 130 38 C120 38, 115 44, 105 44 L65 44 C55 44, 50 38, 40 38 C30 38, 25 44, 15 44 C8 44, 5 40, 8 36 Z" fill="url(#carGrad)" stroke="#00b4d8" stroke-width="2"/>
-        <path d="M48 22 L70 18 L115 18 L135 30 L48 30 Z" fill="rgba(0,180,216,0.3)" stroke="#fff" stroke-width="1"/>
-        <circle cx="32" cy="40" r="7" fill="#061526" stroke="#facc15" stroke-width="2.5"/>
-        <circle cx="145" cy="40" r="7" fill="#061526" stroke="#facc15" stroke-width="2.5"/>
+        <path d="M12 36 L28 23 C34 18, 52 15, 92 15 C132 15, 148 20, 160 30 C166 35, 175 37, 175 40 C175 43, 165 45, 155 45 C145 45, 140 38, 130 38 C120 38, 115 45, 105 45 L65 45 C55 45, 50 38, 40 38 C30 38, 25 45, 15 45 C8 45, 4 41, 6 37 Z" fill="url(#sportCarGrad)" stroke="#facc15" stroke-width="2"/>
+        <path d="M46 22 L68 18 L114 18 L134 30 L46 30 Z" fill="rgba(0,180,216,0.35)" stroke="#fff" stroke-width="1.2"/>
+        <circle cx="30" cy="41" r="7" fill="#061526" stroke="#facc15" stroke-width="2.5"/>
+        <circle cx="145" cy="41" r="7" fill="#061526" stroke="#facc15" stroke-width="2.5"/>
         <defs>
-          <linearGradient id="carGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#ff6b35"/>
+          <linearGradient id="sportCarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#1e3a8a"/>
             <stop offset="50%" stop-color="#00b4d8"/>
-            <stop offset="100%" stop-color="#eab308"/>
+            <stop offset="100%" stop-color="#38bdf8"/>
           </linearGradient>
         </defs>
       </svg>
@@ -1900,10 +1960,19 @@ function triggerMoneyRainEffect() {
 }
 
 /* ==========================================================================
-   APP ENGINE & POPUP FILTER CONTROLS
+   APP ENGINE & COMPANY DETAILS MODAL
    ========================================================================== */
 const DB_PREFIX = "TTESPL_ERP_";
 window.DB_PREFIX = DB_PREFIX;
+
+function openCompanyDetailsModal() {
+  document.getElementById('companyDetailsModal').style.display = 'flex';
+}
+function closeCompanyDetailsModal() {
+  document.getElementById('companyDetailsModal').style.display = 'none';
+}
+window.openCompanyDetailsModal = openCompanyDetailsModal;
+window.closeCompanyDetailsModal = closeCompanyDetailsModal;
 
 function esc(str) {
   if (!str) return '';
