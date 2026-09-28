@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,8 +62,8 @@
   body { 
     background: radial-gradient(circle at 5% 0%, rgba(0,180,216,0.08), transparent 30%), radial-gradient(circle at 95% 5%, rgba(255,107,53,0.08), transparent 28%), var(--bg);
     color: var(--text-main); min-height: 100vh; min-height: 100dvh; 
-    padding-top: env(safe-area-inset-top); 
-    padding-bottom: calc(72px + env(safe-area-inset-bottom)); 
+    padding-top: 0px; 
+    padding-bottom: calc(68px + env(safe-area-inset-bottom)); 
     -webkit-font-smoothing: antialiased; 
     transition: background 0.3s ease, color 0.3s ease;
   }
@@ -118,18 +118,18 @@
   }
   #pullToRefreshIndicator.visible { transform: translateY(0); }
 
-  /* ------------------- SLIM TRUE FULL-PAGE HEADER & LOGO ANIMATION ------------------- */
+  /* ------------------- TRUE TOP STICKY HEADER WITH LIVE ANIMATED LOGO ------------------- */
   header {
-    background: linear-gradient(135deg, rgba(6, 19, 36, 0.98), rgba(10, 37, 64, 0.96));
+    background: linear-gradient(135deg, rgba(6, 19, 36, 0.99), rgba(10, 37, 64, 0.97));
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    color: white; padding: 6px 12px; position: sticky; top: 0; z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4); display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 1px solid rgba(0, 180, 216, 0.4);
-    height: 52px; width: 100%; margin: 0;
+    color: white; padding: 4px 12px; position: sticky; top: 0; z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.45); display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1.5px solid rgba(0, 180, 216, 0.45);
+    height: 50px; width: 100%; margin: 0;
   }
   [data-theme="dark"] header { 
-    background: linear-gradient(135deg, rgba(5, 10, 20, 0.99), rgba(15, 23, 42, 0.97)); 
-    border-bottom: 1px solid rgba(56, 189, 248, 0.35); 
+    background: linear-gradient(135deg, rgba(5, 10, 20, 1), rgba(15, 23, 42, 0.98)); 
+    border-bottom: 1.5px solid rgba(56, 189, 248, 0.4); 
   }
 
   .carwash-bg-canvas {
@@ -155,36 +155,41 @@
     100% { transform: translate(-35px, -55px) scale(1.3); opacity: 0; }
   }
 
-  .brand-area { display: flex; align-items: center; gap: 9px; position: relative; z-index: 2; max-width: calc(100% - 60px); cursor: pointer; }
+  .brand-area { display: flex; align-items: center; gap: 8px; position: relative; z-index: 2; max-width: calc(100% - 55px); cursor: pointer; }
   
-  /* EXACT OFFICIAL LOGO EMBLEM REPLICA WITH GLOW & ROTATING BORDER */
+  /* EXACT OFFICIAL LOGO EMBLEM WITH GLOWING ANIMATED LETTERS & RACING CAR */
   .brand-logo-round {
-    width: 38px; height: 38px; min-width: 38px; border-radius: 50%;
+    width: 36px; height: 36px; min-width: 36px; border-radius: 50%;
     background: radial-gradient(circle at 40% 30%, #1e3a8a, #061526 85%);
     border: 2px solid #eab308;
-    box-shadow: 0 0 12px rgba(234, 179, 8, 0.7), inset 0 0 6px rgba(0, 180, 216, 0.8);
+    box-shadow: 0 0 12px rgba(234, 179, 8, 0.75), inset 0 0 6px rgba(0, 180, 216, 0.9);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     position: relative; overflow: hidden;
   }
   .brand-logo-round::after {
     content: ""; position: absolute; inset: -50%;
-    background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-    transform: rotate(35deg); animation: emblemSweep 2.5s infinite;
+    background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+    transform: rotate(35deg); animation: emblemSweep 2.2s infinite;
   }
   @keyframes emblemSweep { 0% { transform: translateX(-120%) rotate(35deg); } 100% { transform: translateX(120%) rotate(35deg); } }
-  .emblem-car-icon { font-size: 15px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)); }
-  .emblem-txt { font-size: 7.5px; font-weight: 900; color: #facc15; letter-spacing: 0.6px; line-height: 1; margin-top: 1px; text-shadow: 0 0 6px rgba(250,204,21,0.8); }
+  .emblem-car-icon { font-size: 14px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); animation: logoCarDrive 3s linear infinite; }
+  @keyframes logoCarDrive {
+    0% { transform: translateX(-12px); opacity: 0.5; }
+    50% { transform: translateX(4px); opacity: 1; }
+    100% { transform: translateX(-12px); opacity: 0.5; }
+  }
+  .emblem-txt { font-size: 7px; font-weight: 900; color: #facc15; letter-spacing: 0.5px; line-height: 1; margin-top: 1px; text-shadow: 0 0 6px rgba(250,204,21,0.9); }
 
   .brand-text-row { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
   .brand-title-line { display: flex; align-items: baseline; gap: 4px; overflow: hidden; }
   
   .brand-title-glow {
-    font-size: 11.5px; font-weight: 900; letter-spacing: 0.4px; line-height: 1.1;
-    background: linear-gradient(90deg, #ffffff 0%, #38bdf8 30%, #ff9d3d 60%, #ffffff 100%);
+    font-size: 11px; font-weight: 900; letter-spacing: 0.4px; line-height: 1.1;
+    background: linear-gradient(90deg, #ffffff 0%, #38bdf8 25%, #ff9d3d 55%, #ffffff 100%);
     background-size: 250% auto;
     -webkit-background-clip: text; background-clip: text; color: transparent;
-    animation: textNeonShimmer 3s linear infinite;
-    text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+    animation: textNeonShimmer 2.8s linear infinite;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
     white-space: nowrap;
   }
   @keyframes textNeonShimmer {
@@ -192,63 +197,63 @@
     100% { background-position: 250% center; }
   }
   .brand-title-pvt {
-    font-size: 8.5px; font-weight: 800; color: #ff6b35; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap;
+    font-size: 8px; font-weight: 800; color: #ff6b35; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap;
   }
   .brand-sub-horizontal {
-    font-size: 8px; color: #cbd5e1; font-weight: 600; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: 7.5px; color: #cbd5e1; font-weight: 600; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     display: flex; align-items: center; gap: 4px; margin-top: 1px;
   }
   .header-cloud-dot {
-    width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block;
+    width: 5px; height: 5px; border-radius: 50%; background: #10b981; display: inline-block;
     box-shadow: 0 0 8px #10b981; animation: liveSyncGlow 1.8s infinite;
   }
   @keyframes liveSyncGlow { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.25); opacity: 0.7; } }
 
   .profile-menu-wrapper { position: relative; z-index: 10000; }
   .profile-avatar-btn {
-    display: flex; align-items: center; gap: 5px; background: rgba(255, 255, 255, 0.12);
+    display: flex; align-items: center; gap: 4px; background: rgba(255, 255, 255, 0.12);
     border: 1.8px solid rgba(0, 180, 216, 0.65); padding: 2px 6px 2px 2px; border-radius: 24px;
     cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 0 0 10px rgba(0,180,216,0.3);
   }
   .profile-avatar-btn:active { transform: scale(0.92); }
   .profile-avatar-img {
-    width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #00b4d8, #0a2540);
-    color: #fff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #00b4d8, #0a2540);
+    color: #fff; font-size: 11.5px; font-weight: 800; display: flex; align-items: center; justify-content: center;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
   .profile-avatar-role-dot {
-    width: 8px; height: 8px; border-radius: 50%; background: #ff6b35; border: 1.5px solid #fff;
-    position: absolute; top: 1px; left: 22px;
+    width: 7px; height: 7px; border-radius: 50%; background: #ff6b35; border: 1.5px solid #fff;
+    position: absolute; top: 1px; left: 20px;
   }
   .profile-avatar-role-dot.admin { background: #00b4d8; }
 
   .profile-dropdown-card {
-    position: fixed; top: 56px; right: 12px; width: 290px;
-    background: rgba(10, 25, 47, 0.97) !important; backdrop-filter: blur(25px) !important; -webkit-backdrop-filter: blur(25px);
-    border: 1.8px solid rgba(0, 180, 216, 0.45); border-radius: 20px;
-    box-shadow: 0 20px 48px rgba(0,0,0,0.65); padding: 16px;
-    display: none; animation: profileIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    position: fixed; top: 52px; right: 10px; width: 280px;
+    background: rgba(10, 25, 47, 0.98) !important; backdrop-filter: blur(25px) !important; -webkit-backdrop-filter: blur(25px);
+    border: 1.8px solid rgba(0, 180, 216, 0.45); border-radius: 18px;
+    box-shadow: 0 20px 48px rgba(0,0,0,0.7); padding: 14px;
+    display: none; animation: profileIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     color: #ffffff; z-index: 999999 !important;
   }
-  @keyframes profileIn { from { opacity: 0; transform: translateY(-10px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
-  [data-theme="dark"] .profile-dropdown-card { background: rgba(8, 14, 26, 0.98) !important; }
+  @keyframes profileIn { from { opacity: 0; transform: translateY(-8px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  [data-theme="dark"] .profile-dropdown-card { background: rgba(8, 14, 26, 0.99) !important; }
   
   .profile-header-info {
-    text-align: center; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.12); margin-bottom: 10px;
+    text-align: center; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.12); margin-bottom: 8px;
   }
-  .profile-header-name { font-size: 15px; font-weight: 800; color: #fff; }
+  .profile-header-name { font-size: 14.5px; font-weight: 800; color: #fff; }
   .profile-header-role {
-    display: inline-block; margin-top: 4px; font-size: 9.5px; font-weight: 800;
-    padding: 2px 9px; border-radius: 12px; background: #ff6b35; text-transform: uppercase; color: #fff;
+    display: inline-block; margin-top: 3px; font-size: 9px; font-weight: 800;
+    padding: 2px 8px; border-radius: 12px; background: #ff6b35; text-transform: uppercase; color: #fff;
   }
   .profile-header-role.admin { background: #00b4d8; }
 
-  .profile-menu-list { display: flex; flex-direction: column; gap: 6px; }
+  .profile-menu-list { display: flex; flex-direction: column; gap: 5px; }
   .profile-menu-item {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.06);
-    font-size: 12.5px; font-weight: 700; color: #e2e8f0; cursor: pointer;
+    padding: 9px 10px; border-radius: 10px; background: rgba(255,255,255,0.06);
+    font-size: 12px; font-weight: 700; color: #e2e8f0; cursor: pointer;
     transition: background 0.2s ease, transform 0.15s ease; border: none; width: 100%;
   }
   .profile-menu-item:hover, .profile-menu-item:active {
@@ -277,50 +282,50 @@
 
   .daily-reminder-banner {
     background: linear-gradient(90deg, #fffbeb, #fef3c7);
-    border-bottom: 1.5px solid #fde68a; padding: 7px 14px; font-size: 11.5px;
+    border-bottom: 1.5px solid #fde68a; padding: 6px 14px; font-size: 11px;
     color: #92400e; display: flex; align-items: center; justify-content: space-between; gap: 10px;
     font-weight: 600; margin: 0;
   }
   [data-theme="dark"] .daily-reminder-banner { background: #451a03; color: #fde68a; border-bottom-color: #78350f; }
 
-  /* ------------------- IMMERSIVE FULL-WIDTH FOOTER WITH FAST RACING SPORTS CAR & DUST ------------------- */
+  /* ------------------- IMMERSIVE TRUE FULL-WIDTH FOOTER WITH RACING SPORTS CAR & DUST ------------------- */
   .nav-bar {
     position: fixed; bottom: 0; left: 0; right: 0; width: 100%; margin: 0;
-    background: linear-gradient(135deg, rgba(6, 19, 36, 0.98), rgba(10, 37, 64, 0.99));
+    background: linear-gradient(135deg, rgba(6, 19, 36, 0.99), rgba(10, 37, 64, 1));
     backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-    display: flex; border-top: 1.5px solid rgba(0, 180, 216, 0.4); z-index: 1000;
-    box-shadow: 0 -8px 30px rgba(0,0,0,0.4); height: 68px; padding-bottom: env(safe-area-inset-bottom);
+    display: flex; border-top: 1.5px solid rgba(0, 180, 216, 0.45); z-index: 1000;
+    box-shadow: 0 -8px 30px rgba(0,0,0,0.45); height: 66px; padding-bottom: env(safe-area-inset-bottom);
     overflow: hidden;
   }
   [data-theme="dark"] .nav-bar {
-    background: linear-gradient(135deg, rgba(5, 10, 20, 0.99), rgba(15, 23, 42, 1));
-    border-top: 1.5px solid rgba(56, 189, 248, 0.35);
+    background: linear-gradient(135deg, rgba(5, 10, 20, 1), rgba(15, 23, 42, 1));
+    border-top: 1.5px solid rgba(56, 189, 248, 0.4);
   }
   .footer-carwash-canvas {
-    position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.35; overflow: hidden;
+    position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.38; overflow: hidden;
   }
-  /* FAST RACING SPORTS CAR REPEAT WITH FLYING DUST */
+  /* FAST RACING SPORTS CAR WITH FLYING DUST REPEAT */
   .footer-car {
-    position: absolute; left: -150px; bottom: 4px; width: 125px; height: 35px;
-    animation: fastRacingCar 4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+    position: absolute; left: -140px; bottom: 4px; width: 120px; height: 34px;
+    animation: fastRacingCar 3.8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
     filter: drop-shadow(0 0 10px #00b4d8);
   }
   @keyframes fastRacingCar {
     0% { transform: translateX(0px) scaleX(1); opacity: 0; }
-    12% { opacity: 1; }
+    10% { opacity: 1; }
     88% { opacity: 1; }
     100% { transform: translateX(115vw) scaleX(1); opacity: 0; }
   }
   .racing-dust {
-    position: absolute; bottom: 5px; left: 5%; width: 100%; height: 20px; pointer-events: none;
+    position: absolute; bottom: 4px; left: 5%; width: 100%; height: 18px; pointer-events: none;
   }
   .dust-particle {
-    position: absolute; background: rgba(255, 255, 255, 0.5); border-radius: 50%;
-    animation: dustFly 0.7s linear infinite;
+    position: absolute; background: rgba(255, 255, 255, 0.55); border-radius: 50%;
+    animation: dustFly 0.65s linear infinite;
   }
   @keyframes dustFly {
-    0% { transform: translate(0, 0) scale(0.4); opacity: 0.85; }
-    100% { transform: translate(-40px, -10px) scale(1.5); opacity: 0; }
+    0% { transform: translate(0, 0) scale(0.4); opacity: 0.9; }
+    100% { transform: translate(-38px, -9px) scale(1.5); opacity: 0; }
   }
 
   .nav-item {
@@ -335,23 +340,23 @@
     transform: translateY(-3px) scale(1.18);
     filter: drop-shadow(0 0 10px rgba(0, 180, 216, 0.85)) drop-shadow(0 2px 6px rgba(255, 107, 53, 0.6));
   }
-  .nav-icon { font-size: 19px; transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1); }
+  .nav-icon { font-size: 18.5px; transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1); }
   .nav-badge {
-    position: absolute; top: 5px; right: calc(50% - 16px);
-    background: var(--danger); color: white; font-size: 9.5px; font-weight: 800;
-    border-radius: 10px; padding: 1px 6px; min-width: 16px; height: 16px; line-height: 14px;
+    position: absolute; top: 4px; right: calc(50% - 16px);
+    background: var(--danger); color: white; font-size: 9px; font-weight: 800;
+    border-radius: 10px; padding: 1px 5px; min-width: 15px; height: 15px; line-height: 13px;
     box-shadow: 0 0 8px rgba(239,68,68,0.7);
   }
 
   /* ------------------- iOS-STYLE PAGE TRANSITION & CONTAINER ------------------- */
-  .container { max-width: 960px; margin: 0 auto; padding: 14px; }
+  .container { max-width: 960px; margin: 0 auto; padding: 12px 14px; }
   .view-panel { display: none; }
   .view-panel.active {
     display: block;
     animation: iosPageIn 0.38s cubic-bezier(0.32, 0.72, 0, 1) forwards;
   }
   @keyframes iosPageIn {
-    0% { opacity: 0; transform: translateY(18px) scale(0.975); }
+    0% { opacity: 0; transform: translateY(16px) scale(0.975); }
     100% { opacity: 1; transform: translateY(0) scale(1); }
   }
 
@@ -448,7 +453,7 @@
 
   /* ------------------- STAGGERED LIVE ANIMATION FOR FAB 5-OPTIONS ------------------- */
   #fabMainBtn {
-    position: fixed; bottom: 78px; right: 20px; width: 50px; height: 50px;
+    position: fixed; bottom: 76px; right: 20px; width: 50px; height: 50px;
     background: linear-gradient(135deg, var(--accent), #ff9d3d);
     color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
     box-shadow: 0 8px 24px rgba(255,107,53,0.55); font-size: 26px; font-weight: 800;
@@ -456,7 +461,7 @@
   }
   #fabMainBtn:active { transform: scale(0.92); }
   #fabMenu {
-    position: fixed; bottom: 140px; right: 20px; display: none; flex-direction: column; gap: 10px; z-index: 99;
+    position: fixed; bottom: 138px; right: 20px; display: none; flex-direction: column; gap: 10px; z-index: 99;
   }
   .fab-action-btn {
     background: rgba(10, 37, 64, 0.94); backdrop-filter: blur(16px);
@@ -475,7 +480,7 @@
   /* ------------------- PREMIUM MESSENGER CHAT UI (WHATSAPP / FB STYLE) ------------------- */
   .chat-messenger-container {
     background: var(--card); border-radius: var(--radius-md); border: 1px solid var(--border);
-    box-shadow: var(--shadow-md); display: flex; flex-direction: column; height: calc(100vh - 170px); min-height: 480px;
+    box-shadow: var(--shadow-md); display: flex; flex-direction: column; height: calc(100vh - 155px); min-height: 480px;
     overflow: hidden; position: relative;
   }
   .chat-messenger-header {
@@ -756,7 +761,7 @@
     <button class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:10px;" onclick="triggerAppHaptic(); document.getElementById('dailyReminderBanner').style.display='none'">✕</button>
   </div>
 
-  <!-- SLIM TRUE FULL-PAGE HEADER -->
+  <!-- SLIM TRUE TOP STICKY HEADER -->
   <header>
     <div class="carwash-bg-canvas">
       <div class="water-spray"></div>
@@ -1097,7 +1102,7 @@
   </div>
   <div id="fabMainBtn" onclick="triggerAppHaptic(); toggleFabMenu()">+</div>
 
-  <!-- TRUE FULL-PAGE FOOTER WITH FAST RACING SPORTS CAR & DUST -->
+  <!-- TRUE FULL-PAGE FOOTER WITH RACING SPORTS CAR & DUST -->
   <div class="nav-bar">
     <div class="footer-carwash-canvas">
       <div class="water-spray" style="right:auto; left:15%; width:200px;"></div>
