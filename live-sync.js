@@ -15,6 +15,7 @@
   // dikhta tha. Ab id ke andar ke "/" ko "~" se badal kar ek hi flat document
   // banaya jata hai, jo sabhi devices par turant sync hota hai.
   var did = function (id) { return String(id).replace(/\//g, '~'); };
+
   var me = function () { return (typeof currentUser !== 'undefined' && currentUser) ? currentUser.name : ''; };
 
   var CFG = {
