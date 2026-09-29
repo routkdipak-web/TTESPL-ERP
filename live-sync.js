@@ -8,6 +8,13 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   };
+  // BUG FIX: Firestore doc id me '/' allowed nahi hai - agar invoice number
+  // "TTE/26/0001" jaisa ho to us "/" ki wajah se ye ek alag nested sub-collection
+  // path ban jata tha (orders/TTE/26/0001), jo top-level 'orders' collection ke
+  // realtime listener me kabhi nahi aata - isliye doosre device par data nahi
+  // dikhta tha. Ab id ke andar ke "/" ko "~" se badal kar ek hi flat document
+  // banaya jata hai, jo sabhi devices par turant sync hota hai.
+  var did = function (id) { return String(id).replace(/\//g, '~'); };
   var me = function () { return (typeof currentUser !== 'undefined' && currentUser) ? currentUser.name : ''; };
 
   var CFG = {
@@ -50,7 +57,7 @@
         var col = MAP[key];
         if (!col || !item || item.id == null) return Promise.resolve();
         setSync('Saving...', true);
-        return F.setDoc(F.doc(db, col, String(item.id)), item, { merge: true })
+        return F.setDoc(F.doc(db, col, did(item.id)), item, { merge: true })
           .then(function () { setSync('Live Cloud', true); })
           .catch(function (e) { console.error('Cloud Save Error:', e); setSync('Offline', false); });
       },
@@ -59,7 +66,7 @@
         var col = MAP[key];
         if (!col || id == null) return Promise.resolve();
         setSync('Deleting...', true);
-        return F.deleteDoc(F.doc(db, col, String(id)))
+        return F.deleteDoc(F.doc(db, col, did(id)))
           .then(function () { setSync('Live Cloud', true); })
           .catch(function (e) { console.error('Cloud Delete Error:', e); setSync('Offline', false); });
       },
@@ -71,7 +78,7 @@
         for (var i = 0; i < arr.length; i += 400) {
           var b = F.writeBatch(db);
           arr.slice(i, i + 400).forEach(function (it) {
-            if (it && it.id != null) b.set(F.doc(db, col, String(it.id)), it, { merge: true });
+            if (it && it.id != null) b.set(F.doc(db, col, did(it.id)), it, { merge: true });
           });
           jobs.push(b.commit());
         }
@@ -117,7 +124,7 @@
         }
 
         setSync('Resetting...', true);
-        return Promise.all(collectionsToWipse.map(wipeCollection))
+        return Promise.all(collectionsToWipe.map(wipeCollection))
           .then(function () { setSync('Live Cloud', true); })
           .catch(function (e) {
             console.error('Factory Reset Error:', e);
