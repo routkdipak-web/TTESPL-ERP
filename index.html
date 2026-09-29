@@ -535,6 +535,20 @@
   }
 
 
+/* ===== Premium tab-switch card entrance animation (user-suggested) ===== */
+.view-panel.active .card {
+  animation: cardSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.view-panel.active .card:nth-child(1) { animation-delay: 0.03s; }
+.view-panel.active .card:nth-child(2) { animation-delay: 0.07s; }
+.view-panel.active .card:nth-child(3) { animation-delay: 0.11s; }
+.view-panel.active .card:nth-child(4) { animation-delay: 0.15s; }
+@keyframes cardSlideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce){ .view-panel.active .card{ animation:none; } }
+
 /* ===== FIX: modal/popup base styles (centered on desktop + mobile) ===== */
 .auth-overlay{position:fixed;inset:0;z-index:3000;align-items:center;justify-content:center;padding:18px;overflow-y:auto;-webkit-overflow-scrolling:touch;background:rgba(6,14,28,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
 .auth-overlay .auth-card{position:relative;width:100%;max-width:440px;margin:auto;max-height:calc(100dvh - 36px);overflow-y:auto;padding:20px 18px;border-radius:22px;background:var(--card);color:var(--text-main);border:1px solid var(--border);box-shadow:0 30px 80px rgba(0,0,0,.45);}
@@ -588,10 +602,20 @@ body.tt-ready #authScreen .auth-card{animation:ttCardIn 1s cubic-bezier(.16,1,.3
 @keyframes ttSpin{to{transform:rotate(360deg)}}
 #authScreen h2{font-size:16px !important;letter-spacing:.4px;color:#fff !important;text-shadow:0 2px 12px rgba(0,0,0,.4);}
 #authScreen .form-label{color:#dcecff;}
-#authScreen input,#authScreen select{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:14px;padding:13px 14px;font-size:14px;outline:0;transition:border-color .25s,box-shadow .25s,background .25s;}
-#authScreen input::placeholder{color:rgba(255,255,255,.45);}
+#authScreen input,#authScreen select{width:100% !important;background:#ffffff !important;border:1.5px solid rgba(255,255,255,.5) !important;color:#0a1f3d !important;border-radius:14px;padding:13px 14px;font-size:15px;font-weight:700;outline:0;transition:border-color .25s,box-shadow .25s,background .25s;}
+#authScreen input::placeholder{color:#7d8aa0 !important;font-weight:500;}
 #authScreen select option{color:#0a2540;}
-#authScreen input:focus,#authScreen select:focus{border-color:#22d3ee;background:rgba(255,255,255,.13);box-shadow:0 0 0 4px rgba(34,211,238,.22),0 0 20px rgba(34,211,238,.25);}
+#authScreen input:focus,#authScreen select:focus{border-color:#22d3ee !important;background:#ffffff !important;box-shadow:0 0 0 4px rgba(34,211,238,.28),0 0 20px rgba(34,211,238,.22) !important;}
+/* Mobile browsers ka autofill (saved number/password) kabhi kabhi text ko halka/ghost bana deta hai - isse hamesha readable rakhte hain */
+#authScreen input:-webkit-autofill,
+#authScreen input:-webkit-autofill:hover,
+#authScreen input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0a1f3d !important;
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  caret-color: #0a1f3d !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
 #authScreen .btn-primary,#authScreen .btn-accent{position:relative;overflow:hidden;border-radius:14px;font-size:14px;letter-spacing:.3px;}
 #authScreen .btn-primary{background:linear-gradient(110deg,#e0a91f,#ffe08a 50%,#e0a91f);background-size:200% 100%;color:#0a1a33;box-shadow:0 10px 26px rgba(245,197,66,.35);animation:ttGold 4s ease-in-out infinite;}
 #authScreen .btn-primary:hover{background:linear-gradient(110deg,#e0a91f,#ffe08a 50%,#e0a91f);background-size:200% 100%;}
@@ -3573,7 +3597,36 @@ function shareOrderWhatsApp(ordId) {
   window.open(o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`, '_blank');
 }
 
-function executeInvoicePrint() { window.focus(); setTimeout(() => { window.print(); }, 150); }
+function executeInvoicePrint() {
+  const src = document.getElementById('tallyInvoiceBody');
+  if (!src || !src.innerHTML.trim()) { window.focus(); setTimeout(() => window.print(), 150); return; }
+  let ifr = document.getElementById('ttPrintFrame');
+  if (!ifr) {
+    ifr = document.createElement('iframe');
+    ifr.id = 'ttPrintFrame';
+    ifr.style.cssText = 'position:fixed; right:0; bottom:0; width:0; height:0; border:0; visibility:hidden;';
+    document.body.appendChild(ifr);
+  }
+  const doc = ifr.contentWindow.document;
+  doc.open();
+  doc.write(
+    '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Tax Invoice</title>' +
+    '<style>*{box-sizing:border-box;} body{margin:0;padding:10px;font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff;} table{border-collapse:collapse;width:100%;} @page{margin:8mm;}</style>' +
+    '</head><body>' + src.innerHTML + '</body></html>'
+  );
+  doc.close();
+  // Android app ke print bridge ko poora page render hone ka thoda time dete hain
+  // (isi delay ki kami se "mobile app" me PDF blank aa raha tha)
+  setTimeout(() => {
+    try {
+      ifr.contentWindow.focus();
+      ifr.contentWindow.print();
+    } catch (e) {
+      console.error('Frame print failed, falling back', e);
+      window.focus(); window.print();
+    }
+  }, 400);
+}
 
 function openInvoicePrintModal(ordId) {
   const o = ordersData.find(x => String(x.id) === String(ordId));
