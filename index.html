@@ -4081,18 +4081,13 @@ function saveCustomerAction() {
 
 /* TAB 5: BILLING & LEDGER */
 function renderBilling(filterType, empFilter = "ALL") {
-  let totalBilled = 0, totalRecv = 0, totalDue = 0;
-  const ledgerList = ordersData.filter(o => o.status === 'Delivered');
-
-  ledgerList.forEach(o => {
-    totalBilled += o.totalAmount;
-    totalRecv += o.recvAmount;
-    totalDue += o.dueAmount;
+  // Naye bill sabse upar, purane niche (delivered/order date ke hisab se descending)
+  const ledgerList = ordersData.filter(o => o.status === 'Delivered').slice().sort((a, b) => {
+    const da = a.deliveredDate || a.orderDate || '';
+    const db_ = b.deliveredDate || b.orderDate || '';
+    if (da !== db_) return da < db_ ? 1 : -1;
+    return String(b.id).localeCompare(String(a.id), undefined, { numeric: true });
   });
-
-  document.getElementById('metricTotalBilled').textContent = '₹' + totalBilled.toLocaleString('en-IN');
-  document.getElementById('metricTotalRecv').textContent = '₹' + totalRecv.toLocaleString('en-IN');
-  document.getElementById('metricTotalDue').textContent = '₹' + totalDue.toLocaleString('en-IN');
 
   const container = document.getElementById('billingListContainer');
   container.innerHTML = '';
@@ -4100,6 +4095,15 @@ function renderBilling(filterType, empFilter = "ALL") {
 
   let list = ledgerList;
   if(empFilter !== "ALL") list = list.filter(o => o.bookedBy === empFilter);
+
+  // Summary cards ab jo bhi filter (staff / due / received) lagaya hai, usi ka total dikhate hain -
+  // isse "kis staff ne kitna sale kiya aur kitna due hai" seedha upar hi dikh jata hai
+  let totalBilled = 0, totalRecv = 0, totalDue = 0;
+  (filterType === 'due' ? list.filter(o => o.dueAmount > 0) : filterType === 'received' ? list.filter(o => o.dueAmount === 0) : list)
+    .forEach(o => { totalBilled += o.totalAmount; totalRecv += o.recvAmount; totalDue += o.dueAmount; });
+  document.getElementById('metricTotalBilled').textContent = '₹' + totalBilled.toLocaleString('en-IN');
+  document.getElementById('metricTotalRecv').textContent = '₹' + totalRecv.toLocaleString('en-IN');
+  document.getElementById('metricTotalDue').textContent = '₹' + totalDue.toLocaleString('en-IN');
 
   if(filterType === 'due') {
     list = list.filter(o => o.dueAmount > 0);
