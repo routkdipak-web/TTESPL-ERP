@@ -535,6 +535,19 @@
   }
 
 
+/* ===== Premium micro-interactions (user-suggested) ===== */
+.btn, .sub-tab-btn, .card { -webkit-tap-highlight-color: transparent; }
+.btn:active, .sub-tab-btn:active { transform: scale(0.96); transition: transform .12s ease; }
+.metric-card b, .metric-card strong, #metricTotalBilled, #metricTotalRecv, #metricTotalDue, .badge {
+  font-variant-numeric: tabular-nums;
+}
+.nav-item { position: relative; }
+.nav-item.active::after {
+  content: ""; position: absolute; top: 2px; left: 50%; transform: translateX(-50%);
+  width: 22px; height: 3px; border-radius: 3px; background: var(--accent, #f5c542);
+  box-shadow: 0 0 8px rgba(245,197,66,.6);
+}
+
 /* ===== Premium tab-switch card entrance animation (user-suggested) ===== */
 .view-panel.active .card {
   animation: cardSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -1079,6 +1092,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
           <div class="page-top-sub">Machinery, Spares, Detailing Chemicals & Verified Clients</div>
         </div>
         <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); switchTab('catalog', null)">📖 Product Catalog</button>
           <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); loadMasterCatalogAction()">📦 Master Data</button>
           <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openAddPartModal()">+ Add Item</button>
         </div>
@@ -1094,7 +1108,6 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       <div class="sub-tabs" id="inventoryCategoryTabs" style="padding-bottom:10px; margin-bottom:14px; gap:8px;">
         <button class="sub-tab-btn active" onclick="triggerAppHaptic(); selectInventoryCategory('ALL', this)">🌟 All Items (<span id="catCountAll">0</span>)</button>
         <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Machines & Equipment', this)">🚜 Machines (<span id="catCountMach">0</span>)</button>
-        <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Catalog Equipment', this)">📖 Catalog Gear (<span id="catCountCat">0</span>)</button>
         <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Ma-Fra Chemicals', this)">🧼 Ma-Fra Chemicals (<span id="catCountMafraChem">0</span>)</button>
         <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Mafra Detailing', this)">✨ Mafra Detailing (<span id="catCountMafraDet">0</span>)</button>
         <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Maniac Line', this)">⚡ Maniac Line (<span id="catCountManiac">0</span>)</button>
@@ -1116,6 +1129,28 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       </div>
 
       <div id="stockListContainer"></div>
+    </div>
+
+    <!-- PRODUCT CATALOG (info-only - kabhi bhi order/bill me item add nahi karta) -->
+    <div id="view-catalog" class="view-panel">
+      <div class="page-top-header-banner">
+        <div>
+          <div class="page-top-title"><span>📖</span> <span>Product Catalog</span></div>
+          <div class="page-top-sub">Sirf jaankari ke liye - description, technical data & accessories. Isse koi bill/order nahi banta.</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); switchTab('inventory', document.querySelectorAll('.nav-item')[4])">← Back to Stock</button>
+        </div>
+      </div>
+
+      <div class="form-group autocomplete-wrapper" style="margin-bottom:12px;">
+        <input type="text" id="catalogSearchInput" placeholder="🔍 Product, machine, chemical, brand type karein..." oninput="handleCatalogSearchInput(this.value)" autocomplete="off">
+        <div class="solid-suggestion-box" id="catalogSuggestionBox" style="display:none;"></div>
+      </div>
+
+      <div class="sub-tabs" id="catalogSubTabs" style="padding-bottom:10px; margin-bottom:14px; gap:8px;"></div>
+
+      <div id="catalogListContainer" style="display:grid; grid-template-columns:1fr; gap:10px;"></div>
     </div>
 
     <!-- TAB 5: BILLING & LEDGER -->
@@ -2093,6 +2128,9 @@ let registeredEmployees = getStored("STAFF", []);
 window.registeredEmployees = registeredEmployees;
 
 let currentUser = getStored("SESSION_USER", null);
+// Admin check ko case/whitespace ki galti se surakshit banaya (jaise 'admin' ya ' Admin ' register ho gaya ho)
+function isAdminUser() { return !!(currentUser && String(currentUser.role || '').trim().toLowerCase() === 'admin'); }
+window.isAdminUser = isAdminUser;
 
 let customerDatabase = getStored("CUSTOMERS", (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.customers) || [
   { id: 1, name: "Trinity Techno Solution", person: "Trinity Techno Solution", phone: "6371256123", email: "", address: "Plot No-1159/2782, Behind Debaki Tower, Bomikhal, Khordha", gst: "21DDTPM0058K1ZC" }
@@ -2289,7 +2327,7 @@ function checkAuthSession() {
 
     const dotEl = document.getElementById('headerProfileDot');
     if (dotEl) {
-      if (currentUser.role === 'Admin') dotEl.classList.add('admin');
+      if (isAdminUser()) dotEl.classList.add('admin');
       else dotEl.classList.remove('admin');
     }
 
@@ -2299,7 +2337,7 @@ function checkAuthSession() {
     const mRole = document.getElementById('menuStaffRole');
     if (mRole) {
       mRole.textContent = currentUser.role || 'STAFF';
-      if (currentUser.role === 'Admin') mRole.classList.add('admin');
+      if (isAdminUser()) mRole.classList.add('admin');
       else mRole.classList.remove('admin');
     }
 
@@ -2312,7 +2350,7 @@ function checkAuthSession() {
 }
 
 function updateAdminDeleteVisibility() {
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const isAdmin = isAdminUser();
   document.querySelectorAll('.admin-only-btn').forEach(btn => {
     btn.style.display = isAdmin ? 'inline-flex' : 'none';
   });
@@ -2540,7 +2578,7 @@ function closePerformanceReportModal() {
 }
 
 function openStaffManageModal() {
-  if (!currentUser || currentUser.role !== 'Admin') {
+  if (!isAdminUser()) {
     alert("Permission Denied: Only Admin can manage staff.");
     return;
   }
@@ -2597,7 +2635,7 @@ function deleteStaffPrompt(empId) {
 }
 
 function openAdminEditLedgerModal(ordId) {
-  if (!currentUser || currentUser.role !== 'Admin') {
+  if (!isAdminUser()) {
     alert("Permission Denied: Sirf Admin hi ledger invoice modify kar sakte hain!");
     return;
   }
@@ -2646,7 +2684,7 @@ function saveAdminLedgerInvoice() {
 }
 
 function deleteAdminLedgerInvoice(ordId) {
-  if (!currentUser || currentUser.role !== 'Admin') {
+  if (!isAdminUser()) {
     alert("Permission Denied: Sirf Admin hi bill ledger se delete kar sakte hain!");
     return;
   }
@@ -3057,7 +3095,7 @@ async function loadMasterCatalogAction() {
 function renderLeads() {
   const c = document.getElementById('leadsListContainer');
   c.innerHTML = '';
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const isAdmin = isAdminUser();
 
   if (leadsData.length === 0) {
     c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Abhi koi active inquiry nahi hai.</div>`;
@@ -3169,7 +3207,7 @@ function saveLeadAction() {
 }
 
 function deleteLeadAction(id) {
-  if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
+  if (!isAdminUser()) { alert("Admin only!"); return; }
   if(confirm("Confirm DELETE this Lead?")) {
     leadsData = leadsData.filter(x => x.id !== id);
     setStored("LEADS", leadsData);
@@ -3196,7 +3234,7 @@ function renderOrders() {
   const c = document.getElementById('ordersListContainer');
   c.innerHTML = '';
   const today = new Date().toISOString().split('T')[0];
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const isAdmin = isAdminUser();
 
   const pendingList = ordersData.filter(o => o.status === 'Pending');
   const cancelledList = ordersData.filter(o => o.status === 'Cancelled');
@@ -3576,7 +3614,7 @@ function executeConfirmedPaymentCollection() {
 }
 
 function deleteOrderAction(id) {
-  if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
+  if (!isAdminUser()) { alert("Admin only!"); return; }
   if(confirm("Confirm DELETE order?")) {
     ordersData = ordersData.filter(x => x.id !== id);
     setStored("ORDERS", ordersData);
@@ -3670,7 +3708,7 @@ function renderServices() {
   const c = document.getElementById('serviceListContainer');
   c.innerHTML = '';
   const today = new Date().toISOString().split('T')[0];
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const isAdmin = isAdminUser();
 
   if (serviceCallsData.length === 0) {
     c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi repair call pending nahi hai.</div>`;
@@ -3788,7 +3826,7 @@ function saveServiceAction() {
 }
 
 function deleteServiceAction(id) {
-  if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
+  if (!isAdminUser()) { alert("Admin only!"); return; }
   if(confirm("Confirm DELETE service?")) {
     serviceCallsData = serviceCallsData.filter(x => x.id !== id);
     setStored("SERVICES", serviceCallsData);
@@ -3838,7 +3876,7 @@ function renderStockList() {
   if(!c) return;
   c.innerHTML = '';
   updateCategoryCounts();
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const isAdmin = isAdminUser();
   const onlyAvailable = document.getElementById('onlyAvailableStockCheck').checked;
 
   if (activeInventoryCategory === 'CUSTOMERS') {
@@ -4016,7 +4054,7 @@ function saveStockItemAction() {
 
 function editStockItemPrompt(id) { const it = sampleInventory.find(x => x.id === id); if(it) openAddPartModal(it); }
 function deleteStockItem(id) {
-  if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
+  if (!isAdminUser()) { alert("Admin only!"); return; }
   if(confirm("Confirm DELETE item?")) {
     sampleInventory = sampleInventory.filter(x => x.id !== id);
     setStored("INVENTORY", sampleInventory);
@@ -4091,7 +4129,7 @@ function renderBilling(filterType, empFilter = "ALL") {
 
   const container = document.getElementById('billingListContainer');
   container.innerHTML = '';
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const isAdmin = isAdminUser();
 
   let list = ledgerList;
   if(empFilter !== "ALL") list = list.filter(o => o.bookedBy === empFilter);
@@ -4278,7 +4316,7 @@ function updateGlobalReminders() {
 
   // Daily notification (ek device par din me ek hi baar, sirf Admin login par)
   try {
-    if (payFu.length > 0 && currentUser && currentUser.role === 'Admin') {
+    if (payFu.length > 0 && isAdminUser()) {
       const key = 'TT_PAYFU_NOTIF_' + today;
       if (!localStorage.getItem(key)) {
         localStorage.setItem(key, '1');
@@ -4314,6 +4352,7 @@ function switchTab(tab, el) {
   if(tab === 'orders') renderOrders();
   if(tab === 'services') renderServices();
   if(tab === 'inventory') renderStockList();
+  if(tab === 'catalog') renderCatalog();
   if(tab === 'billing') renderBilling('all');
   if(tab === 'chat') renderChatMessages();
 }
@@ -4354,6 +4393,21 @@ function showBroadcastToastAlert(notif) {
   setTimeout(() => {
     if (toast.parentElement) toast.remove();
   }, 7000);
+
+  // Sirf is device ke khule app-page tak simit "3 second toast" hi nahi -
+  // ab ye Android/browser ke asli notification tray me bhi jata hai, taaki
+  // app minimized/background me ho tab bhi HAR device par dikhe.
+  try {
+    if (window.Notification && Notification.permission === 'granted') {
+      const sysNotif = new Notification(notif.title || 'TTESPL Alert', {
+        body: notif.body || '',
+        tag: 'ttespl-' + (notif.type || 'info') + '-' + (notif.timestamp || Date.now()),
+        renotify: true,
+        silent: true // hamara apna beep upar already bajaya ja chuka hai, double-beep na ho
+      });
+      sysNotif.onclick = () => { try { window.focus(); } catch (e) {} sysNotif.close(); };
+    }
+  } catch (e) { console.warn('System notification failed', e); }
 }
 window.showBroadcastToastAlert = showBroadcastToastAlert;
 
@@ -4531,7 +4585,7 @@ function ttPick(nrow, key) {
 function ttLast10(p) { return String(p || '').replace(/\D/g, '').slice(-10); }
 
 async function importLedgerFromJson() {
-  if (!currentUser || currentUser.role !== 'Admin') { alert('Permission Denied: Sirf Admin ledger import kar sakte hain!'); return; }
+  if (!isAdminUser()) { alert('Permission Denied: Sirf Admin ledger import kar sakte hain!'); return; }
   let data;
   try {
     const res = await fetch('ledger-import.json?v=' + Date.now(), { cache: 'no-store' });
@@ -4893,7 +4947,7 @@ function downloadFullBackup() {
 async function restoreBackupFile(ev) {
   const f = ev.target.files[0]; ev.target.value = '';
   if (!f) return;
-  if (!currentUser || currentUser.role !== 'Admin') { alert('Sirf Admin restore kar sakta hai.'); return; }
+  if (!isAdminUser()) { alert('Sirf Admin restore kar sakta hai.'); return; }
   try {
     const j = JSON.parse(await f.text());
     const data = j && j.data;
@@ -4921,6 +4975,116 @@ async function restoreBackupFile(ev) {
   } catch (e) { alert('Restore fail: ' + e.message); }
 }
 window.openBackupModal = openBackupModal; window.downloadFullBackup = downloadFullBackup; window.restoreBackupFile = restoreBackupFile;
+
+/* ===== PRODUCT CATALOG (read-only reference - never feeds into orders/billing) ===== */
+let activeCatalogSub = 'ALL';
+
+function getCatalogItems() {
+  return (sampleInventory || []).filter(i => i.category === 'Catalog Equipment');
+}
+
+function renderCatalog() {
+  const items = getCatalogItems();
+  const subs = Array.from(new Set(items.map(i => i.subCategory).filter(Boolean))).sort();
+
+  const tabsBox = document.getElementById('catalogSubTabs');
+  if (tabsBox) {
+    tabsBox.innerHTML = `<button class="sub-tab-btn ${activeCatalogSub === 'ALL' ? 'active' : ''}" onclick="triggerAppHaptic(); selectCatalogSub('ALL', this)">🌟 All (${items.length})</button>` +
+      subs.map(s => {
+        const c = items.filter(i => i.subCategory === s).length;
+        return `<button class="sub-tab-btn ${activeCatalogSub === s ? 'active' : ''}" onclick="triggerAppHaptic(); selectCatalogSub('${esc(s).replace(/'/g, "\\'")}', this)">${esc(s)} (${c})</button>`;
+      }).join('');
+  }
+  filterCatalog(document.getElementById('catalogSearchInput') ? document.getElementById('catalogSearchInput').value : '');
+}
+window.renderCatalog = renderCatalog;
+
+function selectCatalogSub(sub, el) {
+  activeCatalogSub = sub;
+  document.querySelectorAll('#catalogSubTabs .sub-tab-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  filterCatalog(document.getElementById('catalogSearchInput').value);
+}
+window.selectCatalogSub = selectCatalogSub;
+
+function filterCatalog(q) {
+  q = String(q || '').toLowerCase().trim();
+  let list = getCatalogItems();
+  if (activeCatalogSub !== 'ALL') list = list.filter(i => i.subCategory === activeCatalogSub);
+  if (q) list = list.filter(i => (i.name && i.name.toLowerCase().includes(q)) || (i.subCategory && i.subCategory.toLowerCase().includes(q)) || (i.desc && i.desc.toLowerCase().includes(q)));
+
+  const box = document.getElementById('catalogListContainer');
+  if (!box) return;
+  if (list.length === 0) {
+    box.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi product nahi mila.</div>`;
+    return;
+  }
+  box.innerHTML = list.map(i => `
+    <div class="card" style="cursor:pointer;" onclick="triggerAppHaptic(); openCatalogDetail(${i.id})">
+      <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+        <div style="flex:1;">
+          <strong style="font-size:14.5px; color:var(--text-main);">${esc(i.name)}</strong>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">${esc(i.subCategory || 'Catalog')}</div>
+          ${i.desc ? `<div style="font-size:12px; color:var(--text-muted); margin-top:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(i.desc)}</div>` : ''}
+        </div>
+        <span style="font-size:18px;">›</span>
+      </div>
+    </div>
+  `).join('');
+}
+window.filterCatalog = filterCatalog;
+
+function handleCatalogSearchInput(val) {
+  filterCatalog(val);
+  const q = String(val || '').toLowerCase().trim();
+  const box = document.getElementById('catalogSuggestionBox');
+  if (!box) return;
+  if (!q) { box.style.display = 'none'; return; }
+  const matches = getCatalogItems().filter(i => (i.name && i.name.toLowerCase().includes(q)) || (i.subCategory && i.subCategory.toLowerCase().includes(q))).slice(0, 8);
+  if (!matches.length) { box.style.display = 'none'; return; }
+  box.innerHTML = matches.map(i => `
+    <div class="suggestion-item" onmousedown="triggerAppHaptic(); openCatalogDetail(${i.id})">
+      <div style="flex:1;">
+        <strong style="font-size:12.5px; color:var(--text-main);">${esc(i.name)}</strong>
+        <div class="suggestion-sub">${esc(i.subCategory || 'Catalog')}</div>
+      </div>
+    </div>
+  `).join('');
+  box.style.display = 'block';
+}
+window.handleCatalogSearchInput = handleCatalogSearchInput;
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest || !e.target.closest('#catalogSearchInput, #catalogSuggestionBox')) {
+    const b = document.getElementById('catalogSuggestionBox');
+    if (b) b.style.display = 'none';
+  }
+});
+
+function openCatalogDetail(id) {
+  const i = getCatalogItems().find(x => x.id === id);
+  if (!i) return;
+  let m = document.getElementById('catalogDetailModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'catalogDetailModal';
+    m.className = 'auth-overlay';
+    m.style.display = 'none';
+    document.body.appendChild(m);
+  }
+  const row = (label, val) => val ? `<div style="margin-bottom:14px;"><div style="font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:4px;">${esc(label)}</div><div style="font-size:13.5px; color:var(--text-main); white-space:pre-wrap; line-height:1.5;">${esc(val)}</div></div>` : '';
+  m.innerHTML = `<div class="auth-card" style="max-width:480px;">
+    <div class="card-header"><span class="card-title">${esc(i.name)}</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('catalogDetailModal').style.display='none'">✕</button></div>
+    ${row('Category', [i.category, i.subCategory].filter(Boolean).join(' → '))}
+    ${row('Model / Code', [i.machine && i.machine !== i.name ? i.machine : '', i.code].filter(Boolean).join(' • '))}
+    ${row('Description', i.desc)}
+    ${row('Technical Data / Specs', i.specs)}
+    ${(i.rate > 0) ? row('Indicative Price', '₹' + Number(i.rate).toLocaleString('en-IN')) : ''}
+    <div style="margin-top:6px; padding-top:12px; border-top:1px solid var(--border); font-size:11px; color:var(--text-muted);">Ye sirf reference catalog hai - is item se koi bill ya order nahi banta.</div>
+  </div>`;
+  m.style.display = 'flex';
+}
+window.openCatalogDetail = openCatalogDetail;
 </script>
 
 </body>
