@@ -52,6 +52,27 @@
       db = F.initializeFirestore(app, { experimentalAutoDetectLongPolling: true, ignoreUndefinedProperties: true });
     } catch (e) { db = F.getFirestore(app); }
 
+    // OFFLINE PERSISTENCE: Firestore ka apna IndexedDB local cache on karte hain, taaki
+    // net na ho tab bhi pichla dekha hua data turant dikhe. Agar isi browser me app
+    // ek se zyada TAB me khula ho to ye fail ho sakta hai (normal, sirf ek tab me hi
+    // active hota hai) - is liye fail hone par bhi app bilkul pehle jaisa hi chalta rahega.
+    if (typeof F.enableIndexedDbPersistence === 'function') {
+      F.enableIndexedDbPersistence(db).catch(function (e) {
+        console.warn('IndexedDB persistence off rahi (normal agar ek se zyada tab khula ho):', e && e.code);
+      });
+    }
+
+    // MULTI-DEVICE CONFLICT FIX: jab same profile do device/tab me ek saath khula ho,
+    // to purane tarike me har chhote se change par is device ka POORA local array cloud
+    // par dobara likh diya jata tha - agar ye local array thoda purana/stale hota (dusre
+    // device ka abhi-abhi kiya hua naya change abhi tak isme aaya hi nahi), to wo naya
+    // change cloud par OVERWRITE ho jata tha. Fix: har collection ka jo aakhri cloud
+    // snapshot mila usko yahan cache karte hain, aur push karte waqt sirf wahi items
+    // bhejte hain jo IS device par sach me badle hain (cache se alag hain). Jo item is
+    // device ne chhua hi nahi, wo dobara push hi nahi hoga - isliye dusre device ka naya
+    // data kabhi overwrite nahi hoga, chahe dono ek saath login ho.
+    var lastCloud = {};
+
     // Direct Real-Time Cloud Methods with Persistence Guarantee
     window.cloudSync = {
       saveDoc: function (key, item) {
@@ -75,10 +96,25 @@
       pushKey: function (key, arr) {
         var col = MAP[key];
         if (!col || !Array.isArray(arr)) return Promise.resolve();
+
+        // Sirf wahi items bhejo jo is device par sach me badle hain (cache se alag) -
+        // agar cache abhi taiyar nahi hui (app abhi-abhi khula, pehla cloud snapshot
+        // aana baaki hai) to purane tarike se sab bhej do (safe fallback).
+        var cache = lastCloud[key];
+        var toSend = arr;
+        if (cache) {
+          toSend = arr.filter(function (it) {
+            if (!it || it.id == null) return false;
+            var prev = cache[it.id];
+            return prev === undefined || prev !== JSON.stringify(it);
+          });
+        }
+        if (!toSend.length) return Promise.resolve();
+
         var jobs = [];
-        for (var i = 0; i < arr.length; i += 400) {
+        for (var i = 0; i < toSend.length; i += 400) {
           var b = F.writeBatch(db);
-          arr.slice(i, i + 400).forEach(function (it) {
+          toSend.slice(i, i + 400).forEach(function (it) {
             if (it && it.id != null) b.set(F.doc(db, col, did(it.id)), it, { merge: true });
           });
           jobs.push(b.commit());
@@ -156,6 +192,13 @@
       F.onSnapshot(F.collection(db, MAP[key]), function (snap) {
         var list = [];
         snap.forEach(function (d) { list.push(d.data()); });
+
+        // Is collection ka sabse latest "jaisa cloud me hai waisa" snapshot cache karo -
+        // pushKey isi se compare karke decide karta hai ki kaun se items sach me local
+        // badlav hain (dobara bhejne hain) aur kaun se sirf purane/untouched hain (skip).
+        var cacheNow = {};
+        list.forEach(function (it) { if (it && it.id != null) cacheNow[it.id] = JSON.stringify(it); });
+        lastCloud[key] = cacheNow;
 
         switch (key) {
           case 'LEADS': leadsData = list; if (typeof renderLeads === 'function') renderLeads(); break;
