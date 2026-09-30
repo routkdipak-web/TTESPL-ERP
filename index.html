@@ -19,6 +19,8 @@
     --cyan: #00b4d8;
     --bg: #f1f5f9;
     --card: #ffffff;
+    --card-glass: rgba(255,255,255,.6);
+    --card-glass-border: rgba(255,255,255,.55);
     --text-main: #0f172a;
     --text-muted: #64748b;
     --border: #e2e8f0;
@@ -47,6 +49,8 @@
     --primary-dark: #0284c7;
     --bg: #090d16;
     --card: #111827;
+    --card-glass: rgba(17,24,39,.55);
+    --card-glass-border: rgba(255,255,255,.14);
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --border: #1e293b;
@@ -582,7 +586,7 @@
 
 /* ===== FIX: modal/popup base styles (centered on desktop + mobile) ===== */
 .auth-overlay{position:fixed;inset:0;z-index:3000;align-items:center;justify-content:center;padding:18px;overflow-y:auto;-webkit-overflow-scrolling:touch;background:rgba(6,14,28,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
-.auth-overlay .auth-card{position:relative;width:100%;max-width:440px;margin:auto;max-height:calc(100dvh - 36px);overflow-y:auto;padding:20px 18px;border-radius:22px;background:var(--card);color:var(--text-main);border:1px solid var(--border);box-shadow:0 30px 80px rgba(0,0,0,.45);}
+.auth-overlay .auth-card{position:relative;width:100%;max-width:440px;margin:auto;max-height:calc(100dvh - 36px);overflow-y:auto;padding:20px 18px;border-radius:22px;background-color:var(--card-glass);background-image:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,0) 55%);color:var(--text-main);border:1px solid var(--card-glass-border);box-shadow:0 30px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);}
 .card-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
 .card-title{font-size:15px;font-weight:800;color:var(--text-main);}
 .empty-state{text-align:center;padding:26px 12px;color:var(--text-muted);}
@@ -1902,7 +1906,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="master-data.js?v=4"></script>
-<script src="live-sync.js?v=7"></script>
+<script src="live-sync.js?v=8"></script>
 
 <script>
 /* ==========================================================================
