@@ -187,6 +187,37 @@
       }
     };
 
+    // FLICKER FIX: jab cloud par bahut jaldi-jaldi (ek-ek second me kai baar) data
+    // aata hai, to pehle har baar turant poora screen dobara draw ho jata tha - isse
+    // numbers/UI baar-baar "jump" karte dikhte the (flicker jaisa lagta tha). Ab data
+    // to turant (bina delay) update hota hai, lekin screen sirf ek chhoti si "shaant
+    // pal" (250ms) ke baad ek hi baar dobara draw hoti hai - agar usi 250ms ke andar
+    // aur bhi updates aa jayein to sab ek saath, ek hi baar me dikhaye jate hain.
+    var pendingRender = {};
+    var renderTimer = null;
+    function scheduleRender(key) {
+      pendingRender[key] = true;
+      if (renderTimer) clearTimeout(renderTimer);
+      renderTimer = setTimeout(flushRender, 250);
+    }
+    function flushRender() {
+      renderTimer = null;
+      if (pendingRender.LEADS && typeof renderLeads === 'function') renderLeads();
+      if (pendingRender.ORDERS) {
+        if (typeof renderOrders === 'function') renderOrders();
+        if (typeof renderBilling === 'function') renderBilling('all');
+      }
+      if (pendingRender.SERVICES && typeof renderServices === 'function') renderServices();
+      if (pendingRender.INVENTORY && typeof renderStockList === 'function') renderStockList();
+      if (pendingRender.CUSTOMERS && typeof renderCustomerList === 'function') renderCustomerList();
+      if (pendingRender.STAFF && typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
+      if (pendingRender.MACHINE_PARTS && typeof updateGlobalReminders === 'function') updateGlobalReminders();
+      if (typeof renderDashboard === 'function') renderDashboard();
+      if (typeof updateAdminDeleteVisibility === 'function') updateAdminDeleteVisibility();
+      setSync('Live Cloud', true);
+      pendingRender = {};
+    }
+
     // Live Snapshot Listeners across all devices
     Object.keys(MAP).forEach(function (key) {
       F.onSnapshot(F.collection(db, MAP[key]), function (snap) {
@@ -201,36 +232,22 @@
         lastCloud[key] = cacheNow;
 
         switch (key) {
-          case 'LEADS': leadsData = list; if (typeof renderLeads === 'function') renderLeads(); break;
-          case 'ORDERS': 
-            ordersData = list; 
-            if (typeof renderOrders === 'function') renderOrders(); 
-            if (typeof renderBilling === 'function') renderBilling('all'); 
-            break;
-          case 'SERVICES': serviceCallsData = list; if (typeof renderServices === 'function') renderServices(); break;
-          case 'INVENTORY': 
-            sampleInventory = list; 
-            if (typeof renderStockList === 'function') renderStockList(); 
-            break;
+          case 'LEADS': leadsData = list; break;
+          case 'ORDERS': ordersData = list; break;
+          case 'SERVICES': serviceCallsData = list; break;
+          case 'INVENTORY': sampleInventory = list; break;
           case 'MACHINERY': machineryDatabase = list; break;
-          case 'CUSTOMERS': 
-            customerDatabase = list; 
-            if (typeof renderCustomerList === 'function') renderCustomerList(); 
-            break;
-          case 'STAFF': 
-            if (list.length > 0) registeredEmployees = list; 
-            if (typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
+          case 'CUSTOMERS': customerDatabase = list; break;
+          case 'STAFF':
+            if (list.length > 0) registeredEmployees = list;
             break;
           case 'MACHINE_PARTS':
             machinePartsData = list;
             if (typeof window.machinePartsData !== 'undefined') window.machinePartsData = list;
-            if (typeof updateGlobalReminders === 'function') updateGlobalReminders();
             break;
         }
 
-        if (typeof renderDashboard === 'function') renderDashboard();
-        if (typeof updateAdminDeleteVisibility === 'function') updateAdminDeleteVisibility();
-        setSync('Live Cloud', true);
+        scheduleRender(key);
       }, function (err) {
         console.error('Stream error:', key, err);
         setSync('Offline', false);
