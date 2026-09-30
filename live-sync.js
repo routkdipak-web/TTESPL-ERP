@@ -34,7 +34,8 @@
     MACHINERY: 'machinery',
     LEADS: 'leads',
     ORDERS: 'orders',
-    SERVICES: 'services'
+    SERVICES: 'services',
+    MACHINE_PARTS: 'machine_parts'
   };
 
   function setSync(text, ok) {
@@ -82,11 +83,27 @@
           });
           jobs.push(b.commit());
         }
-        return Promise.all(jobs).then(function () { setSync('Live Cloud', true); });
+        // BUG FIX: pehle yahan koi .catch() nahi tha, isliye jab bhi ye save cloud
+        // tak fail hokar nahi pahunchta tha, na to sync status "Offline" dikhata tha
+        // na hi app ko pata chalta tha - upar wala UI hamesha theek dikhata rehta
+        // tha jabki data cloud me ja hi nahi raha tha. Ab failure clearly dikhega
+        // aur error upar (index.html ke retry/offline-queue) tak bhi jayega.
+        return Promise.all(jobs).then(function () { setSync('Live Cloud', true); })
+          .catch(function (e) { console.error('Cloud pushKey Error:', e); setSync('Offline', false); throw e; });
       },
 
       sendChatMessage: function (msg) {
-        return F.setDoc(F.doc(F.collection(db, 'team_messages')), msg);
+        // Message ka apna stable id (cid) hi Firestore doc id banate hain -
+        // isse baad me wahi message edit/delete karna asaan ho jata hai
+        var id = msg.cid ? did(msg.cid) : undefined;
+        return id ? F.setDoc(F.doc(db, 'team_messages', id), msg, { merge: true })
+                   : F.setDoc(F.doc(F.collection(db, 'team_messages')), msg);
+      },
+      editChatMessage: function (cid, newText) {
+        return F.setDoc(F.doc(db, 'team_messages', did(cid)), { text: newText, edited: true, editedAt: Date.now() }, { merge: true });
+      },
+      deleteChatMessage: function (cid) {
+        return F.deleteDoc(F.doc(db, 'team_messages', did(cid)));
       },
       setTypingStatus: function (user, isTyping) {
         var id = 'typing_' + String(user).replace(/[^a-zA-Z0-9]/g, '_');
@@ -160,6 +177,11 @@
           case 'STAFF': 
             if (list.length > 0) registeredEmployees = list; 
             if (typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
+            break;
+          case 'MACHINE_PARTS':
+            machinePartsData = list;
+            if (typeof window.machinePartsData !== 'undefined') window.machinePartsData = list;
+            if (typeof updateGlobalReminders === 'function') updateGlobalReminders();
             break;
         }
 
