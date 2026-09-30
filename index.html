@@ -208,6 +208,7 @@
     box-shadow: 0 0 8px #10b981; animation: liveSyncGlow 1.8s infinite;
   }
   @keyframes liveSyncGlow { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.25); opacity: 0.7; } }
+  .header-cloud-dot.offline { background:#94a3b8; box-shadow:0 0 6px #94a3b8; animation:none; }
 
   .profile-menu-wrapper { position: relative; z-index: 10000; }
   .profile-avatar-btn {
@@ -366,6 +367,7 @@
     border-radius: 16px; padding: 10px 14px; margin-bottom: 14px;
     display: flex; justify-content: space-between; align-items: center; gap: 8px;
     box-shadow: 0 8px 24px rgba(0, 180, 216, 0.15); position: relative; overflow: hidden;
+    backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3);
   }
   [data-theme="dark"] .page-top-header-banner {
     background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(56, 189, 248, 0.2));
@@ -388,6 +390,7 @@
     border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s ease;
   }
   .card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  [data-theme="dark"] .card { background: rgba(17, 24, 39, 0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 
   .stat-card { position: relative; overflow: hidden; isolation: isolate; }
   .stat-card::after {
@@ -535,6 +538,34 @@
   }
 
 
+/* ===== Premium micro-interactions (user-suggested) ===== */
+.btn, .sub-tab-btn, .card { -webkit-tap-highlight-color: transparent; }
+.btn:active, .sub-tab-btn:active { transform: scale(0.96); transition: transform .12s ease; }
+.metric-card b, .metric-card strong, #metricTotalBilled, #metricTotalRecv, #metricTotalDue, .badge {
+  font-variant-numeric: tabular-nums;
+}
+.nav-item { position: relative; }
+.nav-item.active::after {
+  content: ""; position: absolute; top: 2px; left: 50%; transform: translateX(-50%);
+  width: 22px; height: 3px; border-radius: 3px; background: var(--accent, #f5c542);
+  box-shadow: 0 0 8px rgba(245,197,66,.6);
+}
+
+/* ===== Premium polish: numbers, micro-interactions, nav indicator ===== */
+#metricTotalBilled,#metricTotalRecv,#metricTotalDue,.badge,#dailyReminderText{font-variant-numeric:tabular-nums;}
+.card,.btn,.sub-tab-btn,.nav-item{-webkit-tap-highlight-color:transparent;}
+.btn:active,.card[onclick]:active,.sub-tab-btn:active{transform:scale(.97);transition:transform .1s ease;}
+.nav-item{position:relative;}
+.nav-item.active::before{content:"";position:absolute;top:-2px;left:50%;transform:translateX(-50%);width:26px;height:3px;border-radius:3px;background:linear-gradient(90deg,#f5c542,#ffe08a);box-shadow:0 0 8px rgba(245,197,66,.6);animation:ttNavPill .3s cubic-bezier(.16,1,.3,1) both;}
+@keyframes ttNavPill{from{width:0;opacity:0;}to{width:26px;opacity:1;}}
+/* ===== Enhanced Catalog UI: responsive glass-card grid ===== */
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;}
+.catalog-grid .card{margin-bottom:0;border-radius:16px;background:linear-gradient(160deg,var(--card),var(--bg));border:1px solid var(--border);box-shadow:0 4px 14px rgba(0,0,0,.05);transition:transform .15s ease,box-shadow .15s ease;}
+.catalog-grid .card:active{transform:scale(.97);}
+@media (min-width:520px){.catalog-grid .card:hover{box-shadow:0 10px 26px rgba(0,0,0,.09);transform:translateY(-2px);}}
+
+.page-top-header-banner,header{-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:0 8px 26px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.25);}
+
 /* ===== Premium tab-switch card entrance animation (user-suggested) ===== */
 .view-panel.active .card {
   animation: cardSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -563,6 +594,12 @@
 .toast-title{font-weight:800;font-size:13px;}
 .toast-body{font-size:12px;opacity:.85;}
 .toast-close{margin-left:auto;background:none;border:0;color:inherit;font-size:16px;cursor:pointer;}
+#broadcastToastContainer{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:0;right:0;z-index:9500;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 12px;}
+.broadcast-toast{pointer-events:auto;width:100%;max-width:420px;background:linear-gradient(160deg,rgba(20,30,48,.97),rgba(10,20,36,.97));color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:12px 14px;box-shadow:0 14px 34px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.04);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:ttToastIn .38s cubic-bezier(.16,1,.3,1) both;}
+.broadcast-toast .toast-title{color:#fff;}
+.broadcast-toast .toast-body{color:rgba(255,255,255,.82);white-space:pre-line;}
+@keyframes ttToastIn{from{opacity:0;transform:translateY(-16px) scale(.96);}to{opacity:1;transform:none;}}
+
 @media print{.no-print{display:none !important;}}
 
 @media print{body *{visibility:hidden !important;} #printableInvoiceArea,#printableInvoiceArea *{visibility:visible !important;} #printableInvoiceArea{position:absolute;left:0;top:0;width:100%;padding:8mm;} #invoicePrintModal{background:#fff !important;}}
@@ -700,9 +737,10 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 </div>
 
 <input type="file" id="chatAttachmentInput" style="display:none;" accept="image/*,.pdf,.doc,.docx" onchange="handleChatFileUpload(event)">
+<input type="file" id="chatCameraInput" style="display:none;" accept="image/*" capture="environment" onchange="handleChatFileUpload(event)">
 <input type="file" id="backupRestoreInput" style="display:none;" accept=".json" onchange="processRestoreJSON(event)">
-<input type="file" id="deliveryPhotoFileInput" accept="image/*" style="display:none;" onchange="handleDeliveryPhotoCaptured(event)">
-<input type="file" id="paymentProofFileInput" accept="image/*" style="display:none;" onchange="handlePaymentProofCaptured(event)">
+<input type="file" id="deliveryPhotoFileInput" accept="image/*" capture="environment" style="display:none;" onchange="handleDeliveryPhotoCaptured(event)">
+<input type="file" id="paymentProofFileInput" accept="image/*" capture="environment" style="display:none;" onchange="handlePaymentProofCaptured(event)">
 
 <!-- AUTH SCREEN -->
 <div id="authScreen" class="auth-overlay" style="display:none;">
@@ -876,8 +914,10 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
           <span class="brand-title-pvt">PVT. LTD.</span>
         </div>
         <div class="brand-sub-horizontal">
-          <span class="header-cloud-dot" title="Cloud Active"></span>
+          <span class="header-cloud-dot" id="syncDot" title="Cloud Active"></span>
+          <span id="syncText" style="font-weight:700; margin-right:4px;"></span>
           <span>Detailing &amp; Machinery Portal · Rasulgarh, BBSR</span>
+          <span id="offlineQueueBadge" style="display:none; margin-left:6px; font-size:9.5px; font-weight:800; color:#fff; background:var(--danger,#e11d48); padding:1px 7px; border-radius:8px;"></span>
         </div>
       </div>
     </div>
@@ -1064,6 +1104,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
           <div class="page-top-sub">High-Pressure Washers, Motors & Breakdown Tickets</div>
         </div>
         <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openMachinePartsModal()">🔩 Parts Reminders</button>
           <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openFilterModal('services')">🔍 Filter</button>
           <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openServiceCallModal()">+ New Call</button>
         </div>
@@ -1079,6 +1120,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
           <div class="page-top-sub">Machinery, Spares, Detailing Chemicals & Verified Clients</div>
         </div>
         <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); switchTab('catalog', null)">📖 Product Catalog</button>
           <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); loadMasterCatalogAction()">📦 Master Data</button>
           <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openAddPartModal()">+ Add Item</button>
         </div>
@@ -1094,7 +1136,6 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       <div class="sub-tabs" id="inventoryCategoryTabs" style="padding-bottom:10px; margin-bottom:14px; gap:8px;">
         <button class="sub-tab-btn active" onclick="triggerAppHaptic(); selectInventoryCategory('ALL', this)">🌟 All Items (<span id="catCountAll">0</span>)</button>
         <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Machines & Equipment', this)">🚜 Machines (<span id="catCountMach">0</span>)</button>
-        <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Catalog Equipment', this)">📖 Catalog Gear (<span id="catCountCat">0</span>)</button>
         <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Ma-Fra Chemicals', this)">🧼 Ma-Fra Chemicals (<span id="catCountMafraChem">0</span>)</button>
         <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Mafra Detailing', this)">✨ Mafra Detailing (<span id="catCountMafraDet">0</span>)</button>
         <button class="sub-tab-btn" onclick="triggerAppHaptic(); selectInventoryCategory('Maniac Line', this)">⚡ Maniac Line (<span id="catCountManiac">0</span>)</button>
@@ -1118,6 +1159,28 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       <div id="stockListContainer"></div>
     </div>
 
+    <!-- PRODUCT CATALOG (info-only - kabhi bhi order/bill me item add nahi karta) -->
+    <div id="view-catalog" class="view-panel">
+      <div class="page-top-header-banner">
+        <div>
+          <div class="page-top-title"><span>📖</span> <span>Product Catalog</span></div>
+          <div class="page-top-sub">Sirf jaankari ke liye - description, technical data & accessories. Isse koi bill/order nahi banta.</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); switchTab('inventory', document.querySelectorAll('.nav-item')[4])">← Back to Stock</button>
+        </div>
+      </div>
+
+      <div class="form-group autocomplete-wrapper" style="margin-bottom:12px;">
+        <input type="text" id="catalogSearchInput" placeholder="🔍 Product, machine, chemical, brand type karein..." oninput="handleCatalogSearchInput(this.value)" autocomplete="off">
+        <div class="solid-suggestion-box" id="catalogSuggestionBox" style="display:none;"></div>
+      </div>
+
+      <div class="sub-tabs" id="catalogSubTabs" style="padding-bottom:10px; margin-bottom:14px; gap:8px;"></div>
+
+      <div id="catalogListContainer" class="catalog-grid"></div>
+    </div>
+
     <!-- TAB 5: BILLING & LEDGER -->
     <div id="view-billing" class="view-panel">
       <div class="page-top-header-banner">
@@ -1129,6 +1192,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
           <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openDailyCashClosingModal()">💰 Cash Closing</button>
           <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); openAgeingAnalysisModal()">⏳ Ageing Analysis</button>
           <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); importLedgerFromJson()">📥 Import Ledger</button>
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); downloadBusinessSummaryReport()">📄 Summary Report</button>
         </div>
       </div>
 
@@ -1183,6 +1247,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
             <span style="font-size:18px; cursor:pointer;" onclick="document.getElementById('chatInputMessage').focus()" title="Emoji">😊</span>
             <input type="text" id="chatInputMessage" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendLiveChatMessage()">
             <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); document.getElementById('chatAttachmentInput').click()" style="padding:4px 8px; border:none; background:transparent; font-size:18px; color:var(--text-muted);" title="Attach File">📎</button>
+            <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); document.getElementById('chatCameraInput').click()" style="padding:4px 8px; border:none; background:transparent; font-size:18px; color:var(--text-muted);" title="Camera">📷</button>
           </div>
           <button class="chat-send-btn" onclick="triggerAppHaptic(); sendLiveChatMessage()" title="Send">
             <span style="font-size:16px; margin-left:1px;">➤</span>
@@ -2013,21 +2078,66 @@ function getStored(key, defaultVal) {
 }
 window.getStored = getStored;
 
+/* ===== OFFLINE DATA QUEUE ===== */
+/* Internet na ho to changes yahi save rehte hain, aur net wapas aate hi khud-ba-khud cloud me chale jaate hain */
+function ttQueueOffline(key, val) {
+  try {
+    const raw = localStorage.getItem(DB_PREFIX + 'OFFLINE_QUEUE');
+    const q = raw ? JSON.parse(raw) : {};
+    q[key] = val; // us key ka sabse latest data hi kaafi hai, poora dobara push ho jayega
+    localStorage.setItem(DB_PREFIX + 'OFFLINE_QUEUE', JSON.stringify(q));
+  } catch (e) { console.warn('Offline queue save failed', e); }
+  updateOfflineQueueBadge();
+}
+function updateOfflineQueueBadge() {
+  const el = document.getElementById('offlineQueueBadge');
+  let n = 0;
+  try {
+    const raw = localStorage.getItem(DB_PREFIX + 'OFFLINE_QUEUE');
+    n = raw ? Object.keys(JSON.parse(raw)).length : 0;
+  } catch (e) {}
+  if (el) { el.style.display = n > 0 ? 'inline-block' : 'none'; el.textContent = '⏳ ' + n + ' pending sync'; }
+}
+function ttFlushOfflineQueue() {
+  if (!navigator.onLine) return;
+  let raw;
+  try { raw = localStorage.getItem(DB_PREFIX + 'OFFLINE_QUEUE'); } catch (e) { return; }
+  if (!raw) return;
+  let q;
+  try { q = JSON.parse(raw); } catch (e) { return; }
+  const keys = Object.keys(q);
+  if (!keys.length) return;
+  try { localStorage.removeItem(DB_PREFIX + 'OFFLINE_QUEUE'); } catch (e) {}
+  updateOfflineQueueBadge();
+  keys.forEach(function (k) { ttCloudPush(k, q[k]); });
+}
+window.addEventListener('online', ttFlushOfflineQueue);
+window.addEventListener('offline', updateOfflineQueueBadge);
+setInterval(ttFlushOfflineQueue, 20000);
+
 function ttCloudPush(key, val, attemptsLeft) {
   attemptsLeft = (attemptsLeft == null) ? 25 : attemptsLeft;
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    ttQueueOffline(key, val);
+    return;
+  }
   if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') {
     window.cloudSync.pushKey(key, val).catch(function (e) {
       console.error('Cloud push failed, retrying', key, e);
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) { ttQueueOffline(key, val); return; }
       if (attemptsLeft > 0) setTimeout(function () { ttCloudPush(key, val, attemptsLeft - 1); }, 2000);
+      else ttQueueOffline(key, val);
     });
   } else if (attemptsLeft > 0) {
     // Cloud abhi connect ho raha hai (app abhi khula hai) - taiyar hote hi dobara try karega
     setTimeout(function () { ttCloudPush(key, val, attemptsLeft - 1); }, 1000);
   } else {
-    console.warn('Cloud sync ready nahi hua, data sirf is device par local save hua:', key);
+    console.warn('Cloud sync ready nahi hua, offline queue me daal diya:', key);
+    ttQueueOffline(key, val);
   }
 }
 window.ttCloudPush = ttCloudPush;
+document.addEventListener('DOMContentLoaded', updateOfflineQueueBadge);
 
 function setStored(key, val) {
   try {
@@ -2093,6 +2203,9 @@ let registeredEmployees = getStored("STAFF", []);
 window.registeredEmployees = registeredEmployees;
 
 let currentUser = getStored("SESSION_USER", null);
+// Admin check ko case/whitespace ki galti se surakshit banaya (jaise 'admin' ya ' Admin ' register ho gaya ho)
+function isAdminUser() { return !!(currentUser && String(currentUser.role || '').trim().toLowerCase() === 'admin'); }
+window.isAdminUser = isAdminUser;
 
 let customerDatabase = getStored("CUSTOMERS", (window.TTESPL_MASTER_DATA && window.TTESPL_MASTER_DATA.customers) || [
   { id: 1, name: "Trinity Techno Solution", person: "Trinity Techno Solution", phone: "6371256123", email: "", address: "Plot No-1159/2782, Behind Debaki Tower, Bomikhal, Khordha", gst: "21DDTPM0058K1ZC" }
@@ -2119,6 +2232,8 @@ let leadsData = getStored("LEADS", []);
 window.leadsData = leadsData;
 
 let ordersData = getStored("ORDERS", []);
+let machinePartsData = getStored("MACHINE_PARTS", []);
+window.machinePartsData = machinePartsData;
 window.ordersData = ordersData;
 
 let serviceCallsData = getStored("SERVICES", []);
@@ -2282,6 +2397,7 @@ function checkAuthSession() {
   } else {
     document.getElementById('authScreen').style.display = 'none';
     document.getElementById('mainAppWrapper').style.display = 'block';
+    ttSeedNavHistory();
     
     const initial = (currentUser.name && currentUser.name.trim().length > 0) ? currentUser.name.trim().charAt(0).toUpperCase() : 'U';
     const avatarEl = document.getElementById('headerProfileAvatarInitial');
@@ -2289,7 +2405,7 @@ function checkAuthSession() {
 
     const dotEl = document.getElementById('headerProfileDot');
     if (dotEl) {
-      if (currentUser.role === 'Admin') dotEl.classList.add('admin');
+      if (isAdminUser()) dotEl.classList.add('admin');
       else dotEl.classList.remove('admin');
     }
 
@@ -2299,7 +2415,7 @@ function checkAuthSession() {
     const mRole = document.getElementById('menuStaffRole');
     if (mRole) {
       mRole.textContent = currentUser.role || 'STAFF';
-      if (currentUser.role === 'Admin') mRole.classList.add('admin');
+      if (isAdminUser()) mRole.classList.add('admin');
       else mRole.classList.remove('admin');
     }
 
@@ -2312,7 +2428,7 @@ function checkAuthSession() {
 }
 
 function updateAdminDeleteVisibility() {
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const isAdmin = isAdminUser();
   document.querySelectorAll('.admin-only-btn').forEach(btn => {
     btn.style.display = isAdmin ? 'inline-flex' : 'none';
   });
@@ -2540,7 +2656,7 @@ function closePerformanceReportModal() {
 }
 
 function openStaffManageModal() {
-  if (!currentUser || currentUser.role !== 'Admin') {
+  if (!isAdminUser()) {
     alert("Permission Denied: Only Admin can manage staff.");
     return;
   }
@@ -2597,7 +2713,7 @@ function deleteStaffPrompt(empId) {
 }
 
 function openAdminEditLedgerModal(ordId) {
-  if (!currentUser || currentUser.role !== 'Admin') {
+  if (!isAdminUser()) {
     alert("Permission Denied: Sirf Admin hi ledger invoice modify kar sakte hain!");
     return;
   }
@@ -2646,7 +2762,7 @@ function saveAdminLedgerInvoice() {
 }
 
 function deleteAdminLedgerInvoice(ordId) {
-  if (!currentUser || currentUser.role !== 'Admin') {
+  if (!isAdminUser()) {
     alert("Permission Denied: Sirf Admin hi bill ledger se delete kar sakte hain!");
     return;
   }
@@ -3057,7 +3173,7 @@ async function loadMasterCatalogAction() {
 function renderLeads() {
   const c = document.getElementById('leadsListContainer');
   c.innerHTML = '';
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const isAdmin = isAdminUser();
 
   if (leadsData.length === 0) {
     c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Abhi koi active inquiry nahi hai.</div>`;
@@ -3169,7 +3285,7 @@ function saveLeadAction() {
 }
 
 function deleteLeadAction(id) {
-  if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
+  if (!isAdminUser()) { alert("Admin only!"); return; }
   if(confirm("Confirm DELETE this Lead?")) {
     leadsData = leadsData.filter(x => x.id !== id);
     setStored("LEADS", leadsData);
@@ -3196,7 +3312,7 @@ function renderOrders() {
   const c = document.getElementById('ordersListContainer');
   c.innerHTML = '';
   const today = new Date().toISOString().split('T')[0];
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const isAdmin = isAdminUser();
 
   const pendingList = ordersData.filter(o => o.status === 'Pending');
   const cancelledList = ordersData.filter(o => o.status === 'Cancelled');
@@ -3576,7 +3692,7 @@ function executeConfirmedPaymentCollection() {
 }
 
 function deleteOrderAction(id) {
-  if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
+  if (!isAdminUser()) { alert("Admin only!"); return; }
   if(confirm("Confirm DELETE order?")) {
     ordersData = ordersData.filter(x => x.id !== id);
     setStored("ORDERS", ordersData);
@@ -3597,9 +3713,9 @@ function shareOrderWhatsApp(ordId) {
   window.open(o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`, '_blank');
 }
 
-function executeInvoicePrint() {
-  const src = document.getElementById('tallyInvoiceBody');
-  if (!src || !src.innerHTML.trim()) { window.focus(); setTimeout(() => window.print(), 150); return; }
+// Shared PDF/print helper - ek alag hidden page me content bhejta hai (poore app se alag),
+// isliye Android app ke "Save as PDF" me bhi hamesha sahi content aata hai, blank nahi.
+function ttPrintHtml(title, bodyHtml) {
   let ifr = document.getElementById('ttPrintFrame');
   if (!ifr) {
     ifr = document.createElement('iframe');
@@ -3610,9 +3726,9 @@ function executeInvoicePrint() {
   const doc = ifr.contentWindow.document;
   doc.open();
   doc.write(
-    '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Tax Invoice</title>' +
+    '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(title || 'TTESPL Report') + '</title>' +
     '<style>*{box-sizing:border-box;} body{margin:0;padding:10px;font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff;} table{border-collapse:collapse;width:100%;} @page{margin:8mm;}</style>' +
-    '</head><body>' + src.innerHTML + '</body></html>'
+    '</head><body>' + bodyHtml + '</body></html>'
   );
   doc.close();
   // Android app ke print bridge ko poora page render hone ka thoda time dete hain
@@ -3627,6 +3743,57 @@ function executeInvoicePrint() {
     }
   }, 400);
 }
+window.ttPrintHtml = ttPrintHtml;
+
+function executeInvoicePrint() {
+  const src = document.getElementById('tallyInvoiceBody');
+  if (!src || !src.innerHTML.trim()) { window.focus(); setTimeout(() => window.print(), 150); return; }
+  ttPrintHtml('Tax Invoice', src.innerHTML);
+}
+
+function downloadBusinessSummaryReport() {
+  const today = new Date().toISOString().split('T')[0];
+  const delivered = ordersData.filter(o => o.status === 'Delivered');
+  const totalBilled = delivered.reduce((s, o) => s + o.totalAmount, 0);
+  const totalRecv = delivered.reduce((s, o) => s + o.recvAmount, 0);
+  const totalDue = delivered.reduce((s, o) => s + o.dueAmount, 0);
+
+  const byStaff = {};
+  delivered.forEach(o => {
+    const k = o.bookedBy || 'Unassigned';
+    if (!byStaff[k]) byStaff[k] = { bills: 0, billed: 0, recv: 0, due: 0 };
+    byStaff[k].bills++; byStaff[k].billed += o.totalAmount; byStaff[k].recv += o.recvAmount; byStaff[k].due += o.dueAmount;
+  });
+
+  const dueList = delivered.filter(o => o.dueAmount > 0).sort((a, b) => b.dueAmount - a.dueAmount).slice(0, 25);
+
+  const rupee = n => '₹' + Number(n || 0).toLocaleString('en-IN');
+  const th = 'style="padding:6px 8px; border:1px solid #ccc; background:#0a2540; color:#fff; text-align:left; font-size:12px;"';
+  const td = 'style="padding:6px 8px; border:1px solid #ccc; font-size:12px;"';
+
+  const staffRows = Object.keys(byStaff).sort((a, b) => byStaff[b].billed - byStaff[a].billed).map(k => {
+    const s = byStaff[k];
+    return `<tr><td ${td}>${esc(k)}</td><td ${td}>${s.bills}</td><td ${td}>${rupee(s.billed)}</td><td ${td}>${rupee(s.recv)}</td><td ${td}>${rupee(s.due)}</td></tr>`;
+  }).join('');
+
+  const dueRows = dueList.map(o => `<tr><td ${td}>${esc(o.customerName)}</td><td ${td}>${esc(o.id)}</td><td ${td}>${esc(o.bookedBy || '-')}</td><td ${td}>${rupee(o.dueAmount)}</td></tr>`).join('');
+
+  const html = `
+    <h2 style="margin:0 0 4px;">TTESPL - Business Summary Report</h2>
+    <div style="font-size:12px; color:#555; margin-bottom:16px;">Generated: ${today}</div>
+    <div style="display:flex; gap:14px; margin-bottom:18px;">
+      <div style="flex:1; border:1px solid #ccc; border-radius:8px; padding:10px;"><div style="font-size:11px; color:#555;">TOTAL BILLED</div><div style="font-size:18px; font-weight:800;">${rupee(totalBilled)}</div></div>
+      <div style="flex:1; border:1px solid #ccc; border-radius:8px; padding:10px;"><div style="font-size:11px; color:#555;">RECEIVED</div><div style="font-size:18px; font-weight:800;">${rupee(totalRecv)}</div></div>
+      <div style="flex:1; border:1px solid #ccc; border-radius:8px; padding:10px;"><div style="font-size:11px; color:#555;">DUE REMAINING</div><div style="font-size:18px; font-weight:800;">${rupee(totalDue)}</div></div>
+    </div>
+    <h3 style="margin:0 0 8px;">Staff-wise Sales & Due</h3>
+    <table style="margin-bottom:18px;"><tr><th ${th}>Staff</th><th ${th}>Bills</th><th ${th}>Billed</th><th ${th}>Received</th><th ${th}>Due</th></tr>${staffRows || `<tr><td ${td} colspan="5">Koi data nahi</td></tr>`}</table>
+    <h3 style="margin:0 0 8px;">Top Due Customers</h3>
+    <table><tr><th ${th}>Customer</th><th ${th}>Invoice</th><th ${th}>Staff</th><th ${th}>Due</th></tr>${dueRows || `<tr><td ${td} colspan="4">Koi due nahi</td></tr>`}</table>
+  `;
+  ttPrintHtml('Business Summary Report', html);
+}
+window.downloadBusinessSummaryReport = downloadBusinessSummaryReport;
 
 function openInvoicePrintModal(ordId) {
   const o = ordersData.find(x => String(x.id) === String(ordId));
@@ -3670,7 +3837,7 @@ function renderServices() {
   const c = document.getElementById('serviceListContainer');
   c.innerHTML = '';
   const today = new Date().toISOString().split('T')[0];
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const isAdmin = isAdminUser();
 
   if (serviceCallsData.length === 0) {
     c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi repair call pending nahi hai.</div>`;
@@ -3788,7 +3955,7 @@ function saveServiceAction() {
 }
 
 function deleteServiceAction(id) {
-  if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
+  if (!isAdminUser()) { alert("Admin only!"); return; }
   if(confirm("Confirm DELETE service?")) {
     serviceCallsData = serviceCallsData.filter(x => x.id !== id);
     setStored("SERVICES", serviceCallsData);
@@ -3838,7 +4005,7 @@ function renderStockList() {
   if(!c) return;
   c.innerHTML = '';
   updateCategoryCounts();
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const isAdmin = isAdminUser();
   const onlyAvailable = document.getElementById('onlyAvailableStockCheck').checked;
 
   if (activeInventoryCategory === 'CUSTOMERS') {
@@ -4016,7 +4183,7 @@ function saveStockItemAction() {
 
 function editStockItemPrompt(id) { const it = sampleInventory.find(x => x.id === id); if(it) openAddPartModal(it); }
 function deleteStockItem(id) {
-  if (!currentUser || currentUser.role !== 'Admin') { alert("Admin only!"); return; }
+  if (!isAdminUser()) { alert("Admin only!"); return; }
   if(confirm("Confirm DELETE item?")) {
     sampleInventory = sampleInventory.filter(x => x.id !== id);
     setStored("INVENTORY", sampleInventory);
@@ -4091,7 +4258,7 @@ function renderBilling(filterType, empFilter = "ALL") {
 
   const container = document.getElementById('billingListContainer');
   container.innerHTML = '';
-  const isAdmin = currentUser && (currentUser.role === 'Admin');
+  const isAdmin = isAdminUser();
 
   let list = ledgerList;
   if(empFilter !== "ALL") list = list.filter(o => o.bookedBy === empFilter);
@@ -4131,7 +4298,7 @@ function renderBilling(filterType, empFilter = "ALL") {
         </div>
         <div style="display:flex; align-items:center; gap:6px;">
           <span class="badge ${o.dueAmount > 0 ? 'badge-danger' : 'badge-delivered'}">${o.dueAmount > 0 ? 'Due: ₹' + o.dueAmount : 'Paid'}</span>
-          ${isAdmin ? `<button class="btn btn-outline btn-sm admin-only-btn" onclick="triggerAppHaptic(); openAdminEditLedgerModal('${o.id}')">✏️</button>` : ''}
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openAdminEditLedgerModal('${o.id}')">✏️</button>
         </div>
       </div>
       ${(o.dueAmount > 0 && o.payFollowupDate) ? `<div style="margin-top:8px; font-size:12px; font-weight:800; color:${o.payFollowupDate <= new Date().toISOString().split('T')[0] ? 'var(--danger)' : 'var(--warning, #d97706)'};">📅 Payment follow-up: ${o.payFollowupDate}${o.payFollowupNote ? ' — ' + esc(o.payFollowupNote) : ''}</div>` : ''}
@@ -4269,16 +4436,21 @@ function updateGlobalReminders() {
   let delDue = ordersData.filter(o => o.status === 'Pending' && o.deliveryDate <= today).length;
   let srvDue = serviceCallsData.filter(s => s.status !== 'Work Completed' && s.targetDate <= today).length;
   const payFu = getPaymentFollowupsDue();
+  const partsDue = getDuePartsList();
   let txt = `${delDue} Orders Due | ${srvDue} Services Due`;
   if (payFu.length > 0) {
     const names = payFu.slice(0, 2).map(o => o.customerName).join(', ') + (payFu.length > 2 ? ` +${payFu.length - 2} more` : '');
     txt += ` | 📞 Today follow up ${names} for due payment`;
   }
+  if (partsDue.length > 0) {
+    const pnames = partsDue.slice(0, 2).map(p => `${p.partName} (${p.machineName})`).join(', ') + (partsDue.length > 2 ? ` +${partsDue.length - 2} more` : '');
+    txt += ` | 🔩 Replace ${pnames}`;
+  }
   document.getElementById('dailyReminderText').textContent = txt;
 
   // Daily notification (ek device par din me ek hi baar, sirf Admin login par)
   try {
-    if (payFu.length > 0 && currentUser && currentUser.role === 'Admin') {
+    if (payFu.length > 0 && isAdminUser()) {
       const key = 'TT_PAYFU_NOTIF_' + today;
       if (!localStorage.getItem(key)) {
         localStorage.setItem(key, '1');
@@ -4292,7 +4464,127 @@ function updateGlobalReminders() {
       }
     }
   } catch (e) { console.warn('payment follow-up notif skipped', e); }
+
+  try {
+    if (partsDue.length > 0 && isAdminUser()) {
+      const key = 'TT_PARTS_NOTIF_' + today;
+      if (!localStorage.getItem(key)) {
+        localStorage.setItem(key, '1');
+        if (window.cloudSync && typeof window.cloudSync.pushLiveNotification === 'function') {
+          window.cloudSync.pushLiveNotification({
+            title: "🔩 Machine Part Replacement Due",
+            body: partsDue.slice(0, 3).map(p => `${p.partName} - ${p.machineName} (${p.customerName || 'Workshop'})`).join('\n'),
+            type: "info"
+          });
+        }
+      }
+    }
+  } catch (e) { console.warn('parts reminder notif skipped', e); }
 }
+
+/* ===== MACHINE PARTS REPLACEMENT REMINDERS ===== */
+function ttPartNextDue(p) {
+  const d = new Date(p.installedDate);
+  if (isNaN(d)) return '';
+  d.setMonth(d.getMonth() + (Number(p.intervalMonths) || 0));
+  return d.toISOString().split('T')[0];
+}
+function getDuePartsList() {
+  const today = new Date().toISOString().split('T')[0];
+  return (machinePartsData || []).filter(p => ttPartNextDue(p) && ttPartNextDue(p) <= today);
+}
+window.getDuePartsList = getDuePartsList;
+
+function openMachinePartsModal() {
+  let m = document.getElementById('machinePartsModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'machinePartsModal';
+    m.className = 'auth-overlay';
+    m.style.display = 'none';
+    document.body.appendChild(m);
+  }
+  renderMachinePartsModal();
+  m.style.display = 'flex';
+}
+window.openMachinePartsModal = openMachinePartsModal;
+
+function renderMachinePartsModal() {
+  const m = document.getElementById('machinePartsModal');
+  if (!m) return;
+  const today = new Date().toISOString().split('T')[0];
+  const list = (machinePartsData || []).slice().sort((a, b) => (ttPartNextDue(a) || '9999').localeCompare(ttPartNextDue(b) || '9999'));
+  const rows = list.map(p => {
+    const due = ttPartNextDue(p);
+    const isDue = due && due <= today;
+    return `<div class="card" style="padding:10px 12px; margin-bottom:8px;">
+      <div style="display:flex; justify-content:space-between; gap:8px;">
+        <div>
+          <strong style="font-size:13.5px; color:var(--text-main);">${esc(p.partName)}</strong>
+          <div style="font-size:11.5px; color:var(--text-muted);">${esc(p.machineName)}${p.customerName ? ' • ' + esc(p.customerName) : ''}</div>
+          <div style="font-size:11px; color:${isDue ? 'var(--danger)' : 'var(--text-muted)'}; font-weight:${isDue ? 800 : 400}; margin-top:3px;">${isDue ? '⚠️ Replace due: ' : 'Next replace: '}${esc(due || '-')}</div>
+        </div>
+        <button class="btn btn-outline btn-sm" style="height:fit-content;" onclick="triggerAppHaptic(); deleteMachinePart('${p.id}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('') || `<div style="text-align:center; padding:15px; color:var(--text-muted); font-size:12.5px;">Koi part tracked nahi hai.</div>`;
+
+  m.innerHTML = `<div class="auth-card" style="max-width:460px;">
+    <div class="card-header"><span class="card-title">🔩 Machine Parts Replacement Reminders</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('machinePartsModal').style.display='none'">✕</button></div>
+    <div style="max-height:260px; overflow-y:auto; margin-bottom:14px;">${rows}</div>
+    <div style="border-top:1px solid var(--border); padding-top:12px;">
+      <label class="form-label">Machine Name</label>
+      <input type="text" id="mpMachineName" placeholder="e.g. HRR PRO 11.14" style="width:100%; margin-bottom:8px;">
+      <label class="form-label">Customer (optional)</label>
+      <input type="text" id="mpCustomerName" placeholder="e.g. Sai Car Care" style="width:100%; margin-bottom:8px;">
+      <label class="form-label">Part Name</label>
+      <input type="text" id="mpPartName" placeholder="e.g. HP Pump Seal Kit" style="width:100%; margin-bottom:8px;">
+      <div style="display:flex; gap:8px;">
+        <div style="flex:1;">
+          <label class="form-label">Installed Date</label>
+          <input type="date" id="mpInstalledDate" style="width:100%;">
+        </div>
+        <div style="flex:1;">
+          <label class="form-label">Replace After (months)</label>
+          <input type="number" id="mpIntervalMonths" min="1" value="6" style="width:100%;">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="triggerAppHaptic(); saveMachinePart()">💾 Add Reminder</button>
+    </div>
+  </div>`;
+  const dateEl = document.getElementById('mpInstalledDate');
+  if (dateEl) dateEl.value = today;
+}
+
+function saveMachinePart() {
+  const machineName = document.getElementById('mpMachineName').value.trim();
+  const partName = document.getElementById('mpPartName').value.trim();
+  const installedDate = document.getElementById('mpInstalledDate').value;
+  const intervalMonths = Number(document.getElementById('mpIntervalMonths').value) || 6;
+  if (!machineName || !partName || !installedDate) { alert('Machine name, part name aur installed date bharein!'); return; }
+  const entry = {
+    id: 'MP' + Date.now(),
+    machineName, partName, installedDate, intervalMonths,
+    customerName: document.getElementById('mpCustomerName').value.trim(),
+    addedBy: currentUser ? currentUser.name : 'Staff'
+  };
+  machinePartsData.push(entry);
+  window.machinePartsData = machinePartsData;
+  setStored("MACHINE_PARTS", machinePartsData);
+  updateGlobalReminders();
+  renderMachinePartsModal();
+}
+window.saveMachinePart = saveMachinePart;
+
+function deleteMachinePart(id) {
+  if (!confirm('Ye reminder delete karein?')) return;
+  machinePartsData = machinePartsData.filter(p => p.id !== id);
+  window.machinePartsData = machinePartsData;
+  setStored("MACHINE_PARTS", machinePartsData);
+  updateGlobalReminders();
+  renderMachinePartsModal();
+}
+window.deleteMachinePart = deleteMachinePart;
 
 function switchTab(tab, el) {
   document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
@@ -4314,6 +4606,7 @@ function switchTab(tab, el) {
   if(tab === 'orders') renderOrders();
   if(tab === 'services') renderServices();
   if(tab === 'inventory') renderStockList();
+  if(tab === 'catalog') renderCatalog();
   if(tab === 'billing') renderBilling('all');
   if(tab === 'chat') renderChatMessages();
 }
@@ -4349,11 +4642,34 @@ function showBroadcastToastAlert(notif) {
     </div>
     <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
   `;
+  toast.style.cursor = 'pointer';
+  toast.onclick = (e) => { if (!e.target.closest('.toast-close')) toast.remove(); };
   container.prepend(toast);
 
-  setTimeout(() => {
-    if (toast.parentElement) toast.remove();
-  }, 7000);
+  // Order/Delivery/Payment jaisi zaroori events ab khud se turant gayab nahi hongi -
+  // jab tak koi tap karke band na kare, dikhti rahengi (bilkul push notification jaisa).
+  // Baaki (jaise reminders) purani tarah 8 second me apne aap chali jayengi.
+  const isImportant = ['order', 'delivery', 'payment'].indexOf(notif.type) >= 0;
+  if (!isImportant) {
+    setTimeout(() => {
+      if (toast.parentElement) toast.remove();
+    }, 8000);
+  }
+
+  // Sirf is device ke khule app-page tak simit "3 second toast" hi nahi -
+  // ab ye Android/browser ke asli notification tray me bhi jata hai, taaki
+  // app minimized/background me ho tab bhi HAR device par dikhe.
+  try {
+    if (window.Notification && Notification.permission === 'granted') {
+      const sysNotif = new Notification(notif.title || 'TTESPL Alert', {
+        body: notif.body || '',
+        tag: 'ttespl-' + (notif.type || 'info') + '-' + (notif.timestamp || Date.now()),
+        renotify: true,
+        silent: true // hamara apna beep upar already bajaya ja chuka hai, double-beep na ho
+      });
+      sysNotif.onclick = () => { try { window.focus(); } catch (e) {} sysNotif.close(); };
+    }
+  } catch (e) { console.warn('System notification failed', e); }
 }
 window.showBroadcastToastAlert = showBroadcastToastAlert;
 
@@ -4531,7 +4847,7 @@ function ttPick(nrow, key) {
 function ttLast10(p) { return String(p || '').replace(/\D/g, '').slice(-10); }
 
 async function importLedgerFromJson() {
-  if (!currentUser || currentUser.role !== 'Admin') { alert('Permission Denied: Sirf Admin ledger import kar sakte hain!'); return; }
+  if (!isAdminUser()) { alert('Permission Denied: Sirf Admin ledger import kar sakte hain!'); return; }
   let data;
   try {
     const res = await fetch('ledger-import.json?v=' + Date.now(), { cache: 'no-store' });
@@ -4893,7 +5209,7 @@ function downloadFullBackup() {
 async function restoreBackupFile(ev) {
   const f = ev.target.files[0]; ev.target.value = '';
   if (!f) return;
-  if (!currentUser || currentUser.role !== 'Admin') { alert('Sirf Admin restore kar sakta hai.'); return; }
+  if (!isAdminUser()) { alert('Sirf Admin restore kar sakta hai.'); return; }
   try {
     const j = JSON.parse(await f.text());
     const data = j && j.data;
@@ -4921,6 +5237,164 @@ async function restoreBackupFile(ev) {
   } catch (e) { alert('Restore fail: ' + e.message); }
 }
 window.openBackupModal = openBackupModal; window.downloadFullBackup = downloadFullBackup; window.restoreBackupFile = restoreBackupFile;
+
+/* ===== PRODUCT CATALOG (read-only reference - never feeds into orders/billing) ===== */
+let activeCatalogSub = 'ALL';
+
+function getCatalogItems() {
+  return (sampleInventory || []).filter(i => i.category === 'Catalog Equipment');
+}
+
+function renderCatalog() {
+  const items = getCatalogItems();
+  const subs = Array.from(new Set(items.map(i => i.subCategory).filter(Boolean))).sort();
+
+  const tabsBox = document.getElementById('catalogSubTabs');
+  if (tabsBox) {
+    tabsBox.innerHTML = `<button class="sub-tab-btn ${activeCatalogSub === 'ALL' ? 'active' : ''}" onclick="triggerAppHaptic(); selectCatalogSub('ALL', this)">🌟 All (${items.length})</button>` +
+      subs.map(s => {
+        const c = items.filter(i => i.subCategory === s).length;
+        return `<button class="sub-tab-btn ${activeCatalogSub === s ? 'active' : ''}" onclick="triggerAppHaptic(); selectCatalogSub('${esc(s).replace(/'/g, "\\'")}', this)">${esc(s)} (${c})</button>`;
+      }).join('');
+  }
+  filterCatalog(document.getElementById('catalogSearchInput') ? document.getElementById('catalogSearchInput').value : '');
+}
+window.renderCatalog = renderCatalog;
+
+function selectCatalogSub(sub, el) {
+  activeCatalogSub = sub;
+  document.querySelectorAll('#catalogSubTabs .sub-tab-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  filterCatalog(document.getElementById('catalogSearchInput').value);
+}
+window.selectCatalogSub = selectCatalogSub;
+
+function filterCatalog(q) {
+  q = String(q || '').toLowerCase().trim();
+  let list = getCatalogItems();
+  if (activeCatalogSub !== 'ALL') list = list.filter(i => i.subCategory === activeCatalogSub);
+  if (q) list = list.filter(i => (i.name && i.name.toLowerCase().includes(q)) || (i.subCategory && i.subCategory.toLowerCase().includes(q)) || (i.desc && i.desc.toLowerCase().includes(q)));
+
+  const box = document.getElementById('catalogListContainer');
+  if (!box) return;
+  if (list.length === 0) {
+    box.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi product nahi mila.</div>`;
+    return;
+  }
+  box.innerHTML = list.map(i => `
+    <div class="card" style="cursor:pointer;" onclick="triggerAppHaptic(); openCatalogDetail(${i.id})">
+      <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+        <div style="flex:1;">
+          <strong style="font-size:14.5px; color:var(--text-main);">${esc(i.name)}</strong>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">${esc(i.subCategory || 'Catalog')}</div>
+          ${i.desc ? `<div style="font-size:12px; color:var(--text-muted); margin-top:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(i.desc)}</div>` : ''}
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <button class="btn btn-outline btn-sm" style="padding:4px 8px;" title="Web par search karein" onclick="event.stopPropagation(); triggerAppHaptic(); openCatalogWebSearch('${esc(i.name).replace(/'/g, "\\'")}')">🌐</button>
+          <span style="font-size:18px;">›</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+window.filterCatalog = filterCatalog;
+
+function openCatalogWebSearch(name) {
+  const url = 'https://www.google.com/search?q=' + encodeURIComponent(name);
+  window.open(url, '_blank');
+}
+window.openCatalogWebSearch = openCatalogWebSearch;
+
+function handleCatalogSearchInput(val) {
+  filterCatalog(val);
+  const q = String(val || '').toLowerCase().trim();
+  const box = document.getElementById('catalogSuggestionBox');
+  if (!box) return;
+  if (!q) { box.style.display = 'none'; return; }
+  const matches = getCatalogItems().filter(i => (i.name && i.name.toLowerCase().includes(q)) || (i.subCategory && i.subCategory.toLowerCase().includes(q))).slice(0, 8);
+  if (!matches.length) { box.style.display = 'none'; return; }
+  box.innerHTML = matches.map(i => `
+    <div class="suggestion-item" onmousedown="triggerAppHaptic(); openCatalogDetail(${i.id})">
+      <div style="flex:1;">
+        <strong style="font-size:12.5px; color:var(--text-main);">${esc(i.name)}</strong>
+        <div class="suggestion-sub">${esc(i.subCategory || 'Catalog')}</div>
+      </div>
+    </div>
+  `).join('');
+  box.style.display = 'block';
+}
+window.handleCatalogSearchInput = handleCatalogSearchInput;
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest || !e.target.closest('#catalogSearchInput, #catalogSuggestionBox')) {
+    const b = document.getElementById('catalogSuggestionBox');
+    if (b) b.style.display = 'none';
+  }
+});
+
+function openCatalogDetail(id) {
+  const i = getCatalogItems().find(x => x.id === id);
+  if (!i) return;
+  let m = document.getElementById('catalogDetailModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'catalogDetailModal';
+    m.className = 'auth-overlay';
+    m.style.display = 'none';
+    document.body.appendChild(m);
+  }
+  const row = (label, val) => val ? `<div style="margin-bottom:14px;"><div style="font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:4px;">${esc(label)}</div><div style="font-size:13.5px; color:var(--text-main); white-space:pre-wrap; line-height:1.5;">${esc(val)}</div></div>` : '';
+  m.innerHTML = `<div class="auth-card" style="max-width:480px;">
+    <div class="card-header"><span class="card-title">${esc(i.name)}</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('catalogDetailModal').style.display='none'">✕</button></div>
+    ${row('Category', [i.category, i.subCategory].filter(Boolean).join(' → '))}
+    ${row('Model / Code', [i.machine && i.machine !== i.name ? i.machine : '', i.code].filter(Boolean).join(' • '))}
+    ${row('Description', i.desc)}
+    ${row('Technical Data / Specs', i.specs)}
+    ${(i.rate > 0) ? row('Indicative Price', '₹' + Number(i.rate).toLocaleString('en-IN')) : ''}
+    <button class="btn btn-outline btn-block" style="margin-top:6px;" onclick="triggerAppHaptic(); openCatalogWebSearch('${esc(i.name).replace(/'/g, "\'")}')">🌐 Search on Web</button>
+    <div style="margin-top:10px; padding-top:12px; border-top:1px solid var(--border); font-size:11px; color:var(--text-muted);">Ye sirf reference catalog hai - is item se koi bill ya order nahi banta.</div>
+  </div>`;
+  m.style.display = 'flex';
+}
+window.openCatalogDetail = openCatalogDetail;
+
+/* ===== BACK BUTTON FIX ===== */
+/* Android/browser ka back button ab poora app band karne ki jagah - pehle khula
+   modal band karta hai, fir pichle tab par le jaata hai, tabhi app close hota hai */
+function ttCurrentTabName() {
+  const active = document.querySelector('.view-panel.active');
+  return active ? active.id.replace('view-', '') : 'dashboard';
+}
+function ttPushNavState(tab) {
+  try { history.pushState({ ttTab: tab }, '', '#' + tab); } catch (e) {}
+}
+function ttSeedNavHistory() {
+  try { history.replaceState({ ttTab: ttCurrentTabName() }, '', '#' + ttCurrentTabName()); } catch (e) {}
+}
+if (typeof switchTab === 'function' && !switchTab.__ttNavWrapped) {
+  const __origSwitchTab = switchTab;
+  window.switchTab = function (tab, el, fromPop) {
+    __origSwitchTab(tab, el);
+    if (!fromPop) ttPushNavState(tab);
+  };
+  window.switchTab.__ttNavWrapped = true;
+}
+window.addEventListener('popstate', function (e) {
+  // Sabse pehle: agar koi popup/modal khula hai, back button use hi band kare
+  const openModal = Array.from(document.querySelectorAll('.auth-overlay')).find(m => m.style.display === 'flex');
+  if (openModal) {
+    openModal.style.display = 'none';
+    ttPushNavState(ttCurrentTabName()); // history yahin rok do, taaki agla back tab badle
+    return;
+  }
+  const tab = (e.state && e.state.ttTab) || 'dashboard';
+  if (document.getElementById('view-' + tab)) {
+    const navBtns = document.querySelectorAll('.nav-item');
+    const order = ['dashboard', 'leads', 'orders', 'services', 'inventory', 'billing', 'chat'];
+    const idx = order.indexOf(tab);
+    window.switchTab(tab, navBtns[idx] || null, true);
+  }
+});
 </script>
 
 </body>
