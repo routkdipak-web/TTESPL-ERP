@@ -1902,7 +1902,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="master-data.js?v=4"></script>
-<script src="live-sync.js?v=6"></script>
+<script src="live-sync.js?v=7"></script>
 
 <script>
 /* ==========================================================================
@@ -2115,6 +2115,13 @@ window.addEventListener('online', ttFlushOfflineQueue);
 window.addEventListener('offline', updateOfflineQueueBadge);
 setInterval(ttFlushOfflineQueue, 20000);
 
+function ttWithTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise(function (_, reject) { setTimeout(function () { reject(new Error('cloud-timeout')); }, ms); })
+  ]);
+}
+
 function ttCloudPush(key, val, attemptsLeft) {
   attemptsLeft = (attemptsLeft == null) ? 25 : attemptsLeft;
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
@@ -2122,7 +2129,10 @@ function ttCloudPush(key, val, attemptsLeft) {
     return;
   }
   if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') {
-    window.cloudSync.pushKey(key, val).catch(function (e) {
+    // Agar cloud write "latak" jaye (na safal ho na fail) to bhi 10 second baad
+    // ise fail maan kar retry/offline-queue chalu ho jayega - warna pehle aisi
+    // situation me app chup-chaap kuch nahi karta tha aur data kahin nahi jaata tha
+    ttWithTimeout(window.cloudSync.pushKey(key, val), 10000).catch(function (e) {
       console.error('Cloud push failed, retrying', key, e);
       if (typeof navigator !== 'undefined' && navigator.onLine === false) { ttQueueOffline(key, val); return; }
       if (attemptsLeft > 0) setTimeout(function () { ttCloudPush(key, val, attemptsLeft - 1); }, 2000);
@@ -5377,12 +5387,49 @@ function openCatalogDetail(id) {
     ${row('Description', i.desc)}
     ${row('Technical Data / Specs', i.specs)}
     ${(i.rate > 0) ? row('Indicative Price', '₹' + Number(i.rate).toLocaleString('en-IN')) : ''}
-    <button class="btn btn-outline btn-block" style="margin-top:6px;" onclick="triggerAppHaptic(); openCatalogWebSearch('${esc(i.name).replace(/'/g, "\'")}')">🌐 Search on Web</button>
+    <div id="catalogAiBox" style="margin:4px 0 10px; padding:10px 12px; border-radius:12px; background:var(--bg); border:1px dashed var(--border); font-size:12.5px; line-height:1.5; color:var(--text-main);">
+      <div style="font-weight:800; font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:4px;">🤖 AI Summary (Google Search se)</div>
+      <div id="catalogAiBoxBody">⏳ Dhoond raha hai...</div>
+    </div>
+    <button class="btn btn-outline btn-block" style="margin-top:6px;" onclick="triggerAppHaptic(); openCatalogWebSearch('${esc(i.name).replace(/'/g, "\'")}')">🌐 Search on Web / Photos</button>
     <div style="margin-top:10px; padding-top:12px; border-top:1px solid var(--border); font-size:11px; color:var(--text-muted);">Ye sirf reference catalog hai - is item se koi bill ya order nahi banta.</div>
   </div>`;
   m.style.display = 'flex';
+  fetchCatalogAiSummary(i.name);
 }
 window.openCatalogDetail = openCatalogDetail;
+
+/* ===== AI Summary (Gemini + Google Search grounding) ===== */
+const TT_GEMINI_API_KEY = "AQ.Ab8RN6LSsIljxExrgMsibV7xWnRU_0zb-_BK4PM90wSr0CPVew";
+async function fetchCatalogAiSummary(productName) {
+  const body = document.getElementById('catalogAiBoxBody');
+  if (!body) return;
+  if (!TT_GEMINI_API_KEY) { body.textContent = 'AI summary abhi setup nahi hai.'; return; }
+  try {
+    const prompt = 'Yeh ek car-detailing/machinery product hai: "' + productName + '" (brand: TTESPL / Twin Town Express Services ka catalog item). ' +
+      'Google search karke iske baare me 3-4 chhoti lines me Hindi-English mix (Hinglish) me batao: ye kya hai, kis kaam aata hai, agar chemical/liquid hai to dilution ratio kya hota hai, aur zaroori accessories/safety baat. Bahut sankshipt rakho, bullet jaisa.';
+    const res = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': TT_GEMINI_API_KEY },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          tools: [{ google_search: {} }]
+        })
+      }
+    );
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const parts = (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
+    const text = parts.map(p => p.text || '').join('').trim();
+    body.innerHTML = text ? esc(text).replace(/\n/g, '<br>') : 'Kuch bhi nahi mila is product ke baare me.';
+  } catch (e) {
+    console.error('Gemini summary failed', e);
+    body.textContent = '⚠️ AI summary load nahi ho paya (internet ya quota check karein). Niche "Search on Web" try karein.';
+  }
+}
+window.fetchCatalogAiSummary = fetchCatalogAiSummary;
 
 /* ===== BACK BUTTON FIX ===== */
 /* Android/browser ka back button ab poora app band karne ki jagah - pehle khula
