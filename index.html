@@ -739,8 +739,8 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 <input type="file" id="chatAttachmentInput" style="display:none;" accept="image/*,.pdf,.doc,.docx" onchange="handleChatFileUpload(event)">
 <input type="file" id="chatCameraInput" style="display:none;" accept="image/*" capture="environment" onchange="handleChatFileUpload(event)">
 <input type="file" id="backupRestoreInput" style="display:none;" accept=".json" onchange="processRestoreJSON(event)">
-<input type="file" id="deliveryPhotoFileInput" accept="image/*" capture="environment" style="display:none;" onchange="handleDeliveryPhotoCaptured(event)">
-<input type="file" id="paymentProofFileInput" accept="image/*" capture="environment" style="display:none;" onchange="handlePaymentProofCaptured(event)">
+<input type="file" id="deliveryPhotoFileInput" accept="image/*" style="display:none;" onchange="handleDeliveryPhotoCaptured(event)">
+<input type="file" id="paymentProofFileInput" accept="image/*" style="display:none;" onchange="handlePaymentProofCaptured(event)">
 
 <!-- AUTH SCREEN -->
 <div id="authScreen" class="auth-overlay" style="display:none;">
@@ -5300,8 +5300,34 @@ function filterCatalog(q) {
 window.filterCatalog = filterCatalog;
 
 function openCatalogWebSearch(name) {
-  const url = 'https://www.google.com/search?q=' + encodeURIComponent(name);
-  window.open(url, '_blank');
+  // Ab Chrome me bahar nahi jata - app ke andar hi ek chhota "browser" panel khulta hai
+  const q = encodeURIComponent(name);
+  let m = document.getElementById('inAppBrowserModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'inAppBrowserModal';
+    m.className = 'auth-overlay';
+    m.style.display = 'none';
+    m.innerHTML = `<div class="auth-card" style="max-width:none; width:100%; height:100dvh; max-height:100dvh; margin:0; border-radius:0; padding:0; display:flex; flex-direction:column;">
+      <div class="card-header" style="padding:12px 14px; border-bottom:1px solid var(--border); flex-shrink:0;">
+        <span class="card-title" id="inAppBrowserTitle" style="font-size:13.5px;">🌐 Searching...</span>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" id="inAppBrowserOpenExtBtn">↗ Browser me kholein</button>
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('inAppBrowserModal').style.display='none'; document.getElementById('inAppBrowserFrame').src='about:blank';">✕</button>
+        </div>
+      </div>
+      <div style="font-size:11px; color:var(--text-muted); padding:6px 14px; border-bottom:1px solid var(--border); flex-shrink:0;">
+        Result seedha web se hai (ye app khud isse likh/summarize nahi karta). Agar page yahan khali dikhe, to upar wala "Browser me kholein" button dabayein.
+      </div>
+      <iframe id="inAppBrowserFrame" style="flex:1; width:100%; border:0; background:#fff;"></iframe>
+    </div>`;
+    document.body.appendChild(m);
+  }
+  document.getElementById('inAppBrowserTitle').textContent = '🌐 ' + name;
+  const extUrl = 'https://www.google.com/search?tbm=isch&q=' + q;
+  document.getElementById('inAppBrowserOpenExtBtn').onclick = () => window.open(extUrl, '_blank');
+  document.getElementById('inAppBrowserFrame').src = 'https://www.bing.com/search?q=' + q;
+  m.style.display = 'flex';
 }
 window.openCatalogWebSearch = openCatalogWebSearch;
 
