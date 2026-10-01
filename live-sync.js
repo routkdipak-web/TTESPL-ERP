@@ -231,6 +231,19 @@
       pendingRender = {};
     }
 
+    // APP-RESUME FLICKER FIX: jab phone background se wapas app pe aata hai, Firestore
+    // saari collections ka data thodi-thodi der me ek-ek karke bhejta hai. Agar har
+    // collection turant screen draw kare to UI bahut tezi se kai baar badalta
+    // (flicker) dikhta hai. Isliye: jab tak SAARI collections ka pehla data load nahi
+    // ho jata (ya 4 second guzar nahi jate), screen ko bilkul nahi chhedte - jo pehle
+    // se dikh raha hai wahi dikhta rehta hai. Fir ek hi saaf, turant update hota hai.
+    // Uske baad se hamesha wala normal (250ms wala) tarika chalta hai.
+    var initialKeysPending = Object.keys(MAP).length;
+    var initialLoadDone = false;
+    var initialLoadTimer = setTimeout(function () {
+      if (!initialLoadDone) { initialLoadDone = true; flushRender(); }
+    }, 4000);
+
     // Live Snapshot Listeners across all devices
     Object.keys(MAP).forEach(function (key) {
       F.onSnapshot(F.collection(db, MAP[key]), function (snap) {
@@ -260,7 +273,17 @@
             break;
         }
 
-        scheduleRender(key);
+        if (!initialLoadDone) {
+          pendingRender[key] = true;
+          initialKeysPending--;
+          if (initialKeysPending <= 0) {
+            initialLoadDone = true;
+            clearTimeout(initialLoadTimer);
+            flushRender();
+          }
+        } else {
+          scheduleRender(key);
+        }
       }, function (err) {
         console.error('Stream error:', key, err);
         setSync('Offline', false);
