@@ -158,6 +158,19 @@
         return F.addDoc(F.collection(db, 'app_notifications'), notifDoc);
       },
 
+      // Real Android push notification ke liye: jab bhi koi staff "Enable Notifications"
+      // allow karta hai, uske phone ka FCM token yahan save hota hai. Cloud Function
+      // isi list ko padh kar, jab bhi naya app_notifications doc bane, sabko asli
+      // system notification bhejta hai (app band ho tab bhi).
+      saveFcmToken: function (token, staffName) {
+        if (!token) return Promise.resolve();
+        return F.setDoc(F.doc(db, 'fcm_tokens', did(token)), {
+          token: token,
+          staff: staffName || 'Staff',
+          updatedAt: Date.now()
+        }, { merge: true });
+      },
+
       wipeAll: function () {
         var collectionsToWipe = Object.keys(MAP).map(function (k) { return MAP[k]; })
           .concat(['team_messages', 'chat_status', 'app_notifications']);
