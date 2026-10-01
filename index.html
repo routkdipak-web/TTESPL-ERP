@@ -1267,6 +1267,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
     <div class="fab-action-btn" onclick="triggerAppHaptic(); openOrderModal(); toggleFabMenu();">📦 New Order</div>
     <div class="fab-action-btn" onclick="triggerAppHaptic(); openLeadModal(); toggleFabMenu();">🎯 New Lead</div>
     <div class="fab-action-btn" onclick="triggerAppHaptic(); openServiceCallModal(); toggleFabMenu();">🛠️ Service Call</div>
+    <div class="fab-action-btn" onclick="triggerAppHaptic(); openQuotationModal(); toggleFabMenu();">📝 Quotation</div>
     <div class="fab-action-btn" onclick="triggerAppHaptic(); openProfitCalculatorModal(); toggleFabMenu();">🧮 Profit Calculator</div>
     <div class="fab-action-btn" onclick="triggerAppHaptic(); openPerformanceReportModal(); toggleFabMenu();">📈 Sales Report</div>
   </div>
@@ -5178,6 +5179,268 @@ function buildTallyInvoiceHtml(o) {
 </div>`;
 }
 window.buildTallyInvoiceHtml = buildTallyInvoiceHtml;
+
+/* ===== QUOTATION (Service/Leads se banayi ja sakti he) ===== */
+function openQuotationModal() {
+  let m = document.getElementById('quotationModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'quotationModal';
+    m.className = 'auth-overlay';
+    m.style.display = 'none';
+    m.innerHTML = `<div class="auth-card" style="max-width:520px;">
+      <div class="card-header"><span class="card-title">📝 New Quotation</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('quotationModal').style.display='none'">✕</button></div>
+
+      <label class="form-label">Customer</label>
+      <div style="position:relative; margin-bottom:10px;">
+        <input type="text" id="quotCustName" placeholder="Type customer name or phone..." oninput="handleQuotCustomerAutocomplete(this)" style="width:100%;">
+        <div class="solid-suggestion-box" id="quotCustSuggestBox"></div>
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <input type="text" id="quotCustPhone" placeholder="Phone" style="flex:1;">
+        <input type="text" id="quotCustGst" placeholder="GSTIN (optional)" style="flex:1;">
+      </div>
+      <input type="text" id="quotCustAddr" placeholder="Address" style="width:100%; margin-bottom:14px;">
+
+      <label class="form-label">Items</label>
+      <div id="quotItemsBody"></div>
+      <button class="btn btn-outline btn-sm" style="margin:6px 0 14px;" onclick="quotAddItemRow()">➕ Add Item</button>
+
+      <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <div style="flex:1;"><label class="form-label">Service &amp; Travel Charges</label><input type="number" id="quotServiceCharge" value="0" oninput="quotRecalc()" style="width:100%;"></div>
+        <div style="flex:1;"><label class="form-label">Mode of Payment</label><input type="text" id="quotPayMode" value="Cash/Online" style="width:100%;"></div>
+      </div>
+
+      <div id="quotTotalsBox" style="background:var(--card-glass); border:1px solid var(--card-glass-border); border-radius:10px; padding:10px 12px; margin-bottom:14px; font-size:13px;"></div>
+
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary" style="flex:2;" onclick="printQuotation()">🖨️ Print / Share Quotation</button>
+        <button class="btn btn-outline" style="flex:1;" onclick="document.getElementById('quotationModal').style.display='none'">Close</button>
+      </div>
+    </div>`;
+    document.body.appendChild(m);
+  }
+  document.getElementById('quotCustName').value = '';
+  document.getElementById('quotCustPhone').value = '';
+  document.getElementById('quotCustGst').value = '';
+  document.getElementById('quotCustAddr').value = '';
+  document.getElementById('quotServiceCharge').value = '0';
+  document.getElementById('quotPayMode').value = 'Cash/Online';
+  document.getElementById('quotItemsBody').innerHTML = '';
+  quotAddItemRow();
+  m.style.display = 'flex';
+}
+
+function handleQuotCustomerAutocomplete(inputEl) {
+  const val = (inputEl.value || '').toLowerCase().trim();
+  const box = document.getElementById('quotCustSuggestBox');
+  if (!box) return;
+  if (!val) { box.style.display = 'none'; return; }
+  const matches = (customerDatabase || []).filter(c =>
+    (c.name && c.name.toLowerCase().includes(val)) || (c.phone && String(c.phone).includes(val))
+  ).slice(0, 8);
+  if (matches.length === 0) { box.style.display = 'none'; return; }
+  box.innerHTML = matches.map(c => `
+    <div class="suggestion-item" onmousedown="selectQuotCustomerSuggestion('${encodeURIComponent(c.name || '')}', '${c.phone || ''}', '${encodeURIComponent(c.address || '')}', '${encodeURIComponent(c.gst || '')}')">
+      <div style="flex:1;">
+        <strong style="font-size:13px; color:var(--text-main);">${c.name || ''}</strong>
+        <div class="suggestion-sub">📍 ${c.address || ''}</div>
+      </div>
+      <span class="badge badge-info" style="font-size:10px;">${c.phone || ''}</span>
+    </div>`).join('');
+  box.style.display = 'block';
+}
+function selectQuotCustomerSuggestion(encName, phone, encAddr, encGst) {
+  document.getElementById('quotCustName').value = decodeURIComponent(encName);
+  document.getElementById('quotCustPhone').value = phone || '';
+  document.getElementById('quotCustAddr').value = decodeURIComponent(encAddr || '');
+  document.getElementById('quotCustGst').value = decodeURIComponent(encGst || '');
+  document.getElementById('quotCustSuggestBox').style.display = 'none';
+}
+
+function quotAddItemRow() {
+  const wrap = document.getElementById('quotItemsBody');
+  const row = document.createElement('div');
+  row.className = 'quot-item-row';
+  row.style.cssText = 'border:1px solid var(--border); border-radius:10px; padding:8px; margin-bottom:8px; position:relative;';
+  row.innerHTML = `
+    <div style="position:relative; margin-bottom:6px;">
+      <input type="text" class="qit-name" placeholder="Type product name..." oninput="handleQuotItemInput(this)" style="width:100%;">
+      <div class="solid-suggestion-box"></div>
+    </div>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <input type="text" class="qit-hsn" placeholder="HSN" style="width:70px; font-size:12px;">
+      <input type="number" class="qit-qty" placeholder="Qty" value="1" min="0" oninput="quotRecalc()" style="width:55px;">
+      <input type="number" class="qit-rate" placeholder="Rate" value="0" oninput="quotRecalc()" style="flex:1; min-width:70px;">
+      <input type="number" class="qit-disc" placeholder="Disc%" value="0" oninput="quotRecalc()" style="width:55px;">
+      <button class="btn btn-outline btn-sm" onclick="this.closest('.quot-item-row').remove(); quotRecalc();" style="padding:4px 8px;">✕</button>
+    </div>`;
+  wrap.appendChild(row);
+  quotRecalc();
+}
+
+function handleQuotItemInput(inputEl) {
+  const val = (inputEl.value || '').toLowerCase().trim();
+  const row = inputEl.closest('.quot-item-row');
+  if (!row) return;
+  const box = row.querySelector('.solid-suggestion-box');
+  if (!val) { box.style.display = 'none'; return; }
+  const matches = (sampleInventory || []).filter(p =>
+    (p.name && p.name.toLowerCase().includes(val)) || (p.code && p.code.toLowerCase().includes(val))
+  ).slice(0, 8);
+  if (matches.length === 0) { box.style.display = 'none'; return; }
+  box.innerHTML = matches.map(p => `
+    <div class="suggestion-item" onmousedown="selectQuotItemSuggestion(this, '${encodeURIComponent(p.name || '')}', '${p.hsn || ''}', ${p.rate || 0})">
+      <div style="flex:1;">
+        <strong style="font-size:12.5px; color:var(--text-main);">${p.name}</strong>
+        <div class="suggestion-sub">SKU: ${p.code || 'N/A'}</div>
+      </div>
+      <strong style="color:var(--accent); font-size:13px;">₹${p.rate || 0}</strong>
+    </div>`).join('');
+  box.style.display = 'block';
+}
+function selectQuotItemSuggestion(el, encName, hsn, rate) {
+  const row = el.closest('.quot-item-row');
+  if (!row) return;
+  row.querySelector('.qit-name').value = decodeURIComponent(encName);
+  row.querySelector('.qit-hsn').value = hsn || '';
+  row.querySelector('.qit-rate').value = rate || 0;
+  row.querySelector('.solid-suggestion-box').style.display = 'none';
+  quotRecalc();
+}
+
+function quotRecalc() {
+  const rows = document.querySelectorAll('#quotItemsBody .quot-item-row');
+  let totalNoGst = 0;
+  rows.forEach(r => {
+    const qty = Number(r.querySelector('.qit-qty').value) || 0;
+    const rate = Number(r.querySelector('.qit-rate').value) || 0;
+    const disc = Number(r.querySelector('.qit-disc').value) || 0;
+    totalNoGst += qty * rate * (1 - disc / 100);
+  });
+  const svc = Number(document.getElementById('quotServiceCharge').value) || 0;
+  const cgst = totalNoGst * 0.09, sgst = totalNoGst * 0.09;
+  const grand = totalNoGst + cgst + sgst + svc;
+  const roundOff = Math.round(grand) - grand;
+  const final = Math.round(grand);
+  const box = document.getElementById('quotTotalsBox');
+  if (box) box.innerHTML = `
+    <div style="display:flex; justify-content:space-between;"><span>Total Without GST</span><strong>₹${ttInr(totalNoGst)}</strong></div>
+    <div style="display:flex; justify-content:space-between;"><span>CGST @ 9%</span><strong>₹${ttInr(cgst)}</strong></div>
+    <div style="display:flex; justify-content:space-between;"><span>SGST @ 9%</span><strong>₹${ttInr(sgst)}</strong></div>
+    <div style="display:flex; justify-content:space-between;"><span>Service &amp; Travel</span><strong>₹${ttInr(svc)}</strong></div>
+    <div style="display:flex; justify-content:space-between;"><span>Round Off</span><strong>₹${ttInr(roundOff)}</strong></div>
+    <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); margin-top:6px; padding-top:6px; font-size:15px;"><span>Total</span><strong style="color:var(--accent);">₹${final.toLocaleString('en-IN')}</strong></div>`;
+  return { totalNoGst, cgst, sgst, svc, roundOff, final };
+}
+
+function quotNextId() {
+  const d = new Date();
+  const mon = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+  const yy = String(d.getFullYear()).slice(-2);
+  const seqKey = DB_PREFIX + 'QUOT_SEQ_' + mon + yy;
+  let seq = Number(localStorage.getItem(seqKey) || '0') + 1;
+  localStorage.setItem(seqKey, String(seq));
+  return `QTN-${mon}-${yy}-${String(seq).padStart(3, '0')}`;
+}
+
+function buildQuotationHtml(q) {
+  const B = 'border:1px solid #000;';
+  const cell = 'padding:3px 5px;vertical-align:top;';
+  const meta = (l, v) => `<div style="${B}border-width:0 0 1px 1px;padding:2px 5px;min-height:28px;"><div style="font-size:9.5px;">${l}</div><div style="font-weight:700;font-size:11px;">${v || ''}</div></div>`;
+  const itemRows = q.items.map((i, n) => `<tr>
+    <td style="${cell}border-left:1px solid #000;text-align:center;">${n + 1}</td>
+    <td style="${cell}border-left:1px solid #000;">${esc(i.name)}</td>
+    <td style="${cell}border-left:1px solid #000;text-align:center;">${esc(i.hsn)}</td>
+    <td style="${cell}border-left:1px solid #000;text-align:center;">18</td>
+    <td style="${cell}border-left:1px solid #000;text-align:center;">${i.qty}</td>
+    <td style="${cell}border-left:1px solid #000;text-align:right;">${ttInr(i.rate)}</td>
+    <td style="${cell}border-left:1px solid #000;text-align:center;">Nos</td>
+    <td style="${cell}border-left:1px solid #000;text-align:center;">${i.disc} %</td>
+    <td style="${cell}border-left:1px solid #000;border-right:1px solid #000;text-align:right;">₹${ttInr(i.amount)}</td></tr>`).join('');
+  return `
+<div style="font-family:Arial,Helvetica,sans-serif;color:#000;font-size:11px;line-height:1.35;">
+  <div style="${B}display:flex; justify-content:space-between; padding:6px 8px;"><strong style="font-size:15px;">QUOTATION</strong><span style="font-size:9.5px;">(ORIGINAL FOR RECIPIENT)</span></div>
+  <div style="${B}border-top:0;">
+    <div style="display:grid;grid-template-columns:1.25fr 1fr;">
+      <div style="padding:5px 6px;border-bottom:1px solid #000;">
+        <strong style="font-size:12.5px;">TWINTOWN EXPRESS SERVICES PVT LTD</strong><br>
+        PLOT:1270/8566, SATYA VIHAR, RASHULGARH,<br>BHUBANESWAR-751010<br>
+        Ph-8917465040 / 6743175599<br>GSTIN/UIN: 21AAICT6014E1ZT<br>State Name : Odisha, Code : 21<br>E-Mail : info@ttespl.com
+      </div>
+      <div style="border-left:1px solid #000;display:grid;grid-template-columns:1fr 1fr;">
+        ${meta('Quotation No.', esc(q.id))}${meta('Dated', esc(q.date))}
+        ${meta('Mode/Terms of Payment', esc(q.payMode))}${meta('Terms of Delivery', '100% Advance')}
+      </div>
+    </div>
+    <div style="padding:5px 6px;border-top:1px solid #000;">
+      <span style="font-size:9.5px;">Consignee / Buyer (Bill to)</span><br>
+      <strong>${esc(q.custName)}</strong><br>${esc(q.custAddr || '')}<br>${q.custPhone ? 'Contact: ' + esc(q.custPhone) + '<br>' : ''}
+      GSTIN/UIN : ${esc(q.custGst || 'Unregistered')}
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:11px;border-top:1px solid #000;">
+      <thead><tr style="text-align:center;">
+        <th style="${B}${cell}width:24px;">SI No.</th><th style="${B}${cell}">Description of Goods</th><th style="${B}${cell}">HSN/SAC</th>
+        <th style="${B}${cell}">GST Rate</th><th style="${B}${cell}">Qty.</th><th style="${B}${cell}">Rate</th>
+        <th style="${B}${cell}">per</th><th style="${B}${cell}">Disc. %</th><th style="${B}${cell}">Amount</th></tr></thead>
+      <tbody>${itemRows}</tbody>
+    </table>
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #000;">
+      <div></div>
+      <div>
+        <div style="display:flex;justify-content:space-between;padding:2px 6px;border-left:1px solid #000;"><span>Total Without GST</span><strong>₹${ttInr(q.totalNoGst)}</strong></div>
+        <div style="display:flex;justify-content:space-between;padding:2px 6px;border-left:1px solid #000;border-top:1px solid #000;"><span>Out Put CGST @ 9%</span><strong>₹${ttInr(q.cgst)}</strong></div>
+        <div style="display:flex;justify-content:space-between;padding:2px 6px;border-left:1px solid #000;border-top:1px solid #000;"><span>Out Put SGST @ 9%</span><strong>₹${ttInr(q.sgst)}</strong></div>
+        <div style="display:flex;justify-content:space-between;padding:2px 6px;border-left:1px solid #000;border-top:1px solid #000;background:#eef4e8;"><span>Service &amp; travel charges</span><strong>₹${ttInr(q.svc)}</strong></div>
+        <div style="display:flex;justify-content:space-between;padding:2px 6px;border-left:1px solid #000;border-top:1px solid #000;"><span>Round Off</span><strong>₹${ttInr(q.roundOff)}</strong></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 6px;border:1px solid #000;border-top:1px solid #000;font-weight:800;font-size:13px;"><span>Total</span><strong>₹${q.final.toLocaleString('en-IN')}</strong></div>
+      </div>
+    </div>
+    <div style="padding:4px 6px;border-top:1px solid #000;">Amount (in words)<br><strong style="font-size:12px;">${ttWords(q.final)}</strong></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #000;">
+      <div style="padding:5px 6px;font-size:10px;"><strong>Company's Bank Details</strong><br>A/c Name: TWINTOWN EXPRESS SERVICES PVT LTD<br>Bank Name: ICICI BANK (CUTTACK ROAD)<br>A/c No. &amp; IFSC: 150005501249 | ICIC0001500</div>
+      <div style="padding:5px 6px;border-left:1px solid #000;text-align:right;font-size:10.5px;">for <strong>TWINTOWN EXPRESS SERVICES PVT LTD</strong><br><br><br>Authorised Signatory</div>
+    </div>
+  </div>
+  <div style="text-align:center;font-size:10px;margin-top:4px;">This is a Computer Generated Quotation</div>
+</div>`;
+}
+
+function printQuotation() {
+  const custName = document.getElementById('quotCustName').value.trim();
+  if (!custName) { alert('Customer ka naam daalo'); return; }
+  const rows = document.querySelectorAll('#quotItemsBody .quot-item-row');
+  const items = Array.from(rows).map(r => {
+    const qty = Number(r.querySelector('.qit-qty').value) || 0;
+    const rate = Number(r.querySelector('.qit-rate').value) || 0;
+    const disc = Number(r.querySelector('.qit-disc').value) || 0;
+    return {
+      name: r.querySelector('.qit-name').value.trim() || 'Item',
+      hsn: r.querySelector('.qit-hsn').value.trim() || '-',
+      qty, rate, disc, amount: qty * rate * (1 - disc / 100)
+    };
+  }).filter(i => i.name);
+  if (items.length === 0) { alert('Kam se kam ek item add karo'); return; }
+  const t = quotRecalc();
+  const q = {
+    id: quotNextId(),
+    date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+    custName, custPhone: document.getElementById('quotCustPhone').value.trim(),
+    custAddr: document.getElementById('quotCustAddr').value.trim(),
+    custGst: document.getElementById('quotCustGst').value.trim(),
+    payMode: document.getElementById('quotPayMode').value.trim() || 'Cash/Online',
+    items, totalNoGst: t.totalNoGst, cgst: t.cgst, sgst: t.sgst, svc: t.svc, roundOff: t.roundOff, final: t.final
+  };
+  // Record ek local history me rakhte hain (is device pe) taaki baad me dekha ja sake
+  try {
+    const key = DB_PREFIX + 'QUOTATIONS_HISTORY';
+    const hist = JSON.parse(localStorage.getItem(key) || '[]');
+    hist.unshift({ id: q.id, date: q.date, custName: q.custName, final: q.final });
+    localStorage.setItem(key, JSON.stringify(hist.slice(0, 200)));
+  } catch (e) { console.error('Quotation history save failed', e); }
+  ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q));
+}
+window.openQuotationModal = openQuotationModal;
 
 /* ---- Ledger detail page ---- */
 function ttViewPhoto(src) {
