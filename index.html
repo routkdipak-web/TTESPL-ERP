@@ -4690,8 +4690,13 @@ window.showBroadcastToastAlert = showBroadcastToastAlert;
 function requestAppSystemPermissions() {
   if (window.Notification && Notification.permission !== 'granted') {
     Notification.requestPermission().then(perm => {
-      if (perm === 'granted') alert("✓ Notification Alerts Active!");
+      if (perm === 'granted') {
+        alert("✓ Notification Alerts Active!");
+        if (typeof enablePushNotificationsFCM === 'function') enablePushNotificationsFCM();
+      }
     });
+  } else if (window.Notification && Notification.permission === 'granted') {
+    if (typeof enablePushNotificationsFCM === 'function') enablePushNotificationsFCM();
   }
 
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -4706,6 +4711,54 @@ function requestAppSystemPermissions() {
   }
 }
 window.requestAppSystemPermissions = requestAppSystemPermissions;
+
+/* ===== Real Android push notification setup (FCM) ===== */
+var ttMessaging = null, ttMessagingMod = null;
+var TT_VAPID_KEY = "BEH0BShvwEYtoJd2LZmjZveapaE6UrmW9uQkzBA1HcLXFT9-ZMrGuOphsWJItSigUlhF1lrfNvsiEEs9H_nMEZw";
+function ttInitMessaging(cb) {
+  if (ttMessaging) { cb(); return; }
+  Promise.all([
+    import('https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js'),
+    import('https://www.gstatic.com/firebasejs/12.19.0/firebase-messaging.js')
+  ]).then(function (mods) {
+    var A = mods[0], M = mods[1];
+    var cfg = {
+      apiKey: "AIzaSyAjsq2wbyXmt8_MjEazM9mAYd5vlZW0dy4",
+      authDomain: "ttespl.firebaseapp.com",
+      projectId: "ttespl",
+      storageBucket: "ttespl.firebasestorage.app",
+      messagingSenderId: "244674439608",
+      appId: "1:244674439608:web:7f7299ffd94e0a0cc5474d"
+    };
+    var app = A.getApps().length ? A.getApp() : A.initializeApp(cfg);
+    ttMessagingMod = M;
+    ttMessaging = M.getMessaging(app);
+    cb();
+  }).catch(function (e) { console.error('FCM init failed', e); });
+}
+function enablePushNotificationsFCM() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  if (!TT_VAPID_KEY || TT_VAPID_KEY === "PASTE_YOUR_VAPID_KEY_HERE") { console.warn('FCM: VAPID key abhi set nahi hui'); return; }
+  navigator.serviceWorker.register('firebase-messaging-sw.js').then(function (reg) {
+    ttInitMessaging(function () {
+      ttMessagingMod.getToken(ttMessaging, { vapidKey: TT_VAPID_KEY, serviceWorkerRegistration: reg }).then(function (token) {
+        if (!token) return;
+        var staffName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.name : 'Staff';
+        if (window.cloudSync && typeof window.cloudSync.saveFcmToken === 'function') {
+          window.cloudSync.saveFcmToken(token, staffName);
+        }
+      }).catch(function (e) { console.error('FCM getToken failed', e); });
+    });
+  }).catch(function (e) { console.error('Service worker register failed', e); });
+}
+window.enablePushNotificationsFCM = enablePushNotificationsFCM;
+// Agar permission pehle se hi granted hai (purane user), to agli baar app khulte hi
+// token refresh/save ho jaye - taaki sabko dobara button dabane ki zarurat na pade.
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.Notification && Notification.permission === 'granted') {
+    setTimeout(enablePushNotificationsFCM, 2500);
+  }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   checkAuthSession();
