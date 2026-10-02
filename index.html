@@ -3233,7 +3233,7 @@ function renderLeads() {
       </div>
       ${lead.status === 'Installed' ? `
       <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-        <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); printInstallationReport('${lead.id}')">📄 Print Installation Report</button>
+        <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openInstallationReportView('${lead.id}')">📄 Open Installation Report</button>
         ${ttNextDueBadge(lead)}
       </div>` : `
       <button class="btn btn-primary btn-sm btn-block" style="margin-top:8px;" onclick="triggerAppHaptic(); openInstallationReportModal('${lead.id}')">✅ Confirm Installation &amp; Create Report</button>`}
@@ -4765,6 +4765,18 @@ function ttInitMessaging(cb) {
     cb();
   }).catch(function (e) { console.error('FCM init failed', e); });
 }
+function ttSaveFcmTokenWhenReady(token, staffName, attemptsLeft) {
+  // BUG FIX: pehle ye seedha check karta tha, aur agar us waqt live-sync.js
+  // (Firebase) abhi load hi nahi hua tha to token chupchap save hi nahi hota tha -
+  // koi error bhi nahi dikhta tha, isliye pata hi nahi chalta tha. Ab jab tak
+  // cloudSync taiyar na ho jaye, 1-1 second ruk ke dobara try karta hai (max 20 baar).
+  if (window.cloudSync && typeof window.cloudSync.saveFcmToken === 'function') {
+    window.cloudSync.saveFcmToken(token, staffName);
+    return;
+  }
+  if (attemptsLeft <= 0) { console.error('FCM: cloud kabhi ready nahi hua, token save nahi ho paya'); return; }
+  setTimeout(function () { ttSaveFcmTokenWhenReady(token, staffName, attemptsLeft - 1); }, 1000);
+}
 function enablePushNotificationsFCM() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
   if (!TT_VAPID_KEY || TT_VAPID_KEY === "PASTE_YOUR_VAPID_KEY_HERE") { console.warn('FCM: VAPID key abhi set nahi hui'); return; }
@@ -4773,9 +4785,7 @@ function enablePushNotificationsFCM() {
       ttMessagingMod.getToken(ttMessaging, { vapidKey: TT_VAPID_KEY, serviceWorkerRegistration: reg }).then(function (token) {
         if (!token) return;
         var staffName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.name : 'Staff';
-        if (window.cloudSync && typeof window.cloudSync.saveFcmToken === 'function') {
-          window.cloudSync.saveFcmToken(token, staffName);
-        }
+        ttSaveFcmTokenWhenReady(token, staffName, 20);
       }).catch(function (e) { console.error('FCM getToken failed', e); });
     });
   }).catch(function (e) { console.error('Service worker register failed', e); });
@@ -5613,17 +5623,147 @@ function saveInstallationReport() {
     { n: 4, label: '4th Free Service', date: d4, done: false }
   ];
   lead.maintenanceSchedule = TT_MAINT_SCHEDULE.map(ms => ({
-    part: ms.part, code: ms.code, dueDate: ttAddDays(installDate, ms.days), done: false
+    part: ms.part, code: ms.code, days: ms.days, dueDate: ttAddDays(installDate, ms.days), lastChangedDate: null
   }));
 
   setStored("LEADS", leadsData);
   document.getElementById('installReportModal').style.display = 'none';
   renderLeads();
   renderDashboard();
-  alert("Installation Report save ho gaya! 4 Free Service aur Maintenance schedule apne aap ban gaye hain.");
-  printInstallationReport(leadId);
+  openInstallationReportView(leadId);
 }
 window.saveInstallationReport = saveInstallationReport;
+
+/* -------- INSTALLATION REPORT: VIEW (print yahan se, + free-service/maintenance tracking) -------- */
+function openInstallationReportView(leadId) {
+  const lead = leadsData.find(x => x.id === leadId);
+  if (!lead || !lead.installReport) { alert('Pehle Installation Report banao.'); return; }
+  let m = document.getElementById('installReportViewModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'installReportViewModal';
+    m.className = 'auth-overlay';
+    m.style.display = 'none';
+    document.body.appendChild(m);
+  }
+  renderInstallationReportView(leadId);
+  m.style.display = 'flex';
+}
+window.openInstallationReportView = openInstallationReportView;
+
+function renderInstallationReportView(leadId) {
+  const lead = leadsData.find(x => x.id === leadId);
+  const m = document.getElementById('installReportViewModal');
+  if (!lead || !m) return;
+  const fsHtml = (lead.freeServiceSchedule || []).map((f, i) => `
+    <div style="display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border); border-radius:8px; padding:8px 10px; margin-bottom:6px;">
+      <div>
+        <strong style="font-size:12.5px;">${esc(f.label)}</strong><br>
+        <span style="font-size:11.5px; color:var(--text-muted);">Due: ${f.date} ${f.done ? `| ✅ Done on ${f.report ? f.report.date : ''}` : ''}</span>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="openFreeServiceReportModal('${leadId}', ${i})">${f.done ? '📋 Edit Report' : '📋 Fill Report'}</button>
+    </div>`).join('');
+  const msHtml = (lead.maintenanceSchedule || []).map((ms, i) => `
+    <div style="border:1px solid var(--border); border-radius:8px; padding:8px 10px; margin-bottom:6px;">
+      <div style="display:flex; justify-content:space-between;">
+        <strong style="font-size:12.5px;">${esc(ms.part)}</strong>
+        <span style="font-size:11.5px; color:${ms.dueDate <= new Date().toISOString().split('T')[0] ? 'var(--danger)' : 'var(--text-muted)'};">Due: ${ms.dueDate}</span>
+      </div>
+      <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Kit Code: ${esc(ms.code)}${ms.lastChangedDate ? ` | Last Changed: ${ms.lastChangedDate}` : ''}</div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <input type="date" id="msDate_${leadId}_${i}" style="flex:1; font-size:12px; padding:6px;" value="${new Date().toISOString().split('T')[0]}">
+        <button class="btn btn-primary btn-sm" onclick="markMaintenancePartChanged('${leadId}', ${i})">✔️ Mark Changed</button>
+      </div>
+    </div>`).join('');
+  m.innerHTML = `<div class="auth-card" style="max-width:560px;">
+    <div class="card-header"><span class="card-title">📄 Installation Report</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('installReportViewModal').style.display='none'">✕</button></div>
+    <button class="btn btn-primary btn-block" style="margin-bottom:14px;" onclick="printInstallationReport('${leadId}')">🖨️ Print / Save as PDF</button>
+    <div style="border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:16px; max-height:280px; overflow-y:auto;">${buildInstallationReportHtml(lead)}</div>
+    <strong style="font-size:14px;">🗓️ Free Service Schedule</strong>
+    <div style="margin:8px 0 16px;">${fsHtml}</div>
+    <strong style="font-size:14px;">🔩 Spare Parts / Maintenance Due</strong>
+    <div style="margin:8px 0 4px;">${msHtml}</div>
+  </div>`;
+}
+window.renderInstallationReportView = renderInstallationReportView;
+
+function markMaintenancePartChanged(leadId, idx) {
+  const lead = leadsData.find(x => x.id === leadId);
+  if (!lead || !lead.maintenanceSchedule || !lead.maintenanceSchedule[idx]) return;
+  const dateInput = document.getElementById('msDate_' + leadId + '_' + idx);
+  const changedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+  const ms = lead.maintenanceSchedule[idx];
+  ms.lastChangedDate = changedDate;
+  ms.dueDate = ttAddDays(changedDate, ms.days); // agla due date khud ban jata hai
+  setStored("LEADS", leadsData);
+  renderInstallationReportView(leadId);
+  renderLeads();
+  alert(`${ms.part} change date save ho gaya. Agla due date: ${ms.dueDate}`);
+}
+window.markMaintenancePartChanged = markMaintenancePartChanged;
+
+/* -------- FREE SERVICE REPORT (per visit) -------- */
+function openFreeServiceReportModal(leadId, idx) {
+  const lead = leadsData.find(x => x.id === leadId);
+  if (!lead || !lead.freeServiceSchedule || !lead.freeServiceSchedule[idx]) return;
+  const f = lead.freeServiceSchedule[idx];
+  let m = document.getElementById('freeServiceReportModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'freeServiceReportModal';
+    m.className = 'auth-overlay';
+    m.style.display = 'none';
+    m.innerHTML = `<div class="auth-card" style="max-width:480px;">
+      <div class="card-header"><span class="card-title" id="fsReportTitle">📋 Free Service Report</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('freeServiceReportModal').style.display='none'">✕</button></div>
+      <input type="hidden" id="fsLeadId"><input type="hidden" id="fsIdx">
+      <label class="form-label">Date of Service</label>
+      <input type="date" id="fsServiceDate" style="width:100%; margin-bottom:10px;">
+      <label class="form-label">Technician Name</label>
+      <input type="text" id="fsTechName" style="width:100%; margin-bottom:10px;">
+      <label class="form-label">Service Notes / Remarks</label>
+      <textarea id="fsNotes" rows="3" style="width:100%; margin-bottom:10px;"></textarea>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+        <button class="btn btn-outline btn-sm" onclick="openSignatureModal()">✍️ Customer Signature</button>
+        <span id="fsSignStatus" style="font-size:11.5px; color:var(--text-muted);">Customer Sign: Not attached</span>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="saveFreeServiceReport()">💾 Save Service Report</button>
+    </div>`;
+    document.body.appendChild(m);
+  }
+  document.getElementById('fsReportTitle').textContent = '📋 ' + f.label;
+  document.getElementById('fsLeadId').value = leadId;
+  document.getElementById('fsIdx').value = idx;
+  const r = f.report || {};
+  document.getElementById('fsServiceDate').value = r.date || new Date().toISOString().split('T')[0];
+  document.getElementById('fsTechName').value = r.technician || '';
+  document.getElementById('fsNotes').value = r.notes || '';
+  window._ttLastSignatureData = r.signature || null;
+  document.getElementById('fsSignStatus').textContent = r.signature ? 'Customer Sign: ✓ Attached' : 'Customer Sign: Not attached';
+  document.getElementById('fsSignStatus').style.color = r.signature ? 'var(--success)' : 'var(--text-muted)';
+  m.style.display = 'flex';
+}
+window.openFreeServiceReportModal = openFreeServiceReportModal;
+
+function saveFreeServiceReport() {
+  const leadId = document.getElementById('fsLeadId').value;
+  const idx = Number(document.getElementById('fsIdx').value);
+  const lead = leadsData.find(x => x.id === leadId);
+  if (!lead || !lead.freeServiceSchedule[idx]) return;
+  const f = lead.freeServiceSchedule[idx];
+  f.report = {
+    date: document.getElementById('fsServiceDate').value,
+    technician: document.getElementById('fsTechName').value.trim(),
+    notes: document.getElementById('fsNotes').value.trim(),
+    signature: window._ttLastSignatureData || null
+  };
+  f.done = true;
+  setStored("LEADS", leadsData);
+  document.getElementById('freeServiceReportModal').style.display = 'none';
+  renderInstallationReportView(leadId);
+  renderLeads();
+  alert('Free service report save ho gaya!');
+}
+window.saveFreeServiceReport = saveFreeServiceReport;
 
 function buildInstallationReportHtml(lead) {
   const r = lead.installReport || {};
