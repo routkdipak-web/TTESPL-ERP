@@ -2932,11 +2932,16 @@ function openSignatureModal() {
 function closeSignModal() { document.getElementById('signatureModal').style.display = 'none'; }
 function clearSignCanvas() { if (sigCtx) sigCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height); }
 function saveCustomerSignature() {
-  const statusEl = document.getElementById('srvSignStatus');
-  if (statusEl) {
-    statusEl.textContent = "Customer Sign: ✓ Attached";
-    statusEl.style.color = "var(--success)";
-  }
+  // Signature ki image khud bhi yaad rakhte hain (reports me use karne ke liye) -
+  // purana status-text wala kaam bilkul waisa hi chalta rehta hai.
+  try { if (signatureCanvas) window._ttLastSignatureData = signatureCanvas.toDataURL('image/png'); } catch (e) {}
+  ['srvSignStatus', 'instSignStatus', 'srvReportSignStatus'].forEach(function (id) {
+    const statusEl = document.getElementById(id);
+    if (statusEl) {
+      statusEl.textContent = "Customer Sign: ✓ Attached";
+      statusEl.style.color = "var(--success)";
+    }
+  });
   closeSignModal();
   alert("Customer signature verify ho gaya!");
 }
@@ -3226,6 +3231,12 @@ function renderLeads() {
         💬 <strong>Remarks:</strong> ${lead.remarks} <br>
         <span style="color:var(--danger); font-weight:800;">Next Followup: ${lead.followupDate}</span>
       </div>
+      ${lead.status === 'Installed' ? `
+      <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+        <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); printInstallationReport('${lead.id}')">📄 Print Installation Report</button>
+        ${ttNextDueBadge(lead)}
+      </div>` : `
+      <button class="btn btn-primary btn-sm btn-block" style="margin-top:8px;" onclick="triggerAppHaptic(); openInstallationReportModal('${lead.id}')">✅ Confirm Installation &amp; Create Report</button>`}
     `;
     c.appendChild(card);
   });
@@ -3890,7 +3901,10 @@ function renderServices() {
       </div>
       <div style="font-size:12.5px; margin-bottom:6px;"><strong>Machine:</strong> ${s.machine}</div>
       <div style="font-size:12px; margin-bottom:10px;"><strong>Issue:</strong> ${s.problem}</div>
-      ${s.status === 'Work Completed' ? `<div style="background:var(--success-bg); padding:8px; border-radius:8px; font-size:11.5px;">✅ <strong>Done:</strong> ${s.actionDone}</div>` : `<button class="btn btn-primary btn-sm btn-block" onclick="triggerAppHaptic(); openExecuteServiceModal('${s.id}')">🛠️ Attend & Complete</button>`}
+      ${s.status === 'Work Completed' ? `<div style="background:var(--success-bg); padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:6px;">✅ <strong>Done:</strong> ${s.actionDone}</div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openServiceReportModal('${s.id}')">📄 ${s.report ? 'Edit/Print Report' : 'Create Report Card'}</button>
+        </div>` : `<button class="btn btn-primary btn-sm btn-block" onclick="triggerAppHaptic(); openExecuteServiceModal('${s.id}')">🛠️ Attend & Complete</button>`}
     `;
     c.appendChild(card);
   });
@@ -3963,10 +3977,17 @@ function saveServiceAction() {
   }
 
   setStored("SERVICES", serviceCallsData);
+  const savedId = editId || serviceCallsData[0].id;
   closeServiceModal();
   renderServices();
   renderDashboard();
-  alert("Service record saved!");
+  // Jab bhi call "Work Completed" mark ho, turant uska Service Report Card khol dete hain
+  const savedRec = serviceCallsData.find(x => x.id === savedId);
+  if (status === 'Work Completed' && savedRec && !savedRec.report) {
+    setTimeout(function () { openServiceReportModal(savedId); }, 200);
+  } else {
+    alert("Service record saved!");
+  }
 }
 
 function deleteServiceAction(id) {
@@ -4461,6 +4482,13 @@ function updateGlobalReminders() {
     const pnames = partsDue.slice(0, 2).map(p => `${p.partName} (${p.machineName})`).join(', ') + (partsDue.length > 2 ? ` +${partsDue.length - 2} more` : '');
     txt += ` | 🔩 Replace ${pnames}`;
   }
+  // Installed machines ke due Free Service / Maintenance bhi yahan dikha dete hain
+  let instDueCount = 0;
+  (leadsData || []).forEach(l => {
+    (l.freeServiceSchedule || []).forEach(f => { if (!f.done && f.date <= today) instDueCount++; });
+    (l.maintenanceSchedule || []).forEach(m => { if (!m.done && m.dueDate <= today) instDueCount++; });
+  });
+  if (instDueCount > 0) txt += ` | 🛠️ ${instDueCount} Free Service/Maintenance due`;
   document.getElementById('dailyReminderText').textContent = txt;
 
   // Daily notification (ek device par din me ek hi baar, sirf Admin login par)
@@ -5441,6 +5469,304 @@ function printQuotation() {
   ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q));
 }
 window.openQuotationModal = openQuotationModal;
+
+/* ===== DIGITAL REPORT CARDS: Installation Report (Leads) + Service Call Report (Service) ===== */
+function ttAddDays(dateStr, n) { const d = new Date(dateStr); d.setDate(d.getDate() + n); return d.toISOString().split('T')[0]; }
+function ttAddMonths(dateStr, n) { const d = new Date(dateStr); d.setMonth(d.getMonth() + n); return d.toISOString().split('T')[0]; }
+
+// MAINTENANCE SCHDULE OF PUMP HRC (dinon me, installation date se)
+const TT_MAINT_SCHEDULE = [
+  { part: 'Oil Change', days: 100, code: '0,260 Kg Oil MOBIL DELVAC' },
+  { part: 'Valve Change', days: 525, code: '2186' },
+  { part: 'Piston Change', days: 365, code: '42467' },
+  { part: 'Gasket Change', days: 150, code: '42469' },
+  { part: 'Oil Seal Change', days: 365, code: '42468' },
+  { part: 'Unloader O-Ring Kit', days: 120, code: '2812' },
+  { part: 'Unloader Piston', days: 160, code: '1271160' },
+  { part: 'Unloader Seat', days: 160, code: '1980200' },
+  { part: 'Unloader Spring', days: 160, code: '1271070' },
+  { part: 'Piston Guide', days: 720, code: '3200120 & 3200130' }
+];
+
+function ttNextDueBadge(lead) {
+  const items = [];
+  (lead.freeServiceSchedule || []).forEach(f => { if (!f.done) items.push({ label: f.label, date: f.date }); });
+  (lead.maintenanceSchedule || []).forEach(m => { if (!m.done) items.push({ label: m.part, date: m.dueDate }); });
+  if (items.length === 0) return '';
+  items.sort((a, b) => a.date.localeCompare(b.date));
+  const n = items[0];
+  const today = new Date().toISOString().split('T')[0];
+  const overdue = n.date <= today;
+  return `<span class="badge ${overdue ? 'badge-pending' : 'badge-info'}" style="font-size:10.5px;">⏰ Next: ${n.label} (${n.date})</span>`;
+}
+
+// ---- Shared photo uploader (Installation + Service Report dono isi ko use karte hain) ----
+var ttReportPhotos = [];
+function ttHandleReportPhotoInput(event, previewContainerId) {
+  const files = Array.from(event.target.files || []);
+  const remaining = 5 - ttReportPhotos.length;
+  files.slice(0, Math.max(0, remaining)).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      ttCompressImage(e.target.result, 900, 0.6).then(function (cd) {
+        ttReportPhotos.push(cd);
+        ttRenderReportPhotoPreview(previewContainerId);
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+  event.target.value = '';
+}
+function ttRenderReportPhotoPreview(containerId) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  let html = ttReportPhotos.map((p, i) => `
+    <div style="position:relative; display:inline-block; margin:3px;">
+      <img src="${p}" style="width:60px; height:60px; object-fit:cover; border-radius:8px; border:1px solid var(--border);">
+      <span onclick="ttReportPhotos.splice(${i},1); ttRenderReportPhotoPreview('${containerId}')" style="position:absolute; top:-6px; right:-6px; background:var(--danger); color:#fff; border-radius:50%; width:18px; height:18px; font-size:11px; display:flex; align-items:center; justify-content:center; cursor:pointer;">✕</span>
+    </div>`).join('');
+  if (ttReportPhotos.length < 5) {
+    html += `<label style="display:inline-flex; align-items:center; justify-content:center; width:60px; height:60px; border:2px dashed var(--border); border-radius:8px; cursor:pointer; margin:3px; font-size:22px; color:var(--text-muted);">+<input type="file" accept="image/*" multiple style="display:none;" onchange="ttHandleReportPhotoInput(event,'${containerId}')"></label>`;
+  }
+  c.innerHTML = html;
+}
+
+/* -------- INSTALLATION REPORT -------- */
+function openInstallationReportModal(leadId) {
+  const lead = leadsData.find(x => x.id === leadId);
+  if (!lead) return;
+  let m = document.getElementById('installReportModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'installReportModal';
+    m.className = 'auth-overlay';
+    m.style.display = 'none';
+    m.innerHTML = `<div class="auth-card" style="max-width:520px;">
+      <div class="card-header"><span class="card-title">✅ Installation Report</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('installReportModal').style.display='none'">✕</button></div>
+      <input type="hidden" id="instLeadId">
+      <div style="font-size:12.5px; margin-bottom:10px; color:var(--text-muted);" id="instCustInfo"></div>
+      <label class="form-label">Product Description</label>
+      <input type="text" id="instProductDesc" style="width:100%; margin-bottom:10px;">
+      <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <div style="flex:1;"><label class="form-label">Model No.</label><input type="text" id="instModel" style="width:100%;"></div>
+        <div style="flex:1;"><label class="form-label">Serial No.</label><input type="text" id="instSerial" style="width:100%;"></div>
+      </div>
+      <label class="form-label">Type of Call</label>
+      <select id="instCallType" style="width:100%; margin-bottom:10px;">
+        <option>New Installation</option><option>Demo Installation</option><option>Reinstallation</option>
+      </select>
+      <label class="form-label">Engineer Remarks</label>
+      <textarea id="instEngRemarks" rows="2" style="width:100%; margin-bottom:10px;"></textarea>
+      <label class="form-label">Customer Remarks</label>
+      <textarea id="instCustRemarks" rows="2" style="width:100%; margin-bottom:10px;"></textarea>
+      <label class="form-label">Photos (Installation site, serial plate, setup - max 5)</label>
+      <div id="instPhotoPreview" style="margin-bottom:10px;"></div>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+        <button class="btn btn-outline btn-sm" onclick="openSignatureModal()">✍️ Customer Signature</button>
+        <span id="instSignStatus" style="font-size:11.5px; color:var(--text-muted);">Customer Sign: Not attached</span>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="saveInstallationReport()">💾 Save &amp; Schedule Free Services</button>
+    </div>`;
+    document.body.appendChild(m);
+  }
+  document.getElementById('instLeadId').value = leadId;
+  document.getElementById('instCustInfo').textContent = `Customer: ${lead.customerName} | Phone: ${lead.phone || '-'}`;
+  document.getElementById('instProductDesc').value = lead.machine || '';
+  document.getElementById('instModel').value = '';
+  document.getElementById('instSerial').value = '';
+  document.getElementById('instCallType').value = 'New Installation';
+  document.getElementById('instEngRemarks').value = '';
+  document.getElementById('instCustRemarks').value = '';
+  window._ttLastSignatureData = null;
+  document.getElementById('instSignStatus').textContent = 'Customer Sign: Not attached';
+  document.getElementById('instSignStatus').style.color = 'var(--text-muted)';
+  ttReportPhotos = [];
+  ttRenderReportPhotoPreview('instPhotoPreview');
+  m.style.display = 'flex';
+}
+window.openInstallationReportModal = openInstallationReportModal;
+
+function saveInstallationReport() {
+  const leadId = document.getElementById('instLeadId').value;
+  const lead = leadsData.find(x => x.id === leadId);
+  if (!lead) return;
+  const installDate = new Date().toISOString().split('T')[0];
+  const d2 = ttAddMonths(installDate, 3);
+  const d3 = ttAddMonths(d2, 3);
+  const d4 = ttAddMonths(d3, 3);
+  lead.installReport = {
+    installDate,
+    productDesc: document.getElementById('instProductDesc').value.trim(),
+    model: document.getElementById('instModel').value.trim(),
+    serial: document.getElementById('instSerial').value.trim(),
+    callType: document.getElementById('instCallType').value,
+    engRemarks: document.getElementById('instEngRemarks').value.trim(),
+    custRemarks: document.getElementById('instCustRemarks').value.trim(),
+    photos: ttReportPhotos.slice(),
+    signature: window._ttLastSignatureData || null
+  };
+  lead.status = 'Installed';
+  lead.freeServiceSchedule = [
+    { n: 1, label: '1st Free Service (Reassurance Test)', date: ttAddDays(installDate, 10), done: false },
+    { n: 2, label: '2nd Free Service', date: d2, done: false },
+    { n: 3, label: '3rd Free Service', date: d3, done: false },
+    { n: 4, label: '4th Free Service', date: d4, done: false }
+  ];
+  lead.maintenanceSchedule = TT_MAINT_SCHEDULE.map(ms => ({
+    part: ms.part, code: ms.code, dueDate: ttAddDays(installDate, ms.days), done: false
+  }));
+
+  setStored("LEADS", leadsData);
+  document.getElementById('installReportModal').style.display = 'none';
+  renderLeads();
+  renderDashboard();
+  alert("Installation Report save ho gaya! 4 Free Service aur Maintenance schedule apne aap ban gaye hain.");
+  printInstallationReport(leadId);
+}
+window.saveInstallationReport = saveInstallationReport;
+
+function buildInstallationReportHtml(lead) {
+  const r = lead.installReport || {};
+  const photosHtml = (r.photos || []).map(p => `<img src="${p}" style="width:110px; height:110px; object-fit:cover; border-radius:6px; margin:4px; border:1px solid #ccc;">`).join('');
+  const fsRows = (lead.freeServiceSchedule || []).map(f => `<tr><td style="border:1px solid #000;padding:4px 6px;">${esc(f.label)}</td><td style="border:1px solid #000;padding:4px 6px;text-align:center;">${f.date}</td></tr>`).join('');
+  const msRows = (lead.maintenanceSchedule || []).map(m => `<tr><td style="border:1px solid #000;padding:3px 6px;">${esc(m.part)}</td><td style="border:1px solid #000;padding:3px 6px;text-align:center;">${m.dueDate}</td><td style="border:1px solid #000;padding:3px 6px;text-align:center;">${esc(m.code)}</td></tr>`).join('');
+  return `<div style="font-family:Arial,sans-serif;color:#000;font-size:12px;line-height:1.4;">
+    <div style="text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px;">
+      <strong style="font-size:17px;">TWINTOWN EXPRESS SERVICES PVT LTD</strong><br>
+      <span style="font-size:13px;">Installation Report</span>
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:10px;">
+      <tr><td style="padding:3px;"><strong>Customer:</strong> ${esc(lead.customerName)}</td><td style="padding:3px;"><strong>Phone:</strong> ${esc(lead.phone || '-')}</td></tr>
+      <tr><td style="padding:3px;"><strong>Product:</strong> ${esc(r.productDesc)}</td><td style="padding:3px;"><strong>Type of Call:</strong> ${esc(r.callType)}</td></tr>
+      <tr><td style="padding:3px;"><strong>Model No.:</strong> ${esc(r.model)}</td><td style="padding:3px;"><strong>Serial No.:</strong> ${esc(r.serial)}</td></tr>
+      <tr><td style="padding:3px;" colspan="2"><strong>Installation Date:</strong> ${r.installDate}</td></tr>
+    </table>
+    <div style="margin-bottom:8px;"><strong>Engineer Remarks:</strong> ${esc(r.engRemarks || '-')}</div>
+    <div style="margin-bottom:10px;"><strong>Customer Remarks:</strong> ${esc(r.custRemarks || '-')}</div>
+    ${photosHtml ? `<div style="margin-bottom:10px;"><strong>Photos:</strong><br>${photosHtml}</div>` : ''}
+    <strong style="font-size:13px;">Free Service Schedule</strong>
+    <table style="width:100%;border-collapse:collapse;margin:6px 0 12px;"><tr><th style="border:1px solid #000;padding:4px;">Service</th><th style="border:1px solid #000;padding:4px;">Due Date</th></tr>${fsRows}</table>
+    <strong style="font-size:13px;">Maintenance / Spare Replacement Schedule</strong>
+    <table style="width:100%;border-collapse:collapse;margin:6px 0 12px;"><tr><th style="border:1px solid #000;padding:4px;">Part</th><th style="border:1px solid #000;padding:4px;">Due Date</th><th style="border:1px solid #000;padding:4px;">Kit Code</th></tr>${msRows}</table>
+    <div style="display:flex;justify-content:space-between;margin-top:24px;">
+      <div>Engineer Signature: _______________</div>
+      ${r.signature ? `<div>Customer Signature:<br><img src="${r.signature}" style="width:140px;border-bottom:1px solid #000;"></div>` : `<div>Customer Signature: _______________</div>`}
+    </div>
+  </div>`;
+}
+function printInstallationReport(leadId) {
+  const lead = leadsData.find(x => x.id === leadId);
+  if (!lead || !lead.installReport) { alert('Pehle Installation Report banao.'); return; }
+  ttPrintHtml('Installation Report - ' + lead.customerName, buildInstallationReportHtml(lead));
+}
+window.printInstallationReport = printInstallationReport;
+
+/* -------- SERVICE CALL REPORT CARD -------- */
+function openServiceReportModal(srvId) {
+  const s = serviceCallsData.find(x => x.id === srvId);
+  if (!s) return;
+  let m = document.getElementById('srvReportModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'srvReportModal';
+    m.className = 'auth-overlay';
+    m.style.display = 'none';
+    m.innerHTML = `<div class="auth-card" style="max-width:520px;">
+      <div class="card-header"><span class="card-title">📄 Service Call Report Card</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('srvReportModal').style.display='none'">✕</button></div>
+      <input type="hidden" id="srvRepId">
+      <div style="font-size:12.5px; margin-bottom:10px; color:var(--text-muted);" id="srvRepCustInfo"></div>
+      <label class="form-label">Cause of Problem</label>
+      <input type="text" id="srvRepCause" style="width:100%; margin-bottom:10px;">
+      <label class="form-label">Action Taken</label>
+      <textarea id="srvRepAction" rows="2" style="width:100%; margin-bottom:10px;"></textarea>
+      <label class="form-label">Spare Parts Used / Estimated</label>
+      <textarea id="srvRepParts" rows="2" style="width:100%; margin-bottom:10px;" placeholder="e.g. Valve Kit x1, Oil Seal x2"></textarea>
+      <label class="form-label">Engineer Remarks</label>
+      <textarea id="srvRepEngRemarks" rows="2" style="width:100%; margin-bottom:10px;"></textarea>
+      <label class="form-label">Customer Remarks</label>
+      <textarea id="srvRepCustRemarks" rows="2" style="width:100%; margin-bottom:10px;"></textarea>
+      <label class="form-label">Photos (Before/After repair, replaced parts - max 5)</label>
+      <div id="srvRepPhotoPreview" style="margin-bottom:10px;"></div>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+        <button class="btn btn-outline btn-sm" onclick="openSignatureModal()">✍️ Customer Signature</button>
+        <span id="srvReportSignStatus" style="font-size:11.5px; color:var(--text-muted);">Customer Sign: Not attached</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary" style="flex:2;" onclick="saveServiceReport()">💾 Save &amp; Print</button>
+        <button class="btn btn-outline" style="flex:1;" onclick="document.getElementById('srvReportModal').style.display='none'">Close</button>
+      </div>
+    </div>`;
+    document.body.appendChild(m);
+  }
+  document.getElementById('srvRepId').value = srvId;
+  document.getElementById('srvRepCustInfo').textContent = `Customer: ${s.customerName} | Machine: ${s.machine} | Problem: ${s.problem}`;
+  const r = s.report || {};
+  document.getElementById('srvRepCause').value = r.cause || '';
+  document.getElementById('srvRepAction').value = r.actionTaken || s.actionDone || '';
+  document.getElementById('srvRepParts').value = r.parts || '';
+  document.getElementById('srvRepEngRemarks').value = r.engRemarks || '';
+  document.getElementById('srvRepCustRemarks').value = r.custRemarks || '';
+  window._ttLastSignatureData = r.signature || null;
+  document.getElementById('srvReportSignStatus').textContent = r.signature ? 'Customer Sign: ✓ Attached' : 'Customer Sign: Not attached';
+  document.getElementById('srvReportSignStatus').style.color = r.signature ? 'var(--success)' : 'var(--text-muted)';
+  ttReportPhotos = (r.photos || []).slice();
+  ttRenderReportPhotoPreview('srvRepPhotoPreview');
+  m.style.display = 'flex';
+}
+window.openServiceReportModal = openServiceReportModal;
+
+function saveServiceReport() {
+  const srvId = document.getElementById('srvRepId').value;
+  const s = serviceCallsData.find(x => x.id === srvId);
+  if (!s) return;
+  s.report = {
+    date: new Date().toISOString().split('T')[0],
+    cause: document.getElementById('srvRepCause').value.trim(),
+    actionTaken: document.getElementById('srvRepAction').value.trim(),
+    parts: document.getElementById('srvRepParts').value.trim(),
+    engRemarks: document.getElementById('srvRepEngRemarks').value.trim(),
+    custRemarks: document.getElementById('srvRepCustRemarks').value.trim(),
+    photos: ttReportPhotos.slice(),
+    signature: window._ttLastSignatureData || null
+  };
+  setStored("SERVICES", serviceCallsData);
+  document.getElementById('srvReportModal').style.display = 'none';
+  renderServices();
+  printServiceReport(srvId);
+}
+window.saveServiceReport = saveServiceReport;
+
+function buildServiceReportHtml(s) {
+  const r = s.report || {};
+  const photosHtml = (r.photos || []).map(p => `<img src="${p}" style="width:110px; height:110px; object-fit:cover; border-radius:6px; margin:4px; border:1px solid #ccc;">`).join('');
+  return `<div style="font-family:Arial,sans-serif;color:#000;font-size:12px;line-height:1.4;">
+    <div style="text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px;">
+      <strong style="font-size:17px;">TWINTOWN EXPRESS SERVICES PVT LTD</strong><br>
+      <span style="font-size:13px;">Service Call Report Card</span>
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:10px;">
+      <tr><td style="padding:3px;"><strong>Customer:</strong> ${esc(s.customerName)}</td><td style="padding:3px;"><strong>Phone:</strong> ${esc(s.phone || '-')}</td></tr>
+      <tr><td style="padding:3px;"><strong>Machine/Model:</strong> ${esc(s.machine)}</td><td style="padding:3px;"><strong>Date:</strong> ${r.date || ''}</td></tr>
+      <tr><td style="padding:3px;" colspan="2"><strong>Problem Reported:</strong> ${esc(s.problem)}</td></tr>
+      <tr><td style="padding:3px;" colspan="2"><strong>Cause:</strong> ${esc(r.cause || '-')}</td></tr>
+    </table>
+    <div style="margin-bottom:8px;"><strong>Action Taken:</strong> ${esc(r.actionTaken || '-')}</div>
+    <div style="margin-bottom:8px;"><strong>Spare Parts Used/Estimated:</strong> ${esc(r.parts || '-')}</div>
+    <div style="margin-bottom:8px;"><strong>Engineer Remarks:</strong> ${esc(r.engRemarks || '-')}</div>
+    <div style="margin-bottom:10px;"><strong>Customer Remarks:</strong> ${esc(r.custRemarks || '-')}</div>
+    ${photosHtml ? `<div style="margin-bottom:10px;"><strong>Photos:</strong><br>${photosHtml}</div>` : ''}
+    <div style="display:flex;justify-content:space-between;margin-top:24px;">
+      <div>Engineer Signature: _______________</div>
+      ${r.signature ? `<div>Customer Signature:<br><img src="${r.signature}" style="width:140px;border-bottom:1px solid #000;"></div>` : `<div>Customer Signature: _______________</div>`}
+    </div>
+  </div>`;
+}
+function printServiceReport(srvId) {
+  const s = serviceCallsData.find(x => x.id === srvId);
+  if (!s || !s.report) { alert('Pehle report save karo.'); return; }
+  ttPrintHtml('Service Report - ' + s.customerName, buildServiceReportHtml(s));
+}
+window.printServiceReport = printServiceReport;
 
 /* ---- Ledger detail page ---- */
 function ttViewPhoto(src) {
