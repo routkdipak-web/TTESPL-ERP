@@ -240,8 +240,12 @@
     // Uske baad se hamesha wala normal (250ms wala) tarika chalta hai.
     var initialKeysPending = Object.keys(MAP).length;
     var initialLoadDone = false;
+    // SKELETON LOADER HOOK: index.html ke render functions isko check karke
+    // decide karte hain ki "no data" dikhana hai ya shimmer placeholder -
+    // pehla real cloud data aane tak ye false rehta hai.
+    window.ttCloudInitialLoadDone = false;
     var initialLoadTimer = setTimeout(function () {
-      if (!initialLoadDone) { initialLoadDone = true; flushRender(); }
+      if (!initialLoadDone) { initialLoadDone = true; window.ttCloudInitialLoadDone = true; flushRender(); }
     }, 4000);
 
     // Live Snapshot Listeners across all devices
@@ -278,6 +282,7 @@
           initialKeysPending--;
           if (initialKeysPending <= 0) {
             initialLoadDone = true;
+            window.ttCloudInitialLoadDone = true;
             clearTimeout(initialLoadTimer);
             flushRender();
           }
