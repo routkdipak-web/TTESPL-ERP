@@ -640,7 +640,7 @@
 .btn,.tab-btn,.quick-action,button{position:relative;overflow:hidden;}
 .tt-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:ttRippleAnim .5s ease-out;pointer-events:none;}
 @keyframes ttRippleAnim{to{transform:scale(2.6);opacity:0;}}
-.btn:active,.tab-btn:active,.quick-action:active{transform:scale(.96);}
+.btn:active,.tab-btn:active,.quick-action:active,.cat-chip:active{transform:scale(.96);}
 .btn,.tab-btn,.quick-action{transition:transform .12s ease;}
 
 /* ===== Active tab floating pill indicator (spring physics) ===== */
@@ -1780,6 +1780,8 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       <div>
         <label class="form-label">Total Amount</label>
         <input type="number" id="ordTotalAmt" readonly style="font-weight:800;">
+        <input type="hidden" id="ordTotalRaw" value="0">
+        <div id="ordRoundOffNote" style="font-size:9.5px; color:var(--text-muted); margin-top:2px; font-variant-numeric:tabular-nums;"></div>
       </div>
       <div>
         <label class="form-label">Advance Recv (₹)</label>
@@ -2327,13 +2329,16 @@ function ttCloudPush(key, val, attemptsLeft) {
 window.ttCloudPush = ttCloudPush;
 document.addEventListener('DOMContentLoaded', updateOfflineQueueBadge);
 
-// BUTTON RIPPLE EFFECT: har button/.btn/.tab-btn/.quick-action par tap karte
-// waqt ek subtle material-style ripple dikhta hai - sirf visual, koi click
-// logic yahan change nahi hoti (event capture phase me sirf ripple span add
-// karta hai, asli onclick apna kaam waisa hi karta rehta hai).
+// BUTTON RIPPLE + UNIVERSAL HAPTIC: har button/.btn/.tab-btn/.sub-tab-btn/
+// .quick-action/.nav-item/.cat-chip par tap karte waqt ek subtle material-style
+// ripple + halka sa vibrate hota hai - ye sirf EXTRA feedback hai (koi click
+// logic yahan change nahi hoti). Jin buttons par pehle se apna onclick me
+// triggerAppHaptic() likha hai unke liye ye dusra (harmless) vibrate hai; jin
+// par nahi tha unke liye ab bhi universal haptic mil jata hai.
 document.addEventListener('pointerdown', function (e) {
-  const target = e.target.closest('.btn,.tab-btn,.quick-action');
+  const target = e.target.closest('.btn,.tab-btn,.sub-tab-btn,.quick-action,.nav-item,.cat-chip');
   if (!target) return;
+  try { if (navigator.vibrate) navigator.vibrate(14); } catch (err) {}
   try {
     const rect = target.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height);
@@ -3840,7 +3845,16 @@ function calcOrderTotals() {
     r.querySelector('.item-row-total').textContent = '₹' + sub.toLocaleString('en-IN', {maximumFractionDigits: 2});
     total += sub;
   });
-  document.getElementById('ordTotalAmt').value = Math.round(total * 100) / 100;
+  // AUTO ROUND-OFF: bill/order ka final amount hamesha nearest rupee (poora
+  // integer) me round hota hai - exact round-off difference chhote note me
+  // dikh jata hai, taaki paisa-level mismatch kahin na ho.
+  const rawTotal = Math.round(total * 100) / 100;
+  const roundedTotal = Math.round(rawTotal);
+  const roundOff = Math.round((roundedTotal - rawTotal) * 100) / 100;
+  document.getElementById('ordTotalAmt').value = roundedTotal;
+  const rawEl = document.getElementById('ordTotalRaw'); if (rawEl) rawEl.value = rawTotal;
+  const noteEl = document.getElementById('ordRoundOffNote');
+  if (noteEl) noteEl.textContent = Math.abs(roundOff) >= 0.005 ? `Round Off: ${roundOff >= 0 ? '+' : ''}₹${roundOff.toFixed(2)} (Sub-total ₹${rawTotal.toFixed(2)})` : '';
   calcOrderBalance();
 }
 
@@ -4759,9 +4773,22 @@ function renderChatMessages() {
     let status = '';
     if (msg._state === 'sending') status = ' ⏳';
     if (msg._state === 'failed') { status = ' ⚠️ Send nahi hua - tap karke retry'; bubble.style.cursor = 'pointer'; bubble.onclick = () => retryChatMessage(msg.cid); }
+    // BUG FIX: attached photo/file ab tap karne par khulta hai - image ho to
+    // chhota thumbnail (tap se full-screen viewer), file ho to naam par tap
+    // karke naye tab/download me khulta hai.
+    let attachmentHtml = '';
+    if (msg.fileData) {
+      const isImg = (msg.fileType || '').indexOf('image/') === 0;
+      if (isImg) {
+        attachmentHtml = `<img src="${msg.fileData}" alt="${esc(msg.fileName || 'Photo')}" style="max-width:180px;max-height:180px;border-radius:10px;margin-top:6px;cursor:pointer;display:block;" onclick="event.stopPropagation(); ttOpenChatPhoto('${msg.cid}')">`;
+      } else {
+        attachmentHtml = `<div onclick="event.stopPropagation(); ttOpenChatFile('${msg.cid}')" style="margin-top:6px;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.08);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;font-weight:700;">📄 <span style="text-decoration:underline;">${esc(msg.fileName || 'File')}</span></div>`;
+      }
+    }
     bubble.innerHTML = `
       ${!isMine ? `<span class="msg-author-tag">${esc(msg.sender)}</span>` : ''}
       <div>${esc(msg.text)}</div>
+      ${attachmentHtml}
       <span class="msg-time-tag">${esc(msg.time)}${status}</span>
     `;
     container.appendChild(bubble);
@@ -4772,6 +4799,10 @@ window.renderChatMessages = renderChatMessages;
 
 function pushChatToCloud(msg) {
   const clean = { sender: msg.sender, text: msg.text, time: msg.time, timestamp: msg.timestamp, cid: msg.cid };
+  // BUG FIX: attachment data pehle cloud push se bahar reh jata tha (sirf
+  // text "📎 filename" jaata tha), isliye doosre device par kabhi photo/file
+  // dikhta hi nahi tha. Ab ye bhi saath jaata hai.
+  if (msg.fileData) { clean.fileData = msg.fileData; clean.fileType = msg.fileType || ''; clean.fileName = msg.fileName || 'File'; }
   const mark = (state) => { const p = pendingChat.find(x => x.cid === msg.cid); if (p) { p._state = state; renderChatMessages(); } };
   if (!(window.cloudSync && typeof window.cloudSync.sendChatMessage === 'function')) { mark('failed'); return; }
   msg._state = 'sending';
@@ -4806,6 +4837,14 @@ function sendLiveChatMessage(fileObj = null) {
     cid: 'c' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
     _state: 'sending'
   };
+  // BUG FIX: attachment ka asli data (photo/file) ab message ke sath save
+  // hota hai, taaki chat me tap karne par photo viewer ya file khul sake -
+  // pehle ye fields bilkul bheje hi nahi jaate the.
+  if (fileObj && fileObj.data) {
+    newMsg.fileData = fileObj.data;
+    newMsg.fileType = fileObj.type || '';
+    newMsg.fileName = fileObj.name || 'File';
+  }
   input.value = '';
   pendingChat.push(newMsg);
   renderChatMessages();
@@ -4817,7 +4856,19 @@ function handleChatFileUpload(event) {
   if(!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result });
+    const isImage = (file.type || '').indexOf('image/') === 0;
+    // BUG FIX: pehle yahan sirf filename text bhej diya jata tha, asli photo/
+    // file ka data (e.target.result) kahin store hi nahi hota tha - isliye
+    // chat me tap karne par kuch khulta hi nahi tha. Ab image ho to compress
+    // karke (Firestore 1MB limit ke andar), aur file ho to as-is, uska data
+    // bhi message ke sath bhejte hain.
+    if (isImage && typeof ttCompressImageSafe === 'function') {
+      ttCompressImageSafe(e.target.result, 1000, 0.65).then(function (cd) {
+        sendLiveChatMessage({ name: file.name, type: file.type, data: cd });
+      });
+    } else {
+      sendLiveChatMessage({ name: file.name, type: file.type, data: e.target.result });
+    }
   };
   reader.readAsDataURL(file);
 }
@@ -6357,6 +6408,30 @@ function ttViewPhoto(src) {
   m.style.display = 'flex';
 }
 window.ttViewPhoto = ttViewPhoto;
+
+// Chat attachments ko cid se dhoondh kar kholna - photo full-screen viewer me,
+// file (PDF/doc) naye tab me (ya agar popup block ho to seedha download).
+function ttFindChatMsgByCid(cid) {
+  return (teamChatData || []).find(m => m && m.cid === cid) || (pendingChat || []).find(m => m && m.cid === cid);
+}
+function ttOpenChatPhoto(cid) {
+  const m = ttFindChatMsgByCid(cid);
+  if (m && m.fileData) ttViewPhoto(m.fileData); else alert('Photo abhi load nahi ho payi.');
+}
+function ttOpenChatFile(cid) {
+  const m = ttFindChatMsgByCid(cid);
+  if (!m || !m.fileData) { alert('File abhi load nahi ho payi.'); return; }
+  try {
+    const w = window.open('', '_blank');
+    if (w && w.document) {
+      w.document.write('<title>' + esc(m.fileName || 'File') + '</title><body style="margin:0;background:#525659;"><iframe src="' + m.fileData + '" style="width:100%;height:100vh;border:0;"></iframe></body>');
+      return;
+    }
+  } catch (e) {}
+  const a = document.createElement('a'); a.href = m.fileData; a.download = m.fileName || 'file'; document.body.appendChild(a); a.click(); a.remove();
+}
+window.ttOpenChatPhoto = ttOpenChatPhoto;
+window.ttOpenChatFile = ttOpenChatFile;
 
 function openLedgerDetail(ordId) {
   const o = ordersData.find(x => String(x.id) === String(ordId));
