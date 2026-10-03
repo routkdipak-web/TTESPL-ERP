@@ -475,17 +475,60 @@
      nahi dikhta tha isliye category pehchanna mushkil hota tha. Ab har chip me
      icon ke NEECHE category ka naam aur count hamesha clearly dikhta hai. */
   .cat-chip-row { align-items: stretch; }
-  .cat-chip {
+    .cat-chip {
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-    min-width: 68px; flex: 0 0 auto; padding: 9px 7px 8px; border: none; border-radius: 14px;
-    background: var(--border); color: var(--text-muted); cursor: pointer; white-space: nowrap;
-    transition: all 0.2s ease;
+    min-width: 72px; flex: 0 0 auto; padding: 10px 8px; border-radius: 16px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(205, 235, 248, 0.58)) !important;
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: 1.5px solid rgba(0, 180, 216, 0.28);
+    color: var(--text-muted); cursor: pointer; white-space: nowrap;
+    box-shadow: 0 6px 20px rgba(10, 37, 64, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative; overflow: hidden;
   }
-  .cat-chip-icon { font-size: 19px; line-height: 1; }
-  .cat-chip-label { font-size: 9.5px; font-weight: 800; letter-spacing: 0.1px; max-width: 78px; overflow: hidden; text-overflow: ellipsis; }
-  .cat-chip-count { font-size: 8.5px; font-weight: 700; opacity: 0.75; }
-  .cat-chip.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(10,37,64,0.25); }
-  .cat-chip.active .cat-chip-count { opacity: 0.9; }
+  .cat-chip::after {
+    content: ""; position: absolute; inset: -50%;
+    background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+    transform: translateX(-100%);
+    animation: catShimmer 3.5s infinite linear;
+  }
+  @keyframes catShimmer { 0% { transform: translateX(-100%) rotate(25deg); } 20% { transform: translateX(120%) rotate(25deg); } 100% { transform: translateX(120%) rotate(25deg); } }
+
+  .cat-chip:hover {
+    transform: translateY(-2px);
+    border-color: var(--cyan);
+    box-shadow: 0 10px 24px rgba(0, 180, 216, 0.22);
+  }
+
+  .cat-chip-icon { font-size: 19px; line-height: 1; position: relative; z-index: 2; }
+  .cat-chip-label { font-size: 9.5px; font-weight: 800; letter-spacing: 0.1px; max-width: 78px; overflow: hidden; text-overflow: ellipsis; position: relative; z-index: 2; }
+  .cat-chip-count { font-size: 8.5px; font-weight: 700; opacity: 0.85; position: relative; z-index: 2; }
+
+  .cat-chip.active {
+    background: linear-gradient(135deg, rgba(10, 37, 64, 0.95), rgba(0, 180, 216, 0.85)) !important;
+    color: #ffffff !important;
+    border: 1.5px solid rgba(250, 204, 21, 0.7) !important;
+    box-shadow: 0 8px 24px rgba(0, 180, 216, 0.4), 0 0 14px rgba(250, 204, 21, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px) scale(1.03);
+    animation: activeChipGlow 2.5s ease-in-out infinite alternate;
+  }
+  .cat-chip.active .cat-chip-count { opacity: 1; }
+  @keyframes activeChipGlow {
+    0% { box-shadow: 0 8px 24px rgba(0, 180, 216, 0.4), 0 0 10px rgba(250, 204, 21, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
+    100% { box-shadow: 0 12px 28px rgba(0, 180, 216, 0.55), 0 0 18px rgba(250, 204, 21, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+  }
+
+  [data-theme="dark"] .cat-chip {
+    background: linear-gradient(145deg, rgba(17, 24, 39, 0.78), rgba(11, 35, 58, 0.65)) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.28);
+    color: var(--text-muted);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  [data-theme="dark"] .cat-chip.active {
+    background: linear-gradient(135deg, rgba(2, 132, 199, 0.9), rgba(15, 23, 42, 0.95)) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.85) !important;
+  }
 
   /* ------------------- STAGGERED LIVE ANIMATION FOR FAB 5-OPTIONS ------------------- */
   #fabMainBtn {
