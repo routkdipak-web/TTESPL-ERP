@@ -475,7 +475,7 @@
      nahi dikhta tha isliye category pehchanna mushkil hota tha. Ab har chip me
      icon ke NEECHE category ka naam aur count hamesha clearly dikhta hai. */
   .cat-chip-row { align-items: stretch; }
-    .cat-chip {
+  .cat-chip {
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
     min-width: 72px; flex: 0 0 auto; padding: 10px 8px; border-radius: 16px;
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(205, 235, 248, 0.58)) !important;
@@ -1131,6 +1131,14 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
         </div>
         <span style="font-size:10px; color:#10b981;">Camera/Alerts</span>
       </div>
+
+<div class="profile-menu-item" onclick="triggerAppHaptic(); openNotionCrm(); closeProfileDrawer();">
+  <div class="profile-menu-item-left">
+    <span>🗂️</span>
+    <span>Daily CRM & Visits</span>
+  </div>
+  <span style="font-size:10px; color:#38bdf8;">Notion Style</span>
+</div>
 
       <div class="profile-menu-item" onclick="triggerAppHaptic(); openGlobalSearchModal(); closeProfileDrawer();">
         <div class="profile-menu-item-left">
@@ -2089,10 +2097,290 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
   </div>
 </div>
 
+<!-- NOTION-STYLE DAILY CRM MODAL -->
+<div id="notionCrmModal" class="auth-overlay" style="display:none; z-index:3800;">
+  <div class="auth-card" style="max-width:700px; width:95%; max-height:90dvh;">
+    <div class="card-header">
+      <strong class="card-title">🗂️ Daily Field CRM & Visits</strong>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); printDailyCrmReport()">🖨️ Print Daily Report</button>
+        <button class="btn btn-outline btn-sm" onclick="closeNotionCrmModal()">✕</button>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
+      <input type="text" id="crmSearchInput" placeholder="🔍 Search shop, client or phone..." oninput="renderCrmRecords()" style="flex:1; font-size:13px; padding:8px 12px;">
+      <button class="btn btn-accent btn-sm" onclick="openCrmEditModal()">+ New Visit / Client</button>
+    </div>
+
+    <div id="crmRecordsContainer" style="max-height:55vh; overflow-y:auto; padding-right:4px;"></div>
+  </div>
+</div>
+
+<!-- ADD/EDIT CRM RECORD MODAL -->
+<div id="crmEditModal" class="auth-overlay" style="display:none; z-index:3900;">
+  <div class="auth-card" style="max-width:500px;">
+    <div class="card-header">
+      <strong class="card-title" id="crmEditTitle">📝 CRM Visit Entry</strong>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('crmEditModal').style.display='none'">✕</button>
+    </div>
+    <input type="hidden" id="crmEditId">
+    <div class="form-group">
+      <label class="form-label">Shop / Business Name</label>
+      <input type="text" id="crmShopName" placeholder="e.g. Royal Car Spa & Wash">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Owner / Contact Person</label>
+        <input type="text" id="crmOwnerName" placeholder="Owner name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" id="crmPhone" placeholder="10-digit mobile" maxlength="10">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">CRM Status / Stage</label>
+        <select id="crmStage">
+          <option value="New Lead">📌 New Lead</option>
+          <option value="Visited / Contacted">🤝 Visited / Contacted</option>
+          <option value="Visiting Card Collected">📇 Visiting Card Collected</option>
+          <option value="Demo Given">🚗 Demo Given</option>
+          <option value="Negotiation">💬 Negotiation</option>
+          <option value="Won / Converted">✅ Won / Converted</option>
+          <option value="Lost">❌ Lost</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Visit Date</label>
+        <input type="date" id="crmVisitDate">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Location / Address</label>
+      <input type="text" id="crmAddress" placeholder="Shop address, area">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Daily Notes & Discussion</label>
+      <textarea id="crmNotes" rows="2" placeholder="Machine discussed, requirements, pricing notes..."></textarea>
+    </div>
+
+    <!-- PHOTOS UPLOAD SECTION -->
+    <div class="grid-2" style="margin-bottom:12px; text-align:center;">
+      <div style="background:var(--bg); padding:8px; border-radius:10px; border:1px solid var(--border);">
+        <label class="form-label" style="font-size:11px;">🏪 Shop / Dukan Photo</label>
+        <img id="crmShopPhotoPrev" src="" style="display:none; width:100%; height:90px; object-fit:cover; border-radius:8px; margin-bottom:6px;">
+        <button class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('crmShopFile').click()">📷 Capture Shop</button>
+        <input type="file" id="crmShopFile" accept="image/*" capture="environment" style="display:none;" onchange="handleCrmPhoto(event, 'shop')">
+      </div>
+      <div style="background:var(--bg); padding:8px; border-radius:10px; border:1px solid var(--border);">
+        <label class="form-label" style="font-size:11px;">📇 Visiting Card Photo</label>
+        <img id="crmCardPhotoPrev" src="" style="display:none; width:100%; height:90px; object-fit:cover; border-radius:8px; margin-bottom:6px;">
+        <button class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('crmCardFile').click()">📷 Capture Card</button>
+        <input type="file" id="crmCardFile" accept="image/*" capture="environment" style="display:none;" onchange="handleCrmPhoto(event, 'card')">
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-block" onclick="saveCrmRecord()" style="padding:12px;">💾 Save CRM Entry</button>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="master-data.js?v=4"></script>
 <script src="live-sync.js?v=8"></script>
+
+let crmRecordsData = getStored("CRM_RECORDS", []);
+window.crmRecordsData = crmRecordsData;
+
+let tempShopPhoto = "", tempCardPhoto = "";
+
+function openNotionCrm() {
+  renderCrmRecords();
+  document.getElementById('notionCrmModal').style.display = 'flex';
+}
+function closeNotionCrmModal() {
+  document.getElementById('notionCrmModal').style.display = 'none';
+}
+window.openNotionCrm = openNotionCrm;
+
+function openCrmEditModal(rec = null) {
+  const today = new Date().toISOString().split('T')[0];
+  tempShopPhoto = ""; tempCardPhoto = "";
+  document.getElementById('crmShopPhotoPrev').style.display = 'none';
+  document.getElementById('crmCardPhotoPrev').style.display = 'none';
+
+  if (rec) {
+    document.getElementById('crmEditTitle').textContent = "Edit CRM Record";
+    document.getElementById('crmEditId').value = rec.id;
+    document.getElementById('crmShopName').value = rec.shopName || "";
+    document.getElementById('crmOwnerName').value = rec.ownerName || "";
+    document.getElementById('crmPhone').value = rec.phone || "";
+    document.getElementById('crmStage').value = rec.stage || "New Lead";
+    document.getElementById('crmVisitDate').value = rec.visitDate || today;
+    document.getElementById('crmAddress').value = rec.address || "";
+    document.getElementById('crmNotes').value = rec.notes || "";
+    if (rec.shopPhoto) { tempShopPhoto = rec.shopPhoto; const p = document.getElementById('crmShopPhotoPrev'); p.src = tempShopPhoto; p.style.display = 'block'; }
+    if (rec.cardPhoto) { tempCardPhoto = rec.cardPhoto; const p = document.getElementById('crmCardPhotoPrev'); p.src = tempCardPhoto; p.style.display = 'block'; }
+  } else {
+    document.getElementById('crmEditTitle').textContent = "New CRM Visit Entry";
+    document.getElementById('crmEditId').value = "";
+    document.getElementById('crmShopName').value = "";
+    document.getElementById('crmOwnerName').value = "";
+    document.getElementById('crmPhone').value = "";
+    document.getElementById('crmStage').value = "Visited / Contacted";
+    document.getElementById('crmVisitDate').value = today;
+    document.getElementById('crmAddress').value = "";
+    document.getElementById('crmNotes').value = "";
+  }
+  document.getElementById('crmEditModal').style.display = 'flex';
+}
+window.openCrmEditModal = openCrmEditModal;
+
+function handleCrmPhoto(event, type) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    ttCompressImageSafe(e.target.result, 800, 0.6).then(function(cd) {
+      if (type === 'shop') {
+        tempShopPhoto = cd;
+        const p = document.getElementById('crmShopPhotoPrev'); p.src = cd; p.style.display = 'block';
+      } else {
+        tempCardPhoto = cd;
+        const p = document.getElementById('crmCardPhotoPrev'); p.src = cd; p.style.display = 'block';
+      }
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveCrmRecord() {
+  const editId = document.getElementById('crmEditId').value;
+  const shopName = document.getElementById('crmShopName').value.trim();
+  const ownerName = document.getElementById('crmOwnerName').value.trim();
+  const phone = document.getElementById('crmPhone').value.trim();
+  const stage = document.getElementById('crmStage').value;
+  const visitDate = document.getElementById('crmVisitDate').value;
+  const address = document.getElementById('crmAddress').value.trim();
+  const notes = document.getElementById('crmNotes').value.trim();
+
+  if (!shopName) { alert("Shop / Business name dalna zaroori hai!"); return; }
+
+  if (editId) {
+    const r = crmRecordsData.find(x => x.id === editId);
+    if (r) {
+      r.shopName = shopName; r.ownerName = ownerName; r.phone = phone; r.stage = stage;
+      r.visitDate = visitDate; r.address = address; r.notes = notes;
+      if (tempShopPhoto) r.shopPhoto = tempShopPhoto;
+      if (tempCardPhoto) r.cardPhoto = tempCardPhoto;
+    }
+  } else {
+    const newRec = {
+      id: 'CRM-' + Date.now(),
+      shopName, ownerName, phone, stage, visitDate, address, notes,
+      shopPhoto: tempShopPhoto, cardPhoto: tempCardPhoto,
+      addedBy: currentUser ? currentUser.name : 'Staff'
+    };
+    crmRecordsData.unshift(newRec);
+  }
+
+  setStored("CRM_RECORDS", crmRecordsData);
+  document.getElementById('crmEditModal').style.display = 'none';
+  renderCrmRecords();
+  alert("CRM Record successfully saved!");
+}
+window.saveCrmRecord = saveCrmRecord;
+
+function renderCrmRecords() {
+  const box = document.getElementById('crmRecordsContainer');
+  const q = (document.getElementById('crmSearchInput').value || "").toLowerCase().trim();
+  let list = crmRecordsData;
+  if (q) list = list.filter(x => (x.shopName && x.shopName.toLowerCase().includes(q)) || (x.ownerName && x.ownerName.toLowerCase().includes(q)) || (x.phone && x.phone.includes(q)));
+
+  if (list.length === 0) {
+    box.innerHTML = `<div class="empty-state"><span class="empty-icon">🗂️</span><div class="empty-sub">Koi CRM visit record nahi mila.</div></div>`;
+    return;
+  }
+
+  box.innerHTML = list.map(r => `
+    <div class="card" style="margin-bottom:10px; padding:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <span class="badge badge-info" style="font-size:9.5px; margin-bottom:3px;">${esc(r.stage)}</span>
+          <strong style="font-size:14px; display:block; color:var(--text-main);">${esc(r.shopName)}</strong>
+          <div style="font-size:11.5px; color:var(--text-muted);">${esc(r.ownerName || '')} ${r.phone ? '• ' + esc(r.phone) : ''}</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openCrmEditModal(crmRecordsData.find(x=>x.id==='${r.id}'))">✏️</button>
+          <button class="btn btn-danger-sm btn-sm" onclick="triggerAppHaptic(); deleteCrmRecord('${r.id}')">🗑️</button>
+        </div>
+      </div>
+      <div style="font-size:12px; margin-top:6px; background:var(--bg); padding:8px; border-radius:8px;">
+        📍 <strong>Address:</strong> ${esc(r.address || 'N/A')}<br>
+        💬 <strong>Notes:</strong> ${esc(r.notes || 'No notes')}<br>
+        🕒 <strong>Date:</strong> ${esc(r.visitDate)} | 👤 <strong>By:</strong> ${esc(r.addedBy)}
+      </div>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        ${r.shopPhoto ? `<button class="btn btn-accent btn-sm" onclick="ttViewPhoto('${r.shopPhoto}')">🏪 Shop Photo</button>` : ''}
+        ${r.cardPhoto ? `<button class="btn btn-accent btn-sm" onclick="ttViewPhoto('${r.cardPhoto}')">📇 Visiting Card</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+window.renderCrmRecords = renderCrmRecords;
+
+function deleteCrmRecord(id) {
+  if (confirm("Confirm delete this CRM record?")) {
+    crmRecordsData = crmRecordsData.filter(x => x.id !== id);
+    setStored("CRM_RECORDS", crmRecordsData);
+    renderCrmRecords();
+  }
+}
+window.deleteCrmRecord = deleteCrmRecord;
+
+function printDailyCrmReport() {
+  const today = new Date().toISOString().split('T')[0];
+  const todayList = crmRecordsData.filter(x => x.visitDate === today);
+  const targetList = todayList.length ? todayList : crmRecordsData.slice(0, 20);
+
+  const th = 'style="padding:6px 8px; border:1px solid #000; background:#0a2540; color:#fff; font-size:11px;"';
+  const td = 'style="padding:6px 8px; border:1px solid #000; font-size:11px; vertical-align:top;"';
+
+  const rows = targetList.map((r, i) => `
+    <tr>
+      <td ${td} style="text-align:center;">${i+1}</td>
+      <td ${td}><strong>${esc(r.shopName)}</strong><br>${esc(r.ownerName || '')} (${esc(r.phone || '-')})</td>
+      <td ${td}>${esc(r.stage)}</td>
+      <td ${td}>${esc(r.address)}<br><em>Notes:</em> ${esc(r.notes)}</td>
+      <td ${td} style="text-align:center;">${r.cardPhoto ? 'Yes (Card)' : 'No'}<br>${r.shopPhoto ? 'Yes (Shop)' : 'No'}</td>
+    </tr>
+  `).join('');
+
+  const html = `
+    <h2 style="margin:0 0 4px; text-align:center;">TTESPL - Daily Field CRM Report</h2>
+    <div style="font-size:12px; text-align:center; color:#555; margin-bottom:14px;">Date: ${today} | Total Visits: ${targetList.length}</div>
+    <table>
+      <thead>
+        <tr>
+          <th ${th} style="width:30px;">#</th>
+          <th ${th}>Shop & Owner / Phone</th>
+          <th ${th}>Stage</th>
+          <th ${th}>Address & Notes</th>
+          <th ${th} style="width:70px;">Photos</th>
+        </tr>
+      </thead>
+      <tbody>${rows || '<tr><td colspan="5" style="padding:10px; text-align:center; border:1px solid #000;">No records found</td></tr>'}</tbody>
+    </table>
+    <div style="margin-top:20px; display:flex; justify-content:space-between; font-size:11px;">
+      <div>Verified By: ___________________</div>
+      <div>Authorized Signatory: TWINTOWN EXPRESS SERVICES PVT LTD</div>
+    </div>
+  `;
+  if (typeof ttPrintHtml === 'function') ttPrintHtml('Daily CRM Report', html);
+}
+window.printDailyCrmReport = printDailyCrmReport;
 
 <script>
 /* ==========================================================================
