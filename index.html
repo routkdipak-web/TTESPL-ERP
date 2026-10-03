@@ -63,13 +63,20 @@
 
   html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
   * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-  body { 
-    background: radial-gradient(circle at 5% 0%, rgba(0,180,216,0.08), transparent 30%), radial-gradient(circle at 95% 5%, rgba(255,107,53,0.08), transparent 28%), var(--bg);
+  body {
+    background: linear-gradient(135deg, #071328 0%, #0a2540 50%, #13395e 100%) !important;
+    background-size: 200% 200%;
+    animation: brandBgFlow 12s ease infinite;
     color: var(--text-main); min-height: 100vh; min-height: 100dvh; 
     padding-top: 0px; 
     padding-bottom: calc(68px + env(safe-area-inset-bottom)); 
     -webkit-font-smoothing: antialiased; 
     transition: background 0.3s ease, color 0.3s ease;
+  }
+  @keyframes brandBgFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 
   input, select, textarea {
@@ -391,22 +398,25 @@
   .page-top-sub { font-size: 10.5px; color: #cbd5e1; margin-top: 2px; }
 
   .card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(205, 235, 248, 0.58)) !important;
-    backdrop-filter: blur(18px) saturate(1.5) !important;
-    -webkit-backdrop-filter: blur(18px) saturate(1.5) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(240, 246, 252, 0.78)) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
     border-radius: var(--radius-md);
     padding: 16px;
     margin-bottom: 14px;
-    border: 1.5px solid rgba(0, 180, 216, 0.35) !important;
-    box-shadow: 0 12px 32px rgba(10, 37, 64, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
-    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease;
+    border: 1.5px solid rgba(255, 193, 7, 0.35) !important;
+    box-shadow: 0 14px 38px rgba(7, 19, 40, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
   }
-  .card:hover { box-shadow: 0 16px 36px rgba(0, 180, 216, 0.18); transform: translateY(-2px); }
+  .card:hover {
+    box-shadow: 0 18px 42px rgba(0, 180, 216, 0.25), 0 0 15px rgba(255, 193, 7, 0.2);
+    transform: translateY(-2px);
+  }
 
   [data-theme="dark"] .card {
-    background: linear-gradient(135deg, rgba(17, 24, 39, 0.82), rgba(11, 45, 75, 0.65)) !important;
-    border: 1.5px solid rgba(56, 189, 248, 0.35) !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(10, 25, 48, 0.78)) !important;
+    border: 1.5px solid rgba(250, 204, 21, 0.3) !important;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 
   .stat-card { position: relative; overflow: hidden; isolation: isolate; }
