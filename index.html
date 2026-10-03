@@ -390,12 +390,24 @@
   }
   .page-top-sub { font-size: 10.5px; color: #cbd5e1; margin-top: 2px; }
 
-  .card {
-    background: var(--card); border-radius: var(--radius-md); padding: 16px; margin-bottom: 14px;
-    border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s ease;
+   .card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(240, 246, 252, 0.75)) !important;
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 14px;
+    border: 1.5px solid rgba(0, 180, 216, 0.22);
+    box-shadow: 0 10px 30px rgba(10, 37, 64, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease;
   }
   .card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-  [data-theme="dark"] .card { background: rgba(17, 24, 39, 0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+
+  [data-theme="dark"] .card {
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.85), rgba(11, 18, 32, 0.75)) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.25);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
 
   .stat-card { position: relative; overflow: hidden; isolation: isolate; }
   .stat-card::after {
