@@ -390,23 +390,23 @@
   }
   .page-top-sub { font-size: 10.5px; color: #cbd5e1; margin-top: 2px; }
 
-   .card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(240, 246, 252, 0.75)) !important;
-    backdrop-filter: blur(16px) saturate(1.4);
-    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  .card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(205, 235, 248, 0.58)) !important;
+    backdrop-filter: blur(18px) saturate(1.5) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.5) !important;
     border-radius: var(--radius-md);
     padding: 16px;
     margin-bottom: 14px;
-    border: 1.5px solid rgba(0, 180, 216, 0.22);
-    box-shadow: 0 10px 30px rgba(10, 37, 64, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border: 1.5px solid rgba(0, 180, 216, 0.35) !important;
+    box-shadow: 0 12px 32px rgba(10, 37, 64, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
     transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease;
   }
-  .card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .card:hover { box-shadow: 0 16px 36px rgba(0, 180, 216, 0.18); transform: translateY(-2px); }
 
   [data-theme="dark"] .card {
-    background: linear-gradient(135deg, rgba(17, 24, 39, 0.85), rgba(11, 18, 32, 0.75)) !important;
-    border: 1.5px solid rgba(56, 189, 248, 0.25);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.82), rgba(11, 45, 75, 0.65)) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.35) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
   }
 
   .stat-card { position: relative; overflow: hidden; isolation: isolate; }
