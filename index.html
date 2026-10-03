@@ -345,7 +345,8 @@
     transform: translateY(-3px) scale(1.18);
     filter: drop-shadow(0 0 10px rgba(0, 180, 216, 0.85)) drop-shadow(0 2px 6px rgba(255, 107, 53, 0.6));
   }
-  .nav-icon { font-size: 18.5px; transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1); }
+  .nav-icon { font-size: 18.5px; transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1); display:flex; align-items:center; justify-content:center; }
+  .nav-icon svg { width: 21px; height: 21px; stroke-width: 2.1; }
   .nav-badge {
     position: absolute; top: 4px; right: calc(50% - 16px);
     background: var(--danger); color: white; font-size: 9px; font-weight: 800;
@@ -603,6 +604,50 @@
 .broadcast-toast .toast-title{color:#fff;}
 .broadcast-toast .toast-body{color:rgba(255,255,255,.82);white-space:pre-line;}
 @keyframes ttToastIn{from{opacity:0;transform:translateY(-16px) scale(.96);}to{opacity:1;transform:none;}}
+
+/* ===== Soft Error/Success Toast (cloud save retry feedback) ===== */
+.broadcast-toast.tt-toast-error{background:linear-gradient(160deg,rgba(80,22,30,.97),rgba(54,14,20,.97));border-color:rgba(255,120,120,.25);}
+.broadcast-toast.tt-toast-success{background:linear-gradient(160deg,rgba(16,58,42,.97),rgba(10,40,30,.97));border-color:rgba(120,255,170,.22);}
+.tt-toast-actions{display:flex;gap:8px;margin-top:8px;}
+.tt-toast-retry-btn{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);color:#fff;font-size:12px;font-weight:700;padding:5px 12px;border-radius:9px;cursor:pointer;}
+.tt-toast-retry-btn:active{background:rgba(255,255,255,.26);}
+
+/* ===== Skeleton loader (shown while cloud data load ho raha ho) ===== */
+.tt-skeleton{border-radius:10px;background:linear-gradient(100deg,rgba(140,150,165,.14) 20%,rgba(140,150,165,.28) 38%,rgba(140,150,165,.14) 55%);background-size:300% 100%;animation:ttSkeletonShimmer 1.3s ease-in-out infinite;}
+@keyframes ttSkeletonShimmer{0%{background-position:120% 0;}100%{background-position:-20% 0;}}
+.tt-skeleton-card{height:72px;margin-bottom:10px;}
+.tt-skeleton-line{height:12px;border-radius:6px;margin-bottom:8px;}
+
+/* ===== Button ripple / press feedback ===== */
+.btn,.tab-btn,.quick-action,button{position:relative;overflow:hidden;}
+.tt-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:ttRippleAnim .5s ease-out;pointer-events:none;}
+@keyframes ttRippleAnim{to{transform:scale(2.6);opacity:0;}}
+.btn:active,.tab-btn:active,.quick-action:active{transform:scale(.96);}
+.btn,.tab-btn,.quick-action{transition:transform .12s ease;}
+
+/* ===== Tab/page slide transition ===== */
+.tt-page-slide{animation:ttPageSlideIn .28s cubic-bezier(.16,1,.3,1) both;}
+@keyframes ttPageSlideIn{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:none;}}
+
+/* ===== Status badge soft-glow gradient variants ===== */
+.badge-pending{background:linear-gradient(135deg,rgba(255,176,32,.22),rgba(255,138,0,.12));border:1px solid rgba(255,160,0,.45);box-shadow:0 0 10px rgba(255,160,0,.18);color:#c97a00;}
+.badge-success,.badge-delivered{background:linear-gradient(135deg,rgba(40,210,120,.22),rgba(20,180,100,.1));border:1px solid rgba(40,200,120,.45);box-shadow:0 0 10px rgba(40,200,120,.18);color:#0e9f5e;}
+.badge-danger,.badge-due{background:linear-gradient(135deg,rgba(255,70,90,.22),rgba(220,30,55,.1));border:1px solid rgba(255,70,90,.45);box-shadow:0 0 10px rgba(255,70,90,.18);color:#d81b3f;}
+.badge-info{background:linear-gradient(135deg,rgba(60,140,255,.22),rgba(40,110,230,.1));border:1px solid rgba(70,150,255,.45);box-shadow:0 0 10px rgba(70,150,255,.18);color:#1565c0;}
+:root[data-theme="dark"] .badge-pending{color:#ffc059;}
+:root[data-theme="dark"] .badge-success,:root[data-theme="dark"] .badge-delivered{color:#4ee29a;}
+:root[data-theme="dark"] .badge-danger,:root[data-theme="dark"] .badge-due{color:#ff7a8e;}
+:root[data-theme="dark"] .badge-info{color:#7ab6ff;}
+
+/* ===== Compact floating cards + smoother sticky blur ===== */
+.card{padding:14px;}
+@media (max-width:480px){.card{padding:11px 12px;border-radius:14px;}.card-header{margin-bottom:8px;}}
+.sticky-filters,.tabs-sticky,[class*="sticky"]{-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);}
+
+/* ===== Dark mode contrast sharpening (better in direct sunlight) ===== */
+:root[data-theme="dark"]{--text-main:#f3f6fa;--text-muted:#aab4c4;}
+:root[data-theme="dark"] body{text-shadow:0 0 0.2px rgba(255,255,255,.1);}
+:root[data-theme="dark"] .card{border-color:rgba(255,255,255,.1);}
 
 @media print{.no-print{display:none !important;}}
 
@@ -999,6 +1044,16 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 
     <!-- TAB 0: EXECUTIVE BENTO DASHBOARD -->
     <div id="view-dashboard" class="view-panel active">
+      <div id="ttDashSkeleton" style="padding:4px 0 2px;">
+        <div class="tt-skeleton tt-skeleton-line" style="width:55%; height:16px;"></div>
+        <div class="tt-skeleton tt-skeleton-line" style="width:80%;"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0 14px;">
+          <div class="tt-skeleton tt-skeleton-card" style="margin-bottom:0;"></div>
+          <div class="tt-skeleton tt-skeleton-card" style="margin-bottom:0;"></div>
+          <div class="tt-skeleton tt-skeleton-card" style="margin-bottom:0;"></div>
+          <div class="tt-skeleton tt-skeleton-card" style="margin-bottom:0;"></div>
+        </div>
+      </div>
       <div class="page-top-header-banner">
         <div>
           <div class="page-top-title"><span>📊</span> <span>Executive Command Center</span></div>
@@ -1308,31 +1363,31 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
     </div>
 
     <div class="nav-item active" onclick="triggerAppHaptic(); switchTab('dashboard', this)">
-      <div class="nav-icon">📊</div>
+      <div class="nav-icon" data-fallback="📊"><i data-lucide="layout-dashboard"></i></div>
       <span>Home</span>
     </div>
     <div class="nav-item" onclick="triggerAppHaptic(); switchTab('leads', this)">
-      <div class="nav-icon">🎯</div>
+      <div class="nav-icon" data-fallback="🎯"><i data-lucide="target"></i></div>
       <span>Leads</span>
     </div>
     <div class="nav-item" onclick="triggerAppHaptic(); switchTab('orders', this)">
-      <div class="nav-icon">📦</div>
+      <div class="nav-icon" data-fallback="📦"><i data-lucide="package"></i></div>
       <span>Orders</span>
     </div>
     <div class="nav-item" onclick="triggerAppHaptic(); switchTab('services', this)">
-      <div class="nav-icon">🛠️</div>
+      <div class="nav-icon" data-fallback="🛠️"><i data-lucide="wrench"></i></div>
       <span>Services</span>
     </div>
     <div class="nav-item" onclick="triggerAppHaptic(); switchTab('inventory', this)">
-      <div class="nav-icon">🏷️</div>
+      <div class="nav-icon" data-fallback="🏷️"><i data-lucide="tag"></i></div>
       <span>Stock</span>
     </div>
     <div class="nav-item" onclick="triggerAppHaptic(); switchTab('billing', this)">
-      <div class="nav-icon">📑</div>
+      <div class="nav-icon" data-fallback="📑"><i data-lucide="receipt"></i></div>
       <span>Ledger</span>
     </div>
     <div class="nav-item" onclick="triggerAppHaptic(); switchTab('chat', this)">
-      <div class="nav-icon">💬</div>
+      <div class="nav-icon" data-fallback="💬"><i data-lucide="message-circle"></i></div>
       <span>Chat</span>
       <span class="nav-badge" id="chatNavBadge" style="display:none;">0</span>
     </div>
@@ -1906,6 +1961,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="master-data.js?v=4"></script>
 <script src="live-sync.js?v=8"></script>
 
@@ -2114,7 +2170,28 @@ function ttFlushOfflineQueue() {
   if (!keys.length) return;
   try { localStorage.removeItem(DB_PREFIX + 'OFFLINE_QUEUE'); } catch (e) {}
   updateOfflineQueueBadge();
-  keys.forEach(function (k) { ttCloudPush(k, q[k]); });
+  // AUTO-SYNC NOTIFICATION: net wapas aane par pending changes background me khud
+  // cloud par chale jate hain - sab safal ho jaye to ek chhota "Synced" toast
+  // dikhta hai (bina kisi manual click ke), taaki engineer ko pata chal jaye.
+  const pending = keys.length;
+  let settled = 0, failed = 0;
+  function noteDone(ok) {
+    settled++; if (!ok) failed++;
+    if (settled >= pending) {
+      if (failed === 0) ttShowSuccessToast(pending + ' change' + (pending > 1 ? 's' : '') + ' cloud par sync ho gaye.');
+    }
+  }
+  keys.forEach(function (k) {
+    const val = q[k];
+    if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') {
+      ttWithTimeout(window.cloudSync.pushKey(k, val), 10000)
+        .then(function () { noteDone(true); })
+        .catch(function () { ttCloudPush(k, val); noteDone(false); });
+    } else {
+      ttCloudPush(k, val);
+      noteDone(false);
+    }
+  });
 }
 window.addEventListener('online', ttFlushOfflineQueue);
 window.addEventListener('offline', updateOfflineQueueBadge);
@@ -2141,7 +2218,15 @@ function ttCloudPush(key, val, attemptsLeft) {
       console.error('Cloud push failed, retrying', key, e);
       if (typeof navigator !== 'undefined' && navigator.onLine === false) { ttQueueOffline(key, val); return; }
       if (attemptsLeft > 0) setTimeout(function () { ttCloudPush(key, val, attemptsLeft - 1); }, 2000);
-      else ttQueueOffline(key, val);
+      else {
+        ttQueueOffline(key, val);
+        // SOFT ERROR TOAST: pehle ye sirf console me chhup jata tha, user ko pata
+        // hi nahi chalta tha ki save fail hua. Ab chhota sa toast dikhta hai jisme
+        // 1-tap "Retry" button hota hai.
+        ttShowErrorToast('Cloud save nahi ho paya. Data safe hai, dobara koshish karein.', function () {
+          ttCloudPush(key, val);
+        });
+      }
     });
   } else if (attemptsLeft > 0) {
     // Cloud abhi connect ho raha hai (app abhi khula hai) - taiyar hote hi dobara try karega
@@ -2149,10 +2234,95 @@ function ttCloudPush(key, val, attemptsLeft) {
   } else {
     console.warn('Cloud sync ready nahi hua, offline queue me daal diya:', key);
     ttQueueOffline(key, val);
+    ttShowErrorToast('Cloud se connect nahi ho paya. Data safe hai, dobara koshish karein.', function () {
+      ttCloudPush(key, val);
+    });
   }
 }
 window.ttCloudPush = ttCloudPush;
 document.addEventListener('DOMContentLoaded', updateOfflineQueueBadge);
+
+// BUTTON RIPPLE EFFECT: har button/.btn/.tab-btn/.quick-action par tap karte
+// waqt ek subtle material-style ripple dikhta hai - sirf visual, koi click
+// logic yahan change nahi hoti (event capture phase me sirf ripple span add
+// karta hai, asli onclick apna kaam waisa hi karta rehta hai).
+document.addEventListener('pointerdown', function (e) {
+  const target = e.target.closest('.btn,.tab-btn,.quick-action');
+  if (!target) return;
+  try {
+    const rect = target.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const span = document.createElement('span');
+    span.className = 'tt-ripple';
+    span.style.width = span.style.height = size + 'px';
+    span.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    span.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    target.appendChild(span);
+    setTimeout(function () { span.remove(); }, 520);
+  } catch (err) {}
+}, { passive: true });
+
+// PROFESSIONAL ICON SET: bottom nav ke emoji ki jagah clean Lucide vector icons.
+// Agar kisi wajah se icon library CDN load na ho (jaise net slow/blocked), to
+// turant purana emoji wapas dikh jata hai - app kabhi icon-less nahi dikhega.
+function ttInitLucideIcons() {
+  try {
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    } else {
+      throw new Error('lucide not loaded');
+    }
+  } catch (e) {
+    document.querySelectorAll('.nav-icon[data-fallback]').forEach(function (el) {
+      if (!el.querySelector('svg')) el.textContent = el.getAttribute('data-fallback');
+    });
+  }
+}
+document.addEventListener('DOMContentLoaded', function () { setTimeout(ttInitLucideIcons, 50); });
+// Safety fallback: agar kisi wajah se dashboard render kabhi na chale, to bhi
+// skeleton hamesha ke liye atka na rahe
+document.addEventListener('DOMContentLoaded', function () {
+  setTimeout(function () {
+    const skel = document.getElementById('ttDashSkeleton');
+    if (skel) skel.style.display = 'none';
+  }, 6000);
+});
+
+/* ===== Soft Toast helper (error + retry / success) - reuses existing broadcast toast container ===== */
+function ttShowSoftToast(message, variant, retryFn) {
+  const container = document.getElementById('broadcastToastContainer');
+  if (!container) { if (variant === 'error') alert(message); return; }
+  const toast = document.createElement('div');
+  toast.className = 'broadcast-toast ' + (variant === 'error' ? 'tt-toast-error' : 'tt-toast-success');
+  const icon = variant === 'error' ? '⚠️' : '✅';
+  toast.innerHTML = `
+    <div class="toast-content">
+      <div class="toast-icon">${icon}</div>
+      <div style="flex:1;">
+        <div class="toast-title">${variant === 'error' ? 'Sync Problem' : 'Synced'}</div>
+        <div class="toast-body">${message}</div>
+        ${retryFn ? '<div class="tt-toast-actions"><button class="tt-toast-retry-btn" type="button">🔄 Retry</button></div>' : ''}
+      </div>
+      <button class="toast-close" onclick="this.closest('.broadcast-toast').remove()">✕</button>
+    </div>`;
+  if (retryFn) {
+    const btn = toast.querySelector('.tt-toast-retry-btn');
+    if (btn) btn.onclick = function () { toast.remove(); try { retryFn(); } catch (e) { console.error(e); } };
+  }
+  container.prepend(toast);
+  setTimeout(function () { if (toast.parentElement) toast.remove(); }, variant === 'error' ? 15000 : 5000);
+}
+// Chhota sa throttle: ek hi error type ki toast baar-baar (loop me) na dikhe
+var _ttLastErrorToastAt = 0;
+function ttShowErrorToast(message, retryFn) {
+  const now = Date.now();
+  if (now - _ttLastErrorToastAt < 4000) return; // 4s ke andar dusri error toast skip
+  _ttLastErrorToastAt = now;
+  ttShowSoftToast(message, 'error', retryFn);
+}
+function ttShowSuccessToast(message) { ttShowSoftToast(message, 'success', null); }
+window.ttShowErrorToast = ttShowErrorToast;
+window.ttShowSuccessToast = ttShowSuccessToast;
 
 function setStored(key, val) {
   try {
@@ -2792,6 +2962,9 @@ function deleteAdminLedgerInvoice(ordId) {
 }
 
 function renderDashboard() {
+  // SKELETON LOADER: pehli baar real data aa jaye to shimmer placeholder hata do
+  const skel = document.getElementById('ttDashSkeleton');
+  if (skel) skel.style.display = 'none';
   const today = new Date().toISOString().split('T')[0];
   let todayRecv = 0;
   let totalDue = 0;
@@ -3586,7 +3759,7 @@ function handleDeliveryPhotoCaptured(event) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    ttCompressImage(e.target.result).then(function(cd) {
+    ttCompressImageSafe(e.target.result).then(function(cd) {
       currentDeliveryPhotoBase64 = cd;
       const preview = document.getElementById('deliveryPhotoPreview');
       preview.src = currentDeliveryPhotoBase64;
@@ -3661,7 +3834,7 @@ function handlePaymentProofCaptured(event) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    ttCompressImage(e.target.result).then(function(cd) {
+    ttCompressImageSafe(e.target.result).then(function(cd) {
       currentPaymentProofBase64 = cd;
       const preview = document.getElementById('payProofPreview');
       preview.src = currentPaymentProofBase64;
@@ -4079,7 +4252,7 @@ function renderStockList() {
         <div>
           <span style="font-size:11px; font-weight:700; color:var(--cyan);">${item.code || ''}</span>
           <strong style="font-size:14px; color:var(--text-main); display:block;">${item.name}</strong>
-          <div style="font-size:11px; color:var(--text-muted);">${item.category}</div>
+          <div style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">${item.category}${ttBrandBadge(item.name)}</div>
         </div>
         <div style="text-align:right;">
           <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}">${item.stock} in stock</span>
@@ -4632,7 +4805,14 @@ window.deleteMachinePart = deleteMachinePart;
 function switchTab(tab, el) {
   document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('view-' + tab).classList.add('active');
+  const panel = document.getElementById('view-' + tab);
+  panel.classList.add('active');
+  // PAGE SLIDE TRANSITION: tab switch karte waqt ek smooth native-app jaisa
+  // slide-fade animation - purana instant-show wala flow bilkul waisa hi rehta
+  // hai, sirf CSS class add/remove hoti hai (koi logic change nahi).
+  panel.classList.remove('tt-page-slide');
+  void panel.offsetWidth; // reflow taaki animation dobara trigger ho
+  panel.classList.add('tt-page-slide');
   if (el) el.classList.add('active');
 
   const fabBtn = document.getElementById('fabMainBtn');
@@ -5091,6 +5271,50 @@ function ttCompressImage(dataUrl, maxDim, quality) {
   });
 }
 
+// IMAGE SIZE SAFEGUARD: Firestore ka 1 document max ~1MB hota hai. Normal compress
+// (900px/0.6) usually kaafi hota hai, lekin bahut high-res phone photo me kabhi-kabhi
+// phir bhi bada reh sakta hai - tab ye khud-ba-khud ek aur round chhoti size/quality
+// me compress karta hai, jab tak safe size na aa jaye. Purana ttCompressImage() waisa
+// hi rehta hai (kahin aur use ho raha ho to kuch nahi tootega) - ye ek extra wrapper hai.
+function ttCompressImageSafe(dataUrl, maxDim, quality) {
+  maxDim = maxDim || 900; quality = quality || 0.6;
+  return ttCompressImage(dataUrl, maxDim, quality).then(function (out) {
+    if (out && out.length > 600000 && maxDim > 450) {
+      return ttCompressImageSafe(out, Math.round(maxDim * 0.75), Math.max(0.4, quality - 0.15));
+    }
+    return out;
+  });
+}
+window.ttCompressImageSafe = ttCompressImageSafe;
+
+// MACHINERY BRAND BADGE: product/machine ke naam me jo bhi known brand (Ma-Fra,
+// Annovi Reverberi, Maxshine) mention ho, uska chhota colored badge dikha dete
+// hain - sirf display helper hai, kisi data/field ko chhuta nahi hai.
+var TT_BRANDS = [
+  { key: 'annovi reverberi', label: 'AR', color: '#c0392b' },
+  { key: 'ma-fra', label: 'Ma-Fra', color: '#2563eb' },
+  { key: 'mafra', label: 'Ma-Fra', color: '#2563eb' },
+  { key: 'maxshine', label: 'Maxshine', color: '#16a34a' }
+];
+function ttBrandBadge(name) {
+  if (!name) return '';
+  const lower = String(name).toLowerCase();
+  const b = TT_BRANDS.find(function (x) { return lower.indexOf(x.key) !== -1; });
+  if (!b) return '';
+  return `<span style="font-size:9px; font-weight:800; padding:1px 6px; border-radius:6px; color:#fff; background:${b.color}; letter-spacing:.2px;">${b.label}</span>`;
+}
+
+// SKELETON LOADER: cloud se data fetch hone tak (list khaali ho) ek chhota
+// shimmer placeholder dikhane ke liye - blank screen/jumpy render ki jagah.
+function ttSkeletonCards(n) {
+  n = n || 3;
+  let out = '';
+  for (let i = 0; i < n; i++) out += '<div class="tt-skeleton tt-skeleton-card"></div>';
+  return out;
+}
+window.ttBrandBadge = ttBrandBadge;
+window.ttSkeletonCards = ttSkeletonCards;
+
 function ttInr(n) { return Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function ttWords(num) {
   const a = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
@@ -5528,7 +5752,7 @@ function ttHandleReportPhotoInput(event, previewContainerId) {
   files.slice(0, Math.max(0, remaining)).forEach(file => {
     const reader = new FileReader();
     reader.onload = function (e) {
-      ttCompressImage(e.target.result, 900, 0.6).then(function (cd) {
+      ttCompressImageSafe(e.target.result, 900, 0.6).then(function (cd) {
         ttReportPhotos.push(cd);
         ttRenderReportPhotoPreview(previewContainerId);
       });
