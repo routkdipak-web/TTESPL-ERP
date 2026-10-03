@@ -5354,7 +5354,12 @@ function quotRecalc() {
     const qty = Number(r.querySelector('.qit-qty').value) || 0;
     const rate = Number(r.querySelector('.qit-rate').value) || 0;
     const disc = Number(r.querySelector('.qit-disc').value) || 0;
-    totalNoGst += qty * rate * (1 - disc / 100);
+    // GST FIX: product ka 'rate' GST-INCLUSIVE hota he (jaise 118), isliye pehle
+    // discount GST-inclusive amount par lagao, fir usse 1.18 se divide karke
+    // taxable (without-GST) base nikalo - taaki niche CGST/SGST dobara na lage.
+    const lineInclusive = qty * rate * (1 - disc / 100);
+    const lineTaxable = Math.round((lineInclusive / 1.18) * 100) / 100;
+    totalNoGst += lineTaxable;
   });
   const svc = Number(document.getElementById('quotServiceCharge').value) || 0;
   const cgst = totalNoGst * 0.09, sgst = totalNoGst * 0.09;
@@ -5452,10 +5457,15 @@ function printQuotation() {
     const qty = Number(r.querySelector('.qit-qty').value) || 0;
     const rate = Number(r.querySelector('.qit-rate').value) || 0;
     const disc = Number(r.querySelector('.qit-disc').value) || 0;
+    // GST FIX: 'rate' GST-inclusive he, isliye print table ke "Amount" column me
+    // bhi taxable (without-GST) value dikhana he - quotRecalc() ke totalNoGst ke
+    // sath match karne ke liye, taaki neeche CGST/SGST dobara na lage.
+    const lineInclusive = qty * rate * (1 - disc / 100);
+    const lineTaxable = Math.round((lineInclusive / 1.18) * 100) / 100;
     return {
       name: r.querySelector('.qit-name').value.trim() || 'Item',
       hsn: r.querySelector('.qit-hsn').value.trim() || '-',
-      qty, rate, disc, amount: qty * rate * (1 - disc / 100)
+      qty, rate, disc, amount: lineTaxable
     };
   }).filter(i => i.name);
   if (items.length === 0) { alert('Kam se kam ek item add karo'); return; }
