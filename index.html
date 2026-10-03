@@ -2338,7 +2338,6 @@ document.addEventListener('DOMContentLoaded', updateOfflineQueueBadge);
 document.addEventListener('pointerdown', function (e) {
   const target = e.target.closest('.btn,.tab-btn,.sub-tab-btn,.quick-action,.nav-item,.cat-chip');
   if (!target) return;
-  try { if (navigator.vibrate) navigator.vibrate(14); } catch (err) {}
   try {
     const rect = target.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height);
