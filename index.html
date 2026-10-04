@@ -63,15 +63,23 @@
 
   html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
   * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+  /* BUG FIX: body ka background pehle hardcoded dark navy gradient tha (with
+     !important), chahe theme light ho ya dark - isliye "day" (light) theme
+     bhi hamesha raat jaisa dark dikhta tha. Ab background theme ke hisaab se
+     badalta hai: light theme me halka/bright, dark theme me wahi purana navy. */
   body {
-    background: linear-gradient(135deg, #071328 0%, #0a2540 50%, #13395e 100%) !important;
+    background: linear-gradient(135deg, #dfe9f5 0%, #eef3f9 50%, #e4edf7 100%);
     background-size: 200% 200%;
     animation: brandBgFlow 12s ease infinite;
-    color: var(--text-main); min-height: 100vh; min-height: 100dvh; 
-    padding-top: 0px; 
-    padding-bottom: calc(68px + env(safe-area-inset-bottom)); 
-    -webkit-font-smoothing: antialiased; 
+    color: var(--text-main); min-height: 100vh; min-height: 100dvh;
+    padding-top: 0px;
+    padding-bottom: calc(68px + env(safe-area-inset-bottom));
+    -webkit-font-smoothing: antialiased;
     transition: background 0.3s ease, color 0.3s ease;
+  }
+  [data-theme="dark"] body {
+    background: linear-gradient(135deg, #071328 0%, #0a2540 50%, #13395e 100%);
+    background-size: 200% 200%;
   }
   @keyframes brandBgFlow {
     0% { background-position: 0% 50%; }
