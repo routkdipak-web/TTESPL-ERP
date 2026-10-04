@@ -230,17 +230,35 @@
   .header-cloud-dot.offline { background:#94a3b8; box-shadow:0 0 6px #94a3b8; animation:none; }
 
   .profile-menu-wrapper { position: relative; z-index: 10000; }
+  /* PREMIUM GLASS BUBBLE PROFILE TOGGLE: FAB jaisa hi live glass-bubble +
+     sonar-pulse treatment, sirf yahan pill-shape me (avatar+dot+chevron
+     ke layout ko disturb kiye bina). '.profile-open' class (open state me)
+     hi sonar ring + glow chalati hai - baaki sab purana hi hai. */
   .profile-avatar-btn {
-    display: flex; align-items: center; gap: 4px; background: rgba(255, 255, 255, 0.12);
+    position: relative; display: flex; align-items: center; gap: 4px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.28), rgba(0,180,216,0.16) 60%, rgba(10,37,64,0.3));
+    -webkit-backdrop-filter: blur(10px) saturate(1.4); backdrop-filter: blur(10px) saturate(1.4);
     border: 1.8px solid rgba(0, 180, 216, 0.65); padding: 2px 6px 2px 2px; border-radius: 24px;
     cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 0 10px rgba(0,180,216,0.3);
+    box-shadow: 0 0 10px rgba(0,180,216,0.3), inset 0 1px 3px rgba(255,255,255,0.35);
   }
   .profile-avatar-btn:active { transform: scale(0.92); }
+  .profile-avatar-btn::after {
+    content: ""; position: absolute; inset: -5px; border-radius: 26px;
+    border: 2px solid rgba(0,180,216,0.75); opacity: 0; transform: scale(0.9);
+    pointer-events: none;
+  }
+  .profile-avatar-btn.profile-open { box-shadow: 0 0 16px rgba(0,180,216,0.65), inset 0 1px 3px rgba(255,255,255,0.4); }
+  .profile-avatar-btn.profile-open::after { animation: ttProfileSonarPulse 1.6s cubic-bezier(0.4,0,0.2,1) infinite; }
+  @keyframes ttProfileSonarPulse {
+    0% { transform: scale(0.9); opacity: 0.85; }
+    70% { transform: scale(1.3); opacity: 0; }
+    100% { transform: scale(1.3); opacity: 0; }
+  }
   .profile-avatar-img {
     width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #00b4d8, #0a2540);
     color: #fff; font-size: 11.5px; font-weight: 800; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.3);
   }
   .profile-avatar-role-dot {
     width: 7px; height: 7px; border-radius: 50%; background: #ff6b35; border: 1.5px solid #fff;
@@ -248,15 +266,24 @@
   }
   .profile-avatar-role-dot.admin { background: #00b4d8; }
 
+  /* SMOOTH DROPDOWN: display:none/block ki jagah transform+opacity transition -
+     panel ab profile bubble se thoda neeche se smoothly expand hokar khulta hai
+     aur wapas usi jagah collapse hokar band hota hai (jaise quick-action FAB). */
   .profile-dropdown-card {
-    position: fixed; top: 52px; right: 10px; width: 280px;
+    position: fixed; top: 64px; right: 10px; width: 280px;
     background: rgba(10, 25, 47, 0.98) !important; backdrop-filter: blur(25px) !important; -webkit-backdrop-filter: blur(25px);
     border: 1.8px solid rgba(0, 180, 216, 0.45); border-radius: 18px;
     box-shadow: 0 20px 48px rgba(0,0,0,0.7); padding: 14px;
-    display: none; animation: profileIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     color: #ffffff; z-index: 999999 !important;
+    transform-origin: top right;
+    transform: scale(0.12) translateY(-22px);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: transform 0.34s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.22s ease, visibility 0.34s;
   }
-  @keyframes profileIn { from { opacity: 0; transform: translateY(-8px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .profile-dropdown-card.show {
+    transform: scale(1) translateY(0);
+    opacity: 1; visibility: visible; pointer-events: auto;
+  }
   [data-theme="dark"] .profile-dropdown-card { background: rgba(8, 14, 26, 0.99) !important; }
   
   .profile-header-info {
@@ -361,7 +388,16 @@
     filter: drop-shadow(0 0 10px rgba(0, 180, 216, 0.85)) drop-shadow(0 2px 6px rgba(255, 107, 53, 0.6));
   }
   .nav-icon { font-size: 18.5px; transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1); display:flex; align-items:center; justify-content:center; }
-  .nav-icon svg { width: 21px; height: 21px; stroke-width: 2.1; }
+  .nav-icon svg { width: 22px; height: 22px; stroke-width: 2.6; }
+  /* Colorful/bold per-icon accent (vector icons kept, just given distinct bold colors) */
+  .nav-icon-dash svg { color:#38bdf8; stroke:#38bdf8; }
+  .nav-icon-leads svg { color:#fb7185; stroke:#fb7185; }
+  .nav-icon-orders svg { color:#fbbf24; stroke:#fbbf24; }
+  .nav-icon-services svg { color:#a78bfa; stroke:#a78bfa; }
+  .nav-icon-stock svg { color:#34d399; stroke:#34d399; }
+  .nav-icon-ledger svg { color:#f472b6; stroke:#f472b6; }
+  .nav-icon-chat svg { color:#60e5e5; stroke:#60e5e5; }
+  .nav-item.active .nav-icon svg { stroke-width: 2.8; filter: drop-shadow(0 0 6px currentColor); color:#ffffff !important; stroke:#ffffff !important; }
   .nav-badge {
     position: absolute; top: 4px; right: calc(50% - 16px);
     background: var(--danger); color: white; font-size: 9px; font-weight: 800;
@@ -556,16 +592,74 @@
   }
 
   /* ------------------- STAGGERED LIVE ANIMATION FOR FAB 5-OPTIONS ------------------- */
+  /* PREMIUM GLASS BUBBLE FAB: round toggle button ek "glass bubble" jaisa
+     dikhta hai - TTESPL center me static rehta hai (no plus icon - clean
+     look), aur rim ke andar "TWIN TOWN EXPRESS" chhote letters me hamesha
+     slowly ghumta rehta hai. Open hone par 45deg tilt ki jagah premium
+     "sonar glow pulse" animation chalta hai: ek expanding glowing ring
+     bubble se bahar nikal kar fade hoti hai (infinite loop jab tak panel
+     khula hai), ring-text spin bhi thoda fast ho jata hai, aur TTESPL label
+     halka sa glow-breathe karta hai - sab kuch sirf open state me. */
   #fabMainBtn {
-    position: fixed; bottom: 76px; right: 20px; width: 50px; height: 50px;
-    background: linear-gradient(135deg, var(--accent), #ff9d3d);
+    position: fixed; bottom: 76px; right: 20px; width: 64px; height: 64px;
     color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 8px 24px rgba(255,107,53,0.55); font-size: 26px; font-weight: 800;
-    cursor: pointer; z-index: 99; transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255,255,255,0.55), rgba(255,255,255,0) 45%),
+      linear-gradient(145deg, rgba(255,157,61,0.95), rgba(255,107,53,0.95) 55%, rgba(200,70,20,0.95));
+    -webkit-backdrop-filter: blur(8px) saturate(1.4);
+    backdrop-filter: blur(8px) saturate(1.4);
+    border: 1.5px solid rgba(255,255,255,0.5);
+    box-shadow: 0 10px 26px rgba(255,107,53,0.55), inset 0 2px 5px rgba(255,255,255,0.55), inset 0 -8px 12px rgba(0,0,0,0.18);
+    cursor: pointer; z-index: 99; transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
   }
   #fabMainBtn:active { transform: scale(0.92); }
+  #fabMainBtn.fab-open { box-shadow: 0 10px 30px rgba(255,107,53,0.8), 0 0 0 7px rgba(255,107,53,0.2), inset 0 2px 5px rgba(255,255,255,0.6); }
+  /* Sonar glow pulse ring - sirf open state me dikhta/animate hota hai */
+  #fabMainBtn::after {
+    content: ""; position: absolute; inset: -6px; border-radius: 50%;
+    border: 2px solid rgba(255,157,61,0.75); opacity: 0; transform: scale(0.85);
+    pointer-events: none; transition: opacity 0.2s ease;
+  }
+  #fabMainBtn.fab-open::after { animation: ttFabSonarPulse 1.6s cubic-bezier(0.4,0,0.2,1) infinite; }
+  @keyframes ttFabSonarPulse {
+    0% { transform: scale(0.85); opacity: 0.8; }
+    70% { transform: scale(1.4); opacity: 0; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+  .fab-bubble-clip {
+    position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .fab-ring-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; animation: ttFabRingSpin 11s linear infinite; pointer-events: none; transition: animation-duration 0.3s ease; }
+  #fabMainBtn.fab-open .fab-ring-text { animation-duration: 3.4s; }
+  .fab-ring-text text { font-size: 7.4px; font-weight: 800; letter-spacing: 1px; fill: rgba(255,255,255,0.92); text-transform: uppercase; }
+  @keyframes ttFabRingSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .fab-bubble-core { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
+  .fab-center-label { font-size: 9px; font-weight: 800; letter-spacing: 0.5px; color: rgba(255,255,255,0.97); text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: transform 0.3s ease; }
+  #fabMainBtn.fab-open .fab-center-label { animation: ttFabLabelGlow 1.6s ease-in-out infinite; }
+  @keyframes ttFabLabelGlow {
+    0%, 100% { text-shadow: 0 1px 2px rgba(0,0,0,0.3); transform: scale(1); }
+    50% { text-shadow: 0 0 9px rgba(255,255,255,0.95), 0 1px 2px rgba(0,0,0,0.3); transform: scale(1.1); }
+  }
+  /* QUICK ACTION PANEL: ab yeh hamesha display:flex rehta hai - open/close ka
+     "dhadam se" jump hatane ke liye display toggle ki jagah transform+opacity
+     par smooth transition use karte hain. Close hone par panel apne transform-origin
+     (bottom-right, jahan toggle button hai) ki taraf chhota hokar usi button ke
+     andar "sama" jata hai; open hone par wahi se expand hokar bahar nikalta hai. */
   #fabMenu {
-    position: fixed; bottom: 138px; right: 20px; display: none; flex-direction: column; gap: 10px; z-index: 99;
+    position: fixed; bottom: 138px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 99;
+    transform-origin: bottom right;
+    transform: scale(0.12) translateY(26px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.36s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.22s ease, visibility 0.36s;
+  }
+  #fabMenu.show {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
   .fab-action-btn {
     background: rgba(10, 37, 64, 0.94); backdrop-filter: blur(16px);
@@ -573,7 +667,16 @@
     font-size: 12.5px; font-weight: 800; color: #ffffff; box-shadow: 0 8px 25px rgba(0,0,0,0.35);
     cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap;
     position: relative; overflow: hidden;
+    opacity: 0; transform: translateY(10px) scale(0.82);
+    transition: opacity 0.24s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
+  #fabMenu.show .fab-action-btn { opacity: 1; transform: translateY(0) scale(1); }
+  #fabMenu.show .fab-action-btn:nth-child(1) { transition-delay: 0.02s; }
+  #fabMenu.show .fab-action-btn:nth-child(2) { transition-delay: 0.05s; }
+  #fabMenu.show .fab-action-btn:nth-child(3) { transition-delay: 0.08s; }
+  #fabMenu.show .fab-action-btn:nth-child(4) { transition-delay: 0.11s; }
+  #fabMenu.show .fab-action-btn:nth-child(5) { transition-delay: 0.14s; }
+  #fabMenu.show .fab-action-btn:nth-child(6) { transition-delay: 0.17s; }
   .fab-action-btn::after {
     content: ""; position: absolute; inset: -40%;
     background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.3), transparent);
@@ -1490,7 +1593,17 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
     <div class="fab-action-btn" onclick="triggerAppHaptic(); openProfitCalculatorModal(); toggleFabMenu();">🧮 Profit Calculator</div>
     <div class="fab-action-btn" onclick="triggerAppHaptic(); openPerformanceReportModal(); toggleFabMenu();">📈 Sales Report</div>
   </div>
-  <div id="fabMainBtn" onclick="triggerAppHaptic(); toggleFabMenu()">+</div>
+  <div id="fabMainBtn" onclick="triggerAppHaptic(); toggleFabMenu()" aria-label="Quick Actions">
+    <div class="fab-bubble-clip">
+      <svg class="fab-ring-text" viewBox="0 0 100 100" aria-hidden="true">
+        <defs><path id="fabRingTextPath" d="M 50,50 m -40,0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0"/></defs>
+        <text><textPath href="#fabRingTextPath" startOffset="0%">• TWIN TOWN EXPRESS • TWIN TOWN EXPRESS </textPath></text>
+      </svg>
+      <div class="fab-bubble-core">
+        <span class="fab-center-label">TTESPL</span>
+      </div>
+    </div>
+  </div>
 
   <!-- TRUE FULL-PAGE FOOTER WITH RACING SPORTS CAR & DUST -->
   <div class="nav-bar">
@@ -1528,31 +1641,31 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
     </div>
 
     <div class="nav-item active" onclick="triggerAppHaptic(); switchTab('dashboard', this)">
-      <div class="nav-icon" data-fallback="📊"><i data-lucide="layout-dashboard"></i></div>
+      <div class="nav-icon nav-icon-dash" data-fallback="📊"><i data-lucide="layout-dashboard"></i></div>
       <span>Home</span>
     </div>
     <div class="nav-item" onclick="triggerAppHaptic(); switchTab('leads', this)">
-      <div class="nav-icon" data-fallback="🎯"><i data-lucide="target"></i></div>
+      <div class="nav-icon nav-icon-leads" data-fallback="🎯"><i data-lucide="target"></i></div>
       <span>Leads</span>
     </div>
     <div class="nav-item" onclick="triggerAppHaptic(); switchTab('orders', this)">
-      <div class="nav-icon" data-fallback="📦"><i data-lucide="package"></i></div>
+      <div class="nav-icon nav-icon-orders" data-fallback="📦"><i data-lucide="package"></i></div>
       <span>Orders</span>
     </div>
     <div class="nav-item" onclick="triggerAppHaptic(); switchTab('services', this)">
-      <div class="nav-icon" data-fallback="🛠️"><i data-lucide="wrench"></i></div>
+      <div class="nav-icon nav-icon-services" data-fallback="🛠️"><i data-lucide="wrench"></i></div>
       <span>Services</span>
     </div>
     <div class="nav-item" onclick="triggerAppHaptic(); switchTab('inventory', this)">
-      <div class="nav-icon" data-fallback="🏷️"><i data-lucide="tag"></i></div>
+      <div class="nav-icon nav-icon-stock" data-fallback="🏷️"><i data-lucide="tag"></i></div>
       <span>Stock</span>
     </div>
     <div class="nav-item" onclick="triggerAppHaptic(); switchTab('billing', this)">
-      <div class="nav-icon" data-fallback="📑"><i data-lucide="receipt"></i></div>
+      <div class="nav-icon nav-icon-ledger" data-fallback="📑"><i data-lucide="receipt"></i></div>
       <span>Ledger</span>
     </div>
     <div class="nav-item" onclick="triggerAppHaptic(); switchTab('chat', this)">
-      <div class="nav-icon" data-fallback="💬"><i data-lucide="message-circle"></i></div>
+      <div class="nav-icon nav-icon-chat" data-fallback="💬"><i data-lucide="message-circle"></i></div>
       <span>Chat</span>
       <span class="nav-badge" id="chatNavBadge" style="display:none;">0</span>
     </div>
@@ -1870,6 +1983,10 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
     <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); addOrderItemRow()" style="margin-bottom:12px;">+ Add Product Item</button>
 
     <div class="grid-3" style="background:var(--bg); padding:12px; border-radius:10px; margin-bottom:12px; border:1px solid var(--border);">
+      <div>
+        <label class="form-label">🚚 Courier/Transport (₹)</label>
+        <input type="number" id="ordCourierCharge" value="0" min="0" oninput="calcOrderTotals()">
+      </div>
       <div>
         <label class="form-label">Total Amount</label>
         <input type="number" id="ordTotalAmt" readonly style="font-weight:800;">
@@ -3009,29 +3126,43 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function toggleProfileDrawer(e) {
+  // SMOOTH OPEN/CLOSE: purana code seedha display='block'/'none' karta tha
+  // (achanak "dhadam se" jump). Ab '.show' + '.profile-open' class add/remove
+  // hoti hai - CSS transition khud panel ko bubble ke andar se smoothly
+  // expand/collapse karta hai, aur bubble par sonar-pulse glow chalata hai.
   if (e) {
     e.preventDefault();
     e.stopPropagation();
   }
   const card = document.getElementById('profileDropdownCard');
+  const btn = document.getElementById('profileHeaderTriggerBtn');
   if (!card) return;
-  const isOpen = (card.style.display === 'block');
-  card.style.display = isOpen ? 'none' : 'block';
+  const isOpen = card.classList.contains('show');
+  if (isOpen) {
+    card.classList.remove('show');
+    if (btn) btn.classList.remove('profile-open');
+  } else {
+    card.classList.add('show');
+    if (btn) btn.classList.add('profile-open');
+  }
 }
 window.toggleProfileDrawer = toggleProfileDrawer;
 
 function closeProfileDrawer() {
   const card = document.getElementById('profileDropdownCard');
-  if (card) card.style.display = 'none';
+  const btn = document.getElementById('profileHeaderTriggerBtn');
+  if (card) card.classList.remove('show');
+  if (btn) btn.classList.remove('profile-open');
 }
 window.closeProfileDrawer = closeProfileDrawer;
 
 document.addEventListener('click', function(e) {
   const card = document.getElementById('profileDropdownCard');
   const btn = document.getElementById('profileHeaderTriggerBtn');
-  if (card && card.style.display === 'block') {
+  if (card && card.classList.contains('show')) {
     if (!card.contains(e.target) && !btn.contains(e.target)) {
-      card.style.display = 'none';
+      card.classList.remove('show');
+      if (btn) btn.classList.remove('profile-open');
     }
   }
 });
@@ -3674,14 +3805,21 @@ function renderDashboard() {
 }
 
 function toggleFabMenu() {
+  // SMOOTH OPEN/CLOSE: purana code seedha menu.style.display = 'none'/'flex'
+  // kar deta tha jo CSS transition ko bypass kar ke "dhadam se" jump deta tha.
+  // Ab sirf '.show' / 'fab-open' class add/remove hoti hai - CSS transform/opacity
+  // transition khud panel ko toggle button ke andar smoothly collapse/expand
+  // karta hai, aur 'fab-open' class button par sonar-pulse glow + ring-spin
+  // speed-up + TTESPL glow animation chalati hai (45deg tilt ke badle).
   const menu = document.getElementById('fabMenu');
   const btn = document.getElementById('fabMainBtn');
-  if (menu.style.display === 'flex') {
-    menu.style.display = 'none';
-    btn.style.transform = 'rotate(0deg)';
+  const isOpen = menu.classList.contains('show');
+  if (isOpen) {
+    menu.classList.remove('show');
+    if (btn) btn.classList.remove('fab-open');
   } else {
-    menu.style.display = 'flex';
-    btn.style.transform = 'rotate(45deg)';
+    menu.classList.add('show');
+    if (btn) btn.classList.add('fab-open');
   }
 }
 
@@ -4257,6 +4395,7 @@ function openOrderModal(orderObj = null) {
     document.getElementById('ordRecvAmt').value = orderObj.recvAmount;
     document.getElementById('ordPayMode').value = orderObj.payMode;
     document.getElementById('ordTaxType').value = orderObj.taxType || 'INTRA';
+    document.getElementById('ordCourierCharge').value = orderObj.courierCharge || 0;
     orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.mrp || it.rate, it.disc || 0));
   } else {
     title.textContent = "New Multi-Item Product Order";
@@ -4268,6 +4407,7 @@ function openOrderModal(orderObj = null) {
     document.getElementById('ordRecvAmt').value = "0";
     document.getElementById('ordPayMode').value = "Cash";
     document.getElementById('ordTaxType').value = "INTRA";
+    document.getElementById('ordCourierCharge').value = "0";
     addOrderItemRow();
   }
   calcOrderTotals();
@@ -4311,16 +4451,24 @@ function calcOrderTotals() {
     r.querySelector('.item-row-total').textContent = '₹' + sub.toLocaleString('en-IN', {maximumFractionDigits: 2});
     total += sub;
   });
-  // AUTO ROUND-OFF: bill/order ka final amount hamesha nearest rupee (poora
-  // integer) me round hota hai - exact round-off difference chhote note me
-  // dikh jata hai, taaki paisa-level mismatch kahin na ho.
-  const rawTotal = Math.round(total * 100) / 100;
+  // COURIER/TRANSPORT CHARGE: products ke upar ek flat add-on charge, jo
+  // taxable product total me nahi jodte (tax calc par asar nahi) par
+  // final payable total aur invoice me alag se dikhta hai.
+  const courierEl = document.getElementById('ordCourierCharge');
+  const courierCharge = courierEl ? (parseFloat(courierEl.value) || 0) : 0;
+  // AUTO ROUND-OFF: bill/order ka final amount (products + courier) hamesha
+  // nearest rupee (poora integer) me round hota hai - exact round-off
+  // difference chhote note me dikh jata hai, taaki paisa-level mismatch kahin na ho.
+  const rawTotal = Math.round((total + courierCharge) * 100) / 100;
   const roundedTotal = Math.round(rawTotal);
   const roundOff = Math.round((roundedTotal - rawTotal) * 100) / 100;
   document.getElementById('ordTotalAmt').value = roundedTotal;
   const rawEl = document.getElementById('ordTotalRaw'); if (rawEl) rawEl.value = rawTotal;
   const noteEl = document.getElementById('ordRoundOffNote');
-  if (noteEl) noteEl.textContent = Math.abs(roundOff) >= 0.005 ? `Round Off: ${roundOff >= 0 ? '+' : ''}₹${roundOff.toFixed(2)} (Sub-total ₹${rawTotal.toFixed(2)})` : '';
+  let noteTxt = '';
+  if (courierCharge > 0) noteTxt += `Incl. Courier ₹${courierCharge.toFixed(2)}. `;
+  if (Math.abs(roundOff) >= 0.005) noteTxt += `Round Off: ${roundOff >= 0 ? '+' : ''}₹${roundOff.toFixed(2)} (Sub-total ₹${rawTotal.toFixed(2)})`;
+  if (noteEl) noteEl.textContent = noteTxt;
   calcOrderBalance();
 }
 
@@ -4342,6 +4490,8 @@ function saveOrderAction() {
   const due = parseFloat(document.getElementById('ordDueAmt').value) || 0;
   const payMode = document.getElementById('ordPayMode').value;
   const taxType = document.getElementById('ordTaxType').value;
+  const courierChargeEl = document.getElementById('ordCourierCharge');
+  const courierCharge = courierChargeEl ? (parseFloat(courierChargeEl.value) || 0) : 0;
 
   let items = [];
   document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
@@ -4372,14 +4522,14 @@ function saveOrderAction() {
     if(o) {
       o.customerName = custName; o.phone = phone; o.bookedBy = staff; o.orderDate = ordDate;
       o.deliveryDate = delDate; o.items = items; o.totalAmount = total; o.recvAmount = recv;
-      o.dueAmount = due; o.payMode = payMode; o.taxType = taxType;
+      o.dueAmount = due; o.payMode = payMode; o.taxType = taxType; o.courierCharge = courierCharge;
     }
   } else {
     const newO = {
       id: "ORD-" + Math.floor(100 + Math.random() * 900),
       customerName: custName, phone, orderDate: ordDate, deliveryDate: delDate,
       items, totalAmount: total, recvAmount: recv, dueAmount: due, payMode, taxType,
-      status: "Pending", bookedBy: staff
+      courierCharge, status: "Pending", bookedBy: staff
     };
     ordersData.unshift(newO);
 
@@ -5522,9 +5672,14 @@ function switchTab(tab, el) {
 
   const fabBtn = document.getElementById('fabMainBtn');
   const fabMenu = document.getElementById('fabMenu');
+  // Tab switch par quick-action panel hamesha collapse kar do (agar khula tha),
+  // taaki wo doosre tab ke peeche khula na reh jaye.
+  if (fabMenu && fabMenu.classList.contains('show')) {
+    fabMenu.classList.remove('show');
+    if (fabBtn) fabBtn.classList.remove('fab-open');
+  }
   if (tab === 'chat') {
     if (fabBtn) fabBtn.style.display = 'none';
-    if (fabMenu) fabMenu.style.display = 'none';
   } else {
     if (fabBtn) fabBtn.style.display = 'flex';
   }
@@ -6065,9 +6220,14 @@ function buildTallyInvoiceHtml(o) {
   });
   const sumTaxable = Math.round(items.reduce((s, i) => s + i.taxable, 0) * 100) / 100;
   const total = Number(o.totalAmount) || 0;
-  const tax = Math.round((total - sumTaxable) * 100) / 100;
+  // Courier/Transport charge is a non-taxable add-on: pull it out of the
+  // grand total before working out the GST split, then show it as its own
+  // line below the tax rows so product-level GST math stays untouched.
+  const courierCharge = Number(o.courierCharge) || 0;
+  const totalForTax = Math.round((total - courierCharge) * 100) / 100;
+  const tax = Math.round((totalForTax - sumTaxable) * 100) / 100;
   const half = Math.round(tax / 2 * 100) / 100;
-  const roundOff = Math.round((total - (sumTaxable + (intra ? half * 2 : tax))) * 100) / 100;
+  const roundOff = Math.round((totalForTax - (sumTaxable + (intra ? half * 2 : tax))) * 100) / 100;
   // HSN summary
   const hs = {};
   items.forEach(i => { hs[i.hsn] = hs[i.hsn] || 0; hs[i.hsn] += i.taxable; });
@@ -6133,6 +6293,7 @@ function buildTallyInvoiceHtml(o) {
         <tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">SGST</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(half)}</td></tr>`
         : `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">IGST</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(tax)}</td></tr>`}
         ${Math.abs(roundOff) >= 0.005 ? `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">ROUND OFF</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(roundOff)}</td></tr>` : ''}
+        ${courierCharge > 0 ? `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">Courier / Transport Charges</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(courierCharge)}</td></tr>` : ''}
         <tr style="height:14px;"><td colspan="10" style="border-left:1px solid #000;border-right:1px solid #000;"></td></tr>
         <tr><td colspan="4" style="${B}text-align:right;font-weight:800;padding:3px 5px;">Total</td><td style="${B}text-align:right;font-weight:800;padding:3px 5px;">${items.reduce((s, i) => s + i.qty, 0)} PCS</td><td colspan="4" style="${B}"></td><td style="${B}text-align:right;font-weight:800;font-size:13px;padding:3px 5px;">₹ ${ttInr(total)}</td></tr>
       </tbody>
