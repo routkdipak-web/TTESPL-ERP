@@ -406,7 +406,7 @@
   }
 
   /* ------------------- iOS-STYLE PAGE TRANSITION & CONTAINER ------------------- */
-  .container { max-width: 960px; margin: 0 auto; padding: 12px 14px; position: relative; }
+  .container { max-width: 960px; margin: 0 auto; padding: 12px 14px; }
   .view-panel { display: none; }
   .view-panel.active {
     display: block;
@@ -415,32 +415,6 @@
   @keyframes iosPageIn {
     0% { opacity: 0; transform: translateY(16px) scale(0.975); }
     100% { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  /* RICH CROSSFADE TAB SWITCH: jab ek tab (jaise Home) se doosre tab (jaise
-     Leads) par jaate hain, purana panel ekdum gayab nahi hota - wo khud ek
-     chhoti absolute overlay ban kar smoothly fade+slide-out hota hai, aur
-     theek usi waqt naya panel (jo normal flow me hai) fade+slide-in hota
-     hai - dono animation ek saath (simultaneously) chalte hain, jaise
-     premium native apps me hota hai. */
-  .view-panel.tt-page-exiting {
-    display: block !important;
-    position: absolute; top: 0; left: 14px; right: 14px;
-    z-index: 1; pointer-events: none;
-    animation: ttPageExitFade 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-  }
-  @keyframes ttPageExitFade {
-    0% { opacity: 1; transform: translateX(0) scale(1); }
-    100% { opacity: 0; transform: translateX(-16px) scale(0.975); }
-  }
-  .view-panel.active.tt-page-entering {
-    animation: ttPageEnterFade 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  @keyframes ttPageEnterFade {
-    0% { opacity: 0; transform: translateX(18px) scale(0.975); }
-    100% { opacity: 1; transform: translateX(0) scale(1); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .view-panel.tt-page-exiting, .view-panel.active.tt-page-entering { animation: none; }
   }
 
   .page-top-header-banner {
@@ -5683,41 +5657,17 @@ function deleteMachinePart(id) {
 window.deleteMachinePart = deleteMachinePart;
 
 function switchTab(tab, el) {
-  const panel = document.getElementById('view-' + tab);
-  const prevPanel = document.querySelector('.view-panel.active');
+  document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-  // RICH CROSSFADE TAB SWITCH: purana panel turant gayab nahi hota - usse
-  // 'tt-page-exiting' class milti hai jo use ek chhoti absolute overlay bana
-  // kar smoothly fade+slide-out karti hai, aur theek usi waqt naya panel
-  // 'tt-page-entering' class ke sath fade+slide-in hota hai - dono animation
-  // simultaneously chalte hain (ek band ho raha, doosra khul raha), na ki
-  // ek ke poora gayab hone ka wait karke doosra dikhna.
-  document.querySelectorAll('.view-panel').forEach(p => {
-    if (p === panel) return;
-    p.classList.remove('active');
-    p.classList.remove('tt-page-entering');
-    if (p === prevPanel) {
-      p.classList.remove('tt-page-exiting');
-      void p.offsetWidth; // reflow taaki exit animation dobara trigger ho
-      p.classList.add('tt-page-exiting');
-      setTimeout(function () { p.classList.remove('tt-page-exiting'); }, 320);
-    } else {
-      p.classList.remove('tt-page-exiting');
-    }
-  });
-
-  panel.classList.remove('tt-page-exiting');
+  const panel = document.getElementById('view-' + tab);
   panel.classList.add('active');
   ttUpdateNavPill(el);
   // PAGE SLIDE TRANSITION: tab switch karte waqt ek smooth native-app jaisa
   // slide-fade animation - purana instant-show wala flow bilkul waisa hi rehta
   // hai, sirf CSS class add/remove hoti hai (koi logic change nahi).
   panel.classList.remove('tt-page-slide');
-  panel.classList.remove('tt-page-entering');
   void panel.offsetWidth; // reflow taaki animation dobara trigger ho
   panel.classList.add('tt-page-slide');
-  panel.classList.add('tt-page-entering');
   if (el) el.classList.add('active');
 
   const fabBtn = document.getElementById('fabMainBtn');
