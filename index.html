@@ -397,14 +397,21 @@
   }
   .page-top-sub { font-size: 10.5px; color: #cbd5e1; margin-top: 2px; }
 
+  /* BUG FIX: ye background/border pehle "!important" ke sath the, isliye
+     dashboard ke "Today's Cash & Recv" jaise cards jinka apna inline navy
+     background hota hai, wo bhi force se isi halke/white gradient me badal
+     jate the - upar ka white text white background par hi chhup jata tha.
+     Ab !important hata diya hai taaki jis card ka khud ka inline background
+     ho (jaise stat cards) wo apna hi background dikhaye, aur baaki saare
+     plain cards ko ye glass look mil jaye jaisa pehle milta tha. */
   .card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(240, 246, 252, 0.78)) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(240, 246, 252, 0.78));
     backdrop-filter: blur(20px) saturate(1.6);
     -webkit-backdrop-filter: blur(20px) saturate(1.6);
     border-radius: var(--radius-md);
     padding: 16px;
     margin-bottom: 14px;
-    border: 1.5px solid rgba(255, 193, 7, 0.35) !important;
+    border: 1.5px solid rgba(255, 193, 7, 0.35);
     box-shadow: 0 14px 38px rgba(7, 19, 40, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.95);
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
   }
@@ -414,8 +421,8 @@
   }
 
   [data-theme="dark"] .card {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(10, 25, 48, 0.78)) !important;
-    border: 1.5px solid rgba(250, 204, 21, 0.3) !important;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(10, 25, 48, 0.78));
+    border: 1.5px solid rgba(250, 204, 21, 0.3);
     box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 
@@ -2135,9 +2142,11 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       <button class="btn btn-outline btn-sm" onclick="document.getElementById('crmEditModal').style.display='none'">✕</button>
     </div>
     <input type="hidden" id="crmEditId">
-    <div class="form-group">
+    <div class="form-group autocomplete-wrapper">
       <label class="form-label">Shop / Business Name</label>
-      <input type="text" id="crmShopName" placeholder="e.g. Royal Car Spa & Wash">
+      <input type="text" id="crmShopName" placeholder="Type to search existing customer, ya naya naam likho" oninput="handleCrmCustomerAutocomplete(this)" autocomplete="off">
+      <div class="solid-suggestion-box" id="crmShopSuggestBox"></div>
+      <div style="font-size:10px; color:var(--text-muted); margin-top:3px;">🔍 Pehle se customer hoga to list se select karo - saari details khud bhar jayengi.</div>
     </div>
     <div class="grid-2">
       <div class="form-group">
@@ -2222,6 +2231,9 @@ function openCrmEditModal(rec = null) {
   tempShopPhoto = ""; tempCardPhoto = "";
   document.getElementById('crmShopPhotoPrev').style.display = 'none';
   document.getElementById('crmCardPhotoPrev').style.display = 'none';
+  // Matched existing customer ka id yahan track hota hai - taaki Save par wahi
+  // customer dobara duplicate na ho jaaye (naya tabhi add hoga jab match na mile).
+  window._ttCrmMatchedCustomerId = rec && rec.custId ? rec.custId : null;
 
   if (rec) {
     document.getElementById('crmEditTitle').textContent = "Edit CRM Record";
@@ -2249,6 +2261,48 @@ function openCrmEditModal(rec = null) {
   document.getElementById('crmEditModal').style.display = 'flex';
 }
 window.openCrmEditModal = openCrmEditModal;
+
+// SEARCHABLE CRM CUSTOMER DROPDOWN: Shop Name me type karte hi agar wo
+// customer pehle se CUSTOMERS list me hai to suggestion aata hai - select
+// karne par Owner/Phone/Address khud bhar jaate hain, aur duplicate customer
+// nahi banta. Naya naam ho to bilkul normal type hota rehta hai.
+function handleCrmCustomerAutocomplete(inputEl) {
+  const val = (inputEl.value || '').toLowerCase().trim();
+  const box = document.getElementById('crmShopSuggestBox');
+  if (!box) return;
+  window._ttCrmMatchedCustomerId = null; // naya type ho raha hai, match tab tak clear
+  if (!val) { box.style.display = 'none'; return; }
+  const matches = (customerDatabase || []).filter(c =>
+    (c.name && c.name.toLowerCase().includes(val)) ||
+    (c.phone && String(c.phone).includes(val)) ||
+    (c.person && c.person.toLowerCase().includes(val))
+  ).slice(0, 8);
+  if (matches.length === 0) { box.style.display = 'none'; return; }
+  box.innerHTML = matches.map(c => `
+    <div class="suggestion-item" onmousedown="selectCrmCustomerSuggestion(${c.id})">
+      <div style="flex:1;">
+        <strong style="font-size:13px; color:var(--text-main);">${esc(c.name || '')}</strong>
+        <div class="suggestion-sub">${c.person ? esc(c.person) + ' | ' : ''}📍 ${esc(c.address || '')}</div>
+      </div>
+      <span class="badge badge-info" style="font-size:10px;">${esc(c.phone || '')}</span>
+    </div>
+  `).join('');
+  box.style.display = 'block';
+}
+window.handleCrmCustomerAutocomplete = handleCrmCustomerAutocomplete;
+
+function selectCrmCustomerSuggestion(custId) {
+  const c = (customerDatabase || []).find(x => x.id === custId);
+  if (!c) return;
+  document.getElementById('crmShopName').value = c.name || '';
+  document.getElementById('crmOwnerName').value = c.person || '';
+  document.getElementById('crmPhone').value = c.phone || '';
+  document.getElementById('crmAddress').value = c.address || '';
+  window._ttCrmMatchedCustomerId = c.id;
+  const box = document.getElementById('crmShopSuggestBox');
+  if (box) box.style.display = 'none';
+}
+window.selectCrmCustomerSuggestion = selectCrmCustomerSuggestion;
 
 function handleCrmPhoto(event, type) {
   const file = event.target.files[0];
@@ -2280,18 +2334,38 @@ function saveCrmRecord() {
 
   if (!shopName) { alert("Shop / Business name dalna zaroori hai!"); return; }
 
+  // CRM list ke saath-saath customer bhi sync rahe: agar ye shop pehle se
+  // CUSTOMERS me match nahi hui (phone ya exact naam se), to ek naya customer
+  // record bhi add ho jata hai - jo pehle se match hai usko dobara nahi banate.
+  let custId = window._ttCrmMatchedCustomerId || null;
+  if (!custId) {
+    const existing = (customerDatabase || []).find(c =>
+      (phone && c.phone && String(c.phone) === String(phone)) ||
+      (c.name && c.name.toLowerCase() === shopName.toLowerCase())
+    );
+    if (existing) {
+      custId = existing.id;
+    } else {
+      const newCust = { id: Date.now(), name: shopName, phone: phone || '', address: address || '', gst: 'Unregistered', person: ownerName || '' };
+      customerDatabase.unshift(newCust);
+      setStored("CUSTOMERS", customerDatabase);
+      custId = newCust.id;
+      if (typeof renderCustomerList === 'function') renderCustomerList();
+    }
+  }
+
   if (editId) {
     const r = crmRecordsData.find(x => x.id === editId);
     if (r) {
       r.shopName = shopName; r.ownerName = ownerName; r.phone = phone; r.stage = stage;
-      r.visitDate = visitDate; r.address = address; r.notes = notes;
+      r.visitDate = visitDate; r.address = address; r.notes = notes; r.custId = custId;
       if (tempShopPhoto) r.shopPhoto = tempShopPhoto;
       if (tempCardPhoto) r.cardPhoto = tempCardPhoto;
     }
   } else {
     const newRec = {
       id: 'CRM-' + Date.now(),
-      shopName, ownerName, phone, stage, visitDate, address, notes,
+      shopName, ownerName, phone, stage, visitDate, address, notes, custId,
       shopPhoto: tempShopPhoto, cardPhoto: tempCardPhoto,
       addedBy: currentUser ? currentUser.name : 'Staff'
     };
@@ -2325,6 +2399,7 @@ function renderCrmRecords() {
           <div style="font-size:11.5px; color:var(--text-muted);">${esc(r.ownerName || '')} ${r.phone ? '• ' + esc(r.phone) : ''}</div>
         </div>
         <div style="display:flex; gap:6px;">
+          ${r.phone ? `<a href="tel:${esc(r.phone)}" class="btn btn-accent btn-sm" onclick="triggerAppHaptic()" style="text-decoration:none;">📱</a>` : ''}
           <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openCrmEditModal(crmRecordsData.find(x=>x.id==='${r.id}'))">✏️</button>
           <button class="btn btn-danger-sm btn-sm" onclick="triggerAppHaptic(); deleteCrmRecord('${r.id}')">🗑️</button>
         </div>
@@ -2334,14 +2409,30 @@ function renderCrmRecords() {
         💬 <strong>Notes:</strong> ${esc(r.notes || 'No notes')}<br>
         🕒 <strong>Date:</strong> ${esc(r.visitDate)} | 👤 <strong>By:</strong> ${esc(r.addedBy)}
       </div>
-      <div style="display:flex; gap:8px; margin-top:8px;">
+      <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
         ${r.shopPhoto ? `<button class="btn btn-accent btn-sm" onclick="ttViewPhoto('${r.shopPhoto}')">🏪 Shop Photo</button>` : ''}
         ${r.cardPhoto ? `<button class="btn btn-accent btn-sm" onclick="ttViewPhoto('${r.cardPhoto}')">📇 Visiting Card</button>` : ''}
+        <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); crmCreatePhoneOrder('${r.id}')">📞 Phone Order Entry</button>
       </div>
     </div>
   `).join('');
 }
 window.renderCrmRecords = renderCrmRecords;
+
+// PHONE ORDER ENTRY: koi existing CRM contact call karke order de de to ek
+// tap me naya order form khul jata hai, customer already pre-filled (naam +
+// phone) - seedha items add karke save kar sakte hain.
+function crmCreatePhoneOrder(crmId) {
+  const r = crmRecordsData.find(x => x.id === crmId);
+  if (!r) return;
+  if (typeof openOrderModal === 'function') {
+    openOrderModal();
+    const input = document.getElementById('ordCustSearchInput');
+    if (input) input.value = r.phone ? `${r.shopName} (${r.phone})` : r.shopName;
+  }
+  if (typeof closeNotionCrmModal === 'function') closeNotionCrmModal();
+}
+window.crmCreatePhoneOrder = crmCreatePhoneOrder;
 
 function deleteCrmRecord(id) {
   if (confirm("Confirm delete this CRM record?")) {
