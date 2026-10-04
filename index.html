@@ -2163,6 +2163,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
         <label class="form-label">CRM Status / Stage</label>
         <select id="crmStage">
           <option value="New Lead">📌 New Lead</option>
+          <option value="Phone Call">📱 Phone Call</option>
           <option value="Visited / Contacted">🤝 Visited / Contacted</option>
           <option value="Visiting Card Collected">📇 Visiting Card Collected</option>
           <option value="Demo Given">🚗 Demo Given</option>
@@ -2190,14 +2191,22 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       <div style="background:var(--bg); padding:8px; border-radius:10px; border:1px solid var(--border);">
         <label class="form-label" style="font-size:11px;">🏪 Shop / Dukan Photo</label>
         <img id="crmShopPhotoPrev" src="" style="display:none; width:100%; height:90px; object-fit:cover; border-radius:8px; margin-bottom:6px;">
-        <button class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('crmShopFile').click()">📷 Capture Shop</button>
-        <input type="file" id="crmShopFile" accept="image/*" capture="environment" style="display:none;" onchange="handleCrmPhoto(event, 'shop')">
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="document.getElementById('crmShopFileCam').click()">📷 Camera</button>
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="document.getElementById('crmShopFileGallery').click()">🖼️ Gallery</button>
+        </div>
+        <input type="file" id="crmShopFileCam" accept="image/*" capture="environment" style="display:none;" onchange="handleCrmPhoto(event, 'shop')">
+        <input type="file" id="crmShopFileGallery" accept="image/*" style="display:none;" onchange="handleCrmPhoto(event, 'shop')">
       </div>
       <div style="background:var(--bg); padding:8px; border-radius:10px; border:1px solid var(--border);">
         <label class="form-label" style="font-size:11px;">📇 Visiting Card Photo</label>
         <img id="crmCardPhotoPrev" src="" style="display:none; width:100%; height:90px; object-fit:cover; border-radius:8px; margin-bottom:6px;">
-        <button class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('crmCardFile').click()">📷 Capture Card</button>
-        <input type="file" id="crmCardFile" accept="image/*" capture="environment" style="display:none;" onchange="handleCrmPhoto(event, 'card')">
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="document.getElementById('crmCardFileCam').click()">📷 Camera</button>
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="document.getElementById('crmCardFileGallery').click()">🖼️ Gallery</button>
+        </div>
+        <input type="file" id="crmCardFileCam" accept="image/*" capture="environment" style="display:none;" onchange="handleCrmPhoto(event, 'card')">
+        <input type="file" id="crmCardFileGallery" accept="image/*" style="display:none;" onchange="handleCrmPhoto(event, 'card')">
       </div>
     </div>
 
