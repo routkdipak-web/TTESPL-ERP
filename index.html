@@ -511,10 +511,11 @@
   .qa-tile {
     background: var(--card); border: 1.5px solid var(--border); border-radius: 14px;
     padding: 14px 10px; display: flex; flex-direction: column; align-items: center; gap: 7px;
-    cursor: pointer; transition: all 0.22s cubic-bezier(0.16,1,0.3,1); font-size: 11.5px; font-weight: 700; color: var(--text-main);
+    cursor: pointer; transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+    font-size: 11.5px; font-weight: 700; color: var(--text-main);
   }
   .qa-tile:hover { border-color: var(--cyan); background: rgba(0,180,216,0.06); transform: translateY(-3px); box-shadow: var(--shadow-md); }
-  .qa-tile:active { transform: scale(0.95); }
+  .qa-tile:active { transform: scale(0.93); transition: transform 0.1s ease; }
   .qa-icon-badge {
     width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
     font-size: 19px; background: linear-gradient(135deg, rgba(0,180,216,0.14), rgba(10,37,64,0.08));
@@ -536,9 +537,13 @@
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     padding: 10px 16px; border-radius: var(--radius-sm); font-size: 12.5px; font-weight: 700;
-    border: none; cursor: pointer; text-decoration: none; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    border: none; cursor: pointer; text-decoration: none;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
   }
-  .btn:active { transform: scale(0.95); }
+  /* ELASTIC SPRING-PHYSICS: press down jaldi se ease ho jata hai, lekin
+     release par base transition (bouncy overshoot curve) apply hoti hai -
+     isse button chhodte waqt ek halka "spring back" feel aata hai. */
+  .btn:active { transform: scale(0.94); transition: transform 0.1s ease; }
   .btn-primary { background: linear-gradient(135deg, #0a2540, #13395e); color: white; box-shadow: 0 4px 12px rgba(10,37,64,0.25); }
   .btn-primary:hover { background: #061526; }
   .btn-accent { background: linear-gradient(135deg, #ff6b35, #f59e0b); color: white; box-shadow: 0 4px 14px rgba(255,107,53,0.35); }
@@ -884,8 +889,8 @@
 .btn,.tab-btn,.quick-action,button{position:relative;overflow:hidden;}
 .tt-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:ttRippleAnim .5s ease-out;pointer-events:none;}
 @keyframes ttRippleAnim{to{transform:scale(2.6);opacity:0;}}
-.btn:active,.tab-btn:active,.quick-action:active,.cat-chip:active{transform:scale(.96);}
-.btn,.tab-btn,.quick-action{transition:transform .12s ease;}
+.btn:active,.tab-btn:active,.quick-action:active,.cat-chip:active{transform:scale(.94);transition:transform .1s ease;}
+.btn,.tab-btn,.quick-action{transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);}
 
 /* ===== Active tab floating pill indicator (spring physics) ===== */
 .nav-active-pill{
@@ -941,7 +946,7 @@ h1,h2,h3,.modal-title,.toast-title{
 /* ===== Compact floating cards + smoother sticky blur ===== */
 .card{padding:14px;}
 @media (max-width:480px){.card{padding:11px 12px;border-radius:14px;}.card-header{margin-bottom:8px;}}
-.sticky-filters,.tabs-sticky,[class*="sticky"]{-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);}
+.sticky-filters,.tabs-sticky,[class*="sticky"]{-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);}
 
 /* ===== Dark mode contrast sharpening (better in direct sunlight) ===== */
 :root[data-theme="dark"]{--text-main:#f3f6fa;--text-muted:#aab4c4;}
@@ -955,16 +960,27 @@ h1,h2,h3,.modal-title,.toast-title{
    match karta hai) taaki app ka ek clear premium "goldy glass" signature
    look bane, aur sirf plain white na lage. */
 .card{
+  position:relative;
   background:linear-gradient(165deg,rgba(255,252,240,.92),rgba(255,247,222,.74));
-  -webkit-backdrop-filter:blur(16px) saturate(1.3);
-  backdrop-filter:blur(16px) saturate(1.3);
+  -webkit-backdrop-filter:blur(24px) saturate(1.8);
+  backdrop-filter:blur(24px) saturate(1.8);
   border:1.5px solid rgba(217,164,6,.38);
   box-shadow:0 8px 26px rgba(120,89,0,.1),inset 0 1px 0 rgba(255,255,255,.75),inset 0 0 0 1px rgba(255,215,0,.08);
+}
+/* Fine inner specular top-edge highlight - ek patli chamakti hui line jo
+   glass ke "top rim" par light reflect hone ka ehsaas deti hai */
+.card::before{
+  content:"";position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);
+  border-radius:1px;pointer-events:none;
 }
 :root[data-theme="dark"] .card{
   background:linear-gradient(165deg,rgba(32,28,18,.82),rgba(20,17,10,.72));
   border:1.5px solid rgba(250,204,21,.32);
   box-shadow:0 8px 28px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,221,120,.1),inset 0 0 0 1px rgba(250,204,21,.06);
+}
+:root[data-theme="dark"] .card::before{
+  background:linear-gradient(90deg,transparent,rgba(250,204,21,.45),transparent);
 }
 
 @media print{.no-print{display:none !important;}}
@@ -4059,6 +4075,117 @@ function deleteAdminLedgerInvoice(ordId) {
   }
 }
 
+/* ===== DARK-GOLD EXECUTIVE DASHBOARD CHARTS (lightweight canvas, no external lib) ===== */
+function ttGetLastNDates(n) {
+  const arr = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    arr.push(d.toISOString().split('T')[0]);
+  }
+  return arr;
+}
+function ttGetLastNMonths(n) {
+  const arr = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(); d.setMonth(d.getMonth() - i);
+    arr.push({ key: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'), label: d.toLocaleDateString('en-IN', { month: 'short' }) });
+  }
+  return arr;
+}
+function ttDrawBarChart(canvas, labels, values, colorTop, colorBottom) {
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth || 260, h = canvas.height || 110;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  const max = Math.max(1, ...values);
+  const padBottom = 16, padTop = 6;
+  const gap = w / values.length;
+  const barW = Math.max(6, gap * 0.5);
+  values.forEach((v, i) => {
+    const barH = (v / max) * (h - padBottom - padTop);
+    const x = i * gap + (gap - barW) / 2;
+    const y = h - padBottom - barH;
+    const grad = ctx.createLinearGradient(0, y, 0, h - padBottom);
+    grad.addColorStop(0, colorTop); grad.addColorStop(1, colorBottom);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x, y, barW, Math.max(1, barH), 3); else ctx.rect(x, y, barW, Math.max(1, barH));
+    ctx.fill();
+    ctx.fillStyle = 'rgba(243,214,117,0.6)';
+    ctx.font = '8.5px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(labels[i], x + barW / 2, h - 4);
+  });
+}
+function ttDrawGroupedBarChart(canvas, labels, valuesA, valuesB) {
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth || 260, h = canvas.height || 110;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  const max = Math.max(1, ...valuesA, ...valuesB);
+  const padBottom = 16, padTop = 6;
+  const gap = w / labels.length;
+  const barW = Math.max(4, gap * 0.28);
+  labels.forEach((lbl, i) => {
+    const groupX = i * gap + gap / 2;
+    const hA = (valuesA[i] / max) * (h - padBottom - padTop);
+    const hB = (valuesB[i] / max) * (h - padBottom - padTop);
+    const xA = groupX - barW - 1, xB = groupX + 1;
+    const gradA = ctx.createLinearGradient(0, h - padBottom - hA, 0, h - padBottom);
+    gradA.addColorStop(0, '#f3d675'); gradA.addColorStop(1, '#b8860b');
+    ctx.fillStyle = gradA;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(xA, h - padBottom - hA, barW, Math.max(1, hA), 2); else ctx.rect(xA, h - padBottom - hA, barW, Math.max(1, hA));
+    ctx.fill();
+    const gradB = ctx.createLinearGradient(0, h - padBottom - hB, 0, h - padBottom);
+    gradB.addColorStop(0, '#e8828a'); gradB.addColorStop(1, '#a13f47');
+    ctx.fillStyle = gradB;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(xB, h - padBottom - hB, barW, Math.max(1, hB), 2); else ctx.rect(xB, h - padBottom - hB, barW, Math.max(1, hB));
+    ctx.fill();
+    ctx.fillStyle = 'rgba(243,214,117,0.6)';
+    ctx.font = '8.5px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(lbl, groupX, h - 4);
+  });
+}
+function ttRenderExecCharts() {
+  try {
+    const days = ttGetLastNDates(7);
+    const weeklyVals = days.map(d => {
+      let sum = 0;
+      ordersData.filter(o => o.status === 'Delivered' && (o.deliveredDate || o.orderDate) === d).forEach(o => sum += (o.recvAmount || 0));
+      return sum;
+    });
+    const dayLabels = days.map(d => new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short' }).slice(0, 2));
+    ttDrawBarChart(document.getElementById('dashWeeklyRevenueChart'), dayLabels, weeklyVals, '#f3d675', '#b8860b');
+
+    const months = ttGetLastNMonths(6);
+    const salesVals = months.map(m => {
+      let sum = 0;
+      ordersData.filter(o => o.status === 'Delivered' && String(o.deliveredDate || o.orderDate || '').startsWith(m.key)).forEach(o => sum += (o.totalAmount || 0));
+      return sum;
+    });
+    const expenseVals = months.map(m => ttTotalExpenses(m.key + '-01', m.key + '-31'));
+    ttDrawGroupedBarChart(document.getElementById('dashSalesVsExpenseChart'), months.map(m => m.label), salesVals, expenseVals);
+
+    const totalRecvAll = ordersData.filter(o => o.status === 'Delivered').reduce((s, o) => s + (o.recvAmount || 0), 0);
+    const totalExpAll = ttTotalExpenses();
+    const netP = totalRecvAll - totalExpAll;
+    const npEl = document.getElementById('dashNetProfit');
+    const teEl = document.getElementById('dashTotalExpenses');
+    if (npEl) { npEl.textContent = (netP < 0 ? '-₹' : '₹') + Math.abs(netP).toLocaleString('en-IN'); npEl.style.color = netP < 0 ? '#f87171' : '#f3d675'; }
+    if (teEl) teEl.textContent = '₹' + totalExpAll.toLocaleString('en-IN');
+  } catch (e) { console.error('Exec chart render failed', e); }
+}
+window.ttRenderExecCharts = ttRenderExecCharts;
+
 function renderDashboard() {
   // SKELETON LOADER: pehli baar real data aa jaye to shimmer placeholder hata do
   const skel = document.getElementById('ttDashSkeleton');
@@ -4117,6 +4244,11 @@ function renderDashboard() {
       priorityBox.appendChild(row);
     });
   }
+
+  // DARK-GOLD EXECUTIVE CHARTS: Weekly Revenue + Monthly Sales vs Expenses +
+  // live Net Profit tile - chhota setTimeout isliye taaki canvas apne final
+  // rendered width (clientWidth) le sake jab tak layout settle ho jaye.
+  setTimeout(ttRenderExecCharts, 30);
 }
 
 function toggleFabMenu() {
