@@ -640,7 +640,7 @@
   }
   .fab-ring-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; animation: ttFabRingSpin 11s linear infinite; pointer-events: none; transition: animation-duration 0.3s ease; }
   #fabMainBtn.fab-open .fab-ring-text { animation-duration: 3.4s; }
-  .fab-ring-text text { font-size: 7.4px; font-weight: 800; letter-spacing: 1px; fill: rgba(255,255,255,0.92); text-transform: uppercase; }
+  .fab-ring-text text { font-size: 5.2px; font-weight: 800; letter-spacing: 1px; fill: rgba(255,255,255,0.92); text-transform: uppercase; }
   @keyframes ttFabRingSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   .fab-bubble-core { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
   .fab-center-label { font-size: 9px; font-weight: 800; letter-spacing: 0.5px; color: rgba(255,255,255,0.97); text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: transform 0.3s ease; }
@@ -798,6 +798,21 @@
    form ke neeche wale inputs/buttons mobile keyboard ke peeche kabhi hide na
    ho - purana max-width/background/blur/shadow sab waisa hi rakha hai. */
 .auth-overlay{position:fixed;inset:0;z-index:3000;align-items:center;justify-content:center;padding:18px;overflow-y:auto;-webkit-overflow-scrolling:touch;background:rgba(6,14,28,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+/* TTESPL premium sheet transitions: modals rise from the bottom instead of jumping open. */
+.auth-overlay{opacity:0;transition:opacity .28s cubic-bezier(.22,1,.36,1);}
+.auth-overlay[style*="display: flex"]{opacity:1;}
+.auth-overlay .auth-card{transform:translateY(42px) scale(.965);opacity:.96;transition:transform .42s cubic-bezier(.22,1,.36,1),opacity .28s ease;}
+.auth-overlay[style*="display: flex"] .auth-card{transform:translateY(0) scale(1);opacity:1;}
+@media (max-width:600px){
+  .auth-overlay{align-items:flex-end;padding:8px 8px calc(8px + env(safe-area-inset-bottom));}
+  .auth-overlay .auth-card{max-height:calc(100dvh - 12px);border-radius:24px 24px 18px 18px;transform:translateY(70px) scale(.985);}
+  .auth-overlay[style*="display: flex"] .auth-card{transform:translateY(0) scale(1);}
+}
+/* Native-app-like page sheet transition from the bottom navigation area. */
+.view-panel.tt-page-slide{animation:ttBottomSheetPageIn .42s cubic-bezier(.22,1,.36,1) both;}
+@keyframes ttBottomSheetPageIn{0%{opacity:0;transform:translateY(58px) scale(.985);clip-path:inset(12% 0 0 0 round 22px);}65%{opacity:1;transform:translateY(-3px) scale(1.002);clip-path:inset(0 round 0);}100%{opacity:1;transform:translateY(0) scale(1);clip-path:inset(0);}}
+@media (prefers-reduced-motion:reduce){.auth-overlay,.auth-overlay .auth-card,.view-panel.tt-page-slide{transition:none!important;animation:none!important;transform:none!important;}}
+
 .auth-overlay .auth-card{position:relative;width:100%;max-width:440px;margin:auto;max-height:calc(100dvh - 20px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 18px;padding-bottom:calc(20px + env(safe-area-inset-bottom));border-radius:22px;background-color:var(--card-glass);background-image:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,0) 55%);color:var(--text-main);border:1px solid var(--card-glass-border);box-shadow:0 30px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);}
 .card-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
 .card-title{font-size:15px;font-weight:800;color:var(--text-main);}
@@ -1052,36 +1067,45 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 
 <!-- COMPANY DETAILS POPUP MODAL -->
 <div id="companyDetailsModal" class="auth-overlay" style="display:none; z-index:4000;">
-  <div class="auth-card" style="max-width:500px;">
+  <div class="auth-card" style="max-width:520px;">
     <div class="card-header">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <div class="brand-logo-round" style="width:34px; height:34px;"><span class="emblem-car-icon" style="font-size:13px;">🏎️</span><span class="emblem-txt" style="font-size:6.5px;">TTESPL</span></div>
-        <strong class="card-title" style="font-size:15px;">Twin Town Express Services Pvt. Ltd.</strong>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="brand-logo-round" style="width:34px;height:34px;"><span class="emblem-car-icon" style="font-size:13px;">🏎️</span><span class="emblem-txt" style="font-size:6.5px;">TTESPL</span></div>
+        <strong class="card-title" style="font-size:15px;">Company Details</strong>
       </div>
       <button class="btn btn-outline btn-sm" onclick="closeCompanyDetailsModal()">✕</button>
     </div>
-    <div style="font-size:12.5px; line-height:1.6; color:var(--text-main); margin-top:10px;">
-      <div style="background:var(--bg); padding:12px; border-radius:12px; border:1px solid var(--border); margin-bottom:12px;">
-        <div>📍 <strong>Registered Address:</strong> Plot No-1270/8586, Satya Vihar, Rasulgarh, Bhubaneswar, Khordha, Odisha - 751010</div>
-        <div style="margin-top:6px;">🏢 <strong>Branch / Work Center:</strong> Cuttack Road & Rasulgarh, BBSR</div>
-        <div style="margin-top:6px;">📞 <strong>Contact No:</strong> +91 8917465040 / 0674-2580123</div>
-        <div style="margin-top:6px;">✉️ <strong>Email ID:</strong> info@ttespl.com / support@twintown.in</div>
+    <div id="companyDetailsView" style="font-size:12.5px;line-height:1.6;color:var(--text-main);margin-top:10px;"></div>
+    <div id="companyAdminEditor" style="display:none;margin-top:10px;">
+      <div style="background:var(--warning-bg);border:1px solid rgba(245,158,11,.35);padding:9px 11px;border-radius:10px;font-size:11px;font-weight:700;margin-bottom:10px;">🔐 Admin Mode — yahan se header/company profile ki saari details edit hongi.</div>
+      <div class="form-group"><label class="form-label">Company / Legal Name</label><input id="cpName" type="text"></div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Registered Address</label><textarea id="cpAddress" rows="3"></textarea></div>
+        <div class="form-group"><label class="form-label">Branch / Work Center</label><textarea id="cpBranch" rows="3"></textarea></div>
       </div>
-      <div style="background:rgba(0,180,216,0.1); padding:12px; border-radius:12px; border:1.5px solid var(--cyan); margin-bottom:12px;">
-        <strong style="color:var(--cyan); display:block; margin-bottom:4px;">🛡️ Statutory & Tax Registrations:</strong>
-        <div><strong>GSTIN:</strong> <span style="font-family:monospace; font-weight:800;">21AAICT0014E1ZT</span></div>
-        <div><strong>CIN:</strong> U50200OR2022PTC039210</div>
-        <div><strong>Authorized Brand Partner:</strong> Ma-Fra, MaxShine, Annovi Reverberi, Airtek</div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Contact No.</label><input id="cpPhone" type="text"></div>
+        <div class="form-group"><label class="form-label">Email ID</label><input id="cpEmail" type="text"></div>
       </div>
-      <div style="background:var(--card); padding:12px; border-radius:12px; border:1px solid var(--border);">
-        <strong style="color:var(--primary); display:block; margin-bottom:4px;">🏦 Official Bank & UPI Details:</strong>
-        <div><strong>Bank Name:</strong> ICICI Bank (Cuttack Road Branch, BBSR)</div>
-        <div><strong>Account No:</strong> <span style="font-family:monospace; font-weight:800;">150005501249</span></div>
-        <div><strong>IFSC Code:</strong> <span style="font-family:monospace; font-weight:800;">ICIC0001500</span></div>
-        <div><strong>UPI ID:</strong> <span style="color:var(--cyan); font-weight:800;">eazypay.574099310@icici</span></div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">GSTIN</label><input id="cpGstin" type="text"></div>
+        <div class="form-group"><label class="form-label">CIN</label><input id="cpCin" type="text"></div>
       </div>
+      <div class="form-group"><label class="form-label">Authorized Brand Partner</label><input id="cpBrands" type="text"></div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Bank Name</label><input id="cpBank" type="text"></div>
+        <div class="form-group"><label class="form-label">Account No.</label><input id="cpAccount" type="text"></div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">IFSC Code</label><input id="cpIfsc" type="text"></div>
+        <div class="form-group"><label class="form-label">UPI ID</label><input id="cpUpi" type="text"></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="saveCompanyProfile()">💾 Save Company Details</button>
     </div>
-    <button class="btn btn-primary btn-block" style="margin-top:14px;" onclick="closeCompanyDetailsModal()">✓ Close Details</button>
+    <div id="companyAdminActions" style="display:none;margin-top:10px;">
+      <button class="btn btn-accent btn-block" onclick="openCompanyAdminEditor()">✏️ Edit All Company Details</button>
+    </div>
+    <button class="btn btn-outline btn-block" style="margin-top:8px;" onclick="closeCompanyDetailsModal()">✓ Close</button>
   </div>
 </div>
 
@@ -1638,7 +1662,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
     <div class="fab-bubble-clip">
       <svg class="fab-ring-text" viewBox="0 0 100 100" aria-hidden="true">
         <defs><path id="fabRingTextPath" d="M 50,50 m -40,0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0"/></defs>
-        <text><textPath href="#fabRingTextPath" startOffset="0%">• TWIN TOWN EXPRESS • TWIN TOWN EXPRESS </textPath></text>
+        <text><textPath href="#fabRingTextPath" startOffset="0%">• TWIN TOWN EXPRESS SERVICES PVT LTD, BHUBANESWAR • TWIN TOWN EXPRESS SERVICES PVT LTD, BHUBANESWAR </textPath></text>
       </svg>
       <div class="fab-bubble-core">
         <span class="fab-center-label">TTESPL</span>
@@ -1778,9 +1802,13 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeEditLedgerModal()">✕</button>
     </div>
     <input type="hidden" id="editLedgerInvId">
-    <div class="form-group">
-      <label class="form-label">Customer Name</label>
-      <input type="text" id="editLedgerCustName">
+    <div class="grid-2">
+      <div class="form-group"><label class="form-label">Customer Name</label><input type="text" id="editLedgerCustName"></div>
+      <div class="form-group"><label class="form-label">Customer Phone</label><input type="text" id="editLedgerPhone"></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label class="form-label">Order Date</label><input type="date" id="editLedgerOrderDate"></div>
+      <div class="form-group"><label class="form-label">Delivery Date</label><input type="date" id="editLedgerDeliveryDate"></div>
     </div>
     <div class="grid-2">
       <div class="form-group">
@@ -1808,11 +1836,15 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
         </select>
       </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Booked By Staff</label>
-      <select id="editLedgerStaffSelect" class="emp-dropdown"></select>
+    <div class="grid-2">
+      <div class="form-group"><label class="form-label">Bill / Order Status</label><select id="editLedgerStatus"><option>Delivered</option><option>Pending</option><option>Cancelled</option></select></div>
+      <div class="form-group"><label class="form-label">Booked By Staff</label><select id="editLedgerStaffSelect" class="emp-dropdown"></select></div>
     </div>
-    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveAdminLedgerInvoice()">💾 Update Ledger Bill</button>
+    <div style="margin:4px 0 12px;padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--bg);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><strong style="font-size:12.5px;">🧾 Bill Items — Admin Full Edit</strong><button class="btn btn-accent btn-sm" onclick="addAdminLedgerItemRow()">＋ Item</button></div>
+      <div style="overflow-x:auto;"><table class="items-table" style="min-width:610px;margin:0;"><thead><tr><th>Item</th><th>Qty</th><th>MRP</th><th>Disc %</th><th>HSN</th><th>Total</th><th></th></tr></thead><tbody id="adminLedgerItemsTbody"></tbody></table></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveAdminLedgerInvoice()">💾 Update Complete Ledger Bill</button>
   </div>
 </div>
 
@@ -2817,14 +2849,57 @@ function triggerMoneyRainEffect() {
 const DB_PREFIX = "TTESPL_ERP_";
 window.DB_PREFIX = DB_PREFIX;
 
-function openCompanyDetailsModal() {
-  document.getElementById('companyDetailsModal').style.display = 'flex';
+const TT_DEFAULT_COMPANY_PROFILE = {
+  name:'Twin Town Express Services Pvt. Ltd.',
+  address:'Plot No-1270/8586, Satya Vihar, Rasulgarh, Bhubaneswar, Khordha, Odisha - 751010',
+  branch:'Cuttack Road & Rasulgarh, BBSR',
+  phone:'+91 8917465040 / 0674-2580123',
+  email:'info@ttespl.com / support@twintown.in',
+  gstin:'21AAICT0014E1ZT', cin:'U50200OR2022PTC039210',
+  brands:'Ma-Fra, MaxShine, Annovi Reverberi, Airtek',
+  bank:'ICICI Bank (Cuttack Road Branch, BBSR)', account:'150005501249',
+  ifsc:'ICIC0001500', upi:'eazypay.574099310@icici'
+};
+function getCompanyProfile(){
+  try { return Object.assign({}, TT_DEFAULT_COMPANY_PROFILE, JSON.parse(localStorage.getItem(DB_PREFIX+'COMPANY_PROFILE') || '{}')); } catch(e){ return Object.assign({},TT_DEFAULT_COMPANY_PROFILE); }
 }
-function closeCompanyDetailsModal() {
-  document.getElementById('companyDetailsModal').style.display = 'none';
+function renderCompanyProfile(){
+  const p=getCompanyProfile(), v=document.getElementById('companyDetailsView'); if(!v) return;
+  v.innerHTML=`<div style="background:var(--bg);padding:12px;border-radius:12px;border:1px solid var(--border);margin-bottom:12px;">
+    <div style="font-size:14px;font-weight:900;margin-bottom:7px;">${esc(p.name)}</div>
+    <div>📍 <strong>Registered Address:</strong> ${esc(p.address)}</div><div style="margin-top:6px;">🏢 <strong>Branch / Work Center:</strong> ${esc(p.branch)}</div>
+    <div style="margin-top:6px;">📞 <strong>Contact No:</strong> ${esc(p.phone)}</div><div style="margin-top:6px;">✉️ <strong>Email ID:</strong> ${esc(p.email)}</div>
+  </div><div style="background:rgba(0,180,216,.1);padding:12px;border-radius:12px;border:1.5px solid var(--cyan);margin-bottom:12px;">
+    <strong style="color:var(--cyan);display:block;margin-bottom:4px;">🛡️ Statutory & Tax Registrations</strong><div><strong>GSTIN:</strong> <span style="font-family:monospace;font-weight:800;">${esc(p.gstin)}</span></div><div><strong>CIN:</strong> ${esc(p.cin)}</div><div><strong>Authorized Brand Partner:</strong> ${esc(p.brands)}</div>
+  </div><div style="background:var(--card);padding:12px;border-radius:12px;border:1px solid var(--border);">
+    <strong style="color:var(--primary);display:block;margin-bottom:4px;">🏦 Official Bank & UPI Details</strong><div><strong>Bank Name:</strong> ${esc(p.bank)}</div><div><strong>Account No:</strong> <span style="font-family:monospace;font-weight:800;">${esc(p.account)}</span></div><div><strong>IFSC Code:</strong> <span style="font-family:monospace;font-weight:800;">${esc(p.ifsc)}</span></div><div><strong>UPI ID:</strong> <span style="color:var(--cyan);font-weight:800;">${esc(p.upi)}</span></div>
+  </div>`;
 }
-window.openCompanyDetailsModal = openCompanyDetailsModal;
-window.closeCompanyDetailsModal = closeCompanyDetailsModal;
+function openCompanyDetailsModal(){
+  renderCompanyProfile();
+  const admin=isAdminUser();
+  document.getElementById('companyAdminActions').style.display=admin?'block':'none';
+  document.getElementById('companyAdminEditor').style.display='none';
+  document.getElementById('companyDetailsView').style.display='block';
+  document.getElementById('companyDetailsModal').style.display='flex';
+}
+function openCompanyAdminEditor(){
+  if(!isAdminUser()){alert('Permission Denied: Sirf Admin company details edit kar sakta hai!');return;}
+  const p=getCompanyProfile();
+  Object.keys(p).forEach(k=>{const el=document.getElementById('cp'+k.charAt(0).toUpperCase()+k.slice(1));if(el)el.value=p[k]||'';});
+  document.getElementById('companyDetailsView').style.display='none';
+  document.getElementById('companyAdminActions').style.display='none';
+  document.getElementById('companyAdminEditor').style.display='block';
+}
+function saveCompanyProfile(){
+  if(!isAdminUser()){alert('Permission Denied: Sirf Admin save kar sakta hai!');return;}
+  const p={}; ['name','address','branch','phone','email','gstin','cin','brands','bank','account','ifsc','upi'].forEach(k=>{const el=document.getElementById('cp'+k.charAt(0).toUpperCase()+k.slice(1));p[k]=el?el.value.trim():'';});
+  localStorage.setItem(DB_PREFIX+'COMPANY_PROFILE',JSON.stringify(p));
+  renderCompanyProfile(); document.getElementById('companyAdminEditor').style.display='none'; document.getElementById('companyAdminActions').style.display='block'; document.getElementById('companyDetailsView').style.display='block';
+  alert('Company details successfully updated.');
+}
+function closeCompanyDetailsModal(){document.getElementById('companyDetailsModal').style.display='none';}
+window.openCompanyDetailsModal=openCompanyDetailsModal; window.closeCompanyDetailsModal=closeCompanyDetailsModal; window.openCompanyAdminEditor=openCompanyAdminEditor; window.saveCompanyProfile=saveCompanyProfile;
 
 function esc(str) {
   if (!str) return '';
@@ -3019,78 +3094,30 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 window.addEventListener('resize', function () { ttUpdateNavPill(); });
 
-/* ===== PULL-TO-REFRESH (mobile gesture) ===== */
-/* Screen ko sabse top se neeche kheenchne par saara data dobara render ho jata
-   hai + pending offline changes bhi push ho jate hain - koi existing listener
-   ya onclick handler isse nahi chhua jata, sirf touch gesture upar add hua hai. */
-(function () {
-  let startY = 0, pulling = false, triggered = false;
-  const THRESHOLD = 68;
-
-  function scrollParent(el) {
-    const root = document.scrollingElement || document.documentElement;
-    while (el && el !== document.body && el !== document.documentElement) {
-      let cs;
-      try { cs = window.getComputedStyle(el); } catch (e) { break; }
-      if (/(auto|scroll)/.test(cs.overflowY) && el.scrollHeight > el.clientHeight + 2) return el;
-      el = el.parentElement;
-    }
-    return root;
-  }
-
-  document.addEventListener('touchstart', function (e) {
-    if (!e.touches || e.touches.length !== 1) return;
-    const sp = scrollParent(e.target);
-    const root = document.scrollingElement || document.documentElement;
-    if (sp !== root || root.scrollTop > 0) { pulling = false; return; }
-    startY = e.touches[0].clientY;
-    pulling = true;
-    triggered = false;
-  }, { passive: true });
-
-  document.addEventListener('touchmove', function (e) {
-    if (!pulling || !e.touches || e.touches.length !== 1) return;
-    const dy = e.touches[0].clientY - startY;
-    if (dy <= 0) { hidePullIndicator(); return; }
-    const ind = document.getElementById('ttPullRefreshIndicator');
-    const icon = document.getElementById('ttPullRefreshIcon');
-    const label = document.getElementById('ttPullRefreshLabel');
-    if (!ind) return;
-    const dist = Math.min(dy, 110);
-    ind.classList.add('visible');
-    ind.style.transform = 'translate(-50%,' + (-70 + dist) + 'px)';
-    if (dy > THRESHOLD) {
-      if (!triggered) { triggered = true; if (icon) icon.style.transform = 'rotate(180deg)'; if (label) label.textContent = 'Release to refresh'; }
-    } else {
-      if (triggered) { triggered = false; if (icon) icon.style.transform = 'rotate(0deg)'; if (label) label.textContent = 'Pull to refresh'; }
-    }
-  }, { passive: true });
-
-  document.addEventListener('touchend', function () {
-    if (!pulling) return;
-    pulling = false;
-    if (triggered) { doPullRefresh(); } else { hidePullIndicator(); }
-  }, { passive: true });
-
-  function hidePullIndicator() {
-    const ind = document.getElementById('ttPullRefreshIndicator');
-    if (ind) { ind.classList.remove('visible'); ind.style.transform = 'translate(-50%,-70px)'; }
-  }
-
-  function doPullRefresh() {
-    const ind = document.getElementById('ttPullRefreshIndicator');
-    const label = document.getElementById('ttPullRefreshLabel');
-    if (ind) { ind.classList.add('spinning'); ind.style.transform = 'translate(-50%,10px)'; }
-    if (label) label.textContent = 'Refreshing...';
-    try { triggerAppHaptic(); } catch (e) {}
-    try { ttFlushOfflineQueue(); } catch (e) {}
-    setTimeout(function () {
-      try { if (typeof refreshAllData === 'function') refreshAllData(); } catch (e) { console.error('Pull-to-refresh failed', e); }
-      if (ind) ind.classList.remove('spinning');
-      if (label) label.textContent = 'Updated';
-      setTimeout(hidePullIndicator, 650);
-    }, 500);
-  }
+/* ===== PULL-TO-REFRESH: only when the MAIN PAGE is genuinely at the top ===== */
+(function(){
+  let startY=0,pulling=false,triggered=false,ignore=false; const THRESHOLD=72;
+  const root=()=>document.scrollingElement||document.documentElement;
+  function hide(){const i=document.getElementById('ttPullRefreshIndicator');if(i){i.classList.remove('visible','spinning');i.style.transform='translate(-50%,-70px)';}}
+  document.addEventListener('touchstart',e=>{
+    if(!e.touches||e.touches.length!==1)return;
+    const t=e.target, r=root();
+    const nested=t.closest('.auth-card,.chat-messenger-stream,.solid-suggestion-box,.sub-tabs,.nav-bar,#fabMenu,input,textarea,select,button');
+    ignore=!!nested || r.scrollTop>1 || window.scrollY>1;
+    if(ignore){pulling=false;return;}
+    startY=e.touches[0].clientY; pulling=true; triggered=false;
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!pulling||!e.touches||e.touches.length!==1)return;
+    const r=root(); if(r.scrollTop>1||window.scrollY>1){pulling=false;hide();return;}
+    const dy=e.touches[0].clientY-startY; if(dy<=0){hide();return;}
+    const ind=document.getElementById('ttPullRefreshIndicator'),icon=document.getElementById('ttPullRefreshIcon'),label=document.getElementById('ttPullRefreshLabel');if(!ind)return;
+    const dist=Math.min(dy,115);ind.classList.add('visible');ind.style.transform='translate(-50%,'+(-70+dist)+'px)';
+    if(dy>THRESHOLD){triggered=true;if(icon)icon.style.transform='rotate(180deg)';if(label)label.textContent='Release to refresh';}
+    else{triggered=false;if(icon)icon.style.transform='rotate(0deg)';if(label)label.textContent='Pull to refresh';}
+  },{passive:true});
+  document.addEventListener('touchend',()=>{if(!pulling)return;pulling=false;if(triggered)doRefresh();else hide();},{passive:true});
+  function doRefresh(){const ind=document.getElementById('ttPullRefreshIndicator'),label=document.getElementById('ttPullRefreshLabel');if(ind){ind.classList.add('spinning');ind.style.transform='translate(-50%,10px)';}if(label)label.textContent='Refreshing...';try{triggerAppHaptic();ttFlushOfflineQueue();}catch(e){}setTimeout(()=>{try{if(typeof refreshAllData==='function')refreshAllData();}catch(e){}if(ind)ind.classList.remove('spinning');if(label)label.textContent='Updated';setTimeout(hide,650);},450);}
 })();
 // Safety fallback: agar kisi wajah se dashboard render kabhi na chale, to bhi
 // skeleton hamesha ke liye atka na rahe
@@ -3725,68 +3752,54 @@ function deleteStaffPrompt(empId) {
 }
 
 function openAdminEditLedgerModal(ordId) {
-  if (!isAdminUser()) {
-    alert("Permission Denied: Sirf Admin hi ledger invoice modify kar sakte hain!");
-    return;
-  }
-  const o = ordersData.find(x => x.id === ordId);
-  if (!o) return;
-
-  document.getElementById('editLedgerInvId').value = o.id;
-  document.getElementById('editLedgerCustName').value = o.customerName;
-  document.getElementById('editLedgerTotalAmt').value = o.totalAmount;
-  document.getElementById('editLedgerRecvAmt').value = o.recvAmount;
-  document.getElementById('editLedgerDueAmt').value = o.dueAmount;
-  document.getElementById('editLedgerPayMode').value = o.payMode;
-  document.getElementById('editLedgerStaffSelect').value = o.bookedBy;
-  document.getElementById('editLedgerModal').style.display = 'flex';
+  if(!isAdminUser()){alert("Permission Denied: Sirf Admin hi ledger invoice modify kar sakte hain!");return;}
+  const o=ordersData.find(x=>x.id===ordId); if(!o)return;
+  document.getElementById('editLedgerInvId').value=o.id;
+  document.getElementById('editLedgerCustName').value=o.customerName||'';
+  document.getElementById('editLedgerPhone').value=o.phone||'';
+  document.getElementById('editLedgerOrderDate').value=o.orderDate||'';
+  document.getElementById('editLedgerDeliveryDate').value=o.deliveryDate||o.deliveredDate||'';
+  document.getElementById('editLedgerTotalAmt').value=o.totalAmount||0;
+  document.getElementById('editLedgerRecvAmt').value=o.recvAmount||0;
+  document.getElementById('editLedgerDueAmt').value=o.dueAmount||0;
+  document.getElementById('editLedgerPayMode').value=o.payMode||'Cash';
+  document.getElementById('editLedgerStatus').value=o.status||'Delivered';
+  document.getElementById('editLedgerStaffSelect').value=o.bookedBy||'';
+  const tb=document.getElementById('adminLedgerItemsTbody'); tb.innerHTML='';
+  (o.items||[]).forEach(it=>addAdminLedgerItemRow(it));
+  if(!(o.items||[]).length)addAdminLedgerItemRow();
+  calcEditLedgerBalance();
+  document.getElementById('editLedgerModal').style.display='flex';
 }
-function closeEditLedgerModal() {
-  document.getElementById('editLedgerModal').style.display = 'none';
+function addAdminLedgerItemRow(it={}){
+  const tb=document.getElementById('adminLedgerItemsTbody'); if(!tb)return;
+  const tr=document.createElement('tr');
+  const name=it.name||'', qty=it.qty||1, mrp=it.mrp??it.rate??0, disc=it.disc||0, hsn=it.hsn||'';
+  tr.innerHTML=`<td><input class="al-name" value="${esc(name)}" style="min-width:190px;"></td><td><input class="al-qty" type="number" min="1" value="${qty}" style="width:60px;"></td><td><input class="al-mrp" type="number" value="${mrp}" style="width:80px;"></td><td><input class="al-disc" type="number" min="0" max="100" value="${disc}" style="width:65px;"></td><td><input class="al-hsn" value="${esc(hsn)}" style="width:90px;"></td><td class="al-total">₹0</td><td><button class="btn btn-danger-sm btn-sm" onclick="this.closest('tr').remove();calcAdminLedgerItems()">✕</button></td>`;
+  tb.appendChild(tr);
+  tr.querySelectorAll('input').forEach(x=>x.addEventListener('input',calcAdminLedgerItems));
+  calcAdminLedgerItems();
 }
-
-function calcEditLedgerBalance() {
-  const tot = parseFloat(document.getElementById('editLedgerTotalAmt').value) || 0;
-  const recv = parseFloat(document.getElementById('editLedgerRecvAmt').value) || 0;
-  document.getElementById('editLedgerDueAmt').value = Math.max(0, tot - recv);
+function calcAdminLedgerItems(){
+  let total=0; document.querySelectorAll('#adminLedgerItemsTbody tr').forEach(r=>{const q=+r.querySelector('.al-qty').value||0,m=+r.querySelector('.al-mrp').value||0,d=+r.querySelector('.al-disc').value||0;const t=q*m*(1-d/100);r.querySelector('.al-total').textContent='₹'+t.toLocaleString('en-IN',{maximumFractionDigits:2});total+=t;});
+  const el=document.getElementById('editLedgerTotalAmt'); if(el)el.value=Math.round(total); calcEditLedgerBalance();
 }
-
-function saveAdminLedgerInvoice() {
-  const invId = document.getElementById('editLedgerInvId').value;
-  const o = ordersData.find(x => x.id === invId);
-  if (!o) return;
-
-  o.customerName = document.getElementById('editLedgerCustName').value.trim();
-  o.totalAmount = parseFloat(document.getElementById('editLedgerTotalAmt').value) || 0;
-  o.recvAmount = parseFloat(document.getElementById('editLedgerRecvAmt').value) || 0;
-  o.dueAmount = parseFloat(document.getElementById('editLedgerDueAmt').value) || 0;
-  o.payMode = document.getElementById('editLedgerPayMode').value;
-  o.bookedBy = document.getElementById('editLedgerStaffSelect').value;
-
-  o.auditTrail = o.auditTrail || [];
-  o.auditTrail.unshift({ by: currentUser.name + " (Admin)", time: getNowStr(), note: "Modified billing numbers in ledger" });
-
-  setStored("ORDERS", ordersData);
-  closeEditLedgerModal();
-  renderBilling('all');
-  renderDashboard();
-  alert("Ledger invoice successfully updated!");
+function closeEditLedgerModal(){document.getElementById('editLedgerModal').style.display='none';}
+function calcEditLedgerBalance(){const tot=parseFloat(document.getElementById('editLedgerTotalAmt').value)||0,recv=parseFloat(document.getElementById('editLedgerRecvAmt').value)||0;document.getElementById('editLedgerDueAmt').value=Math.max(0,tot-recv);}
+function saveAdminLedgerInvoice(){
+  if(!isAdminUser()){alert('Permission Denied: Sirf Admin save kar sakta hai!');return;}
+  const invId=document.getElementById('editLedgerInvId').value,o=ordersData.find(x=>x.id===invId);if(!o)return;
+  const rows=[...document.querySelectorAll('#adminLedgerItemsTbody tr')];
+  const items=rows.map(r=>{const name=r.querySelector('.al-name').value.trim(),qty=parseFloat(r.querySelector('.al-qty').value)||1,mrp=parseFloat(r.querySelector('.al-mrp').value)||0,disc=parseFloat(r.querySelector('.al-disc').value)||0,hsn=r.querySelector('.al-hsn').value.trim(),rate=mrp*(1-disc/100);return Object.assign({},(o.items||[]).find(i=>i.name===name)||{}, {name,qty,mrp,disc,hsn,rate,total:qty*rate});}).filter(i=>i.name);
+  o.customerName=document.getElementById('editLedgerCustName').value.trim(); o.phone=document.getElementById('editLedgerPhone').value.trim();
+  o.orderDate=document.getElementById('editLedgerOrderDate').value; o.deliveryDate=document.getElementById('editLedgerDeliveryDate').value;
+  o.items=items; o.totalAmount=parseFloat(document.getElementById('editLedgerTotalAmt').value)||0; o.recvAmount=parseFloat(document.getElementById('editLedgerRecvAmt').value)||0; o.dueAmount=Math.max(0,o.totalAmount-o.recvAmount);
+  o.payMode=document.getElementById('editLedgerPayMode').value; o.status=document.getElementById('editLedgerStatus').value; o.bookedBy=document.getElementById('editLedgerStaffSelect').value;
+  if(o.status==='Delivered'&&!o.deliveredDate)o.deliveredDate=o.deliveryDate||new Date().toISOString().split('T')[0];
+  o.auditTrail=o.auditTrail||[];o.auditTrail.unshift({by:(currentUser?.name||'Admin')+' (Admin)',time:getNowStr(),note:'Admin fully edited ledger bill, payment and items'});
+  setStored('ORDERS',ordersData);closeEditLedgerModal();renderBilling('all');renderDashboard();renderOrders();alert('Complete ledger bill & items successfully updated!');
 }
-
-function deleteAdminLedgerInvoice(ordId) {
-  if (!isAdminUser()) {
-    alert("Permission Denied: Sirf Admin hi bill ledger se delete kar sakte hain!");
-    return;
-  }
-  if (confirm(`Confirm permanent deletion of Invoice ${ordId} from ledger?`)) {
-    ordersData = ordersData.filter(x => x.id !== ordId);
-    setStored("ORDERS", ordersData);
-    renderBilling('all');
-    renderDashboard();
-    renderOrders();
-    alert(`Invoice ${ordId} deleted successfully.`);
-  }
-}
+function deleteAdminLedgerInvoice(ordId){if(!isAdminUser()){alert('Permission Denied: Sirf Admin hi bill ledger se delete kar sakta hai!');return;}if(confirm(`Confirm permanent deletion of Invoice ${ordId} from ledger?`)){ordersData=ordersData.filter(x=>x.id!==ordId);setStored('ORDERS',ordersData);renderBilling('all');renderDashboard();renderOrders();alert(`Invoice ${ordId} deleted successfully.`);}}
 
 function renderDashboard() {
   // SKELETON LOADER: pehli baar real data aa jaye to shimmer placeholder hata do
@@ -5826,6 +5839,7 @@ function switchTab(tab, el) {
   panel.classList.remove('tt-page-slide');
   void panel.offsetWidth; // reflow taaki animation dobara trigger ho
   panel.classList.add('tt-page-slide');
+  try { window.scrollTo({top:0, behavior:'smooth'}); } catch(e) { window.scrollTo(0,0); }
   if (el) el.classList.add('active');
 
   const fabBtn = document.getElementById('fabMainBtn');
