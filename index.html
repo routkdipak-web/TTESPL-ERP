@@ -406,7 +406,7 @@
   }
 
   /* ------------------- iOS-STYLE PAGE TRANSITION & CONTAINER ------------------- */
-  .container { max-width: 960px; margin: 0 auto; padding: 12px 14px; position: relative; }
+  .container { max-width: 960px; margin: 0 auto; padding: 12px 14px; }
   .view-panel { display: none; }
   .view-panel.active {
     display: block;
@@ -415,32 +415,6 @@
   @keyframes iosPageIn {
     0% { opacity: 0; transform: translateY(16px) scale(0.975); }
     100% { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  /* RICH CROSSFADE TAB SWITCH: jab ek tab (jaise Home) se doosre tab (jaise
-     Leads) par jaate hain, purana panel ekdum gayab nahi hota - wo khud ek
-     chhoti absolute overlay ban kar smoothly fade+slide-out hota hai, aur
-     theek usi waqt naya panel (jo normal flow me hai) fade+slide-in hota
-     hai - dono animation ek saath (simultaneously) chalte hain, jaise
-     premium native apps me hota hai. */
-  .view-panel.tt-page-exiting {
-    display: block !important;
-    position: absolute; top: 0; left: 14px; right: 14px;
-    z-index: 1; pointer-events: none;
-    animation: ttPageExitFade 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-  }
-  @keyframes ttPageExitFade {
-    0% { opacity: 1; transform: translateX(0) scale(1); }
-    100% { opacity: 0; transform: translateX(-16px) scale(0.975); }
-  }
-  .view-panel.active.tt-page-entering {
-    animation: ttPageEnterFade 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  @keyframes ttPageEnterFade {
-    0% { opacity: 0; transform: translateX(18px) scale(0.975); }
-    100% { opacity: 1; transform: translateX(0) scale(1); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .view-panel.tt-page-exiting, .view-panel.active.tt-page-entering { animation: none; }
   }
 
   .page-top-header-banner {
@@ -511,11 +485,10 @@
   .qa-tile {
     background: var(--card); border: 1.5px solid var(--border); border-radius: 14px;
     padding: 14px 10px; display: flex; flex-direction: column; align-items: center; gap: 7px;
-    cursor: pointer; transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
-    font-size: 11.5px; font-weight: 700; color: var(--text-main);
+    cursor: pointer; transition: all 0.22s cubic-bezier(0.16,1,0.3,1); font-size: 11.5px; font-weight: 700; color: var(--text-main);
   }
   .qa-tile:hover { border-color: var(--cyan); background: rgba(0,180,216,0.06); transform: translateY(-3px); box-shadow: var(--shadow-md); }
-  .qa-tile:active { transform: scale(0.93); transition: transform 0.1s ease; }
+  .qa-tile:active { transform: scale(0.95); }
   .qa-icon-badge {
     width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
     font-size: 19px; background: linear-gradient(135deg, rgba(0,180,216,0.14), rgba(10,37,64,0.08));
@@ -537,13 +510,9 @@
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     padding: 10px 16px; border-radius: var(--radius-sm); font-size: 12.5px; font-weight: 700;
-    border: none; cursor: pointer; text-decoration: none;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+    border: none; cursor: pointer; text-decoration: none; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  /* ELASTIC SPRING-PHYSICS: press down jaldi se ease ho jata hai, lekin
-     release par base transition (bouncy overshoot curve) apply hoti hai -
-     isse button chhodte waqt ek halka "spring back" feel aata hai. */
-  .btn:active { transform: scale(0.94); transition: transform 0.1s ease; }
+  .btn:active { transform: scale(0.95); }
   .btn-primary { background: linear-gradient(135deg, #0a2540, #13395e); color: white; box-shadow: 0 4px 12px rgba(10,37,64,0.25); }
   .btn-primary:hover { background: #061526; }
   .btn-accent { background: linear-gradient(135deg, #ff6b35, #f59e0b); color: white; box-shadow: 0 4px 14px rgba(255,107,53,0.35); }
@@ -816,12 +785,8 @@
 @media (prefers-reduced-motion: reduce){ .view-panel.active .card{ animation:none; } }
 
 /* ===== FIX: modal/popup base styles (centered on desktop + mobile) ===== */
-/* MOBILE KEYBOARD OVERFLOW FIX: dvh-based max-height (dynamic viewport height
-   khud keyboard khulne par shrink hoti hai) + safe-area bottom padding, taaki
-   form ke neeche wale inputs/buttons mobile keyboard ke peeche kabhi hide na
-   ho - purana max-width/background/blur/shadow sab waisa hi rakha hai. */
 .auth-overlay{position:fixed;inset:0;z-index:3000;align-items:center;justify-content:center;padding:18px;overflow-y:auto;-webkit-overflow-scrolling:touch;background:rgba(6,14,28,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
-.auth-overlay .auth-card{position:relative;width:100%;max-width:440px;margin:auto;max-height:calc(100dvh - 20px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 18px;padding-bottom:calc(20px + env(safe-area-inset-bottom));border-radius:22px;background-color:var(--card-glass);background-image:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,0) 55%);color:var(--text-main);border:1px solid var(--card-glass-border);box-shadow:0 30px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);}
+.auth-overlay .auth-card{position:relative;width:100%;max-width:440px;margin:auto;max-height:calc(100dvh - 36px);overflow-y:auto;padding:20px 18px;border-radius:22px;background-color:var(--card-glass);background-image:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,0) 55%);color:var(--text-main);border:1px solid var(--card-glass-border);box-shadow:0 30px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);}
 .card-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
 .card-title{font-size:15px;font-weight:800;color:var(--text-main);}
 .empty-state{text-align:center;padding:26px 12px;color:var(--text-muted);}
@@ -846,37 +811,6 @@
 .tt-toast-retry-btn{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);color:#fff;font-size:12px;font-weight:700;padding:5px 12px;border-radius:9px;cursor:pointer;}
 .tt-toast-retry-btn:active{background:rgba(255,255,255,.26);}
 
-/* ===== Dark-Gold Executive Dashboard Charts ===== */
-.tt-exec-chart-card {
-  background: linear-gradient(160deg, #1a1407 0%, #0d0a04 100%);
-  border: 1.5px solid rgba(212,175,55,0.35);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(250,204,21,0.08);
-}
-.tt-exec-chart-card .card-title, .tt-exec-chart-card .tt-exec-chart-title { color: #f3d675 !important; }
-.tt-exec-chart-card .tt-exec-chart-sub { color: rgba(243,214,117,0.6); font-size: 10.5px; }
-.tt-exec-net-profit-tile {
-  background: linear-gradient(145deg, rgba(212,175,55,0.16), rgba(10,10,6,0.4));
-  border: 1.5px solid rgba(212,175,55,0.45); border-radius: 14px; padding: 12px 14px;
-}
-
-/* ===== Full-screen photo lightbox entrance ===== */
-@keyframes ttLightboxFadeIn{from{opacity:0;}to{opacity:1;}}
-#ttPhotoViewerImg{animation:ttLightboxImgIn 0.26s cubic-bezier(0.22,1,0.36,1) both;}
-@keyframes ttLightboxImgIn{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}
-
-/* ===== Low-stock pulsing visual alarm (stock <= 5) ===== */
-.low-stock-pulse{animation:ttLowStockBadgePulse 1.5s ease-in-out infinite;}
-@keyframes ttLowStockBadgePulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.55);}
-  50%{box-shadow:0 0 0 5px rgba(239,68,68,0);}
-}
-.low-stock-card-pulse{animation:ttLowStockCardPulse 1.8s ease-in-out infinite;}
-@keyframes ttLowStockCardPulse{
-  0%,100%{border-color:rgba(239,68,68,.35);box-shadow:0 0 0 0 rgba(239,68,68,.25);}
-  50%{border-color:rgba(239,68,68,.85);box-shadow:0 0 14px 2px rgba(239,68,68,.35);}
-}
-@media (prefers-reduced-motion: reduce){ .low-stock-pulse,.low-stock-card-pulse{animation:none;} }
-
 /* ===== Skeleton loader (shown while cloud data load ho raha ho) ===== */
 .tt-skeleton{border-radius:10px;background:linear-gradient(100deg,rgba(140,150,165,.14) 20%,rgba(140,150,165,.28) 38%,rgba(140,150,165,.14) 55%);background-size:300% 100%;animation:ttSkeletonShimmer 1.3s ease-in-out infinite;}
 @keyframes ttSkeletonShimmer{0%{background-position:120% 0;}100%{background-position:-20% 0;}}
@@ -889,8 +823,8 @@
 .btn,.tab-btn,.quick-action,button{position:relative;overflow:hidden;}
 .tt-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:ttRippleAnim .5s ease-out;pointer-events:none;}
 @keyframes ttRippleAnim{to{transform:scale(2.6);opacity:0;}}
-.btn:active,.tab-btn:active,.quick-action:active,.cat-chip:active{transform:scale(.94);transition:transform .1s ease;}
-.btn,.tab-btn,.quick-action{transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+.btn:active,.tab-btn:active,.quick-action:active,.cat-chip:active{transform:scale(.96);}
+.btn,.tab-btn,.quick-action{transition:transform .12s ease;}
 
 /* ===== Active tab floating pill indicator (spring physics) ===== */
 .nav-active-pill{
@@ -946,7 +880,7 @@ h1,h2,h3,.modal-title,.toast-title{
 /* ===== Compact floating cards + smoother sticky blur ===== */
 .card{padding:14px;}
 @media (max-width:480px){.card{padding:11px 12px;border-radius:14px;}.card-header{margin-bottom:8px;}}
-.sticky-filters,.tabs-sticky,[class*="sticky"]{-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);}
+.sticky-filters,.tabs-sticky,[class*="sticky"]{-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);}
 
 /* ===== Dark mode contrast sharpening (better in direct sunlight) ===== */
 :root[data-theme="dark"]{--text-main:#f3f6fa;--text-muted:#aab4c4;}
@@ -960,27 +894,16 @@ h1,h2,h3,.modal-title,.toast-title{
    match karta hai) taaki app ka ek clear premium "goldy glass" signature
    look bane, aur sirf plain white na lage. */
 .card{
-  position:relative;
   background:linear-gradient(165deg,rgba(255,252,240,.92),rgba(255,247,222,.74));
-  -webkit-backdrop-filter:blur(24px) saturate(1.8);
-  backdrop-filter:blur(24px) saturate(1.8);
+  -webkit-backdrop-filter:blur(16px) saturate(1.3);
+  backdrop-filter:blur(16px) saturate(1.3);
   border:1.5px solid rgba(217,164,6,.38);
   box-shadow:0 8px 26px rgba(120,89,0,.1),inset 0 1px 0 rgba(255,255,255,.75),inset 0 0 0 1px rgba(255,215,0,.08);
-}
-/* Fine inner specular top-edge highlight - ek patli chamakti hui line jo
-   glass ke "top rim" par light reflect hone ka ehsaas deti hai */
-.card::before{
-  content:"";position:absolute;top:0;left:10%;right:10%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);
-  border-radius:1px;pointer-events:none;
 }
 :root[data-theme="dark"] .card{
   background:linear-gradient(165deg,rgba(32,28,18,.82),rgba(20,17,10,.72));
   border:1.5px solid rgba(250,204,21,.32);
   box-shadow:0 8px 28px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,221,120,.1),inset 0 0 0 1px rgba(250,204,21,.06);
-}
-:root[data-theme="dark"] .card::before{
-  background:linear-gradient(90deg,transparent,rgba(250,204,21,.45),transparent);
 }
 
 @media print{.no-print{display:none !important;}}
@@ -1429,33 +1352,6 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
         </div>
       </div>
 
-      <div class="card tt-exec-chart-card">
-        <div class="card-header">
-          <strong class="card-title">💎 Executive Insights</strong>
-          <button class="btn btn-outline btn-sm" style="border-color:rgba(212,175,55,0.5); color:#f3d675;" onclick="triggerAppHaptic(); openExpenseModal()">💸 Expenses</button>
-        </div>
-        <div class="tt-exec-net-profit-tile" style="margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <div class="tt-exec-chart-sub">NET PROFIT (Collections − Expenses)</div>
-            <div style="font-size:22px; font-weight:900; color:#f3d675; font-variant-numeric:tabular-nums;" id="dashNetProfit">₹0</div>
-          </div>
-          <div style="text-align:right;">
-            <div class="tt-exec-chart-sub">TOTAL EXPENSES</div>
-            <div style="font-size:15px; font-weight:800; color:#e8b4b8; font-variant-numeric:tabular-nums;" id="dashTotalExpenses">₹0</div>
-          </div>
-        </div>
-        <div class="grid-2" style="gap:14px;">
-          <div>
-            <div class="tt-exec-chart-title" style="font-size:11.5px; font-weight:800; margin-bottom:4px;">📈 Weekly Revenue</div>
-            <canvas id="dashWeeklyRevenueChart" height="110" style="width:100%;"></canvas>
-          </div>
-          <div>
-            <div class="tt-exec-chart-title" style="font-size:11.5px; font-weight:800; margin-bottom:4px;">📊 Sales vs Expenses (Monthly)</div>
-            <canvas id="dashSalesVsExpenseChart" height="110" style="width:100%;"></canvas>
-          </div>
-        </div>
-      </div>
-
       <div class="card">
         <div class="card-header">
           <strong class="card-title">⚡ Quick Action Terminal</strong>
@@ -1620,14 +1516,13 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
         </div>
         <div style="display:flex; gap:6px; flex-wrap:wrap;">
           <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openDailyCashClosingModal()">💰 Cash Closing</button>
-          <button class="btn btn-danger-sm" style="padding:6px 12px; font-size:12px;" onclick="triggerAppHaptic(); openExpenseModal()">💸 Expenses</button>
           <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); openAgeingAnalysisModal()">⏳ Ageing Analysis</button>
           <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); importLedgerFromJson()">📥 Import Ledger</button>
           <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); downloadBusinessSummaryReport()">📄 Summary Report</button>
         </div>
       </div>
 
-      <div class="grid-4" style="margin-bottom:14px;">
+      <div class="grid-3" style="margin-bottom:14px;">
         <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:12px; border-top:4px solid var(--primary);" onclick="triggerAppHaptic(); filterBilling('all')">
           <div style="font-size:10.5px; color:var(--text-muted); font-weight:800;">TOTAL BILLED</div>
           <div style="font-size:17px; font-weight:800; color:var(--text-main);" id="metricTotalBilled">₹0</div>
@@ -1639,10 +1534,6 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
         <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:12px; border-top:4px solid var(--danger); background:var(--danger-bg);" onclick="triggerAppHaptic(); filterBilling('due')">
           <div style="font-size:10.5px; color:var(--danger); font-weight:800;">DUE REMAINING</div>
           <div style="font-size:17px; font-weight:800; color:var(--danger);" id="metricTotalDue">₹0</div>
-        </div>
-        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:12px; border-top:4px solid #d4af37; background:rgba(212,175,55,0.1);" onclick="triggerAppHaptic(); openExpenseModal()">
-          <div style="font-size:10.5px; color:#b8860b; font-weight:800;">NET PROFIT</div>
-          <div style="font-size:17px; font-weight:800; color:#b8860b;" id="metricNetProfit">₹0</div>
         </div>
       </div>
 
@@ -1881,82 +1772,6 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       <select id="editLedgerStaffSelect" class="emp-dropdown"></select>
     </div>
     <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveAdminLedgerInvoice()">💾 Update Ledger Bill</button>
-  </div>
-</div>
-
-<!-- EXPENSES & VENDOR PURCHASES MODAL -->
-<div id="expenseModal" class="auth-overlay" style="display:none; z-index:3450;">
-  <div class="auth-card" style="max-width:620px; width:95%;">
-    <div class="card-header">
-      <strong class="card-title">💸 Expenses &amp; Vendor Purchases</strong>
-      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeExpenseModal()">✕</button>
-    </div>
-
-    <input type="hidden" id="editExpenseId">
-    <div class="grid-2">
-      <div class="form-group">
-        <label class="form-label">Vendor / Paid To</label>
-        <input type="text" id="expVendorName" placeholder="e.g. Indian Oil, Landlord, Spares Dealer...">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Category</label>
-        <select id="expCategory">
-          <option value="Fuel">⛽ Fuel</option>
-          <option value="Rent">🏠 Rent</option>
-          <option value="Spares">⚙️ Spares</option>
-          <option value="Utilities">💡 Utilities</option>
-          <option value="Misc">📦 Misc</option>
-        </select>
-      </div>
-    </div>
-    <div class="grid-2">
-      <div class="form-group">
-        <label class="form-label">Amount (₹)</label>
-        <input type="number" id="expAmount" placeholder="0" min="0">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Payment Mode</label>
-        <select id="expPayMode">
-          <option value="Cash">💵 Cash</option>
-          <option value="UPI / QR Code">📱 UPI / QR Code</option>
-          <option value="Net Banking / NEFT">🏦 Net Banking / NEFT</option>
-          <option value="Cheque">📜 Cheque</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Date</label>
-      <input type="date" id="expDate">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Receipt Photo (optional)</label>
-      <div style="display:flex; gap:8px;">
-        <label class="btn btn-outline btn-sm" style="flex:1; text-align:center; cursor:pointer;">📷 Camera
-          <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleExpensePhoto(event)">
-        </label>
-        <label class="btn btn-outline btn-sm" style="flex:1; text-align:center; cursor:pointer;">🖼️ Gallery
-          <input type="file" accept="image/*" style="display:none;" onchange="handleExpensePhoto(event)">
-        </label>
-      </div>
-      <img id="expPhotoPreview" style="display:none; max-width:120px; max-height:120px; border-radius:8px; margin-top:8px; border:1px solid var(--border); cursor:pointer;" onclick="ttViewPhoto(this.src)">
-    </div>
-    <button class="btn btn-primary btn-block" style="margin-bottom:14px;" onclick="triggerAppHaptic(); saveExpenseAction()">💾 Save Expense</button>
-
-    <div class="card-header" style="margin-top:4px;">
-      <strong class="card-title" style="font-size:13.5px;">📋 Expense History</strong>
-      <span class="badge badge-danger" id="expTotalBadge" style="font-variant-numeric:tabular-nums;">₹0 Total</span>
-    </div>
-    <div class="grid-2" style="margin-bottom:10px;">
-      <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label">From</label>
-        <input type="date" id="expFilterFrom" onchange="renderExpensesList()">
-      </div>
-      <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label">To</label>
-        <input type="date" id="expFilterTo" onchange="renderExpensesList()">
-      </div>
-    </div>
-    <div id="expenseListContainer" style="max-height:280px; overflow-y:auto;"></div>
   </div>
 </div>
 
@@ -2258,10 +2073,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
         </div>
         <div class="form-group autocomplete-wrapper">
           <label class="form-label">Part Used (Stock Deducted)</label>
-          <div style="display:flex; gap:6px;">
-            <input type="text" id="srvPartSearchInput" placeholder="Search replaced part..." oninput="handlePartAutocomplete(this, 'srvPartSearchInput')" style="flex:1;">
-            <input type="number" id="srvPartQty" value="1" min="1" title="Qty used" style="width:54px;">
-          </div>
+          <input type="text" id="srvPartSearchInput" placeholder="Search replaced part..." oninput="handlePartAutocomplete(this, 'srvPartSearchInput')">
           <div class="solid-suggestion-box" id="srvPartSuggestBox"></div>
         </div>
       </div>
@@ -3395,12 +3207,6 @@ window.ordersData = ordersData;
 let serviceCallsData = getStored("SERVICES", []);
 window.serviceCallsData = serviceCallsData;
 
-/* EXPENSES & VENDOR PURCHASES: Fuel/Rent/Spares/Utilities/Misc kharche
-   track karne ke liye - Net Profit calculation (Collections - Expenses)
-   isi data par depend karta hai (dashboard + ledger me dikhta hai). */
-let expensesData = getStored("EXPENSES_DATA", []);
-window.expensesData = expensesData;
-
 /* FLOATING FILTER MODAL LOGIC FOR LEADS, ORDERS, SERVICES */
 let activeFilterSection = 'orders';
 let ordersFilterState = { staff: "ALL", from: "", to: "" };
@@ -3923,143 +3729,6 @@ function saveAdminLedgerInvoice() {
   alert("Ledger invoice successfully updated!");
 }
 
-/* ===== EXPENSES & VENDOR PURCHASES MODULE ===== */
-function ttTotalExpenses(fromDate, toDate) {
-  return (expensesData || []).filter(e => (!fromDate || e.date >= fromDate) && (!toDate || e.date <= toDate))
-    .reduce((s, e) => s + (Number(e.amount) || 0), 0);
-}
-window.ttTotalExpenses = ttTotalExpenses;
-
-function openExpenseModal() {
-  document.getElementById('editExpenseId').value = '';
-  document.getElementById('expVendorName').value = '';
-  document.getElementById('expCategory').value = 'Fuel';
-  document.getElementById('expAmount').value = '';
-  document.getElementById('expPayMode').value = 'Cash';
-  document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
-  document.getElementById('expPhotoPreview').style.display = 'none';
-  document.getElementById('expPhotoPreview').src = '';
-  document.getElementById('expFilterFrom').value = '';
-  document.getElementById('expFilterTo').value = '';
-  renderExpensesList();
-  document.getElementById('expenseModal').style.display = 'flex';
-}
-window.openExpenseModal = openExpenseModal;
-function closeExpenseModal() { document.getElementById('expenseModal').style.display = 'none'; }
-window.closeExpenseModal = closeExpenseModal;
-
-function handleExpensePhoto(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    ttCompressImageSafe(e.target.result, 900, 0.7).then(cd => {
-      const preview = document.getElementById('expPhotoPreview');
-      preview.src = cd;
-      preview.style.display = 'block';
-      preview.dataset.photo = cd;
-    });
-  };
-  reader.readAsDataURL(file);
-}
-window.handleExpensePhoto = handleExpensePhoto;
-
-function saveExpenseAction() {
-  const editId = document.getElementById('editExpenseId').value;
-  const vendor = document.getElementById('expVendorName').value.trim();
-  const category = document.getElementById('expCategory').value;
-  const amount = parseFloat(document.getElementById('expAmount').value) || 0;
-  const payMode = document.getElementById('expPayMode').value;
-  const date = document.getElementById('expDate').value;
-  const photo = document.getElementById('expPhotoPreview').dataset.photo || '';
-
-  if (!vendor || amount <= 0) { alert('Vendor name aur valid amount daalo!'); return; }
-
-  if (editId) {
-    const ex = expensesData.find(x => x.id === editId);
-    if (ex) {
-      ex.vendor = vendor; ex.category = category; ex.amount = amount;
-      ex.payMode = payMode; ex.date = date; if (photo) ex.receiptPhoto = photo;
-    }
-  } else {
-    expensesData.unshift({
-      id: "EXP-" + Date.now(), vendor, category, amount, payMode, date,
-      receiptPhoto: photo, by: currentUser ? currentUser.name : 'Staff'
-    });
-  }
-
-  setStored("EXPENSES_DATA", expensesData);
-  document.getElementById('editExpenseId').value = '';
-  document.getElementById('expVendorName').value = '';
-  document.getElementById('expAmount').value = '';
-  document.getElementById('expPhotoPreview').style.display = 'none';
-  document.getElementById('expPhotoPreview').src = '';
-  document.getElementById('expPhotoPreview').dataset.photo = '';
-  renderExpensesList();
-  renderDashboard();
-  if (document.getElementById('view-billing').classList.contains('active')) renderBilling('all');
-}
-window.saveExpenseAction = saveExpenseAction;
-
-function editExpensePrompt(id) {
-  const ex = expensesData.find(x => x.id === id);
-  if (!ex) return;
-  document.getElementById('editExpenseId').value = ex.id;
-  document.getElementById('expVendorName').value = ex.vendor;
-  document.getElementById('expCategory').value = ex.category;
-  document.getElementById('expAmount').value = ex.amount;
-  document.getElementById('expPayMode').value = ex.payMode;
-  document.getElementById('expDate').value = ex.date;
-  const preview = document.getElementById('expPhotoPreview');
-  if (ex.receiptPhoto) { preview.src = ex.receiptPhoto; preview.style.display = 'block'; preview.dataset.photo = ex.receiptPhoto; }
-  else { preview.style.display = 'none'; preview.dataset.photo = ''; }
-}
-window.editExpensePrompt = editExpensePrompt;
-
-function deleteExpenseAction(id) {
-  if (!isAdminUser()) { alert("Admin only!"); return; }
-  if (confirm("Confirm delete this expense record?")) {
-    expensesData = expensesData.filter(x => x.id !== id);
-    window.expensesData = expensesData;
-    setStored("EXPENSES_DATA", expensesData);
-    renderExpensesList();
-    renderDashboard();
-  }
-}
-window.deleteExpenseAction = deleteExpenseAction;
-
-function renderExpensesList() {
-  const c = document.getElementById('expenseListContainer');
-  if (!c) return;
-  const from = document.getElementById('expFilterFrom').value;
-  const to = document.getElementById('expFilterTo').value;
-  let list = (expensesData || []).filter(e => (!from || e.date >= from) && (!to || e.date <= to));
-  const total = list.reduce((s, e) => s + (Number(e.amount) || 0), 0);
-  document.getElementById('expTotalBadge').textContent = '₹' + total.toLocaleString('en-IN') + ' Total';
-
-  if (list.length === 0) {
-    c.innerHTML = `<div class="empty-state"><span class="empty-icon">💸</span><div class="empty-sub">Koi expense record nahi mila.</div></div>`;
-    return;
-  }
-  const isAdmin = isAdminUser();
-  const catIcon = { Fuel: '⛽', Rent: '🏠', Spares: '⚙️', Utilities: '💡', Misc: '📦' };
-  c.innerHTML = list.map(e => `
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:9px 0; border-bottom:1px dashed var(--border);">
-      <div style="min-width:0;">
-        <strong style="font-size:13px; color:var(--text-main);">${catIcon[e.category] || '📦'} ${esc(e.vendor)}</strong>
-        <div style="font-size:11px; color:var(--text-muted);">${esc(e.category)} · ${esc(e.date || '')} · ${esc(e.payMode || '')}</div>
-      </div>
-      <div style="text-align:right; display:flex; align-items:center; gap:6px;">
-        <strong style="font-size:13.5px; color:var(--danger); font-variant-numeric:tabular-nums;">₹${Number(e.amount).toLocaleString('en-IN')}</strong>
-        ${e.receiptPhoto ? `<button class="btn btn-outline btn-sm" onclick="ttViewPhoto('${e.receiptPhoto}')" style="padding:4px 7px;">🖼️</button>` : ''}
-        <button class="btn btn-outline btn-sm" onclick="editExpensePrompt('${e.id}')" style="padding:4px 7px;">✏️</button>
-        ${isAdmin ? `<button class="btn btn-danger-sm" onclick="deleteExpenseAction('${e.id}')" style="padding:4px 7px;">🗑️</button>` : ''}
-      </div>
-    </div>
-  `).join('');
-}
-window.renderExpensesList = renderExpensesList;
-
 function deleteAdminLedgerInvoice(ordId) {
   if (!isAdminUser()) {
     alert("Permission Denied: Sirf Admin hi bill ledger se delete kar sakte hain!");
@@ -4074,117 +3743,6 @@ function deleteAdminLedgerInvoice(ordId) {
     alert(`Invoice ${ordId} deleted successfully.`);
   }
 }
-
-/* ===== DARK-GOLD EXECUTIVE DASHBOARD CHARTS (lightweight canvas, no external lib) ===== */
-function ttGetLastNDates(n) {
-  const arr = [];
-  for (let i = n - 1; i >= 0; i--) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    arr.push(d.toISOString().split('T')[0]);
-  }
-  return arr;
-}
-function ttGetLastNMonths(n) {
-  const arr = [];
-  for (let i = n - 1; i >= 0; i--) {
-    const d = new Date(); d.setMonth(d.getMonth() - i);
-    arr.push({ key: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'), label: d.toLocaleDateString('en-IN', { month: 'short' }) });
-  }
-  return arr;
-}
-function ttDrawBarChart(canvas, labels, values, colorTop, colorBottom) {
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const w = canvas.clientWidth || 260, h = canvas.height || 110;
-  canvas.width = w * dpr; canvas.height = h * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.clearRect(0, 0, w, h);
-  const max = Math.max(1, ...values);
-  const padBottom = 16, padTop = 6;
-  const gap = w / values.length;
-  const barW = Math.max(6, gap * 0.5);
-  values.forEach((v, i) => {
-    const barH = (v / max) * (h - padBottom - padTop);
-    const x = i * gap + (gap - barW) / 2;
-    const y = h - padBottom - barH;
-    const grad = ctx.createLinearGradient(0, y, 0, h - padBottom);
-    grad.addColorStop(0, colorTop); grad.addColorStop(1, colorBottom);
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(x, y, barW, Math.max(1, barH), 3); else ctx.rect(x, y, barW, Math.max(1, barH));
-    ctx.fill();
-    ctx.fillStyle = 'rgba(243,214,117,0.6)';
-    ctx.font = '8.5px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(labels[i], x + barW / 2, h - 4);
-  });
-}
-function ttDrawGroupedBarChart(canvas, labels, valuesA, valuesB) {
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const w = canvas.clientWidth || 260, h = canvas.height || 110;
-  canvas.width = w * dpr; canvas.height = h * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.clearRect(0, 0, w, h);
-  const max = Math.max(1, ...valuesA, ...valuesB);
-  const padBottom = 16, padTop = 6;
-  const gap = w / labels.length;
-  const barW = Math.max(4, gap * 0.28);
-  labels.forEach((lbl, i) => {
-    const groupX = i * gap + gap / 2;
-    const hA = (valuesA[i] / max) * (h - padBottom - padTop);
-    const hB = (valuesB[i] / max) * (h - padBottom - padTop);
-    const xA = groupX - barW - 1, xB = groupX + 1;
-    const gradA = ctx.createLinearGradient(0, h - padBottom - hA, 0, h - padBottom);
-    gradA.addColorStop(0, '#f3d675'); gradA.addColorStop(1, '#b8860b');
-    ctx.fillStyle = gradA;
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(xA, h - padBottom - hA, barW, Math.max(1, hA), 2); else ctx.rect(xA, h - padBottom - hA, barW, Math.max(1, hA));
-    ctx.fill();
-    const gradB = ctx.createLinearGradient(0, h - padBottom - hB, 0, h - padBottom);
-    gradB.addColorStop(0, '#e8828a'); gradB.addColorStop(1, '#a13f47');
-    ctx.fillStyle = gradB;
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(xB, h - padBottom - hB, barW, Math.max(1, hB), 2); else ctx.rect(xB, h - padBottom - hB, barW, Math.max(1, hB));
-    ctx.fill();
-    ctx.fillStyle = 'rgba(243,214,117,0.6)';
-    ctx.font = '8.5px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(lbl, groupX, h - 4);
-  });
-}
-function ttRenderExecCharts() {
-  try {
-    const days = ttGetLastNDates(7);
-    const weeklyVals = days.map(d => {
-      let sum = 0;
-      ordersData.filter(o => o.status === 'Delivered' && (o.deliveredDate || o.orderDate) === d).forEach(o => sum += (o.recvAmount || 0));
-      return sum;
-    });
-    const dayLabels = days.map(d => new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short' }).slice(0, 2));
-    ttDrawBarChart(document.getElementById('dashWeeklyRevenueChart'), dayLabels, weeklyVals, '#f3d675', '#b8860b');
-
-    const months = ttGetLastNMonths(6);
-    const salesVals = months.map(m => {
-      let sum = 0;
-      ordersData.filter(o => o.status === 'Delivered' && String(o.deliveredDate || o.orderDate || '').startsWith(m.key)).forEach(o => sum += (o.totalAmount || 0));
-      return sum;
-    });
-    const expenseVals = months.map(m => ttTotalExpenses(m.key + '-01', m.key + '-31'));
-    ttDrawGroupedBarChart(document.getElementById('dashSalesVsExpenseChart'), months.map(m => m.label), salesVals, expenseVals);
-
-    const totalRecvAll = ordersData.filter(o => o.status === 'Delivered').reduce((s, o) => s + (o.recvAmount || 0), 0);
-    const totalExpAll = ttTotalExpenses();
-    const netP = totalRecvAll - totalExpAll;
-    const npEl = document.getElementById('dashNetProfit');
-    const teEl = document.getElementById('dashTotalExpenses');
-    if (npEl) { npEl.textContent = (netP < 0 ? '-₹' : '₹') + Math.abs(netP).toLocaleString('en-IN'); npEl.style.color = netP < 0 ? '#f87171' : '#f3d675'; }
-    if (teEl) teEl.textContent = '₹' + totalExpAll.toLocaleString('en-IN');
-  } catch (e) { console.error('Exec chart render failed', e); }
-}
-window.ttRenderExecCharts = ttRenderExecCharts;
 
 function renderDashboard() {
   // SKELETON LOADER: pehli baar real data aa jaye to shimmer placeholder hata do
@@ -4244,11 +3802,6 @@ function renderDashboard() {
       priorityBox.appendChild(row);
     });
   }
-
-  // DARK-GOLD EXECUTIVE CHARTS: Weekly Revenue + Monthly Sales vs Expenses +
-  // live Net Profit tile - chhota setTimeout isliye taaki canvas apne final
-  // rendered width (clientWidth) le sake jab tak layout settle ho jaye.
-  setTimeout(ttRenderExecCharts, 30);
 }
 
 function toggleFabMenu() {
@@ -4357,41 +3910,6 @@ function saveCustomerSignature() {
 }
 
 /* WIDE HORIZONTAL AUTOCOMPLETE HANDLER FOR CUSTOMERS */
-// AUTOCOMPLETE OVERFLOW FIX: suggestion box ko ab fixed viewport coordinates
-// par rakha jata hai (parent ke scroll/overflow se bilkul independent),
-// taaki scrolled modal ke andar wo kabhi clip/cut na ho. Dropdown ki chaudai
-// input jitni hi rakhi jati hai, aur agar neeche jagah kam ho (keyboard khula
-// ho ya modal ke bottom ke paas input ho) to wo khud input ke UPAR khul jata
-// hai - kahin bhi hidden/clipped nahi hota.
-function ttPositionSuggestionBox(box, inputEl) {
-  if (!box || !inputEl) return;
-  try {
-    box._ttAnchorInput = inputEl;
-    const r = inputEl.getBoundingClientRect();
-    box.style.position = 'fixed';
-    box.style.left = Math.max(8, r.left) + 'px';
-    box.style.width = Math.max(220, r.width) + 'px';
-    box.style.minWidth = '0';
-    box.style.maxWidth = (window.innerWidth - 16) + 'px';
-    box.style.top = (r.bottom + 4) + 'px';
-    box.style.bottom = 'auto';
-    const estHeight = Math.min(250, box.scrollHeight || 250);
-    if (r.bottom + estHeight + 12 > window.innerHeight) {
-      box.style.top = Math.max(8, r.top - estHeight - 4) + 'px';
-    }
-  } catch (e) {}
-}
-window.ttPositionSuggestionBox = ttPositionSuggestionBox;
-function ttRepositionVisibleSuggestionBoxes() {
-  document.querySelectorAll('.solid-suggestion-box').forEach(function (box) {
-    if (box.style.display === 'block' && box._ttAnchorInput) {
-      ttPositionSuggestionBox(box, box._ttAnchorInput);
-    }
-  });
-}
-window.addEventListener('scroll', ttRepositionVisibleSuggestionBoxes, true);
-window.addEventListener('resize', ttRepositionVisibleSuggestionBoxes);
-
 function handleCustomerAutocomplete(inputEl, targetInputId) {
   const val = (inputEl.value || '').toLowerCase().trim();
   const box = inputEl.parentElement.querySelector('.solid-suggestion-box');
@@ -4422,7 +3940,6 @@ function handleCustomerAutocomplete(inputEl, targetInputId) {
     </div>
   `;
   box.innerHTML = html;
-  ttPositionSuggestionBox(box, inputEl);
   box.style.display = 'block';
 }
 
@@ -5200,39 +4717,12 @@ function editOrderPrompt(ordId) {
   if(o) openOrderModal(o);
 }
 
-// NATIVE SHARE SHEET: mobile par navigator.share() browser/OS ka apna native
-// share sheet khol deta hai (WhatsApp, Telegram, Email, SMS - jo bhi app
-// installed ho use dikhta hai), seedha wa.me link kholne se zyada flexible.
-// Agar yeh available/supported nahi hai (desktop browser) ya fail ho jaye
-// (user cancel kare to AbortError - wahan kuch nahi karte), to purana clean
-// plain-text fallback (wa.me / print) chalta hai - functionality kahin nahi tuti.
-async function ttNativeShareOrFallback(shareData, fallbackFn) {
-  try {
-    if (navigator.share) {
-      await navigator.share(shareData);
-      return true;
-    }
-  } catch (e) {
-    if (e && e.name === 'AbortError') return false; // user ne share sheet cancel ki
-  }
-  if (typeof fallbackFn === 'function') fallbackFn();
-  return false;
-}
-window.ttNativeShareOrFallback = ttNativeShareOrFallback;
-
 function shareOrderWhatsApp(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
-  const itemsTextPlain = o.items.map(i => `${i.name} (x${i.qty}, Disc:${i.disc || 0}%) - Rs.${i.total}`).join('\n');
-  const plainMsg = `TWIN TOWN EXPRESS SERVICES PVT LTD\nInvoice: ${o.id}\nCustomer: ${o.customerName}\n-----------------------\nItems:\n${itemsTextPlain}\n-----------------------\nTotal Bill: Rs.${o.totalAmount}\nPaid: Rs.${o.recvAmount}\nDue: Rs.${o.dueAmount}\n\nRasulgarh, Bhubaneswar`;
-  ttNativeShareOrFallback(
-    { title: `TTESPL Invoice ${o.id}`, text: plainMsg },
-    function () {
-      const itemsText = o.items.map(i => `${i.name} (x${i.qty}, Disc:${i.disc || 0}%) - Rs.${i.total}`).join('%0A');
-      const msg = `*TWIN TOWN EXPRESS SERVICES PVT LTD*%0A*Invoice:* ${o.id}%0A*Customer:* ${o.customerName}%0A-----------------------%0A*Items:*%0A${itemsText}%0A-----------------------%0A*Total Bill:* Rs.${o.totalAmount}%0A*Paid:* Rs.${o.recvAmount}%0A*Due:* Rs.${o.dueAmount}%0A%0A_Rasulgarh, Bhubaneswar_`;
-      window.open(o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`, '_blank');
-    }
-  );
+  const itemsText = o.items.map(i => `${i.name} (x${i.qty}, Disc:${i.disc || 0}%) - Rs.${i.total}`).join('%0A');
+  const msg = `*TWIN TOWN EXPRESS SERVICES PVT LTD*%0A*Invoice:* ${o.id}%0A*Customer:* ${o.customerName}%0A-----------------------%0A*Items:*%0A${itemsText}%0A-----------------------%0A*Total Bill:* Rs.${o.totalAmount}%0A*Paid:* Rs.${o.recvAmount}%0A*Due:* Rs.${o.dueAmount}%0A%0A_Rasulgarh, Bhubaneswar_`;
+  window.open(o.phone ? `https://wa.me/91${o.phone}?text=${msg}` : `https://wa.me/?text=${msg}`, '_blank');
 }
 
 // Shared PDF/print helper - ek alag hidden page me content bhejta hai (poore app se alag),
@@ -5399,7 +4889,6 @@ function renderServices() {
       <div style="font-size:12.5px; margin-bottom:6px;"><strong>Machine:</strong> ${s.machine}</div>
       <div style="font-size:12px; margin-bottom:10px;"><strong>Issue:</strong> ${s.problem}</div>
       ${s.status === 'Work Completed' ? `<div style="background:var(--success-bg); padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:6px;">✅ <strong>Done:</strong> ${s.actionDone}</div>
-        ${s.stockDeducted ? `<div style="font-size:10.5px; color:var(--text-muted); margin-bottom:6px;">📦 <strong>Part used:</strong> ${esc(s.partUsed || '')} x${s.partQty || 1} <span class="badge badge-info" style="font-size:9px;">Stock Auto-Deducted</span></div>` : ''}
         <div style="display:flex; gap:6px;">
           <button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openServiceReportModal('${s.id}')">📄 ${s.report ? 'Edit/Print Report' : 'Create Report Card'}</button>
         </div>` : `<button class="btn btn-primary btn-sm btn-block" onclick="triggerAppHaptic(); openExecuteServiceModal('${s.id}')">🛠️ Attend & Complete</button>`}
@@ -5422,8 +4911,6 @@ function openServiceCallModal(srvObj = null) {
     document.getElementById('srvTargetDate').value = srvObj.targetDate;
     document.getElementById('srvStatusSelect').value = srvObj.status;
     document.getElementById('srvProblem').value = srvObj.problem;
-    document.getElementById('srvPartSearchInput').value = srvObj.partUsed || "";
-    document.getElementById('srvPartQty').value = srvObj.partQty || 1;
     toggleServiceCompletionFields(srvObj.status);
   } else {
     title.textContent = "New Service / Repair Call";
@@ -5434,8 +4921,6 @@ function openServiceCallModal(srvObj = null) {
     document.getElementById('srvTargetDate').value = today;
     document.getElementById('srvMachine').value = "";
     document.getElementById('srvProblem').value = "";
-    document.getElementById('srvPartSearchInput').value = "";
-    document.getElementById('srvPartQty').value = 1;
     document.getElementById('srvStatusSelect').value = "Pending / Scheduled";
     toggleServiceCompletionFields("Pending / Scheduled");
   }
@@ -5458,64 +4943,26 @@ function saveServiceAction() {
   const prob = document.getElementById('srvProblem').value.trim();
 
   let actDone = "";
-  let partSearch = "", partQty = 0;
-  if(status === 'Work Completed') {
-    actDone = document.getElementById('srvActionDone').value.trim();
-    partSearch = document.getElementById('srvPartSearchInput').value.trim();
-    partQty = parseInt(document.getElementById('srvPartQty').value) || 1;
-  }
+  if(status === 'Work Completed') { actDone = document.getElementById('srvActionDone').value.trim(); }
 
   const custName = cust ? cust.name : custSearch.split('(')[0].trim();
   const phone = cust ? cust.phone : "";
 
-  // PARTS AUTO-DEDUCTION: jab service call "Work Completed" mark ho aur ek
-  // part link kiya gaya ho, to uska stock turant inventory se deduct hota hai
-  // aur dono jagah (service record + inventory item) ek clear audit trail
-  // entry likhi jaati hai - taaki baad me pata chale kab, kitna, kis service
-  // call ke liye stock kata. Agar yeh part pehle hi ek baar deduct ho chuka
-  // hai (edit karke dobara save kiya), to dobara deduct nahi hota.
-  let stockDeductNote = "";
-  let linkedPart = null;
-  if (status === 'Work Completed' && partSearch) {
-    linkedPart = resolvePartFromSearch(partSearch);
-  }
-
   if(editId) {
     const s = serviceCallsData.find(x => x.id === editId);
     if(s) {
-      const alreadyDeducted = !!s.stockDeducted;
       s.customerName = custName; s.phone = phone; s.attendedBy = staff; s.machine = mach;
       s.recvDate = rDate; s.targetDate = tDate; s.status = status; s.problem = prob; s.actionDone = actDone;
-      s.partUsed = partSearch; s.partQty = partQty;
-      if (linkedPart && !alreadyDeducted) {
-        linkedPart.stock = Math.max(0, (linkedPart.stock || 0) - partQty);
-        linkedPart.stockAudit = linkedPart.stockAudit || [];
-        linkedPart.stockAudit.unshift({ by: staff || (currentUser ? currentUser.name : 'Staff'), time: getNowStr(), note: `-${partQty} used in Service Call ${s.id} (${custName})` });
-        s.stockDeducted = true;
-        stockDeductNote = ` Stock auto-deducted: ${linkedPart.name} x${partQty}.`;
-        s.auditTrail = s.auditTrail || [];
-        s.auditTrail.unshift({ by: staff || (currentUser ? currentUser.name : 'Staff'), time: getNowStr(), note: `Part "${linkedPart.name}" x${partQty} deducted from inventory` });
-      }
     }
   } else {
     const newS = {
       id: "SRV-" + Math.floor(100 + Math.random() * 900),
       customerName: custName, phone, machine: mach || "HPW Pump", recvDate: rDate,
-      targetDate: tDate, status, problem: prob, attendedBy: staff, actionDone: actDone,
-      partUsed: partSearch, partQty: partQty
+      targetDate: tDate, status, problem: prob, attendedBy: staff, actionDone: actDone
     };
-    if (linkedPart) {
-      linkedPart.stock = Math.max(0, (linkedPart.stock || 0) - partQty);
-      linkedPart.stockAudit = linkedPart.stockAudit || [];
-      linkedPart.stockAudit.unshift({ by: staff || (currentUser ? currentUser.name : 'Staff'), time: getNowStr(), note: `-${partQty} used in Service Call ${newS.id} (${custName})` });
-      newS.stockDeducted = true;
-      stockDeductNote = ` Stock auto-deducted: ${linkedPart.name} x${partQty}.`;
-      newS.auditTrail = [{ by: staff || (currentUser ? currentUser.name : 'Staff'), time: getNowStr(), note: `Part "${linkedPart.name}" x${partQty} deducted from inventory` }];
-    }
     serviceCallsData.unshift(newS);
   }
 
-  if (linkedPart) { setStored("INVENTORY", sampleInventory); renderStockList(); }
   setStored("SERVICES", serviceCallsData);
   const savedId = editId || serviceCallsData[0].id;
   closeServiceModal();
@@ -5526,7 +4973,7 @@ function saveServiceAction() {
   if (status === 'Work Completed' && savedRec && !savedRec.report) {
     setTimeout(function () { openServiceReportModal(savedId); }, 200);
   } else {
-    alert("Service record saved!" + stockDeductNote);
+    alert("Service record saved!");
   }
 }
 
@@ -5625,7 +5072,7 @@ function renderStockList() {
           <div style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">${item.category}${ttBrandBadge(item.name)}</div>
         </div>
         <div style="text-align:right;">
-          <span class="badge ${item.stock <= 5 ? 'badge-danger low-stock-pulse' : 'badge-delivered'}">${item.stock} in stock</span>
+          <span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}">${item.stock} in stock</span>
           <div style="font-size:13.5px; font-weight:800; color:var(--text-main); margin-top:4px;">MRP: ₹${item.rate || 0}</div>
         </div>
       </div>
@@ -5634,7 +5081,6 @@ function renderStockList() {
         ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="event.stopPropagation(); triggerAppHaptic(); deleteStockItem(${item.id})">🗑️</button>` : ''}
       </div>
     `;
-    if (item.stock <= 5) card.classList.add('low-stock-card-pulse');
     c.appendChild(card);
   });
 }
@@ -5676,12 +5122,11 @@ function filterStockList(val) {
           <div style="font-size:11px; color:var(--text-muted);">${item.category || item.phone || ''}</div>
         </div>
         <div style="text-align:right;">
-          ${item.stock !== undefined ? `<span class="badge ${item.stock <= 5 ? 'badge-danger low-stock-pulse' : 'badge-delivered'}">${item.stock} in stock</span>` : ''}
+          ${item.stock !== undefined ? `<span class="badge ${item.stock <= 5 ? 'badge-danger' : 'badge-delivered'}">${item.stock} in stock</span>` : ''}
           <div style="font-size:13.5px; font-weight:800; color:var(--text-main); margin-top:4px;">${item.rate ? 'MRP: ₹' + item.rate : (item.address || '')}</div>
         </div>
       </div>
     `;
-    if (item.stock !== undefined && item.stock <= 5) card.classList.add('low-stock-card-pulse');
     c.appendChild(card);
   });
 }
@@ -5852,13 +5297,6 @@ function renderBilling(filterType, empFilter = "ALL") {
   document.getElementById('metricTotalBilled').textContent = '₹' + totalBilled.toLocaleString('en-IN');
   document.getElementById('metricTotalRecv').textContent = '₹' + totalRecv.toLocaleString('en-IN');
   document.getElementById('metricTotalDue').textContent = '₹' + totalDue.toLocaleString('en-IN');
-  // NET PROFIT = Total Billed Collections (received) - Total Expenses (sabhi vendor/kharche)
-  const netProfitEl = document.getElementById('metricNetProfit');
-  if (netProfitEl) {
-    const netProfit = totalRecv - ttTotalExpenses();
-    netProfitEl.textContent = (netProfit < 0 ? '-₹' : '₹') + Math.abs(netProfit).toLocaleString('en-IN');
-    netProfitEl.style.color = netProfit < 0 ? 'var(--danger)' : '#b8860b';
-  }
 
   if(filterType === 'due') {
     list = list.filter(o => o.dueAmount > 0);
@@ -6219,41 +5657,17 @@ function deleteMachinePart(id) {
 window.deleteMachinePart = deleteMachinePart;
 
 function switchTab(tab, el) {
-  const panel = document.getElementById('view-' + tab);
-  const prevPanel = document.querySelector('.view-panel.active');
+  document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-  // RICH CROSSFADE TAB SWITCH: purana panel turant gayab nahi hota - usse
-  // 'tt-page-exiting' class milti hai jo use ek chhoti absolute overlay bana
-  // kar smoothly fade+slide-out karti hai, aur theek usi waqt naya panel
-  // 'tt-page-entering' class ke sath fade+slide-in hota hai - dono animation
-  // simultaneously chalte hain (ek band ho raha, doosra khul raha), na ki
-  // ek ke poora gayab hone ka wait karke doosra dikhna.
-  document.querySelectorAll('.view-panel').forEach(p => {
-    if (p === panel) return;
-    p.classList.remove('active');
-    p.classList.remove('tt-page-entering');
-    if (p === prevPanel) {
-      p.classList.remove('tt-page-exiting');
-      void p.offsetWidth; // reflow taaki exit animation dobara trigger ho
-      p.classList.add('tt-page-exiting');
-      setTimeout(function () { p.classList.remove('tt-page-exiting'); }, 320);
-    } else {
-      p.classList.remove('tt-page-exiting');
-    }
-  });
-
-  panel.classList.remove('tt-page-exiting');
+  const panel = document.getElementById('view-' + tab);
   panel.classList.add('active');
   ttUpdateNavPill(el);
   // PAGE SLIDE TRANSITION: tab switch karte waqt ek smooth native-app jaisa
   // slide-fade animation - purana instant-show wala flow bilkul waisa hi rehta
   // hai, sirf CSS class add/remove hoti hai (koi logic change nahi).
   panel.classList.remove('tt-page-slide');
-  panel.classList.remove('tt-page-entering');
   void panel.offsetWidth; // reflow taaki animation dobara trigger ho
   panel.classList.add('tt-page-slide');
-  panel.classList.add('tt-page-entering');
   if (el) el.classList.add('active');
 
   const fabBtn = document.getElementById('fabMainBtn');
@@ -7174,15 +6588,7 @@ function printQuotation() {
     hist.unshift({ id: q.id, date: q.date, custName: q.custName, final: q.final });
     localStorage.setItem(key, JSON.stringify(hist.slice(0, 200)));
   } catch (e) { console.error('Quotation history save failed', e); }
-  // NATIVE SHARE FIRST: mobile par seedha WhatsApp/Telegram/Email share sheet
-  // khulta hai; agar wo available na ho ya fail ho jaye to purana Print/PDF
-  // flow (ttPrintHtml) fallback ke roop me chalta hai - dono kaam karte hain.
-  const itemsTxt = items.map(i => `${i.name} x${i.qty} - Rs.${i.amount.toFixed(2)}`).join('\n');
-  const plainMsg = `TWIN TOWN EXPRESS SERVICES PVT LTD\nQuotation: ${q.id}\nCustomer: ${q.custName}\n-----------------------\n${itemsTxt}\n-----------------------\nTotal: Rs.${q.final}\n\nRasulgarh, Bhubaneswar`;
-  ttNativeShareOrFallback(
-    { title: `TTESPL Quotation ${q.id}`, text: plainMsg },
-    function () { ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q)); }
-  );
+  ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q));
 }
 window.openQuotationModal = openQuotationModal;
 
@@ -7615,54 +7021,20 @@ function printServiceReport(srvId) {
 window.printServiceReport = printServiceReport;
 
 /* ---- Ledger detail page ---- */
-// PREMIUM FULL-SCREEN LIGHTBOX: photo (delivery/payment/CRM/chat) ab ek smooth
-// fade+scale-in animation ke saath full-screen khulti hai, image par tap se
-// zoom-toggle hota hai, aur neeche ek seedha "Download" button hai jo photo
-// ko device me save kar deta hai - bina koi purana ttViewPhoto(src) call
-// tootay (signature wahi hai, sirf andar ka UI premium hua hai).
 function ttViewPhoto(src) {
   if (!src) { alert('Photo available nahi hai.'); return; }
   let m = document.getElementById('ttPhotoViewer');
   if (!m) {
     m = document.createElement('div'); m.id = 'ttPhotoViewer';
-    m.style.cssText = 'position:fixed;inset:0;z-index:9500;background:rgba(5,10,20,.94);display:none;align-items:center;justify-content:center;padding:14px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);';
-    m.onclick = (e) => { if (e.target === m) ttCloseLightbox(); };
-    m.innerHTML = `
-      <img id="ttPhotoViewerImg" style="max-width:100%;max-height:82vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.6);cursor:zoom-in;transition:transform 0.28s cubic-bezier(0.34,1.56,0.64,1);transform:scale(1);">
-      <div style="position:absolute;top:16px;right:18px;color:#fff;font-size:26px;cursor:pointer;background:rgba(255,255,255,0.12);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;" onclick="ttCloseLightbox()">✕</div>
-      <div style="position:absolute;bottom:26px;left:0;right:0;display:flex;justify-content:center;">
-        <button class="btn btn-primary" style="box-shadow:0 10px 26px rgba(0,0,0,.4);" onclick="event.stopPropagation(); ttDownloadLightboxPhoto()">⬇️ Download</button>
-      </div>`;
+    m.style.cssText = 'position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:14px;';
+    m.onclick = () => { m.style.display = 'none'; };
+    m.innerHTML = '<img id="ttPhotoViewerImg" style="max-width:100%;max-height:92vh;border-radius:10px;"><div style="position:absolute;top:14px;right:18px;color:#fff;font-size:26px;">✕</div>';
     document.body.appendChild(m);
   }
-  const img = document.getElementById('ttPhotoViewerImg');
-  img.src = src;
-  img.style.transform = 'scale(1)';
-  img._ttZoomed = false;
-  img.onclick = (e) => {
-    e.stopPropagation();
-    img._ttZoomed = !img._ttZoomed;
-    img.style.transform = img._ttZoomed ? 'scale(1.9)' : 'scale(1)';
-    img.style.cursor = img._ttZoomed ? 'zoom-out' : 'zoom-in';
-  };
+  document.getElementById('ttPhotoViewerImg').src = src;
   m.style.display = 'flex';
-  m.style.animation = 'ttLightboxFadeIn 0.22s ease both';
-}
-function ttCloseLightbox() {
-  const m = document.getElementById('ttPhotoViewer');
-  if (m) m.style.display = 'none';
-}
-function ttDownloadLightboxPhoto() {
-  const img = document.getElementById('ttPhotoViewerImg');
-  if (!img || !img.src) return;
-  const a = document.createElement('a');
-  a.href = img.src;
-  a.download = 'TTESPL_Photo_' + Date.now() + '.jpg';
-  document.body.appendChild(a); a.click(); a.remove();
 }
 window.ttViewPhoto = ttViewPhoto;
-window.ttCloseLightbox = ttCloseLightbox;
-window.ttDownloadLightboxPhoto = ttDownloadLightboxPhoto;
 
 // Chat attachments ko cid se dhoondh kar kholna - photo full-screen viewer me,
 // file (PDF/doc) naye tab me (ya agar popup block ho to seedha download).
