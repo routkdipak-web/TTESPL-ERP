@@ -410,14 +410,38 @@
   .view-panel { display: none; }
   .view-panel.active {
     display: block;
-    animation: iosPageIn 0.38s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    animation: iosPageIn 0.42s cubic-bezier(0.32, 0.72, 0, 1) forwards;
   }
+  /* Bottom-nav tab ko touch karne par naya panel neeche (bottom nav) ki taraf
+     se uthta hua smoothly poora page ban jata hai - sirf single panel par
+     transform+opacity (GPU-cheap), koi doosra panel simultaneously render
+     nahi hota, isliye backdrop-filter wale cards ke saath bhi lag nahi aata. */
   @keyframes iosPageIn {
-    0% { opacity: 0; transform: translateY(16px) scale(0.975); }
+    0% { opacity: 0; transform: translateY(36px) scale(0.975); }
     100% { opacity: 1; transform: translateY(0) scale(1); }
   }
   @media (prefers-reduced-motion: reduce) {
     .view-panel.active { animation: none; }
+  }
+
+  /* ------------------- NEW ORDER / LEAD / SERVICE: BOTTOM-SHEET OPEN/CLOSE -------------------
+     Pehle yeh modal "dhadam se" (abruptly) display:flex ho kar seedha screen
+     par aa jata tha. Ab card neeche (jahan se button dabaya tha) se smoothly
+     uthte hue upar aata hai, aur close karne par wapas neeche usi button me
+     "sama" jaata hai. Sirf ek hi card animate hota hai (no nested blur-heavy
+     panels), isliye yeh pichle crossfade-lag wala issue nahi deta. */
+  .tt-sheet-card { animation: ttSheetUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; transform-origin: center bottom; }
+  .tt-sheet-card.tt-sheet-closing { animation: ttSheetDown 0.26s cubic-bezier(0.4, 0, 1, 1) forwards; }
+  @keyframes ttSheetUp {
+    0% { opacity: 0; transform: translateY(85px) scale(0.92); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes ttSheetDown {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(85px) scale(0.92); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tt-sheet-card, .tt-sheet-card.tt-sheet-closing { animation: none; }
   }
 
   .page-top-header-banner {
@@ -640,7 +664,7 @@
   }
   .fab-ring-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; animation: ttFabRingSpin 11s linear infinite; pointer-events: none; transition: animation-duration 0.3s ease; }
   #fabMainBtn.fab-open .fab-ring-text { animation-duration: 3.4s; }
-  .fab-ring-text text { font-size: 5.2px; font-weight: 800; letter-spacing: 1px; fill: rgba(255,255,255,0.92); text-transform: uppercase; }
+  .fab-ring-text text { font-size: 7.4px; font-weight: 800; letter-spacing: 1px; fill: rgba(255,255,255,0.92); text-transform: uppercase; }
   @keyframes ttFabRingSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   .fab-bubble-core { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
   .fab-center-label { font-size: 9px; font-weight: 800; letter-spacing: 0.5px; color: rgba(255,255,255,0.97); text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: transform 0.3s ease; }
@@ -798,21 +822,6 @@
    form ke neeche wale inputs/buttons mobile keyboard ke peeche kabhi hide na
    ho - purana max-width/background/blur/shadow sab waisa hi rakha hai. */
 .auth-overlay{position:fixed;inset:0;z-index:3000;align-items:center;justify-content:center;padding:18px;overflow-y:auto;-webkit-overflow-scrolling:touch;background:rgba(6,14,28,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
-/* TTESPL premium sheet transitions: modals rise from the bottom instead of jumping open. */
-.auth-overlay{opacity:0;transition:opacity .28s cubic-bezier(.22,1,.36,1);}
-.auth-overlay[style*="display: flex"]{opacity:1;}
-.auth-overlay .auth-card{transform:translateY(42px) scale(.965);opacity:.96;transition:transform .42s cubic-bezier(.22,1,.36,1),opacity .28s ease;}
-.auth-overlay[style*="display: flex"] .auth-card{transform:translateY(0) scale(1);opacity:1;}
-@media (max-width:600px){
-  .auth-overlay{align-items:flex-end;padding:8px 8px calc(8px + env(safe-area-inset-bottom));}
-  .auth-overlay .auth-card{max-height:calc(100dvh - 12px);border-radius:24px 24px 18px 18px;transform:translateY(70px) scale(.985);}
-  .auth-overlay[style*="display: flex"] .auth-card{transform:translateY(0) scale(1);}
-}
-/* Native-app-like page sheet transition from the bottom navigation area. */
-.view-panel.tt-page-slide{animation:ttBottomSheetPageIn .42s cubic-bezier(.22,1,.36,1) both;}
-@keyframes ttBottomSheetPageIn{0%{opacity:0;transform:translateY(58px) scale(.985);clip-path:inset(12% 0 0 0 round 22px);}65%{opacity:1;transform:translateY(-3px) scale(1.002);clip-path:inset(0 round 0);}100%{opacity:1;transform:translateY(0) scale(1);clip-path:inset(0);}}
-@media (prefers-reduced-motion:reduce){.auth-overlay,.auth-overlay .auth-card,.view-panel.tt-page-slide{transition:none!important;animation:none!important;transform:none!important;}}
-
 .auth-overlay .auth-card{position:relative;width:100%;max-width:440px;margin:auto;max-height:calc(100dvh - 20px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 18px;padding-bottom:calc(20px + env(safe-area-inset-bottom));border-radius:22px;background-color:var(--card-glass);background-image:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,0) 55%);color:var(--text-main);border:1px solid var(--card-glass-border);box-shadow:0 30px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);}
 .card-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
 .card-title{font-size:15px;font-weight:800;color:var(--text-main);}
@@ -881,10 +890,6 @@
   pointer-events:none; z-index:1;
 }
 .nav-active-pill.ready{opacity:1;}
-
-/* ===== Tab/page slide transition ===== */
-.tt-page-slide{animation:ttPageSlideIn .28s cubic-bezier(.16,1,.3,1) both;}
-@keyframes ttPageSlideIn{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:none;}}
 
 /* ===== Status badge soft-glow gradient variants ===== */
 .badge-pending{background:linear-gradient(135deg,rgba(255,176,32,.22),rgba(255,138,0,.12));border:1px solid rgba(255,160,0,.45);box-shadow:0 0 10px rgba(255,160,0,.18);color:#c97a00;}
@@ -1067,45 +1072,56 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 
 <!-- COMPANY DETAILS POPUP MODAL -->
 <div id="companyDetailsModal" class="auth-overlay" style="display:none; z-index:4000;">
-  <div class="auth-card" style="max-width:520px;">
+  <div class="auth-card" style="max-width:500px;">
     <div class="card-header">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div class="brand-logo-round" style="width:34px;height:34px;"><span class="emblem-car-icon" style="font-size:13px;">🏎️</span><span class="emblem-txt" style="font-size:6.5px;">TTESPL</span></div>
-        <strong class="card-title" style="font-size:15px;">Company Details</strong>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="brand-logo-round" style="width:34px; height:34px;"><span class="emblem-car-icon" style="font-size:13px;">🏎️</span><span class="emblem-txt" style="font-size:6.5px;">TTESPL</span></div>
+        <strong class="card-title" style="font-size:15px;">Twin Town Express Services Pvt. Ltd.</strong>
       </div>
       <button class="btn btn-outline btn-sm" onclick="closeCompanyDetailsModal()">✕</button>
     </div>
-    <div id="companyDetailsView" style="font-size:12.5px;line-height:1.6;color:var(--text-main);margin-top:10px;"></div>
-    <div id="companyAdminEditor" style="display:none;margin-top:10px;">
-      <div style="background:var(--warning-bg);border:1px solid rgba(245,158,11,.35);padding:9px 11px;border-radius:10px;font-size:11px;font-weight:700;margin-bottom:10px;">🔐 Admin Mode — yahan se header/company profile ki saari details edit hongi.</div>
-      <div class="form-group"><label class="form-label">Company / Legal Name</label><input id="cpName" type="text"></div>
-      <div class="grid-2">
-        <div class="form-group"><label class="form-label">Registered Address</label><textarea id="cpAddress" rows="3"></textarea></div>
-        <div class="form-group"><label class="form-label">Branch / Work Center</label><textarea id="cpBranch" rows="3"></textarea></div>
+    <div id="companyDetailsViewBox" style="font-size:12.5px; line-height:1.6; color:var(--text-main); margin-top:10px;">
+      <div style="background:var(--bg); padding:12px; border-radius:12px; border:1px solid var(--border); margin-bottom:12px;">
+        <div>📍 <strong>Registered Address:</strong> <span id="cdvAddress"></span></div>
+        <div style="margin-top:6px;">🏢 <strong>Branch / Work Center:</strong> <span id="cdvBranch"></span></div>
+        <div style="margin-top:6px;">📞 <strong>Contact No:</strong> <span id="cdvContact"></span></div>
+        <div style="margin-top:6px;">✉️ <strong>Email ID:</strong> <span id="cdvEmail"></span></div>
       </div>
-      <div class="grid-2">
-        <div class="form-group"><label class="form-label">Contact No.</label><input id="cpPhone" type="text"></div>
-        <div class="form-group"><label class="form-label">Email ID</label><input id="cpEmail" type="text"></div>
+      <div style="background:rgba(0,180,216,0.1); padding:12px; border-radius:12px; border:1.5px solid var(--cyan); margin-bottom:12px;">
+        <strong style="color:var(--cyan); display:block; margin-bottom:4px;">🛡️ Statutory & Tax Registrations:</strong>
+        <div><strong>GSTIN:</strong> <span id="cdvGstin" style="font-family:monospace; font-weight:800;"></span></div>
+        <div><strong>CIN:</strong> <span id="cdvCin"></span></div>
+        <div><strong>Authorized Brand Partner:</strong> <span id="cdvBrand"></span></div>
       </div>
-      <div class="grid-2">
-        <div class="form-group"><label class="form-label">GSTIN</label><input id="cpGstin" type="text"></div>
-        <div class="form-group"><label class="form-label">CIN</label><input id="cpCin" type="text"></div>
+      <div style="background:var(--card); padding:12px; border-radius:12px; border:1px solid var(--border);">
+        <strong style="color:var(--primary); display:block; margin-bottom:4px;">🏦 Official Bank & UPI Details:</strong>
+        <div><strong>Bank Name:</strong> <span id="cdvBankName"></span></div>
+        <div><strong>Account No:</strong> <span id="cdvAccountNo" style="font-family:monospace; font-weight:800;"></span></div>
+        <div><strong>IFSC Code:</strong> <span id="cdvIfsc" style="font-family:monospace; font-weight:800;"></span></div>
+        <div><strong>UPI ID:</strong> <span id="cdvUpi" style="color:var(--cyan); font-weight:800;"></span></div>
       </div>
-      <div class="form-group"><label class="form-label">Authorized Brand Partner</label><input id="cpBrands" type="text"></div>
-      <div class="grid-2">
-        <div class="form-group"><label class="form-label">Bank Name</label><input id="cpBank" type="text"></div>
-        <div class="form-group"><label class="form-label">Account No.</label><input id="cpAccount" type="text"></div>
-      </div>
-      <div class="grid-2">
-        <div class="form-group"><label class="form-label">IFSC Code</label><input id="cpIfsc" type="text"></div>
-        <div class="form-group"><label class="form-label">UPI ID</label><input id="cpUpi" type="text"></div>
-      </div>
-      <button class="btn btn-primary btn-block" onclick="saveCompanyProfile()">💾 Save Company Details</button>
     </div>
-    <div id="companyAdminActions" style="display:none;margin-top:10px;">
-      <button class="btn btn-accent btn-block" onclick="openCompanyAdminEditor()">✏️ Edit All Company Details</button>
+    <div id="companyDetailsEditBox" style="display:none; margin-top:10px;">
+      <div class="form-group"><label class="form-label">Registered Address</label><textarea id="cdeAddress" rows="2"></textarea></div>
+      <div class="form-group"><label class="form-label">Branch / Work Center</label><input type="text" id="cdeBranch"></div>
+      <div class="form-group"><label class="form-label">Contact No</label><input type="text" id="cdeContact"></div>
+      <div class="form-group"><label class="form-label">Email ID</label><input type="text" id="cdeEmail"></div>
+      <div class="form-group"><label class="form-label">GSTIN</label><input type="text" id="cdeGstin"></div>
+      <div class="form-group"><label class="form-label">CIN</label><input type="text" id="cdeCin"></div>
+      <div class="form-group"><label class="form-label">Authorized Brand Partner</label><input type="text" id="cdeBrand"></div>
+      <div class="form-group"><label class="form-label">Bank Name</label><input type="text" id="cdeBankName"></div>
+      <div class="form-group"><label class="form-label">Account No</label><input type="text" id="cdeAccountNo"></div>
+      <div class="form-group"><label class="form-label">IFSC Code</label><input type="text" id="cdeIfsc"></div>
+      <div class="form-group"><label class="form-label">UPI ID</label><input type="text" id="cdeUpi"></div>
     </div>
-    <button class="btn btn-outline btn-block" style="margin-top:8px;" onclick="closeCompanyDetailsModal()">✓ Close</button>
+    <div id="companyDetailsAdminBtns" style="display:none; gap:8px; margin-top:10px;">
+      <button class="btn btn-outline btn-block" onclick="toggleCompanyDetailsEdit(true)">✏️ Edit Details</button>
+    </div>
+    <div id="companyDetailsSaveBtns" style="display:none; gap:8px; margin-top:10px;">
+      <button class="btn btn-outline" style="flex:1;" onclick="toggleCompanyDetailsEdit(false)">Cancel</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveCompanyDetailsAction()">💾 Save</button>
+    </div>
+    <button id="companyDetailsCloseBtn" class="btn btn-primary btn-block" style="margin-top:14px;" onclick="closeCompanyDetailsModal()">✓ Close Details</button>
   </div>
 </div>
 
@@ -1802,13 +1818,9 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeEditLedgerModal()">✕</button>
     </div>
     <input type="hidden" id="editLedgerInvId">
-    <div class="grid-2">
-      <div class="form-group"><label class="form-label">Customer Name</label><input type="text" id="editLedgerCustName"></div>
-      <div class="form-group"><label class="form-label">Customer Phone</label><input type="text" id="editLedgerPhone"></div>
-    </div>
-    <div class="grid-2">
-      <div class="form-group"><label class="form-label">Order Date</label><input type="date" id="editLedgerOrderDate"></div>
-      <div class="form-group"><label class="form-label">Delivery Date</label><input type="date" id="editLedgerDeliveryDate"></div>
+    <div class="form-group">
+      <label class="form-label">Customer Name</label>
+      <input type="text" id="editLedgerCustName">
     </div>
     <div class="grid-2">
       <div class="form-group">
@@ -1836,15 +1848,19 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
         </select>
       </div>
     </div>
-    <div class="grid-2">
-      <div class="form-group"><label class="form-label">Bill / Order Status</label><select id="editLedgerStatus"><option>Delivered</option><option>Pending</option><option>Cancelled</option></select></div>
-      <div class="form-group"><label class="form-label">Booked By Staff</label><select id="editLedgerStaffSelect" class="emp-dropdown"></select></div>
+    <div class="form-group">
+      <label class="form-label">Booked By Staff</label>
+      <select id="editLedgerStaffSelect" class="emp-dropdown"></select>
     </div>
-    <div style="margin:4px 0 12px;padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--bg);">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><strong style="font-size:12.5px;">🧾 Bill Items — Admin Full Edit</strong><button class="btn btn-accent btn-sm" onclick="addAdminLedgerItemRow()">＋ Item</button></div>
-      <div style="overflow-x:auto;"><table class="items-table" style="min-width:610px;margin:0;"><thead><tr><th>Item</th><th>Qty</th><th>MRP</th><th>Disc %</th><th>HSN</th><th>Total</th><th></th></tr></thead><tbody id="adminLedgerItemsTbody"></tbody></table></div>
+    <div class="form-group" style="margin-top:4px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+        <label class="form-label" style="margin:0;">🧾 Bill Items (Full Edit)</label>
+        <button type="button" class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); addEditLedgerItemRow()">+ Add Item</button>
+      </div>
+      <div id="editLedgerItemsRows" style="display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto; -webkit-overflow-scrolling:touch;"></div>
+      <button type="button" class="btn btn-outline btn-sm btn-block" style="margin-top:8px;" onclick="triggerAppHaptic(); recalcLedgerTotalFromItems()">🔄 Recalculate Total From Items</button>
     </div>
-    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveAdminLedgerInvoice()">💾 Update Complete Ledger Bill</button>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveAdminLedgerInvoice()">💾 Update Ledger Bill</button>
   </div>
 </div>
 
@@ -1957,7 +1973,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 
 <!-- 3. Lead Modal -->
 <div id="leadModal" class="auth-overlay" style="display:none;">
-  <div class="auth-card">
+  <div class="auth-card tt-sheet-card">
     <div class="card-header">
       <strong class="card-title" id="leadModalTitle">Machine Inquiry & Lead</strong>
       <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeLeadModal()">✕</button>
@@ -2003,7 +2019,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 
 <!-- 5. Order Modal -->
 <div id="orderModal" class="auth-overlay" style="display:none;">
-  <div class="auth-card" style="max-width:680px;">
+  <div class="auth-card tt-sheet-card" style="max-width:680px;">
     <div class="card-header">
       <strong class="card-title" id="orderModalTitle">Multi-Item Product Order</strong>
       <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeOrderModal()">✕</button>
@@ -2093,7 +2109,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       
 <!-- 6. Service Call Modal -->
 <div id="serviceModal" class="auth-overlay" style="display:none;">
-  <div class="auth-card" style="max-width:540px;">
+  <div class="auth-card tt-sheet-card" style="max-width:540px;">
     <div class="card-header">
       <strong class="card-title" id="serviceModalTitle">Service & Repair Record</strong>
       <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeServiceModal()">✕</button>
@@ -2710,6 +2726,37 @@ function triggerAppHaptic(intensity = 18) {
 }
 window.triggerAppHaptic = triggerAppHaptic;
 
+/* ===== BOTTOM-SHEET MODAL OPEN/CLOSE HELPER (New Order / Lead / Service) =====
+   Modal ko dikhane se pehle .tt-sheet-card animation ko dobara (fresh) trigger
+   karne ke liye class remove -> reflow -> add karte hain; close karte waqt
+   pehle "ttSheetDown" exit animation play hoti hai, uske baad hi display:none
+   hota hai - taaki card smoothly neeche button me "sama" jaaye, dhadam se
+   gayab na ho. */
+function ttOpenSheetModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  const card = modal.querySelector('.tt-sheet-card');
+  modal.style.display = 'flex';
+  if (card) {
+    card.classList.remove('tt-sheet-closing', 'tt-sheet-card');
+    void card.offsetWidth; // reflow taaki animation dobara trigger ho
+    card.classList.add('tt-sheet-card');
+  }
+}
+function ttCloseSheetModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  const card = modal.querySelector('.tt-sheet-card');
+  if (!card) { modal.style.display = 'none'; return; }
+  card.classList.add('tt-sheet-closing');
+  setTimeout(function () {
+    modal.style.display = 'none';
+    card.classList.remove('tt-sheet-closing');
+  }, 240);
+}
+window.ttOpenSheetModal = ttOpenSheetModal;
+window.ttCloseSheetModal = ttCloseSheetModal;
+
 let audioCtxInstance = null;
 function getAudioContext() {
   if (!audioCtxInstance) audioCtxInstance = new (window.AudioContext || window.webkitAudioContext)();
@@ -2849,57 +2896,98 @@ function triggerMoneyRainEffect() {
 const DB_PREFIX = "TTESPL_ERP_";
 window.DB_PREFIX = DB_PREFIX;
 
-const TT_DEFAULT_COMPANY_PROFILE = {
-  name:'Twin Town Express Services Pvt. Ltd.',
-  address:'Plot No-1270/8586, Satya Vihar, Rasulgarh, Bhubaneswar, Khordha, Odisha - 751010',
-  branch:'Cuttack Road & Rasulgarh, BBSR',
-  phone:'+91 8917465040 / 0674-2580123',
-  email:'info@ttespl.com / support@twintown.in',
-  gstin:'21AAICT0014E1ZT', cin:'U50200OR2022PTC039210',
-  brands:'Ma-Fra, MaxShine, Annovi Reverberi, Airtek',
-  bank:'ICICI Bank (Cuttack Road Branch, BBSR)', account:'150005501249',
-  ifsc:'ICIC0001500', upi:'eazypay.574099310@icici'
+/* COMPANY DETAILS: admin ab saari details (address, contact, GST, bank, UPI
+   etc.) edit kar sakta hai - localStorage me persist hota hai, non-admin ko
+   sirf read-only view dikhta hai, koi extra field nahi add kiya gaya hai. */
+const COMPANY_DETAILS_DEFAULTS = {
+  address: "Plot No-1270/8586, Satya Vihar, Rasulgarh, Bhubaneswar, Khordha, Odisha - 751010",
+  branch: "Cuttack Road & Rasulgarh, BBSR",
+  contact: "+91 8917465040 / 0674-2580123",
+  email: "info@ttespl.com / support@twintown.in",
+  gstin: "21AAICT0014E1ZT",
+  cin: "U50200OR2022PTC039210",
+  brand: "Ma-Fra, MaxShine, Annovi Reverberi, Airtek",
+  bankName: "ICICI Bank (Cuttack Road Branch, BBSR)",
+  accountNo: "150005501249",
+  ifsc: "ICIC0001500",
+  upi: "eazypay.574099310@icici"
 };
-function getCompanyProfile(){
-  try { return Object.assign({}, TT_DEFAULT_COMPANY_PROFILE, JSON.parse(localStorage.getItem(DB_PREFIX+'COMPANY_PROFILE') || '{}')); } catch(e){ return Object.assign({},TT_DEFAULT_COMPANY_PROFILE); }
+let companyDetailsData = Object.assign({}, COMPANY_DETAILS_DEFAULTS, getStored("COMPANY_DETAILS", {}));
+window.companyDetailsData = companyDetailsData;
+
+function renderCompanyDetailsView() {
+  const d = companyDetailsData;
+  document.getElementById('cdvAddress').textContent = d.address;
+  document.getElementById('cdvBranch').textContent = d.branch;
+  document.getElementById('cdvContact').textContent = d.contact;
+  document.getElementById('cdvEmail').textContent = d.email;
+  document.getElementById('cdvGstin').textContent = d.gstin;
+  document.getElementById('cdvCin').textContent = d.cin;
+  document.getElementById('cdvBrand').textContent = d.brand;
+  document.getElementById('cdvBankName').textContent = d.bankName;
+  document.getElementById('cdvAccountNo').textContent = d.accountNo;
+  document.getElementById('cdvIfsc').textContent = d.ifsc;
+  document.getElementById('cdvUpi').textContent = d.upi;
 }
-function renderCompanyProfile(){
-  const p=getCompanyProfile(), v=document.getElementById('companyDetailsView'); if(!v) return;
-  v.innerHTML=`<div style="background:var(--bg);padding:12px;border-radius:12px;border:1px solid var(--border);margin-bottom:12px;">
-    <div style="font-size:14px;font-weight:900;margin-bottom:7px;">${esc(p.name)}</div>
-    <div>📍 <strong>Registered Address:</strong> ${esc(p.address)}</div><div style="margin-top:6px;">🏢 <strong>Branch / Work Center:</strong> ${esc(p.branch)}</div>
-    <div style="margin-top:6px;">📞 <strong>Contact No:</strong> ${esc(p.phone)}</div><div style="margin-top:6px;">✉️ <strong>Email ID:</strong> ${esc(p.email)}</div>
-  </div><div style="background:rgba(0,180,216,.1);padding:12px;border-radius:12px;border:1.5px solid var(--cyan);margin-bottom:12px;">
-    <strong style="color:var(--cyan);display:block;margin-bottom:4px;">🛡️ Statutory & Tax Registrations</strong><div><strong>GSTIN:</strong> <span style="font-family:monospace;font-weight:800;">${esc(p.gstin)}</span></div><div><strong>CIN:</strong> ${esc(p.cin)}</div><div><strong>Authorized Brand Partner:</strong> ${esc(p.brands)}</div>
-  </div><div style="background:var(--card);padding:12px;border-radius:12px;border:1px solid var(--border);">
-    <strong style="color:var(--primary);display:block;margin-bottom:4px;">🏦 Official Bank & UPI Details</strong><div><strong>Bank Name:</strong> ${esc(p.bank)}</div><div><strong>Account No:</strong> <span style="font-family:monospace;font-weight:800;">${esc(p.account)}</span></div><div><strong>IFSC Code:</strong> <span style="font-family:monospace;font-weight:800;">${esc(p.ifsc)}</span></div><div><strong>UPI ID:</strong> <span style="color:var(--cyan);font-weight:800;">${esc(p.upi)}</span></div>
-  </div>`;
+
+function openCompanyDetailsModal() {
+  renderCompanyDetailsView();
+  toggleCompanyDetailsEdit(false);
+  document.getElementById('companyDetailsAdminBtns').style.display = isAdminUser() ? 'flex' : 'none';
+  document.getElementById('companyDetailsModal').style.display = 'flex';
 }
-function openCompanyDetailsModal(){
-  renderCompanyProfile();
-  const admin=isAdminUser();
-  document.getElementById('companyAdminActions').style.display=admin?'block':'none';
-  document.getElementById('companyAdminEditor').style.display='none';
-  document.getElementById('companyDetailsView').style.display='block';
-  document.getElementById('companyDetailsModal').style.display='flex';
+function closeCompanyDetailsModal() {
+  toggleCompanyDetailsEdit(false);
+  document.getElementById('companyDetailsModal').style.display = 'none';
 }
-function openCompanyAdminEditor(){
-  if(!isAdminUser()){alert('Permission Denied: Sirf Admin company details edit kar sakta hai!');return;}
-  const p=getCompanyProfile();
-  Object.keys(p).forEach(k=>{const el=document.getElementById('cp'+k.charAt(0).toUpperCase()+k.slice(1));if(el)el.value=p[k]||'';});
-  document.getElementById('companyDetailsView').style.display='none';
-  document.getElementById('companyAdminActions').style.display='none';
-  document.getElementById('companyAdminEditor').style.display='block';
+function toggleCompanyDetailsEdit(editing) {
+  if (editing && !isAdminUser()) { alert("Admin only!"); return; }
+  const d = companyDetailsData;
+  if (editing) {
+    document.getElementById('cdeAddress').value = d.address;
+    document.getElementById('cdeBranch').value = d.branch;
+    document.getElementById('cdeContact').value = d.contact;
+    document.getElementById('cdeEmail').value = d.email;
+    document.getElementById('cdeGstin').value = d.gstin;
+    document.getElementById('cdeCin').value = d.cin;
+    document.getElementById('cdeBrand').value = d.brand;
+    document.getElementById('cdeBankName').value = d.bankName;
+    document.getElementById('cdeAccountNo').value = d.accountNo;
+    document.getElementById('cdeIfsc').value = d.ifsc;
+    document.getElementById('cdeUpi').value = d.upi;
+  }
+  document.getElementById('companyDetailsViewBox').style.display = editing ? 'none' : 'block';
+  document.getElementById('companyDetailsEditBox').style.display = editing ? 'block' : 'none';
+  document.getElementById('companyDetailsSaveBtns').style.display = editing ? 'flex' : 'none';
+  document.getElementById('companyDetailsAdminBtns').style.display = (!editing && isAdminUser()) ? 'flex' : 'none';
+  document.getElementById('companyDetailsCloseBtn').style.display = editing ? 'none' : 'block';
 }
-function saveCompanyProfile(){
-  if(!isAdminUser()){alert('Permission Denied: Sirf Admin save kar sakta hai!');return;}
-  const p={}; ['name','address','branch','phone','email','gstin','cin','brands','bank','account','ifsc','upi'].forEach(k=>{const el=document.getElementById('cp'+k.charAt(0).toUpperCase()+k.slice(1));p[k]=el?el.value.trim():'';});
-  localStorage.setItem(DB_PREFIX+'COMPANY_PROFILE',JSON.stringify(p));
-  renderCompanyProfile(); document.getElementById('companyAdminEditor').style.display='none'; document.getElementById('companyAdminActions').style.display='block'; document.getElementById('companyDetailsView').style.display='block';
-  alert('Company details successfully updated.');
+function saveCompanyDetailsAction() {
+  if (!isAdminUser()) { alert("Admin only!"); return; }
+  companyDetailsData = {
+    address: document.getElementById('cdeAddress').value.trim(),
+    branch: document.getElementById('cdeBranch').value.trim(),
+    contact: document.getElementById('cdeContact').value.trim(),
+    email: document.getElementById('cdeEmail').value.trim(),
+    gstin: document.getElementById('cdeGstin').value.trim(),
+    cin: document.getElementById('cdeCin').value.trim(),
+    brand: document.getElementById('cdeBrand').value.trim(),
+    bankName: document.getElementById('cdeBankName').value.trim(),
+    accountNo: document.getElementById('cdeAccountNo').value.trim(),
+    ifsc: document.getElementById('cdeIfsc').value.trim(),
+    upi: document.getElementById('cdeUpi').value.trim()
+  };
+  window.companyDetailsData = companyDetailsData;
+  setStored("COMPANY_DETAILS", companyDetailsData);
+  renderCompanyDetailsView();
+  toggleCompanyDetailsEdit(false);
+  triggerAppHaptic();
+  alert("Company details updated!");
 }
-function closeCompanyDetailsModal(){document.getElementById('companyDetailsModal').style.display='none';}
-window.openCompanyDetailsModal=openCompanyDetailsModal; window.closeCompanyDetailsModal=closeCompanyDetailsModal; window.openCompanyAdminEditor=openCompanyAdminEditor; window.saveCompanyProfile=saveCompanyProfile;
+window.openCompanyDetailsModal = openCompanyDetailsModal;
+window.closeCompanyDetailsModal = closeCompanyDetailsModal;
+window.toggleCompanyDetailsEdit = toggleCompanyDetailsEdit;
+window.saveCompanyDetailsAction = saveCompanyDetailsAction;
 
 function esc(str) {
   if (!str) return '';
@@ -3094,30 +3182,99 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 window.addEventListener('resize', function () { ttUpdateNavPill(); });
 
-/* ===== PULL-TO-REFRESH: only when the MAIN PAGE is genuinely at the top ===== */
-(function(){
-  let startY=0,pulling=false,triggered=false,ignore=false; const THRESHOLD=72;
-  const root=()=>document.scrollingElement||document.documentElement;
-  function hide(){const i=document.getElementById('ttPullRefreshIndicator');if(i){i.classList.remove('visible','spinning');i.style.transform='translate(-50%,-70px)';}}
-  document.addEventListener('touchstart',e=>{
-    if(!e.touches||e.touches.length!==1)return;
-    const t=e.target, r=root();
-    const nested=t.closest('.auth-card,.chat-messenger-stream,.solid-suggestion-box,.sub-tabs,.nav-bar,#fabMenu,input,textarea,select,button');
-    ignore=!!nested || r.scrollTop>1 || window.scrollY>1;
-    if(ignore){pulling=false;return;}
-    startY=e.touches[0].clientY; pulling=true; triggered=false;
-  },{passive:true});
-  document.addEventListener('touchmove',e=>{
-    if(!pulling||!e.touches||e.touches.length!==1)return;
-    const r=root(); if(r.scrollTop>1||window.scrollY>1){pulling=false;hide();return;}
-    const dy=e.touches[0].clientY-startY; if(dy<=0){hide();return;}
-    const ind=document.getElementById('ttPullRefreshIndicator'),icon=document.getElementById('ttPullRefreshIcon'),label=document.getElementById('ttPullRefreshLabel');if(!ind)return;
-    const dist=Math.min(dy,115);ind.classList.add('visible');ind.style.transform='translate(-50%,'+(-70+dist)+'px)';
-    if(dy>THRESHOLD){triggered=true;if(icon)icon.style.transform='rotate(180deg)';if(label)label.textContent='Release to refresh';}
-    else{triggered=false;if(icon)icon.style.transform='rotate(0deg)';if(label)label.textContent='Pull to refresh';}
-  },{passive:true});
-  document.addEventListener('touchend',()=>{if(!pulling)return;pulling=false;if(triggered)doRefresh();else hide();},{passive:true});
-  function doRefresh(){const ind=document.getElementById('ttPullRefreshIndicator'),label=document.getElementById('ttPullRefreshLabel');if(ind){ind.classList.add('spinning');ind.style.transform='translate(-50%,10px)';}if(label)label.textContent='Refreshing...';try{triggerAppHaptic();ttFlushOfflineQueue();}catch(e){}setTimeout(()=>{try{if(typeof refreshAllData==='function')refreshAllData();}catch(e){}if(ind)ind.classList.remove('spinning');if(label)label.textContent='Updated';setTimeout(hide,650);},450);}
+/* ===== PULL-TO-REFRESH (mobile gesture) ===== */
+/* Screen ko sabse top se neeche kheenchne par saara data dobara render ho jata
+   hai + pending offline changes bhi push ho jate hain - koi existing listener
+   ya onclick handler isse nahi chhua jata, sirf touch gesture upar add hua hai. */
+(function () {
+  let startY = 0, pulling = false, triggered = false;
+  const THRESHOLD = 68;
+  // SETTLE GUARD: iOS/Android par upar scroll karte waqt momentum se scrollTop
+  // 0 pe aakar thoda "rubber-band" bounce karta hai - agar hum turant usi pal
+  // ek naya touch start maan kar pulling arm kar de, to beech scroll mein hi
+  // (jabhi scrollTop 0 pe settle hua) refresh trigger ho jata tha. Ab hum
+  // scrollTop 0 hue ko kam se kam SETTLE_MS tak stable rehna padta hai, tabhi
+  // naya pull-to-refresh gesture arm hota hai - sirf poora top pe aa kar,
+  // rukkar, phir neeche kheenchne par hi refresh hoga, beech mein kabhi nahi.
+  const SETTLE_MS = 150;
+  let lastScrollAt = 0;
+  let lastScrollTop = 0;
+
+  function scrollParent(el) {
+    const root = document.scrollingElement || document.documentElement;
+    while (el && el !== document.body && el !== document.documentElement) {
+      let cs;
+      try { cs = window.getComputedStyle(el); } catch (e) { break; }
+      if (/(auto|scroll)/.test(cs.overflowY) && el.scrollHeight > el.clientHeight + 2) return el;
+      el = el.parentElement;
+    }
+    return root;
+  }
+
+  window.addEventListener('scroll', function () {
+    const root = document.scrollingElement || document.documentElement;
+    if (root.scrollTop !== lastScrollTop) { lastScrollTop = root.scrollTop; lastScrollAt = Date.now(); }
+  }, { passive: true, capture: true });
+
+  document.addEventListener('touchstart', function (e) {
+    if (!e.touches || e.touches.length !== 1) return;
+    const sp = scrollParent(e.target);
+    const root = document.scrollingElement || document.documentElement;
+    const atTop = root.scrollTop <= 0;
+    const settled = (Date.now() - lastScrollAt) > SETTLE_MS;
+    if (sp !== root || !atTop || !settled) { pulling = false; return; }
+    startY = e.touches[0].clientY;
+    pulling = true;
+    triggered = false;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function (e) {
+    if (!pulling || !e.touches || e.touches.length !== 1) return;
+    // Beech mein agar page thoda bhi scroll ho gaya (scrollTop > 0), to yeh
+    // ek genuine pull-to-refresh gesture nahi raha - cancel kar do.
+    const root = document.scrollingElement || document.documentElement;
+    if (root.scrollTop > 0) { pulling = false; hidePullIndicator(); return; }
+    const dy = e.touches[0].clientY - startY;
+    if (dy <= 0) { hidePullIndicator(); return; }
+    const ind = document.getElementById('ttPullRefreshIndicator');
+    const icon = document.getElementById('ttPullRefreshIcon');
+    const label = document.getElementById('ttPullRefreshLabel');
+    if (!ind) return;
+    const dist = Math.min(dy, 110);
+    ind.classList.add('visible');
+    ind.style.transform = 'translate(-50%,' + (-70 + dist) + 'px)';
+    if (dy > THRESHOLD) {
+      if (!triggered) { triggered = true; if (icon) icon.style.transform = 'rotate(180deg)'; if (label) label.textContent = 'Release to refresh'; }
+    } else {
+      if (triggered) { triggered = false; if (icon) icon.style.transform = 'rotate(0deg)'; if (label) label.textContent = 'Pull to refresh'; }
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', function () {
+    if (!pulling) return;
+    pulling = false;
+    if (triggered) { doPullRefresh(); } else { hidePullIndicator(); }
+  }, { passive: true });
+
+  function hidePullIndicator() {
+    const ind = document.getElementById('ttPullRefreshIndicator');
+    if (ind) { ind.classList.remove('visible'); ind.style.transform = 'translate(-50%,-70px)'; }
+  }
+
+  function doPullRefresh() {
+    const ind = document.getElementById('ttPullRefreshIndicator');
+    const label = document.getElementById('ttPullRefreshLabel');
+    if (ind) { ind.classList.add('spinning'); ind.style.transform = 'translate(-50%,10px)'; }
+    if (label) label.textContent = 'Refreshing...';
+    try { triggerAppHaptic(); } catch (e) {}
+    try { ttFlushOfflineQueue(); } catch (e) {}
+    setTimeout(function () {
+      try { if (typeof refreshAllData === 'function') refreshAllData(); } catch (e) { console.error('Pull-to-refresh failed', e); }
+      if (ind) ind.classList.remove('spinning');
+      if (label) label.textContent = 'Updated';
+      setTimeout(hidePullIndicator, 650);
+    }, 500);
+  }
 })();
 // Safety fallback: agar kisi wajah se dashboard render kabhi na chale, to bhi
 // skeleton hamesha ke liye atka na rahe
@@ -3752,54 +3909,120 @@ function deleteStaffPrompt(empId) {
 }
 
 function openAdminEditLedgerModal(ordId) {
-  if(!isAdminUser()){alert("Permission Denied: Sirf Admin hi ledger invoice modify kar sakte hain!");return;}
-  const o=ordersData.find(x=>x.id===ordId); if(!o)return;
-  document.getElementById('editLedgerInvId').value=o.id;
-  document.getElementById('editLedgerCustName').value=o.customerName||'';
-  document.getElementById('editLedgerPhone').value=o.phone||'';
-  document.getElementById('editLedgerOrderDate').value=o.orderDate||'';
-  document.getElementById('editLedgerDeliveryDate').value=o.deliveryDate||o.deliveredDate||'';
-  document.getElementById('editLedgerTotalAmt').value=o.totalAmount||0;
-  document.getElementById('editLedgerRecvAmt').value=o.recvAmount||0;
-  document.getElementById('editLedgerDueAmt').value=o.dueAmount||0;
-  document.getElementById('editLedgerPayMode').value=o.payMode||'Cash';
-  document.getElementById('editLedgerStatus').value=o.status||'Delivered';
-  document.getElementById('editLedgerStaffSelect').value=o.bookedBy||'';
-  const tb=document.getElementById('adminLedgerItemsTbody'); tb.innerHTML='';
-  (o.items||[]).forEach(it=>addAdminLedgerItemRow(it));
-  if(!(o.items||[]).length)addAdminLedgerItemRow();
+  if (!isAdminUser()) {
+    alert("Permission Denied: Sirf Admin hi ledger invoice modify kar sakte hain!");
+    return;
+  }
+  const o = ordersData.find(x => x.id === ordId);
+  if (!o) return;
+
+  document.getElementById('editLedgerInvId').value = o.id;
+  document.getElementById('editLedgerCustName').value = o.customerName;
+  document.getElementById('editLedgerTotalAmt').value = o.totalAmount;
+  document.getElementById('editLedgerRecvAmt').value = o.recvAmount;
+  document.getElementById('editLedgerDueAmt').value = o.dueAmount;
+  document.getElementById('editLedgerPayMode').value = o.payMode;
+  document.getElementById('editLedgerStaffSelect').value = o.bookedBy;
+  renderEditLedgerItemRows(o.items || []);
+  document.getElementById('editLedgerModal').style.display = 'flex';
+}
+function closeEditLedgerModal() {
+  document.getElementById('editLedgerModal').style.display = 'none';
+}
+
+function calcEditLedgerBalance() {
+  const tot = parseFloat(document.getElementById('editLedgerTotalAmt').value) || 0;
+  const recv = parseFloat(document.getElementById('editLedgerRecvAmt').value) || 0;
+  document.getElementById('editLedgerDueAmt').value = Math.max(0, tot - recv);
+}
+
+/* ===== ADMIN: FULL EDIT OF LEDGER BILL ITEMS (name / qty / line total) ===== */
+function renderEditLedgerItemRows(items) {
+  const box = document.getElementById('editLedgerItemsRows');
+  if (!box) return;
+  box.innerHTML = '';
+  if (!items || !items.length) { addEditLedgerItemRow(); return; }
+  items.forEach(it => addEditLedgerItemRow(it));
+}
+function addEditLedgerItemRow(it) {
+  const box = document.getElementById('editLedgerItemsRows');
+  if (!box) return;
+  it = it || { name: '', qty: 1, total: 0 };
+  const row = document.createElement('div');
+  row.className = 'tt-ledger-item-row';
+  row.style.cssText = 'display:flex; gap:6px; align-items:center;';
+  row.innerHTML = `
+    <input type="text" class="tt-ledger-item-name" placeholder="Item / Service name" value="${esc(it.name || '')}" style="flex:2; min-width:0;">
+    <input type="number" class="tt-ledger-item-qty" placeholder="Qty" value="${it.qty != null ? it.qty : 1}" style="flex:0.6; min-width:0;">
+    <input type="number" class="tt-ledger-item-total" placeholder="₹ Total" value="${it.total != null ? it.total : 0}" style="flex:1; min-width:0;">
+    <button type="button" class="btn btn-danger-sm" style="padding:6px 9px;" onclick="removeEditLedgerItemRow(this)">🗑️</button>
+  `;
+  box.appendChild(row);
+}
+function removeEditLedgerItemRow(btn) {
+  const row = btn.closest('.tt-ledger-item-row');
+  const box = document.getElementById('editLedgerItemsRows');
+  if (row) row.remove();
+  if (box && !box.children.length) addEditLedgerItemRow();
+}
+function recalcLedgerTotalFromItems() {
+  const box = document.getElementById('editLedgerItemsRows');
+  if (!box) return;
+  let sum = 0;
+  box.querySelectorAll('.tt-ledger-item-total').forEach(inp => { sum += parseFloat(inp.value) || 0; });
+  document.getElementById('editLedgerTotalAmt').value = sum;
   calcEditLedgerBalance();
-  document.getElementById('editLedgerModal').style.display='flex';
 }
-function addAdminLedgerItemRow(it={}){
-  const tb=document.getElementById('adminLedgerItemsTbody'); if(!tb)return;
-  const tr=document.createElement('tr');
-  const name=it.name||'', qty=it.qty||1, mrp=it.mrp??it.rate??0, disc=it.disc||0, hsn=it.hsn||'';
-  tr.innerHTML=`<td><input class="al-name" value="${esc(name)}" style="min-width:190px;"></td><td><input class="al-qty" type="number" min="1" value="${qty}" style="width:60px;"></td><td><input class="al-mrp" type="number" value="${mrp}" style="width:80px;"></td><td><input class="al-disc" type="number" min="0" max="100" value="${disc}" style="width:65px;"></td><td><input class="al-hsn" value="${esc(hsn)}" style="width:90px;"></td><td class="al-total">₹0</td><td><button class="btn btn-danger-sm btn-sm" onclick="this.closest('tr').remove();calcAdminLedgerItems()">✕</button></td>`;
-  tb.appendChild(tr);
-  tr.querySelectorAll('input').forEach(x=>x.addEventListener('input',calcAdminLedgerItems));
-  calcAdminLedgerItems();
+
+function saveAdminLedgerInvoice() {
+  const invId = document.getElementById('editLedgerInvId').value;
+  const o = ordersData.find(x => x.id === invId);
+  if (!o) return;
+
+  o.customerName = document.getElementById('editLedgerCustName').value.trim();
+  o.totalAmount = parseFloat(document.getElementById('editLedgerTotalAmt').value) || 0;
+  o.recvAmount = parseFloat(document.getElementById('editLedgerRecvAmt').value) || 0;
+  o.dueAmount = parseFloat(document.getElementById('editLedgerDueAmt').value) || 0;
+  o.payMode = document.getElementById('editLedgerPayMode').value;
+  o.bookedBy = document.getElementById('editLedgerStaffSelect').value;
+
+  const itemBox = document.getElementById('editLedgerItemsRows');
+  if (itemBox) {
+    const newItems = [];
+    itemBox.querySelectorAll('.tt-ledger-item-row').forEach(row => {
+      const name = (row.querySelector('.tt-ledger-item-name').value || '').trim();
+      const qty = parseFloat(row.querySelector('.tt-ledger-item-qty').value) || 0;
+      const total = parseFloat(row.querySelector('.tt-ledger-item-total').value) || 0;
+      if (name) newItems.push({ name, qty, total });
+    });
+    o.items = newItems;
+  }
+
+  o.auditTrail = o.auditTrail || [];
+  o.auditTrail.unshift({ by: currentUser.name + " (Admin)", time: getNowStr(), note: "Modified billing numbers / bill items in ledger" });
+
+  setStored("ORDERS", ordersData);
+  closeEditLedgerModal();
+  renderBilling('all');
+  renderDashboard();
+  if (document.getElementById('ledgerDetailPage') && document.getElementById('ledgerDetailPage').style.display === 'block') openLedgerDetail(o.id);
+  alert("Ledger invoice successfully updated!");
 }
-function calcAdminLedgerItems(){
-  let total=0; document.querySelectorAll('#adminLedgerItemsTbody tr').forEach(r=>{const q=+r.querySelector('.al-qty').value||0,m=+r.querySelector('.al-mrp').value||0,d=+r.querySelector('.al-disc').value||0;const t=q*m*(1-d/100);r.querySelector('.al-total').textContent='₹'+t.toLocaleString('en-IN',{maximumFractionDigits:2});total+=t;});
-  const el=document.getElementById('editLedgerTotalAmt'); if(el)el.value=Math.round(total); calcEditLedgerBalance();
+
+function deleteAdminLedgerInvoice(ordId) {
+  if (!isAdminUser()) {
+    alert("Permission Denied: Sirf Admin hi bill ledger se delete kar sakte hain!");
+    return;
+  }
+  if (confirm(`Confirm permanent deletion of Invoice ${ordId} from ledger?`)) {
+    ordersData = ordersData.filter(x => x.id !== ordId);
+    setStored("ORDERS", ordersData);
+    renderBilling('all');
+    renderDashboard();
+    renderOrders();
+    alert(`Invoice ${ordId} deleted successfully.`);
+  }
 }
-function closeEditLedgerModal(){document.getElementById('editLedgerModal').style.display='none';}
-function calcEditLedgerBalance(){const tot=parseFloat(document.getElementById('editLedgerTotalAmt').value)||0,recv=parseFloat(document.getElementById('editLedgerRecvAmt').value)||0;document.getElementById('editLedgerDueAmt').value=Math.max(0,tot-recv);}
-function saveAdminLedgerInvoice(){
-  if(!isAdminUser()){alert('Permission Denied: Sirf Admin save kar sakta hai!');return;}
-  const invId=document.getElementById('editLedgerInvId').value,o=ordersData.find(x=>x.id===invId);if(!o)return;
-  const rows=[...document.querySelectorAll('#adminLedgerItemsTbody tr')];
-  const items=rows.map(r=>{const name=r.querySelector('.al-name').value.trim(),qty=parseFloat(r.querySelector('.al-qty').value)||1,mrp=parseFloat(r.querySelector('.al-mrp').value)||0,disc=parseFloat(r.querySelector('.al-disc').value)||0,hsn=r.querySelector('.al-hsn').value.trim(),rate=mrp*(1-disc/100);return Object.assign({},(o.items||[]).find(i=>i.name===name)||{}, {name,qty,mrp,disc,hsn,rate,total:qty*rate});}).filter(i=>i.name);
-  o.customerName=document.getElementById('editLedgerCustName').value.trim(); o.phone=document.getElementById('editLedgerPhone').value.trim();
-  o.orderDate=document.getElementById('editLedgerOrderDate').value; o.deliveryDate=document.getElementById('editLedgerDeliveryDate').value;
-  o.items=items; o.totalAmount=parseFloat(document.getElementById('editLedgerTotalAmt').value)||0; o.recvAmount=parseFloat(document.getElementById('editLedgerRecvAmt').value)||0; o.dueAmount=Math.max(0,o.totalAmount-o.recvAmount);
-  o.payMode=document.getElementById('editLedgerPayMode').value; o.status=document.getElementById('editLedgerStatus').value; o.bookedBy=document.getElementById('editLedgerStaffSelect').value;
-  if(o.status==='Delivered'&&!o.deliveredDate)o.deliveredDate=o.deliveryDate||new Date().toISOString().split('T')[0];
-  o.auditTrail=o.auditTrail||[];o.auditTrail.unshift({by:(currentUser?.name||'Admin')+' (Admin)',time:getNowStr(),note:'Admin fully edited ledger bill, payment and items'});
-  setStored('ORDERS',ordersData);closeEditLedgerModal();renderBilling('all');renderDashboard();renderOrders();alert('Complete ledger bill & items successfully updated!');
-}
-function deleteAdminLedgerInvoice(ordId){if(!isAdminUser()){alert('Permission Denied: Sirf Admin hi bill ledger se delete kar sakta hai!');return;}if(confirm(`Confirm permanent deletion of Invoice ${ordId} from ledger?`)){ordersData=ordersData.filter(x=>x.id!==ordId);setStored('ORDERS',ordersData);renderBilling('all');renderDashboard();renderOrders();alert(`Invoice ${ordId} deleted successfully.`);}}
 
 function renderDashboard() {
   // SKELETON LOADER: pehli baar real data aa jaye to shimmer placeholder hata do
@@ -4326,9 +4549,9 @@ function openLeadModal(leadObj = null) {
     document.getElementById('leadPrice').value = "";
     document.getElementById('leadRemarks').value = "";
   }
-  document.getElementById('leadModal').style.display = 'flex';
+  ttOpenSheetModal('leadModal');
 }
-function closeLeadModal() { document.getElementById('leadModal').style.display = 'none'; }
+function closeLeadModal() { ttCloseSheetModal('leadModal'); }
 
 function saveLeadAction() {
   const editId = document.getElementById('editLeadId').value;
@@ -4505,9 +4728,9 @@ function openOrderModal(orderObj = null) {
     addOrderItemRow();
   }
   calcOrderTotals();
-  document.getElementById('orderModal').style.display = 'flex';
+  ttOpenSheetModal('orderModal');
 }
-function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
+function closeOrderModal() { ttCloseSheetModal('orderModal'); }
 
 function addOrderItemRow(itemName = "", qty = 1, mrp = 0, disc = 0) {
   const tbody = document.getElementById('orderItemsTbody');
@@ -5050,9 +5273,9 @@ function openServiceCallModal(srvObj = null) {
     document.getElementById('srvStatusSelect').value = "Pending / Scheduled";
     toggleServiceCompletionFields("Pending / Scheduled");
   }
-  document.getElementById('serviceModal').style.display = 'flex';
+  ttOpenSheetModal('serviceModal');
 }
-function closeServiceModal() { document.getElementById('serviceModal').style.display = 'none'; }
+function closeServiceModal() { ttCloseSheetModal('serviceModal'); }
 function toggleServiceCompletionFields(statusVal) {
   document.getElementById('srvCompletedFields').style.display = (statusVal === 'Work Completed') ? 'block' : 'none';
 }
@@ -5833,13 +6056,6 @@ function switchTab(tab, el) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   panel.classList.add('active');
   ttUpdateNavPill(el);
-  // PAGE SLIDE TRANSITION: tab switch karte waqt ek smooth native-app jaisa
-  // slide-fade animation - purana instant-show wala flow bilkul waisa hi rehta
-  // hai, sirf CSS class add/remove hoti hai (koi logic change nahi).
-  panel.classList.remove('tt-page-slide');
-  void panel.offsetWidth; // reflow taaki animation dobara trigger ho
-  panel.classList.add('tt-page-slide');
-  try { window.scrollTo({top:0, behavior:'smooth'}); } catch(e) { window.scrollTo(0,0); }
   if (el) el.classList.add('active');
 
   const fabBtn = document.getElementById('fabMainBtn');
@@ -7315,7 +7531,7 @@ function openLedgerDetail(ordId) {
         (trail.length ? trail.map(t => `<div style="font-size:12px;padding:5px 0;border-bottom:1px dashed var(--border);">🕒 <strong>${esc(t.time || '')}</strong> — ${esc(t.note || '')}<br><span style="color:var(--text-muted);">by ${esc(t.by || '')}</span></div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);padding-top:6px;">Koi follow-up history nahi.</div>'))}
     ${sec('🚚 Delivery Details', row('Status', esc(o.status || '-')) + row('Delivered date & time', esc(o.deliveredAt || o.deliveredDate || '-')) + row('Delivered by', esc(o.deliveredBy || '-')) + photoBtn(o.deliveryProofPhoto, 'Delivery Photo Dekhein'))}
     ${sec('💵 Payment Details', payHtml)}
-    ${sec('🧾 Items (' + (o.items || []).length + ')', (o.items || []).map((it, i) => `<div style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12.5px;"><span>${i + 1}. ${esc(it.name)} × ${it.qty}</span><strong>₹${ttInr(it.total)}</strong></div>`).join(''))}
+    ${sec('🧾 Items (' + (o.items || []).length + ')' + (isAdminUser() ? ` <button class="btn btn-outline btn-sm" style="float:right;" onclick="openAdminEditLedgerModal('${o.id}')">✏️ Edit</button>` : ''), (o.items || []).map((it, i) => `<div style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12.5px;"><span>${i + 1}. ${esc(it.name)} × ${it.qty}</span><strong>₹${ttInr(it.total)}</strong></div>`).join(''))}
     <div style="display:flex;gap:8px;padding:6px 12px 30px;">
       <button class="btn btn-print" style="flex:1;" onclick="document.getElementById('ledgerDetailPage').style.display='none'; openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice</button>
       ${o.dueAmount > 0 ? `<button class="btn btn-outline" style="flex:1;" onclick="openPayFollowupModal('${o.id}')">📅 Follow-up</button>` : ''}
