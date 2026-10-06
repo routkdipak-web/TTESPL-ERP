@@ -19,9 +19,16 @@ var messaging = firebase.messaging();
 messaging.onBackgroundMessage(function (payload) {
   var title = (payload.notification && payload.notification.title) || (payload.data && payload.data.title) || 'TTESPL Alert';
   var body = (payload.notification && payload.notification.body) || (payload.data && payload.data.body) || '';
+  // vibrate + requireInteraction isliye diye hain taaki phone band/lock hone
+  // par bhi ye ek asli "heads-up" popup/banner ki tarah dikhe aur bajey,
+  // sirf chupke se notification tray me na chala jaye.
   self.registration.showNotification(title, {
     body: body,
-    tag: 'ttespl-notif-' + Date.now()
+    tag: 'ttespl-notif-' + Date.now(),
+    vibrate: [120, 60, 120],
+    requireInteraction: true,
+    icon: 'https://cdn-icons-png.flaticon.com/512/9422/9422891.png',
+    badge: 'https://cdn-icons-png.flaticon.com/512/9422/9422891.png'
   });
 });
 
