@@ -180,8 +180,34 @@
     100% { transform: translate(-35px, -55px) scale(1.3); opacity: 0; }
   }
 
-  .brand-area { display: flex; align-items: center; gap: 8px; position: relative; z-index: 2; max-width: calc(100% - 55px); cursor: pointer; }
-  
+  .brand-area { display: flex; align-items: center; gap: 6px; position: relative; z-index: 2; max-width: calc(100% - 130px); cursor: pointer; min-width: 0; flex-shrink: 1; }
+
+  /* PARTNER BRAND LOGO STRIP: header ke beech me (company naam aur profile
+     icon ke beech) chhote premium circular badges - har badge white backing
+     ke saath taaki dark/transparent background wale logos bhi saaf dikhein.
+     flex-shrink:0 isliye diya hai taaki ye apni fix chhoti size par hi rahe
+     aur company naam ko "squeeze" na kare - jagah kam hone par pehle naam
+     text khud ellipsis (...) ke saath simat jata hai, logos apni jagah
+     bilkul theek fit rehte hain, kabhi ek-doosre par overlap nahi karte. */
+  .header-partner-strip {
+    display: flex; align-items: center; gap: 3px; flex: 0 0 auto; min-width: 0;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    padding: 0 2px; margin-left: 2px; position: relative; z-index: 2;
+  }
+  .header-partner-strip::-webkit-scrollbar { display: none; }
+  .header-partner-logo {
+    width: 18px; height: 18px; min-width: 18px; border-radius: 50%;
+    background: #fff; object-fit: cover; flex-shrink: 0;
+    border: 1.2px solid rgba(255,255,255,0.55);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4), 0 0 0 1px rgba(234,179,8,0.25);
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .header-partner-logo:active { transform: scale(0.88); }
+  @media (max-width: 400px) {
+    .header-partner-logo { width: 15px; height: 15px; min-width: 15px; }
+    .header-partner-strip { gap: 2px; }
+  }
+
   /* EXACT OFFICIAL LOGO EMBLEM WITH GLOWING ANIMATED LETTERS & RACING CAR */
   .brand-logo-round {
     width: 36px; height: 36px; min-width: 36px; border-radius: 50%;
@@ -205,9 +231,12 @@
   }
   .emblem-txt { font-size: 7px; font-weight: 900; color: #facc15; letter-spacing: 0.5px; line-height: 1; margin-top: 1px; text-shadow: 0 0 6px rgba(250,204,21,0.9); }
 
-  .brand-text-row { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-  .brand-title-line { display: flex; align-items: baseline; gap: 4px; overflow: hidden; }
-  
+  .brand-text-row { display: flex; flex-direction: column; justify-content: center; overflow: hidden; min-width: 0; }
+  .brand-title-line { display: flex; align-items: baseline; gap: 4px; overflow: hidden; min-width: 0; }
+
+  /* Jagah kam padne par naam khud chhota ho kar "..." (ellipsis) ke saath
+     simat jaye - beech me se kisi letter par achanak "kat" na jaye jaisa
+     pehle "PVT L" par ho raha tha. */
   .brand-title-glow {
     font-size: 11px; font-weight: 900; letter-spacing: 0.4px; line-height: 1.1;
     background: linear-gradient(90deg, #ffffff 0%, #38bdf8 25%, #ff9d3d 55%, #ffffff 100%);
@@ -215,14 +244,19 @@
     -webkit-background-clip: text; background-clip: text; color: transparent;
     animation: textNeonShimmer 2.8s linear infinite;
     text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
-    white-space: nowrap;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; display: inline-block; max-width: 100%;
   }
   @keyframes textNeonShimmer {
     0% { background-position: 0% center; }
     100% { background-position: 250% center; }
   }
   .brand-title-pvt {
-    font-size: 8px; font-weight: 800; color: #ff6b35; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap;
+    font-size: 8px; font-weight: 800; color: #ff6b35; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; flex-shrink: 0;
+  }
+  /* Bahut narrow phone par "PVT. LTD." hata dete hain taaki poora naam bina
+     kaate dikhe aur logos ke saath overlap na ho. */
+  @media (max-width: 400px) {
+    .brand-title-pvt { display: none; }
   }
   .brand-sub-horizontal {
     font-size: 7.5px; color: #cbd5e1; font-weight: 600; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -1316,6 +1350,15 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
           <span id="offlineQueueBadge" style="display:none; margin-left:6px; font-size:9.5px; font-weight:800; color:#fff; background:var(--danger,#e11d48); padding:1px 7px; border-radius:8px;"></span>
         </div>
       </div>
+    </div>
+
+    <!-- AUTHORIZED BRAND PARTNER LOGOS: company naam aur profile icon ke beech, premium circular badges -->
+    <div class="header-partner-strip" onclick="triggerAppHaptic(); openCompanyDetailsModal();" title="Our Authorized Brand Partners">
+      <img src="data:image/png;base64,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" alt="MaxShine" title="MaxShine" class="header-partner-logo">
+      <img src="data:image/png;base64,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" alt="Ma-Fra" title="Ma-Fra" class="header-partner-logo">
+      <img src="data:image/png;base64,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" alt="Airtek" title="Airtek" class="header-partner-logo">
+      <img src="data:image/png;base64,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" alt="ManMachine Works" title="ManMachine Works" class="header-partner-logo">
+      <img src="data:image/png;base64,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" alt="Vista Auto" title="Vista Auto" class="header-partner-logo">
     </div>
 
     <!-- Right: Single Profile Avatar Touch Button -->
@@ -6124,26 +6167,30 @@ function showBroadcastToastAlert(notif) {
   toast.onclick = (e) => { if (!e.target.closest('.toast-close')) toast.remove(); };
   container.prepend(toast);
 
-  // Order/Delivery/Payment jaisi zaroori events ab khud se turant gayab nahi hongi -
-  // jab tak koi tap karke band na kare, dikhti rahengi (bilkul push notification jaisa).
-  // Baaki (jaise reminders) purani tarah 8 second me apne aap chali jayengi.
-  const isImportant = ['order', 'delivery', 'payment'].indexOf(notif.type) >= 0;
-  if (!isImportant) {
-    setTimeout(() => {
-      if (toast.parentElement) toast.remove();
-    }, 8000);
-  }
+  // Sabhi in-app toast (Order/Delivery/Payment sahit) ab 8 second me khud
+  // apne aap gayab ho jati hain - manually "✕" dabane ki zarurat nahi,
+  // taaki screen par purani notifications ka dher na lage.
+  setTimeout(() => {
+    if (toast.parentElement) toast.remove();
+  }, 8000);
 
   // Sirf is device ke khule app-page tak simit "3 second toast" hi nahi -
   // ab ye Android/browser ke asli notification tray me bhi jata hai, taaki
   // app minimized/background me ho tab bhi HAR device par dikhe.
   try {
     if (window.Notification && Notification.permission === 'granted') {
+      // BUG FIX: pehle "silent:true" tha, jiski wajah se ye notification
+      // Android ke notification tray me bilkul "chupke se" (bina sound,
+      // bina vibration, bina heads-up popup) chali jaati thi - isliye sirf
+      // neeche notification panel kholne par hi dikhti thi, upar popup/banner
+      // kabhi nahi aata tha. Ab silent hata diya aur vibrate pattern add kiya
+      // hai, taaki ye ek asli heads-up alert jaisa dikhe/bajе.
       const sysNotif = new Notification(notif.title || 'TTESPL Alert', {
         body: notif.body || '',
         tag: 'ttespl-' + (notif.type || 'info') + '-' + (notif.timestamp || Date.now()),
         renotify: true,
-        silent: true // hamara apna beep upar already bajaya ja chuka hai, double-beep na ho
+        requireInteraction: false,
+        vibrate: [120, 60, 120]
       });
       sysNotif.onclick = () => { try { window.focus(); } catch (e) {} sysNotif.close(); };
     }
