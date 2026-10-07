@@ -111,21 +111,71 @@
         }
         if (!toSend.length) return Promise.resolve();
 
-        var jobs = [];
-        for (var i = 0; i < toSend.length; i += 400) {
-          var b = F.writeBatch(db);
-          toSend.slice(i, i + 400).forEach(function (it) {
-            if (it && it.id != null) b.set(F.doc(db, col, did(it.id)), it, { merge: true });
-          });
-          jobs.push(b.commit());
+        // DOCUMENT SIZE SAFEGUARD (orders): har partial "due payment" collect hote
+        // waqt uska proof photo order.payments[] array ke andar HAMESHA ke liye jama
+        // ho jata tha. Kai due-collections ke baad (jo normal hai - customers kai
+        // baar me payment karte hain) ye poora order document Firestore ki hard
+        // ~1MB/document limit se bada ho jata tha - aur tab "Deliver & Upload Proof"
+        // jaisa koi bhi naya save us order ke liye CHUPCHAAP (sirf browser console
+        // me) fail ho jata tha: UI turant "Delivered"/ledger dikha deta tha (local
+        // change), lekin cloud me kabhi jaata hi nahi tha - isliye app band karke
+        // dobara kholne par purana status wapas aa jata tha. Fix: agar kisi order
+        // ka size bada lage (ya Firestore size-error se fail ho), to sirf us order
+        // ke CLOUD-bound copy me se purane payment-proof photos hata kar ek chhota
+        // version bhejte hain - is device ka local data (poora photo history sahit)
+        // bilkul nahi badalta, sirf cloud me jo jaata hai wahi chhota hota hai.
+        function sizeOf(it) { try { return JSON.stringify(it).length; } catch (e) { return 0; } }
+        var SAFE_LIMIT = 900000;
+        function shrinkOrderForCloud(it, aggressive) {
+          var copy;
+          try { copy = JSON.parse(JSON.stringify(it)); } catch (e) { return it; }
+          if (Array.isArray(copy.payments) && copy.payments.length) {
+            var n = copy.payments.length;
+            copy.payments.forEach(function (p, idx) {
+              if (p && p.photo && (aggressive || idx < n - 1)) p.photo = '';
+            });
+          }
+          if (copy.lastPaymentProof) copy.lastPaymentProof = '';
+          if (aggressive && copy.deliveryProofPhoto) copy.deliveryProofPhoto = '';
+          return copy;
         }
+
+        var prepared = toSend.map(function (it) {
+          if (col === 'orders' && sizeOf(it) > SAFE_LIMIT) return shrinkOrderForCloud(it, false);
+          return it;
+        });
+
+        function commitAll(list) {
+          var jobs = [];
+          for (var i = 0; i < list.length; i += 400) {
+            var b = F.writeBatch(db);
+            list.slice(i, i + 400).forEach(function (it) {
+              if (it && it.id != null) b.set(F.doc(db, col, did(it.id)), it, { merge: true });
+            });
+            jobs.push(b.commit());
+          }
+          return Promise.all(jobs);
+        }
+
         // BUG FIX: pehle yahan koi .catch() nahi tha, isliye jab bhi ye save cloud
         // tak fail hokar nahi pahunchta tha, na to sync status "Offline" dikhata tha
         // na hi app ko pata chalta tha - upar wala UI hamesha theek dikhata rehta
         // tha jabki data cloud me ja hi nahi raha tha. Ab failure clearly dikhega
         // aur error upar (index.html ke retry/offline-queue) tak bhi jayega.
-        return Promise.all(jobs).then(function () { setSync('Live Cloud', true); })
-          .catch(function (e) { console.error('Cloud pushKey Error:', e); setSync('Offline', false); throw e; });
+        return commitAll(prepared).then(function () { setSync('Live Cloud', true); })
+          .catch(function (e) {
+            console.error('Cloud pushKey Error:', e);
+            var msg = (e && e.message) || '';
+            if (col === 'orders' && /longer than|exceeds|too large|invalid-argument|resource-exhausted/i.test(msg)) {
+              // Aakhri koshish: is batch ke sabhi orders se purane proof photos
+              // poori tarah hata kar bhejo - taaki status/amount jaisi zaroori
+              // cheezein size ki wajah se kabhi bhi cloud jaane se na ruke.
+              var shrunk = toSend.map(function (it) { return col === 'orders' ? shrinkOrderForCloud(it, true) : it; });
+              return commitAll(shrunk).then(function () { setSync('Live Cloud', true); })
+                .catch(function (e2) { console.error('Cloud pushKey retry Error:', e2); setSync('Offline', false); throw e2; });
+            }
+            setSync('Offline', false); throw e;
+          });
       },
 
       sendChatMessage: function (msg) {
