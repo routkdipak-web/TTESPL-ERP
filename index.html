@@ -1549,7 +1549,6 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 
     <!-- TAB 4: INVENTORY -->
     <div id="view-inventory" class="view-panel">
-      <button id="ttStickyAddStockBtn" class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openAddPartModal()" style="position:fixed; right:14px; top:62px; z-index:1200; border-radius:999px; padding:9px 13px; box-shadow:0 8px 22px rgba(255,107,53,.35); display:none;">➕ Add Stock</button>
       <div class="page-top-header-banner">
         <div>
           <div class="page-top-title"><span>🏷️</span> <span>Stock & Master Inventory</span></div>
@@ -1558,7 +1557,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
         <div style="display:flex; gap:6px;">
           <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); switchTab('catalog', null)">📖 Product Catalog</button>
           <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); loadMasterCatalogAction()">📦 Master Data</button>
-          <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openAddPartModal()">+ Add Item</button>
+          <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openAddPartModal()">➕ Add Stock / Item</button>
         </div>
       </div>
 
@@ -2230,7 +2229,15 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       </div>
       <div class="form-group">
         <label class="form-label">Category</label>
-        <input type="text" id="stkCategory" placeholder="e.g. Spares - HRC">
+        <select id="stkCategory">
+          <option value="Machines &amp; Equipment">Machines</option>
+          <option value="Ma-Fra Chemicals">Mafra Chemical</option>
+          <option value="Mafra Detailing">MAFRA Detailing</option>
+          <option value="Maniac Line">Maniac Line</option>
+          <option value="Maxshine Gear &amp; Tools">Maxshine</option>
+          <option value="Vista Car Care">Vista</option>
+          <option value="Machine Spares">Spares</option>
+        </select>
       </div>
     </div>
     <div class="grid-2">
@@ -5347,8 +5354,6 @@ function updateCategoryCounts() {
 
 function selectInventoryCategory(categoryName, btnEl) {
   activeInventoryCategory = categoryName;
-  const sticky = document.getElementById('ttStickyAddStockBtn');
-  if (sticky) sticky.style.display = (categoryName === 'CUSTOMERS') ? 'none' : 'inline-flex';
   document.querySelectorAll('#inventoryCategoryTabs .cat-chip').forEach(b => b.classList.remove('active'));
   if (btnEl) btnEl.classList.add('active');
   document.getElementById('currentCategoryTitle').textContent = categoryName === 'ALL' ? '• All Categories' : `• Category: ${categoryName}`;
@@ -5508,10 +5513,20 @@ function openAddPartModal(partObj = null) {
     editId.value = "";
     document.getElementById('stkName').value = "";
     document.getElementById('stkCode').value = "";
-    // Jis category tab se "+ Add Item" dabaya gaya hai, naya item usi category
-    // me pre-filled khulta hai (ALL/CUSTOMERS tab se khole to default "Machine
-    // Spares" hi rehta hai, jaise pehle hota tha).
-    const presetCat = (typeof activeInventoryCategory !== 'undefined' && activeInventoryCategory && activeInventoryCategory !== 'ALL' && activeInventoryCategory !== 'CUSTOMERS') ? activeInventoryCategory : "Machine Spares";
+    // Stock section me jis category tab par user hai, wahi category
+    // Add Item modal me automatically pre-selected hoti hai.
+    // ALL / CUSTOMERS se Add kholne par Machines default rahega.
+    const allowedAddCategories = [
+      'Machines & Equipment',
+      'Ma-Fra Chemicals',
+      'Mafra Detailing',
+      'Maniac Line',
+      'Maxshine Gear & Tools',
+      'Vista Car Care',
+      'Machine Spares'
+    ];
+    const currentCat = (typeof activeInventoryCategory !== 'undefined') ? activeInventoryCategory : 'ALL';
+    const presetCat = allowedAddCategories.includes(currentCat) ? currentCat : 'Machines & Equipment';
     document.getElementById('stkCategory').value = presetCat;
     document.getElementById('stkMachine').value = "";
     document.getElementById('stkHsn').value = "84139190";
@@ -7915,12 +7930,6 @@ window.addEventListener('popstate', function (e) {
   }
 });
 
-// Inventory sticky Add Stock button follows the active inventory tab without
-// changing the existing header button or any inventory data structure.
-document.addEventListener('DOMContentLoaded', function () {
-  const sticky = document.getElementById('ttStickyAddStockBtn');
-  if (sticky) sticky.style.display = (typeof activeInventoryCategory !== 'undefined' && activeInventoryCategory !== 'CUSTOMERS') ? 'inline-flex' : 'none';
-});
 </script>
 
 </body>
