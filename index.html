@@ -505,56 +505,17 @@
      Ab !important hata diya hai taaki jis card ka khud ka inline background
      ho (jaise stat cards) wo apna hi background dikhaye, aur baaki saare
      plain cards ko ye glass look mil jaye jaisa pehle milta tha. */
-      /* ===== ULTRA-PREMIUM GLASS & DEPTH REFINEMENT ===== */
-  :root {
-    --glass-bg-light: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(240, 246, 252, 0.85) 100%);
-    --glass-bg-dark: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(10, 22, 40, 0.88) 100%);
-    --shadow-premium: 0 20px 45px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-    --shadow-premium-dark: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-  }
-
   .card {
-    position: relative;
-    background: var(--glass-bg-light) !important;
-    backdrop-filter: blur(30px) saturate(1.9) !important;
-    -webkit-backdrop-filter: blur(30px) saturate(1.9) !important;
-    border-radius: 22px !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(240, 246, 252, 0.78));
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border-radius: var(--radius-md);
     padding: 16px;
     margin-bottom: 14px;
-    border: 1.5px solid rgba(217, 164, 6, 0.35) !important;
-    box-shadow: var(--shadow-premium) !important;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease !important;
+    border: 1.5px solid rgba(255, 193, 7, 0.35);
+    box-shadow: 0 14px 38px rgba(7, 19, 40, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
   }
-
-  [data-theme="dark"] .card {
-    background: var(--glass-bg-dark) !important;
-    border: 1.5px solid rgba(56, 189, 248, 0.3) !important;
-    box-shadow: var(--shadow-premium-dark) !important;
-  }
-
-  .card::before {
-    content: ""; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .9), transparent);
-    border-radius: 1px; pointer-events: none;
-  }
-
-  :root[data-theme="dark"] .card::before {
-    background: linear-gradient(90deg, transparent, rgba(250, 204, 21, .45), transparent);
-  }
-
-  .card:hover {
-    transform: translateY(-3px) scale(1.004);
-    box-shadow: 0 25px 55px rgba(0, 180, 216, 0.22), 0 0 0 1px rgba(255, 215, 0, 0.5) inset !important;
-  }
-
-  /* Smooth Button Spring Physics */
-  .btn, .sub-tab-btn, .qa-tile, .cat-chip {
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, box-shadow 0.2s ease !important;
-  }
-  .btn:active, .qa-tile:active, .cat-chip:active {
-    transform: scale(0.92) !important;
-  }
-  
   .card:hover {
     box-shadow: 0 18px 42px rgba(0, 180, 216, 0.25), 0 0 15px rgba(255, 193, 7, 0.2);
     transform: translateY(-2px);
@@ -3323,45 +3284,7 @@ function updateThemeMenuLabel(mode) {
   const el = document.getElementById('currentThemeTag');
   if (el) el.textContent = (mode === 'dark') ? 'Dark 🌙' : 'Light ☀️';
 }
-/* ===== WORLD-CLASS UX JAVASCRIPT ADDITIONS ===== */
 
-// 1. Quick Action FAB Menu Auto-Close on Outside Tap
-document.addEventListener('click', function(e) {
-  const fabMenu = document.getElementById('fabMenu');
-  const fabBtn = document.getElementById('fabMainBtn');
-  if (fabMenu && fabMenu.classList.contains('show')) {
-    if (!fabMenu.contains(e.target) && !fabBtn.contains(e.target)) {
-      if (typeof toggleFabMenu === 'function') {
-        toggleFabMenu();
-      } else {
-        fabMenu.classList.remove('show');
-      }
-    }
-  }
-});
-
-// 2. Ultra-Smooth World-Class Toast Notification
-function ttShowWorldClassToast(title, message, type = 'success') {
-  const container = document.getElementById('broadcastToastContainer');
-  if (!container) return;
-  const toast = document.createElement('div');
-  toast.className = `broadcast-toast ${type === 'error' ? 'tt-toast-error' : 'tt-toast-success'}`;
-  toast.style.cssText = "animation: ttToastIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;";
-  toast.innerHTML = `
-    <div class="toast-content">
-      <div class="toast-icon">${type === 'error' ? '⚡' : '✨'}</div>
-      <div style="flex:1;">
-        <div class="toast-title">${title}</div>
-        <div class="toast-body">${message}</div>
-      </div>
-      <button class="toast-close" onclick="this.closest('.broadcast-toast').remove()">✕</button>
-    </div>`;
-  container.prepend(toast);
-  setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4000);
-}
-window.ttShowWorldClassToast = ttShowWorldClassToast;
-
-// --- Purana code yahan se shuru hota hai ---  
 document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = getStored("THEME_MODE", "light");
   document.body.setAttribute('data-theme', savedTheme);
@@ -5486,6 +5409,18 @@ function renderStockList() {
     if (item.stock <= 5) card.classList.add('low-stock-card-pulse');
     c.appendChild(card);
   });
+
+  // HAR TAB ME "+ Add Item": pehle sirf upar header me ek hi global "+ Add
+  // Item" button tha (hamesha default category ke saath khulta tha) - ab har
+  // category tab ke list ke neeche bhi ek button hai, jo us tab ki category
+  // pre-filled karke item add karta hai (CUSTOMERS tab yahan upar hi return
+  // ho chuka hai, isliye yahan tak sirf product category tabs hi aate hain).
+  const addBtn = document.createElement('button');
+  addBtn.className = 'btn btn-outline btn-block';
+  addBtn.style.cssText = 'margin-top:8px; border-style:dashed;';
+  addBtn.textContent = '+ Add Item' + (activeInventoryCategory !== 'ALL' ? ' to ' + activeInventoryCategory : '');
+  addBtn.onclick = () => { triggerAppHaptic(); openAddPartModal(); };
+  c.appendChild(addBtn);
 }
 window.renderStockList = renderStockList;
 
@@ -5575,7 +5510,11 @@ function openAddPartModal(partObj = null) {
     editId.value = "";
     document.getElementById('stkName').value = "";
     document.getElementById('stkCode').value = "";
-    document.getElementById('stkCategory').value = "Machine Spares";
+    // Jis category tab se "+ Add Item" dabaya gaya hai, naya item usi category
+    // me pre-filled khulta hai (ALL/CUSTOMERS tab se khole to default "Machine
+    // Spares" hi rehta hai, jaise pehle hota tha).
+    const presetCat = (typeof activeInventoryCategory !== 'undefined' && activeInventoryCategory && activeInventoryCategory !== 'ALL' && activeInventoryCategory !== 'CUSTOMERS') ? activeInventoryCategory : "Machine Spares";
+    document.getElementById('stkCategory').value = presetCat;
     document.getElementById('stkMachine').value = "";
     document.getElementById('stkHsn').value = "84139190";
     document.getElementById('stkQty').value = "0";
@@ -6632,9 +6571,23 @@ function buildTallyInvoiceHtml(o) {
   // line below the tax rows so product-level GST math stays untouched.
   const courierCharge = Number(o.courierCharge) || 0;
   const totalForTax = Math.round((total - courierCharge) * 100) / 100;
-  const tax = Math.round((totalForTax - sumTaxable) * 100) / 100;
+  // BUG FIX: pehle tax ko "order ke stored total me se bacha hua paisa"
+  // (totalForTax - sumTaxable) maan kar nikala jata tha, seedha 18% se nahi.
+  // Agar order ka totalAmount kisi wajah se (admin ne ledger edit me discount
+  // diya, ya price round kiya) items ke asli inclusive total se match nahi
+  // karta tha, to poora CGST/SGST galat dikhta tha - jabki niche HSN/SAC
+  // summary table sahi 18% hi dikhati thi (dono jagah mismatch). Ab tax
+  // hamesha seedha taxable value ka 18% hi hota hai - HSN summary table se
+  // match karta hai. Agar order total se koi farak ho (discount wagera), wo
+  // alag se "Discount/Adjustment" line me dikhega, GST ka hisaab kabhi galat
+  // nahi hoga.
+  const tax = Math.round(sumTaxable * 0.18 * 100) / 100;
   const half = Math.round(tax / 2 * 100) / 100;
-  const roundOff = Math.round((totalForTax - (sumTaxable + (intra ? half * 2 : tax))) * 100) / 100;
+  const gstTotal = intra ? half * 2 : tax;
+  const computedSubtotal = Math.round((sumTaxable + gstTotal) * 100) / 100;
+  const diff = Math.round((totalForTax - computedSubtotal) * 100) / 100;
+  const roundOff = Math.abs(diff) < 1 ? diff : 0;
+  const discountAdj = Math.abs(diff) >= 1 ? diff : 0;
   // HSN summary
   const hs = {};
   items.forEach(i => { hs[i.hsn] = hs[i.hsn] || 0; hs[i.hsn] += i.taxable; });
@@ -6699,6 +6652,7 @@ function buildTallyInvoiceHtml(o) {
         ${intra ? `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">CGST</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(half)}</td></tr>
         <tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">SGST</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(half)}</td></tr>`
         : `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">IGST</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(tax)}</td></tr>`}
+        ${discountAdj !== 0 ? `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">${discountAdj < 0 ? 'Discount/Adjustment' : 'Additional Charge'}</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(discountAdj)}</td></tr>` : ''}
         ${Math.abs(roundOff) >= 0.005 ? `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">ROUND OFF</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(roundOff)}</td></tr>` : ''}
         ${courierCharge > 0 ? `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">Courier / Transport Charges</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(courierCharge)}</td></tr>` : ''}
         <tr style="height:14px;"><td colspan="10" style="border-left:1px solid #000;border-right:1px solid #000;"></td></tr>
@@ -6761,7 +6715,10 @@ function openQuotationModal() {
       <div id="quotTotalsBox" style="background:var(--card-glass); border:1px solid var(--card-glass-border); border-radius:10px; padding:10px 12px; margin-bottom:14px; font-size:13px;"></div>
 
       <div style="display:flex; gap:8px;">
-        <button class="btn btn-primary" style="flex:2;" onclick="printQuotation()">🖨️ Print / Share Quotation</button>
+        <button class="btn btn-primary" style="flex:1;" onclick="triggerAppHaptic(); shareQuotation()">📤 Share</button>
+        <button class="btn btn-print" style="flex:1;" onclick="triggerAppHaptic(); printQuotation()">🖨️ Print</button>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:8px;">
         <button class="btn btn-outline" style="flex:1;" onclick="document.getElementById('quotationModal').style.display='none'">Close</button>
       </div>
     </div>`;
@@ -6958,9 +6915,14 @@ function buildQuotationHtml(q) {
 </div>`;
 }
 
-function printQuotation() {
+// SHARE / PRINT SPLIT: pehle ek hi button "Print/Share" dono try karta tha
+// (share fail/cancel hone par khud-ba-khud print khul jata tha) - ab user ke
+// kehne par dono poori tarah ALAG buttons hain, jo bhi dabao wahi hoga, dusra
+// kabhi apne aap trigger nahi hoga. Ye common builder dono ke liye quotation
+// object banata hai (validation + history-save ek hi jagah).
+function buildQuotationFromFormOrAlert() {
   const custName = document.getElementById('quotCustName').value.trim();
-  if (!custName) { alert('Customer ka naam daalo'); return; }
+  if (!custName) { alert('Customer ka naam daalo'); return null; }
   const rows = document.querySelectorAll('#quotItemsBody .quot-item-row');
   const items = Array.from(rows).map(r => {
     const qty = Number(r.querySelector('.qit-qty').value) || 0;
@@ -6977,7 +6939,7 @@ function printQuotation() {
       qty, rate, disc, amount: lineTaxable
     };
   }).filter(i => i.name);
-  if (items.length === 0) { alert('Kam se kam ek item add karo'); return; }
+  if (items.length === 0) { alert('Kam se kam ek item add karo'); return null; }
   const t = quotRecalc();
   const q = {
     id: quotNextId(),
@@ -6995,17 +6957,33 @@ function printQuotation() {
     hist.unshift({ id: q.id, date: q.date, custName: q.custName, final: q.final });
     localStorage.setItem(key, JSON.stringify(hist.slice(0, 200)));
   } catch (e) { console.error('Quotation history save failed', e); }
-  // NATIVE SHARE FIRST: mobile par seedha WhatsApp/Telegram/Email share sheet
-  // khulta hai; agar wo available na ho ya fail ho jaye to purana Print/PDF
-  // flow (ttPrintHtml) fallback ke roop me chalta hai - dono kaam karte hain.
-  const itemsTxt = items.map(i => `${i.name} x${i.qty} - Rs.${i.amount.toFixed(2)}`).join('\n');
+  return q;
+}
+
+function shareQuotation() {
+  const q = buildQuotationFromFormOrAlert();
+  if (!q) return;
+  const itemsTxt = q.items.map(i => `${i.name} x${i.qty} - Rs.${i.amount.toFixed(2)}`).join('\n');
   const plainMsg = `TWIN TOWN EXPRESS SERVICES PVT LTD\nQuotation: ${q.id}\nCustomer: ${q.custName}\n-----------------------\n${itemsTxt}\n-----------------------\nTotal: Rs.${q.final}\n\nRasulgarh, Bhubaneswar`;
-  ttNativeShareOrFallback(
-    { title: `TTESPL Quotation ${q.id}`, text: plainMsg },
-    function () { ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q)); }
-  );
+  if (navigator.share) {
+    navigator.share({ title: `TTESPL Quotation ${q.id}`, text: plainMsg }).catch(function (e) {
+      if (e && e.name !== 'AbortError') console.error('Share failed', e);
+    });
+  } else {
+    // Native share available na ho (jaise kuch purane WebView) to seedha
+    // WhatsApp web share link khol dete hain - print yahan kabhi nahi khulta.
+    window.open(q.custPhone ? `https://wa.me/91${q.custPhone}?text=${encodeURIComponent(plainMsg)}` : `https://wa.me/?text=${encodeURIComponent(plainMsg)}`, '_blank');
+  }
+}
+
+function printQuotation() {
+  const q = buildQuotationFromFormOrAlert();
+  if (!q) return;
+  ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q));
 }
 window.openQuotationModal = openQuotationModal;
+window.shareQuotation = shareQuotation;
+window.printQuotation = printQuotation;
 
 /* ===== DIGITAL REPORT CARDS: Installation Report (Leads) + Service Call Report (Service) ===== */
 function ttAddDays(dateStr, n) { const d = new Date(dateStr); d.setDate(d.getDate() + n); return d.toISOString().split('T')[0]; }
@@ -7550,7 +7528,7 @@ function openLedgerDetail(ordId) {
         (trail.length ? trail.map(t => `<div style="font-size:12px;padding:5px 0;border-bottom:1px dashed var(--border);">🕒 <strong>${esc(t.time || '')}</strong> — ${esc(t.note || '')}<br><span style="color:var(--text-muted);">by ${esc(t.by || '')}</span></div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);padding-top:6px;">Koi follow-up history nahi.</div>'))}
     ${sec('🚚 Delivery Details', row('Status', esc(o.status || '-')) + row('Delivered date & time', esc(o.deliveredAt || o.deliveredDate || '-')) + row('Delivered by', esc(o.deliveredBy || '-')) + photoBtn(o.deliveryProofPhoto, 'Delivery Photo Dekhein'))}
     ${sec('💵 Payment Details', payHtml)}
-    ${sec('🧾 Items (' + (o.items || []).length + ')' + (isAdminUser() ? ` <button class="btn btn-outline btn-sm" style="float:right;" onclick="openAdminEditLedgerModal('${o.id}')">✏️ Edit</button>` : ''), (o.items || []).map((it, i) => `<div style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12.5px;"><span>${i + 1}. ${esc(it.name)} × ${it.qty}</span><strong>₹${ttInr(it.total)}</strong></div>`).join(''))}
+    ${sec('🧾 Products Billed (' + (o.items || []).length + ')' + (isAdminUser() ? ` <button class="btn btn-outline btn-sm" style="float:right;" onclick="openAdminEditLedgerModal('${o.id}')">✏️ Edit</button>` : ''), (o.items || []).map((it, i) => `<div style="padding:6px 0;border-bottom:1px dashed var(--border);font-size:12.5px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span><strong>${i + 1}. ${esc(it.name)}</strong></span><strong>₹${ttInr(it.total)}</strong></div><div style="color:var(--text-muted);font-size:11px;margin-top:2px;">Qty: ${it.qty} × Rate: ₹${ttInr(it.rate != null ? it.rate : (it.qty ? it.total / it.qty : it.total))}${it.disc ? ' · Disc: ' + it.disc + '%' : ''}${it.mrp ? ' · MRP: ₹' + ttInr(it.mrp) : ''}</div></div>`).join('') || '<div style="font-size:12px;color:var(--text-muted);">Koi item record nahi hai.</div>')}
     <div style="display:flex;gap:8px;padding:6px 12px 30px;">
       <button class="btn btn-print" style="flex:1;" onclick="document.getElementById('ledgerDetailPage').style.display='none'; openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice</button>
       ${o.dueAmount > 0 ? `<button class="btn btn-outline" style="flex:1;" onclick="openPayFollowupModal('${o.id}')">📅 Follow-up</button>` : ''}
