@@ -505,16 +505,43 @@
      Ab !important hata diya hai taaki jis card ka khud ka inline background
      ho (jaise stat cards) wo apna hi background dikhaye, aur baaki saare
      plain cards ko ye glass look mil jaye jaisa pehle milta tha. */
+    /* ===== ULTRA-PREMIUM GLASS & DEPTH REFINEMENT ===== */
+  :root {
+    --glass-bg-light: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(240, 246, 252, 0.85) 100%);
+    --glass-bg-dark: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(10, 22, 40, 0.88) 100%);
+    --shadow-premium: 0 20px 45px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    --shadow-premium-dark: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
   .card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(240, 246, 252, 0.78));
-    backdrop-filter: blur(20px) saturate(1.6);
-    -webkit-backdrop-filter: blur(20px) saturate(1.6);
-    border-radius: var(--radius-md);
+    background: var(--glass-bg-light) !important;
+    backdrop-filter: blur(30px) saturate(1.9) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(1.9) !important;
+    border-radius: 22px !important;
     padding: 16px;
     margin-bottom: 14px;
-    border: 1.5px solid rgba(255, 193, 7, 0.35);
-    box-shadow: 0 14px 38px rgba(7, 19, 40, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.95);
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    border: 1.5px solid rgba(217, 164, 6, 0.35) !important;
+    box-shadow: var(--shadow-premium) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease !important;
+  }
+
+  [data-theme="dark"] .card {
+    background: var(--glass-bg-dark) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.3) !important;
+    box-shadow: var(--shadow-premium-dark) !important;
+  }
+
+  .card:hover {
+    transform: translateY(-3px) scale(1.004);
+    box-shadow: 0 25px 55px rgba(0, 180, 216, 0.22), 0 0 0 1px rgba(255, 215, 0, 0.5) inset !important;
+  }
+
+  /* Smooth Button Spring Physics */
+  .btn, .sub-tab-btn, .qa-tile, .cat-chip {
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, box-shadow 0.2s ease !important;
+  }
+  .btn:active, .qa-tile:active, .cat-chip:active {
+    transform: scale(0.92) !important;
   }
   .card:hover {
     box-shadow: 0 18px 42px rgba(0, 180, 216, 0.25), 0 0 15px rgba(255, 193, 7, 0.2);
@@ -3284,7 +3311,45 @@ function updateThemeMenuLabel(mode) {
   const el = document.getElementById('currentThemeTag');
   if (el) el.textContent = (mode === 'dark') ? 'Dark 🌙' : 'Light ☀️';
 }
+/* ===== WORLD-CLASS UX JAVASCRIPT ADDITIONS ===== */
 
+// 1. Quick Action FAB Menu Auto-Close on Outside Tap
+document.addEventListener('click', function(e) {
+  const fabMenu = document.getElementById('fabMenu');
+  const fabBtn = document.getElementById('fabMainBtn');
+  if (fabMenu && fabMenu.classList.contains('show')) {
+    if (!fabMenu.contains(e.target) && !fabBtn.contains(e.target)) {
+      if (typeof toggleFabMenu === 'function') {
+        toggleFabMenu();
+      } else {
+        fabMenu.classList.remove('show');
+      }
+    }
+  }
+});
+
+// 2. Ultra-Smooth World-Class Toast Notification
+function ttShowWorldClassToast(title, message, type = 'success') {
+  const container = document.getElementById('broadcastToastContainer');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = `broadcast-toast ${type === 'error' ? 'tt-toast-error' : 'tt-toast-success'}`;
+  toast.style.cssText = "animation: ttToastIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;";
+  toast.innerHTML = `
+    <div class="toast-content">
+      <div class="toast-icon">${type === 'error' ? '⚡' : '✨'}</div>
+      <div style="flex:1;">
+        <div class="toast-title">${title}</div>
+        <div class="toast-body">${message}</div>
+      </div>
+      <button class="toast-close" onclick="this.closest('.broadcast-toast').remove()">✕</button>
+    </div>`;
+  container.prepend(toast);
+  setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4000);
+}
+window.ttShowWorldClassToast = ttShowWorldClassToast;
+
+// --- Purana code yahan se shuru hota hai ---  
 document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = getStored("THEME_MODE", "light");
   document.body.setAttribute('data-theme', savedTheme);
