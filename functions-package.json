@@ -1,0 +1,13 @@
+{
+  "name": "functions",
+  "description": "TTESPL ERP - sends real FCM push notifications when a new app_notifications doc is created",
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "private": true
+}
