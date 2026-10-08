@@ -133,6 +133,16 @@
   .suggestion-item:hover, .suggestion-item.active { background: rgba(0,180,216,0.1) !important; color: var(--cyan); }
   .suggestion-sub { font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
 
+  #pullToRefreshIndicator {
+    position: fixed; top: 0; left: 0; right: 0; height: 46px;
+    background: linear-gradient(90deg, #0a2540, #13395e);
+    color: #ffffff; font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transform: translateY(-100%); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); z-index: 9999;
+    box-shadow: var(--shadow-md);
+  }
+  #pullToRefreshIndicator.visible { transform: translateY(0); }
+
   /* ------------------- TRUE TOP STICKY HEADER WITH LIVE ANIMATED LOGO ------------------- */
   header {
     background: linear-gradient(135deg, rgba(6, 19, 36, 0.99), rgba(10, 37, 64, 0.97));
@@ -935,6 +945,13 @@
 #ttOfflineBanner{position:fixed;top:0;left:0;right:0;z-index:4200;transform:translateY(-120%);transition:transform .32s cubic-bezier(.16,1,.3,1);background:linear-gradient(135deg,#7a1f1f,#581414);color:#fff;font-size:12.5px;font-weight:700;text-align:center;letter-spacing:.2px;padding:9px 14px;padding-top:calc(9px + env(safe-area-inset-top,0px));box-shadow:0 4px 16px rgba(0,0,0,.32);}
 #ttOfflineBanner.show{transform:translateY(0);}
 
+/* ===== Pull-to-refresh indicator ===== */
+#ttPullRefreshIndicator{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);left:50%;transform:translate(-50%,-70px);z-index:4100;background:rgba(10,37,64,.95);color:#fff;font-size:11.5px;font-weight:700;padding:7px 14px;border-radius:999px;display:flex;align-items:center;gap:6px;box-shadow:0 6px 18px rgba(0,0,0,.28);transition:transform .18s ease,opacity .18s ease;opacity:0;pointer-events:none;}
+#ttPullRefreshIndicator.visible{opacity:1;}
+#ttPullRefreshIndicator.spinning #ttPullRefreshIcon{animation:ttPullSpin .6s linear infinite;display:inline-block;}
+#ttPullRefreshIndicator #ttPullRefreshIcon{display:inline-block;transition:transform .15s ease;}
+@keyframes ttPullSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
 /* ===== Premium typography hierarchy (Plus Jakarta Sans weight mix) ===== */
 .card-title,.page-top-title,.stat-value,.brand-title-glow,.empty-title,
 h1,h2,h3,.modal-title,.toast-title{
@@ -1061,6 +1078,11 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 <div id="moneyRainOverlay"></div>
 <div id="broadcastToastContainer"></div>
 <div id="ttOfflineBanner">📡 Offline Mode — changes will sync when online</div>
+<div id="ttPullRefreshIndicator"><span id="ttPullRefreshIcon">↓</span> <span id="ttPullRefreshLabel">Pull to refresh</span></div>
+
+<div id="pullToRefreshIndicator">
+  <span>🔄</span> <span id="ptrText">Refreshing data from Cloud...</span>
+</div>
 
 <!-- FLOATING POPUP FILTER MODAL -->
 <div class="filter-floating-modal" id="globalFilterModal">
@@ -2467,7 +2489,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="master-data.js?v=4"></script>
-<script src="live-sync.js?v=9"></script>
+<script src="live-sync.js?v=8"></script>
 
 <script>
     
@@ -3210,10 +3232,100 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 window.addEventListener('resize', function () { ttUpdateNavPill(); });
 
-// PULL-TO-REFRESH FEATURE REMOVED (user request): laggy/mid-scroll trigger
-// feel se bachne ke liye custom pull-to-refresh gesture poori tarah hata diya
-// gaya hai. Data abhi bhi hamesha real-time Firestore listeners (live-sync.js)
-// se khud-ba-khud update hota rehta hai - koi manual refresh ki zarurat nahi.
+/* ===== PULL-TO-REFRESH (mobile gesture) ===== */
+/* Screen ko sabse top se neeche kheenchne par saara data dobara render ho jata
+   hai + pending offline changes bhi push ho jate hain - koi existing listener
+   ya onclick handler isse nahi chhua jata, sirf touch gesture upar add hua hai. */
+(function () {
+  let startY = 0, pulling = false, triggered = false;
+  const THRESHOLD = 68;
+  // SETTLE GUARD: iOS/Android par upar scroll karte waqt momentum se scrollTop
+  // 0 pe aakar thoda "rubber-band" bounce karta hai - agar hum turant usi pal
+  // ek naya touch start maan kar pulling arm kar de, to beech scroll mein hi
+  // (jabhi scrollTop 0 pe settle hua) refresh trigger ho jata tha. Ab hum
+  // scrollTop 0 hue ko kam se kam SETTLE_MS tak stable rehna padta hai, tabhi
+  // naya pull-to-refresh gesture arm hota hai - sirf poora top pe aa kar,
+  // rukkar, phir neeche kheenchne par hi refresh hoga, beech mein kabhi nahi.
+  const SETTLE_MS = 220;
+  let lastScrollAt = 0;
+  let lastScrollTop = 0;
+
+  function scrollParent(el) {
+    const root = document.scrollingElement || document.documentElement;
+    while (el && el !== document.body && el !== document.documentElement) {
+      let cs;
+      try { cs = window.getComputedStyle(el); } catch (e) { break; }
+      if (/(auto|scroll)/.test(cs.overflowY) && el.scrollHeight > el.clientHeight + 2) return el;
+      el = el.parentElement;
+    }
+    return root;
+  }
+
+  window.addEventListener('scroll', function () {
+    const root = document.scrollingElement || document.documentElement;
+    if (root.scrollTop !== lastScrollTop) { lastScrollTop = root.scrollTop; lastScrollAt = Date.now(); }
+  }, { passive: true, capture: true });
+
+  document.addEventListener('touchstart', function (e) {
+    if (!e.touches || e.touches.length !== 1) return;
+    const sp = scrollParent(e.target);
+    const root = document.scrollingElement || document.documentElement;
+    const atTop = root.scrollTop <= 0;
+    const settled = (Date.now() - lastScrollAt) > SETTLE_MS;
+    if (sp !== root || !atTop || !settled) { pulling = false; return; }
+    startY = e.touches[0].clientY;
+    pulling = true;
+    triggered = false;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function (e) {
+    if (!pulling || !e.touches || e.touches.length !== 1) return;
+    // Beech mein agar page thoda bhi scroll ho gaya (scrollTop > 0), to yeh
+    // ek genuine pull-to-refresh gesture nahi raha - cancel kar do.
+    const root = document.scrollingElement || document.documentElement;
+    if (root.scrollTop > 0) { pulling = false; hidePullIndicator(); return; }
+    const dy = e.touches[0].clientY - startY;
+    if (dy <= 0) { hidePullIndicator(); return; }
+    const ind = document.getElementById('ttPullRefreshIndicator');
+    const icon = document.getElementById('ttPullRefreshIcon');
+    const label = document.getElementById('ttPullRefreshLabel');
+    if (!ind) return;
+    const dist = Math.min(dy, 110);
+    ind.classList.add('visible');
+    ind.style.transform = 'translate(-50%,' + (-70 + dist) + 'px)';
+    if (dy > THRESHOLD) {
+      if (!triggered) { triggered = true; if (icon) icon.style.transform = 'rotate(180deg)'; if (label) label.textContent = 'Release to refresh'; }
+    } else {
+      if (triggered) { triggered = false; if (icon) icon.style.transform = 'rotate(0deg)'; if (label) label.textContent = 'Pull to refresh'; }
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', function () {
+    if (!pulling) return;
+    pulling = false;
+    if (triggered) { doPullRefresh(); } else { hidePullIndicator(); }
+  }, { passive: true });
+
+  function hidePullIndicator() {
+    const ind = document.getElementById('ttPullRefreshIndicator');
+    if (ind) { ind.classList.remove('visible'); ind.style.transform = 'translate(-50%,-70px)'; }
+  }
+
+  function doPullRefresh() {
+    const ind = document.getElementById('ttPullRefreshIndicator');
+    const label = document.getElementById('ttPullRefreshLabel');
+    if (ind) { ind.classList.add('spinning'); ind.style.transform = 'translate(-50%,10px)'; }
+    if (label) label.textContent = 'Refreshing...';
+    try { triggerAppHaptic(); } catch (e) {}
+    try { ttFlushOfflineQueue(); } catch (e) {}
+    setTimeout(function () {
+      try { if (typeof refreshAllData === 'function') refreshAllData(); } catch (e) { console.error('Pull-to-refresh failed', e); }
+      if (ind) ind.classList.remove('spinning');
+      if (label) label.textContent = 'Updated';
+      setTimeout(hidePullIndicator, 650);
+    }, 500);
+  }
+})();
 // Safety fallback: agar kisi wajah se dashboard render kabhi na chale, to bhi
 // skeleton hamesha ke liye atka na rahe
 document.addEventListener('DOMContentLoaded', function () {
@@ -5409,18 +5521,6 @@ function renderStockList() {
     if (item.stock <= 5) card.classList.add('low-stock-card-pulse');
     c.appendChild(card);
   });
-
-  // HAR TAB ME "+ Add Item": pehle sirf upar header me ek hi global "+ Add
-  // Item" button tha (hamesha default category ke saath khulta tha) - ab har
-  // category tab ke list ke neeche bhi ek button hai, jo us tab ki category
-  // pre-filled karke item add karta hai (CUSTOMERS tab yahan upar hi return
-  // ho chuka hai, isliye yahan tak sirf product category tabs hi aate hain).
-  const addBtn = document.createElement('button');
-  addBtn.className = 'btn btn-outline btn-block';
-  addBtn.style.cssText = 'margin-top:8px; border-style:dashed;';
-  addBtn.textContent = '+ Add Item' + (activeInventoryCategory !== 'ALL' ? ' to ' + activeInventoryCategory : '');
-  addBtn.onclick = () => { triggerAppHaptic(); openAddPartModal(); };
-  c.appendChild(addBtn);
 }
 window.renderStockList = renderStockList;
 
@@ -5510,11 +5610,7 @@ function openAddPartModal(partObj = null) {
     editId.value = "";
     document.getElementById('stkName').value = "";
     document.getElementById('stkCode').value = "";
-    // Jis category tab se "+ Add Item" dabaya gaya hai, naya item usi category
-    // me pre-filled khulta hai (ALL/CUSTOMERS tab se khole to default "Machine
-    // Spares" hi rehta hai, jaise pehle hota tha).
-    const presetCat = (typeof activeInventoryCategory !== 'undefined' && activeInventoryCategory && activeInventoryCategory !== 'ALL' && activeInventoryCategory !== 'CUSTOMERS') ? activeInventoryCategory : "Machine Spares";
-    document.getElementById('stkCategory').value = presetCat;
+    document.getElementById('stkCategory').value = "Machine Spares";
     document.getElementById('stkMachine').value = "";
     document.getElementById('stkHsn').value = "84139190";
     document.getElementById('stkQty').value = "0";
@@ -6571,23 +6667,9 @@ function buildTallyInvoiceHtml(o) {
   // line below the tax rows so product-level GST math stays untouched.
   const courierCharge = Number(o.courierCharge) || 0;
   const totalForTax = Math.round((total - courierCharge) * 100) / 100;
-  // BUG FIX: pehle tax ko "order ke stored total me se bacha hua paisa"
-  // (totalForTax - sumTaxable) maan kar nikala jata tha, seedha 18% se nahi.
-  // Agar order ka totalAmount kisi wajah se (admin ne ledger edit me discount
-  // diya, ya price round kiya) items ke asli inclusive total se match nahi
-  // karta tha, to poora CGST/SGST galat dikhta tha - jabki niche HSN/SAC
-  // summary table sahi 18% hi dikhati thi (dono jagah mismatch). Ab tax
-  // hamesha seedha taxable value ka 18% hi hota hai - HSN summary table se
-  // match karta hai. Agar order total se koi farak ho (discount wagera), wo
-  // alag se "Discount/Adjustment" line me dikhega, GST ka hisaab kabhi galat
-  // nahi hoga.
-  const tax = Math.round(sumTaxable * 0.18 * 100) / 100;
+  const tax = Math.round((totalForTax - sumTaxable) * 100) / 100;
   const half = Math.round(tax / 2 * 100) / 100;
-  const gstTotal = intra ? half * 2 : tax;
-  const computedSubtotal = Math.round((sumTaxable + gstTotal) * 100) / 100;
-  const diff = Math.round((totalForTax - computedSubtotal) * 100) / 100;
-  const roundOff = Math.abs(diff) < 1 ? diff : 0;
-  const discountAdj = Math.abs(diff) >= 1 ? diff : 0;
+  const roundOff = Math.round((totalForTax - (sumTaxable + (intra ? half * 2 : tax))) * 100) / 100;
   // HSN summary
   const hs = {};
   items.forEach(i => { hs[i.hsn] = hs[i.hsn] || 0; hs[i.hsn] += i.taxable; });
@@ -6652,7 +6734,6 @@ function buildTallyInvoiceHtml(o) {
         ${intra ? `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">CGST</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(half)}</td></tr>
         <tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">SGST</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(half)}</td></tr>`
         : `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">IGST</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(tax)}</td></tr>`}
-        ${discountAdj !== 0 ? `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">${discountAdj < 0 ? 'Discount/Adjustment' : 'Additional Charge'}</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(discountAdj)}</td></tr>` : ''}
         ${Math.abs(roundOff) >= 0.005 ? `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">ROUND OFF</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(roundOff)}</td></tr>` : ''}
         ${courierCharge > 0 ? `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;border-left:1px solid #000;">Courier / Transport Charges</td><td style="text-align:right;padding:2px 5px;border-left:1px solid #000;border-right:1px solid #000;font-weight:700;">${ttInr(courierCharge)}</td></tr>` : ''}
         <tr style="height:14px;"><td colspan="10" style="border-left:1px solid #000;border-right:1px solid #000;"></td></tr>
@@ -6715,10 +6796,7 @@ function openQuotationModal() {
       <div id="quotTotalsBox" style="background:var(--card-glass); border:1px solid var(--card-glass-border); border-radius:10px; padding:10px 12px; margin-bottom:14px; font-size:13px;"></div>
 
       <div style="display:flex; gap:8px;">
-        <button class="btn btn-primary" style="flex:1;" onclick="triggerAppHaptic(); shareQuotation()">📤 Share</button>
-        <button class="btn btn-print" style="flex:1;" onclick="triggerAppHaptic(); printQuotation()">🖨️ Print</button>
-      </div>
-      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button class="btn btn-primary" style="flex:2;" onclick="printQuotation()">🖨️ Print / Share Quotation</button>
         <button class="btn btn-outline" style="flex:1;" onclick="document.getElementById('quotationModal').style.display='none'">Close</button>
       </div>
     </div>`;
@@ -6915,14 +6993,9 @@ function buildQuotationHtml(q) {
 </div>`;
 }
 
-// SHARE / PRINT SPLIT: pehle ek hi button "Print/Share" dono try karta tha
-// (share fail/cancel hone par khud-ba-khud print khul jata tha) - ab user ke
-// kehne par dono poori tarah ALAG buttons hain, jo bhi dabao wahi hoga, dusra
-// kabhi apne aap trigger nahi hoga. Ye common builder dono ke liye quotation
-// object banata hai (validation + history-save ek hi jagah).
-function buildQuotationFromFormOrAlert() {
+function printQuotation() {
   const custName = document.getElementById('quotCustName').value.trim();
-  if (!custName) { alert('Customer ka naam daalo'); return null; }
+  if (!custName) { alert('Customer ka naam daalo'); return; }
   const rows = document.querySelectorAll('#quotItemsBody .quot-item-row');
   const items = Array.from(rows).map(r => {
     const qty = Number(r.querySelector('.qit-qty').value) || 0;
@@ -6939,7 +7012,7 @@ function buildQuotationFromFormOrAlert() {
       qty, rate, disc, amount: lineTaxable
     };
   }).filter(i => i.name);
-  if (items.length === 0) { alert('Kam se kam ek item add karo'); return null; }
+  if (items.length === 0) { alert('Kam se kam ek item add karo'); return; }
   const t = quotRecalc();
   const q = {
     id: quotNextId(),
@@ -6957,33 +7030,17 @@ function buildQuotationFromFormOrAlert() {
     hist.unshift({ id: q.id, date: q.date, custName: q.custName, final: q.final });
     localStorage.setItem(key, JSON.stringify(hist.slice(0, 200)));
   } catch (e) { console.error('Quotation history save failed', e); }
-  return q;
-}
-
-function shareQuotation() {
-  const q = buildQuotationFromFormOrAlert();
-  if (!q) return;
-  const itemsTxt = q.items.map(i => `${i.name} x${i.qty} - Rs.${i.amount.toFixed(2)}`).join('\n');
+  // NATIVE SHARE FIRST: mobile par seedha WhatsApp/Telegram/Email share sheet
+  // khulta hai; agar wo available na ho ya fail ho jaye to purana Print/PDF
+  // flow (ttPrintHtml) fallback ke roop me chalta hai - dono kaam karte hain.
+  const itemsTxt = items.map(i => `${i.name} x${i.qty} - Rs.${i.amount.toFixed(2)}`).join('\n');
   const plainMsg = `TWIN TOWN EXPRESS SERVICES PVT LTD\nQuotation: ${q.id}\nCustomer: ${q.custName}\n-----------------------\n${itemsTxt}\n-----------------------\nTotal: Rs.${q.final}\n\nRasulgarh, Bhubaneswar`;
-  if (navigator.share) {
-    navigator.share({ title: `TTESPL Quotation ${q.id}`, text: plainMsg }).catch(function (e) {
-      if (e && e.name !== 'AbortError') console.error('Share failed', e);
-    });
-  } else {
-    // Native share available na ho (jaise kuch purane WebView) to seedha
-    // WhatsApp web share link khol dete hain - print yahan kabhi nahi khulta.
-    window.open(q.custPhone ? `https://wa.me/91${q.custPhone}?text=${encodeURIComponent(plainMsg)}` : `https://wa.me/?text=${encodeURIComponent(plainMsg)}`, '_blank');
-  }
-}
-
-function printQuotation() {
-  const q = buildQuotationFromFormOrAlert();
-  if (!q) return;
-  ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q));
+  ttNativeShareOrFallback(
+    { title: `TTESPL Quotation ${q.id}`, text: plainMsg },
+    function () { ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q)); }
+  );
 }
 window.openQuotationModal = openQuotationModal;
-window.shareQuotation = shareQuotation;
-window.printQuotation = printQuotation;
 
 /* ===== DIGITAL REPORT CARDS: Installation Report (Leads) + Service Call Report (Service) ===== */
 function ttAddDays(dateStr, n) { const d = new Date(dateStr); d.setDate(d.getDate() + n); return d.toISOString().split('T')[0]; }
@@ -7528,7 +7585,7 @@ function openLedgerDetail(ordId) {
         (trail.length ? trail.map(t => `<div style="font-size:12px;padding:5px 0;border-bottom:1px dashed var(--border);">🕒 <strong>${esc(t.time || '')}</strong> — ${esc(t.note || '')}<br><span style="color:var(--text-muted);">by ${esc(t.by || '')}</span></div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);padding-top:6px;">Koi follow-up history nahi.</div>'))}
     ${sec('🚚 Delivery Details', row('Status', esc(o.status || '-')) + row('Delivered date & time', esc(o.deliveredAt || o.deliveredDate || '-')) + row('Delivered by', esc(o.deliveredBy || '-')) + photoBtn(o.deliveryProofPhoto, 'Delivery Photo Dekhein'))}
     ${sec('💵 Payment Details', payHtml)}
-    ${sec('🧾 Products Billed (' + (o.items || []).length + ')' + (isAdminUser() ? ` <button class="btn btn-outline btn-sm" style="float:right;" onclick="openAdminEditLedgerModal('${o.id}')">✏️ Edit</button>` : ''), (o.items || []).map((it, i) => `<div style="padding:6px 0;border-bottom:1px dashed var(--border);font-size:12.5px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span><strong>${i + 1}. ${esc(it.name)}</strong></span><strong>₹${ttInr(it.total)}</strong></div><div style="color:var(--text-muted);font-size:11px;margin-top:2px;">Qty: ${it.qty} × Rate: ₹${ttInr(it.rate != null ? it.rate : (it.qty ? it.total / it.qty : it.total))}${it.disc ? ' · Disc: ' + it.disc + '%' : ''}${it.mrp ? ' · MRP: ₹' + ttInr(it.mrp) : ''}</div></div>`).join('') || '<div style="font-size:12px;color:var(--text-muted);">Koi item record nahi hai.</div>')}
+    ${sec('🧾 Items (' + (o.items || []).length + ')' + (isAdminUser() ? ` <button class="btn btn-outline btn-sm" style="float:right;" onclick="openAdminEditLedgerModal('${o.id}')">✏️ Edit</button>` : ''), (o.items || []).map((it, i) => `<div style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12.5px;"><span>${i + 1}. ${esc(it.name)} × ${it.qty}</span><strong>₹${ttInr(it.total)}</strong></div>`).join(''))}
     <div style="display:flex;gap:8px;padding:6px 12px 30px;">
       <button class="btn btn-print" style="flex:1;" onclick="document.getElementById('ledgerDetailPage').style.display='none'; openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice</button>
       ${o.dueAmount > 0 ? `<button class="btn btn-outline" style="flex:1;" onclick="openPayFollowupModal('${o.id}')">📅 Follow-up</button>` : ''}
