@@ -1,1 +1,38 @@
-u
+name: Deploy to Firebase Functions
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: |
+          cd functions
+          npm install
+
+      # OLD METHOD (FIREBASE_TOKEN via `firebase login:ci`) hamesha fail ho raha tha
+      # kyuki Google ne purana "out-of-band" copy-paste login flow band kar diya hai -
+      # isi wajah se Termux me bhi `firebase login --no-localhost` baar baar
+      # "Unable to authenticate using the provided code" error deta tha. Service
+      # Account key is poore problem ko bypass kar deta hai - koi interactive
+      # login kabhi zaroori nahi, bas ek JSON key file chahiye (GitHub secret me
+      # FIREBASE_SERVICE_ACCOUNT ke naam se save hai).
+      - name: Write service account key
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ${{ runner.temp }}/gcp-key.json
+
+      - name: Deploy to Firebase Functions
+        run: npx firebase-tools deploy --only functions --project ttespl --non-interactive
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/gcp-key.json
