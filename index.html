@@ -1378,10 +1378,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cyan,#00
   <span style="font-size:10px; color:#38bdf8;">Notion Style</span>
 </div>
 
-      <div class="profile-menu-item" onclick="triggerAppHaptic(); openTravelExpenses(); closeProfileDrawer();" style="background:linear-gradient(115deg,rgba(14,165,233,.16),rgba(99,102,241,.13));border:1px solid rgba(56,189,248,.24);">
-        <div class="profile-menu-item-left"><span>🧭</span><span>Travel Expenses</span></div>
-        <span style="font-size:10px;color:#38bdf8;font-weight:800;">MONTHLY</span>
-      </div>
+<div class="profile-menu-item" onclick="triggerAppHaptic(); openTravelExpenses(); closeProfileDrawer();">
+  <div class="profile-menu-item-left">
+    <span>🧭</span>
+    <span>Travel Expenses & KM</span>
+  </div>
+  <span style="font-size:10px; color:#38bdf8;">Monthly PDF</span>
+</div>
 
       <div class="profile-menu-item" onclick="triggerAppHaptic(); openGlobalSearchModal(); closeProfileDrawer();">
         <div class="profile-menu-item-left">
@@ -2478,7 +2481,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cyan,#00
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="master-data.js?v=4"></script>
-<script src="live-sync.js?v=8"></script>
+<script src="live-sync.js?v=9"></script>
 
 <script>
     
@@ -5124,127 +5127,7 @@ function ttPrintHtml(title, bodyHtml) {
   doc.write(
     '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(title || 'TTESPL Report') + '</title>' +
     '<style>*{box-sizing:border-box;} body{margin:0;padding:10px;font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff;} table{border-collapse:collapse;width:100%;} @page{margin:8mm;}</style>' +
-    '</head><body>' + bodyHtml + '
-
-<!-- TTESPL PREMIUM TRAVEL EXPENSES MODULE -->
-<script>
-(function(){
-  'use strict';
-  var STORE_KEY='TRAVEL_EXPENSES';
-  var editId=null;
-  var activeEmployeeId=null;
-  var activeMonth='';
-  function el(id){return document.getElementById(id);}
-  function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-  function moneyKm(v){return (Number(v)||0).toLocaleString('en-IN',{maximumFractionDigits:2});}
-  function employees(){return (Array.isArray(registeredEmployees)?registeredEmployees:[]).filter(function(e){return e && e.id!=null;});}
-  function isAdmin(){return typeof isAdminUser==='function' && isAdminUser();}
-  function currentEmp(){return (typeof currentUser!=='undefined' && currentUser)?currentUser:null;}
-  function getRows(){try{return JSON.parse(localStorage.getItem((window.DB_PREFIX||'TTESPL_ERP_')+STORE_KEY)||'[]')||[];}catch(e){return [];}}
-  function saveRows(rows){
-    try { if(typeof setStored==='function') setStored(STORE_KEY,rows); else localStorage.setItem((window.DB_PREFIX||'TTESPL_ERP_')+STORE_KEY,JSON.stringify(rows)); }
-    catch(e){console.error('Travel save failed',e);alert('Save nahi ho paya. Device storage check karein.');}
-    window.ttTravelExpenses=rows;
-  }
-  function monthNow(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
-  function monthLabel(m){if(!m)return '';var a=m.split('-');return new Date(Number(a[0]),Number(a[1])-1,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'});}
-  function selectedEmployee(){return employees().find(function(e){return String(e.id)===String(activeEmployeeId);}) || currentEmp() || {id:'unknown',name:'Employee'};}
-  function ensureModal(){
-    if(el('ttTravelModal'))return;
-    var modal=document.createElement('div');modal.id='ttTravelModal';modal.className='auth-overlay';modal.style.cssText='display:none;z-index:8000;align-items:flex-start;overflow:auto;padding:12px;';
-    modal.innerHTML=`<div class="auth-card tt-travel-card" style="max-width:900px;width:100%;margin:auto;max-height:none;overflow:visible;background:var(--card-glass,rgba(255,255,255,.88));backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.48);box-shadow:0 24px 80px rgba(2,6,23,.28);border-radius:24px;">
-      <div class="card-header" style="position:sticky;top:0;z-index:2;background:rgba(10,37,64,.96);color:white;border-radius:18px 18px 0 0;padding:14px 16px;">
-        <div><div style="font-size:17px;font-weight:900;letter-spacing:.2px">🧭 Travel Expenses</div><div style="font-size:11px;opacity:.78;margin-top:3px">Employee-wise monthly visit & kilometre register</div></div>
-        <button class="btn btn-outline btn-sm" onclick="closeTravelExpenses()" style="color:white;border-color:rgba(255,255,255,.3)">✕</button>
-      </div>
-      <div style="padding:14px;">
-        <div class="tt-travel-controls" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:12px;">
-          <div id="ttTravelEmployeeWrap"><label class="form-label">Employee Profile</label><select id="ttTravelEmployee" class="form-control" onchange="travelSelectEmployee(this.value)"></select></div>
-          <div><label class="form-label">Month</label><input type="month" id="ttTravelMonth" class="form-control" onchange="travelSelectMonth(this.value)"></div>
-        </div>
-        <div id="ttTravelStats" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 16px;"></div>
-        <div style="padding:14px;border:1px solid rgba(56,189,248,.24);border-radius:18px;background:linear-gradient(135deg,rgba(14,165,233,.09),rgba(99,102,241,.08));margin-bottom:16px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;"><strong id="ttTravelFormTitle" style="font-size:14px">＋ Add Visit</strong><span style="font-size:10px;color:var(--text-muted)">Multiple visits on same date supported</span></div>
-          <input type="hidden" id="ttTravelEntryId">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;">
-            <div><label class="form-label">Visit Date *</label><input type="date" id="ttTravelDate" class="form-control" required></div>
-            <div><label class="form-label">From / Starting Place *</label><input type="text" id="ttTravelFrom" class="form-control" placeholder="e.g. Office, Bhubaneswar" maxlength="180"></div>
-            <div><label class="form-label">To / Visited Place *</label><input type="text" id="ttTravelTo" class="form-control" placeholder="e.g. Customer, Cuttack" maxlength="180"></div>
-            <div><label class="form-label">Distance (KM) *</label><input type="number" id="ttTravelKm" class="form-control" min="0" max="99999" step="0.1" placeholder="e.g. 24.5" inputmode="decimal"></div>
-            <div><label class="form-label">Visit Purpose</label><input type="text" id="ttTravelPurpose" class="form-control" placeholder="Service / Sales / Delivery" maxlength="180"></div>
-            <div><label class="form-label">Notes (optional)</label><input type="text" id="ttTravelNotes" class="form-control" placeholder="Extra details" maxlength="300"></div>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;"><button class="btn btn-primary" onclick="saveTravelEntry()">💾 Save Visit</button><button class="btn btn-outline" onclick="resetTravelForm()">＋ New / Clear</button><button class="btn btn-print" onclick="printTravelMonthlyReport()">🖨️ Print / Save PDF</button></div>
-          <div style="font-size:10.5px;color:var(--text-muted);margin-top:9px;line-height:1.5">PDF mein employee name, month, date-wise route, daily visits aur total KM aayega. Android print screen mein “Save as PDF” select karein.</div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap"><strong style="font-size:14px">📅 Monthly Visit History</strong><span id="ttTravelCount" style="font-size:11px;color:var(--text-muted)"></span></div>
-        <div id="ttTravelHistory"></div>
-        <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn btn-outline" onclick="closeTravelExpenses()">Close</button></div>
-      </div></div>`;
-    document.body.appendChild(modal);
-    var style=document.createElement('style');style.textContent=`.tt-travel-card input,.tt-travel-card select{width:100%;min-width:0;border-radius:11px;padding:11px 12px;border:1px solid var(--border);background:var(--card);color:var(--text-main);font:inherit;font-size:13px;outline:none}.tt-travel-card input:focus,.tt-travel-card select:focus{border-color:#38bdf8;box-shadow:0 0 0 3px rgba(56,189,248,.14)}.tt-travel-stat{padding:12px 9px;border-radius:15px;border:1px solid var(--border);background:var(--card);box-shadow:0 4px 18px rgba(15,23,42,.05);min-width:0}.tt-travel-stat small{display:block;color:var(--text-muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.35px}.tt-travel-stat strong{display:block;font-size:19px;margin-top:4px;color:var(--text-main);overflow-wrap:anywhere}.tt-travel-day{border:1px solid var(--border);border-radius:15px;overflow:hidden;margin-bottom:10px;background:var(--card)}.tt-travel-day-head{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 12px;background:linear-gradient(110deg,rgba(14,165,233,.11),rgba(99,102,241,.08));border-bottom:1px solid var(--border)}.tt-travel-entry{padding:12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.tt-travel-entry:last-child{border-bottom:0}.tt-travel-route{font-size:13px;font-weight:800;line-height:1.45;overflow-wrap:anywhere}.tt-travel-meta{font-size:11px;color:var(--text-muted);line-height:1.6;margin-top:4px;overflow-wrap:anywhere}.tt-travel-actions{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}.tt-travel-actions button{font-size:11px;padding:6px 8px}@media(max-width:480px){.tt-travel-entry{flex-direction:column}.tt-travel-actions{width:100%}.tt-travel-actions button{flex:1}.tt-travel-stat strong{font-size:16px}}`;
-    document.head.appendChild(style);
-  }
-  window.openTravelExpenses=function(){
-    if(!currentEmp()){alert('Pehle employee account se login karein.');return;}
-    ensureModal();activeMonth=activeMonth||monthNow();
-    activeEmployeeId=isAdmin()?String(currentEmp().id):String(currentEmp().id);
-    var wrap=el('ttTravelEmployeeWrap'),sel=el('ttTravelEmployee');
-    if(isAdmin()){
-      wrap.style.display='block';
-      var emps=employees();
-      sel.innerHTML=emps.map(function(e){return '<option value="'+safe(e.id)+'">'+safe(e.name)+' — '+safe(e.role||'Staff')+'</option>';}).join('');
-      if(!emps.some(function(e){return String(e.id)===String(activeEmployeeId);})&&emps.length)activeEmployeeId=String(emps[0].id);
-      sel.value=activeEmployeeId;
-    }else{wrap.style.display='none';}
-    el('ttTravelMonth').value=activeMonth;
-    el('ttTravelModal').style.display='flex';
-    resetTravelForm();renderTravelExpenses();
-  };
-  window.closeTravelExpenses=function(){if(el('ttTravelModal'))el('ttTravelModal').style.display='none';};
-  window.travelSelectEmployee=function(id){if(!isAdmin())return;activeEmployeeId=String(id);resetTravelForm();renderTravelExpenses();};
-  window.travelSelectMonth=function(m){if(!m)return;activeMonth=m;resetTravelForm();renderTravelExpenses();};
-  window.resetTravelForm=function(){editId=null;['ttTravelEntryId','ttTravelFrom','ttTravelTo','ttTravelKm','ttTravelPurpose','ttTravelNotes'].forEach(function(id){if(el(id))el(id).value='';});if(el('ttTravelDate'))el('ttTravelDate').value=activeMonth?activeMonth+'-01':new Date().toISOString().slice(0,10);if(el('ttTravelFormTitle'))el('ttTravelFormTitle').textContent='＋ Add Visit';};
-  function userCanEdit(row){return isAdmin()||String(row.employeeId)===String(currentEmp()&&currentEmp().id);}
-  window.saveTravelEntry=function(){
-    var date=el('ttTravelDate').value,from=el('ttTravelFrom').value.trim(),to=el('ttTravelTo').value.trim(),km=Number(el('ttTravelKm').value);
-    if(!activeEmployeeId){alert('Employee select karein.');return;}
-    if(!date||!from||!to||el('ttTravelKm').value===''||!Number.isFinite(km)||km<0){alert('Date, From, To aur valid KM bharna zaroori hai.');return;}
-    if(date.slice(0,7)!==activeMonth){if(!confirm('Visit selected month se alag date ka hai. Report ko is date ke month par switch karke save karein?'))return;activeMonth=date.slice(0,7);if(el('ttTravelMonth'))el('ttTravelMonth').value=activeMonth;}
-    var rows=getRows(),id=el('ttTravelEntryId').value||editId;
-    var existing=id?rows.find(function(r){return String(r.id)===String(id);}):null;
-    if(existing&&!userCanEdit(existing)){alert('Is entry ko edit karne ki permission nahi hai.');return;}
-    var emp=selectedEmployee();
-    var row={id:id||('TRV-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)),employeeId:activeEmployeeId,employeeName:emp.name||'Employee',date:date,from:from,to:to,km:Math.round(km*100)/100,purpose:el('ttTravelPurpose').value.trim(),notes:el('ttTravelNotes').value.trim(),createdAt:existing?existing.createdAt:Date.now(),updatedAt:Date.now(),createdBy:existing?existing.createdBy:(currentEmp()&&currentEmp().name||'Staff')};
-    if(existing){rows=rows.map(function(r){return String(r.id)===String(id)?row:r;});}else rows.push(row);
-    saveRows(rows);resetTravelForm();renderTravelExpenses();if(typeof ttShowSuccessToast==='function')ttShowSuccessToast(existing?'Travel visit updated.':'Travel visit saved.');
-  };
-  window.editTravelEntry=function(id){var r=getRows().find(function(x){return String(x.id)===String(id);});if(!r||!userCanEdit(r))return alert('Permission denied.');if(!isAdmin()&&String(r.employeeId)!==String(currentEmp()&&currentEmp().id))return alert('Sirf apna travel data edit kar sakte hain.');editId=r.id;el('ttTravelEntryId').value=r.id;el('ttTravelDate').value=r.date;el('ttTravelFrom').value=r.from||'';el('ttTravelTo').value=r.to||'';el('ttTravelKm').value=r.km;el('ttTravelPurpose').value=r.purpose||'';el('ttTravelNotes').value=r.notes||'';el('ttTravelFormTitle').textContent='✏️ Edit Visit';var f=el('ttTravelFormTitle');if(f)f.scrollIntoView({behavior:'smooth',block:'center'});};
-  window.deleteTravelEntry=function(id){var rows=getRows(),r=rows.find(function(x){return String(x.id)===String(id);});if(!r||!userCanEdit(r))return alert('Permission denied.');if(!confirm('Is travel visit ko permanently delete karein?'))return;saveRows(rows.filter(function(x){return String(x.id)!==String(id);}));if(window.cloudSync&&typeof window.cloudSync.deleteItem==='function')window.cloudSync.deleteItem(STORE_KEY,id).catch(function(e){console.warn('Cloud delete failed',e);});renderTravelExpenses();};
-  function renderTravelExpenses(){
-    if(!el('ttTravelHistory'))return;
-    var emp=selectedEmployee(),rows=getRows().filter(function(r){return String(r.employeeId)===String(emp.id)&&String(r.date||'').slice(0,7)===activeMonth;}).sort(function(a,b){return String(b.date).localeCompare(String(a.date))||Number(b.createdAt||0)-Number(a.createdAt||0);});
-    var total=rows.reduce(function(s,r){return s+(Number(r.km)||0);},0),days=new Set(rows.map(function(r){return r.date;})).size;
-    el('ttTravelStats').innerHTML='<div class="tt-travel-stat"><small>Total Distance</small><strong>'+moneyKm(total)+' <span style="font-size:11px">KM</span></strong></div><div class="tt-travel-stat"><small>Total Visits</small><strong>'+rows.length+'</strong></div><div class="tt-travel-stat"><small>Visit Days</small><strong>'+days+'</strong></div>';
-    el('ttTravelCount').textContent=rows.length+' visit(s) · '+monthLabel(activeMonth);
-    if(!rows.length){el('ttTravelHistory').innerHTML='<div style="text-align:center;padding:26px 14px;border:1px dashed var(--border);border-radius:16px;color:var(--text-muted)"><div style="font-size:28px;margin-bottom:8px">🗺️</div><strong style="color:var(--text-main)">No visits for this month</strong><div style="font-size:12px;margin-top:5px">Upar form se pehli visit add karein.</div></div>';return;}
-    var groups={};rows.forEach(function(r){(groups[r.date]||(groups[r.date]=[])).push(r);});
-    el('ttTravelHistory').innerHTML=Object.keys(groups).sort().reverse().map(function(date){var list=groups[date],dayKm=list.reduce(function(a,r){return a+(Number(r.km)||0);},0);return '<section class="tt-travel-day"><div class="tt-travel-day-head"><strong>📅 '+safe(new Date(date+'T12:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}))+'</strong><strong style="white-space:nowrap">'+moneyKm(dayKm)+' KM</strong></div>'+list.map(function(r){return '<div class="tt-travel-entry"><div style="min-width:0;flex:1"><div class="tt-travel-route">'+safe(r.from)+' <span style="color:#0ea5e9">→</span> '+safe(r.to)+'</div><div class="tt-travel-meta"><strong>'+moneyKm(r.km)+' KM</strong>'+(r.purpose?' · '+safe(r.purpose):'')+(r.notes?'<br>'+safe(r.notes):'')+'</div></div><div class="tt-travel-actions"><button class="btn btn-outline btn-sm" onclick="editTravelEntry('+JSON.stringify(String(r.id))+')">✏️ Edit</button><button class="btn btn-danger-sm btn-sm" onclick="deleteTravelEntry('+JSON.stringify(String(r.id))+')">🗑 Delete</button></div></div>';}).join('')+'</section>';}).join('');
-  }
-  window.renderTravelExpenses=renderTravelExpenses;
-  window.printTravelMonthlyReport=function(){
-    var emp=selectedEmployee(),rows=getRows().filter(function(r){return String(r.employeeId)===String(emp.id)&&String(r.date||'').slice(0,7)===activeMonth;}).sort(function(a,b){return String(a.date).localeCompare(String(b.date))||Number(a.createdAt||0)-Number(b.createdAt||0);});
-    if(!rows.length){alert('Is month ke liye koi travel data nahi hai.');return;}
-    var total=rows.reduce(function(s,r){return s+(Number(r.km)||0);},0),days={};rows.forEach(function(r){(days[r.date]||(days[r.date]=[])).push(r);});
-    var html='<div style="font-family:Arial,sans-serif;color:#111"><div style="text-align:center;border-bottom:2px solid #0a2540;padding-bottom:12px;margin-bottom:14px"><h2 style="margin:0 0 5px;color:#0a2540">TWIN TOWN EXPRESS SERVICES PVT LTD</h2><h3 style="margin:0">MONTHLY TRAVEL EXPENSE / VISIT REPORT</h3><div style="margin-top:8px;font-size:13px">Month: <b>'+safe(monthLabel(activeMonth))+'</b></div></div><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-size:13px"><div>Employee Name: <b>'+safe(emp.name||'Employee')+'</b></div><div>Total Visits: <b>'+rows.length+'</b></div><div>Total Distance: <b>'+moneyKm(total)+' KM</b></div></div><table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr style="background:#eaf2f8"><th style="border:1px solid #9ca3af;padding:7px">Date</th><th style="border:1px solid #9ca3af;padding:7px">From</th><th style="border:1px solid #9ca3af;padding:7px">To / Visited Place</th><th style="border:1px solid #9ca3af;padding:7px">Purpose / Notes</th><th style="border:1px solid #9ca3af;padding:7px;text-align:right">KM</th></tr></thead><tbody>';
-    rows.forEach(function(r){html+='<tr><td style="border:1px solid #9ca3af;padding:7px;white-space:nowrap">'+safe(new Date(r.date+'T12:00:00').toLocaleDateString('en-IN'))+'</td><td style="border:1px solid #9ca3af;padding:7px">'+safe(r.from)+'</td><td style="border:1px solid #9ca3af;padding:7px">'+safe(r.to)+'</td><td style="border:1px solid #9ca3af;padding:7px">'+safe(r.purpose||'')+(r.notes?'<br><span style="color:#555">'+safe(r.notes)+'</span>':'')+'</td><td style="border:1px solid #9ca3af;padding:7px;text-align:right">'+moneyKm(r.km)+'</td></tr>';});
-    html+='</tbody><tfoot><tr><td colspan="4" style="border:1px solid #9ca3af;padding:9px;text-align:right;font-weight:bold">MONTH TOTAL</td><td style="border:1px solid #9ca3af;padding:9px;text-align:right;font-weight:bold">'+moneyKm(total)+' KM</td></tr></tfoot></table><div style="margin-top:35px;display:flex;justify-content:space-between;font-size:11px"><span>Employee Signature: __________________</span><span>Authorized Signature: __________________</span></div><div style="margin-top:18px;color:#555;font-size:9px">Generated from TTESPL ERP · '+safe(new Date().toLocaleString('en-IN'))+'</div></div>';
-    if(typeof ttPrintHtml==='function')ttPrintHtml('Travel Report - '+(emp.name||'Employee')+' - '+monthLabel(activeMonth),html);else{var w=window.open('','_blank');w.document.write(html);w.document.close();w.print();}
-  };
-})();
-</script>
-
-</body></html>'
+    '</head><body>' + bodyHtml + '</body></html>'
   );
   doc.close();
   // Android app ke print bridge ko poora page render hone ka thoda time dete hain
@@ -7642,127 +7525,7 @@ function ttOpenChatFile(cid) {
   try {
     const w = window.open('', '_blank');
     if (w && w.document) {
-      w.document.write('<title>' + esc(m.fileName || 'File') + '</title><body style="margin:0;background:#525659;"><iframe src="' + m.fileData + '" style="width:100%;height:100vh;border:0;"></iframe>
-
-<!-- TTESPL PREMIUM TRAVEL EXPENSES MODULE -->
-<script>
-(function(){
-  'use strict';
-  var STORE_KEY='TRAVEL_EXPENSES';
-  var editId=null;
-  var activeEmployeeId=null;
-  var activeMonth='';
-  function el(id){return document.getElementById(id);}
-  function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-  function moneyKm(v){return (Number(v)||0).toLocaleString('en-IN',{maximumFractionDigits:2});}
-  function employees(){return (Array.isArray(registeredEmployees)?registeredEmployees:[]).filter(function(e){return e && e.id!=null;});}
-  function isAdmin(){return typeof isAdminUser==='function' && isAdminUser();}
-  function currentEmp(){return (typeof currentUser!=='undefined' && currentUser)?currentUser:null;}
-  function getRows(){try{return JSON.parse(localStorage.getItem((window.DB_PREFIX||'TTESPL_ERP_')+STORE_KEY)||'[]')||[];}catch(e){return [];}}
-  function saveRows(rows){
-    try { if(typeof setStored==='function') setStored(STORE_KEY,rows); else localStorage.setItem((window.DB_PREFIX||'TTESPL_ERP_')+STORE_KEY,JSON.stringify(rows)); }
-    catch(e){console.error('Travel save failed',e);alert('Save nahi ho paya. Device storage check karein.');}
-    window.ttTravelExpenses=rows;
-  }
-  function monthNow(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
-  function monthLabel(m){if(!m)return '';var a=m.split('-');return new Date(Number(a[0]),Number(a[1])-1,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'});}
-  function selectedEmployee(){return employees().find(function(e){return String(e.id)===String(activeEmployeeId);}) || currentEmp() || {id:'unknown',name:'Employee'};}
-  function ensureModal(){
-    if(el('ttTravelModal'))return;
-    var modal=document.createElement('div');modal.id='ttTravelModal';modal.className='auth-overlay';modal.style.cssText='display:none;z-index:8000;align-items:flex-start;overflow:auto;padding:12px;';
-    modal.innerHTML=`<div class="auth-card tt-travel-card" style="max-width:900px;width:100%;margin:auto;max-height:none;overflow:visible;background:var(--card-glass,rgba(255,255,255,.88));backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.48);box-shadow:0 24px 80px rgba(2,6,23,.28);border-radius:24px;">
-      <div class="card-header" style="position:sticky;top:0;z-index:2;background:rgba(10,37,64,.96);color:white;border-radius:18px 18px 0 0;padding:14px 16px;">
-        <div><div style="font-size:17px;font-weight:900;letter-spacing:.2px">🧭 Travel Expenses</div><div style="font-size:11px;opacity:.78;margin-top:3px">Employee-wise monthly visit & kilometre register</div></div>
-        <button class="btn btn-outline btn-sm" onclick="closeTravelExpenses()" style="color:white;border-color:rgba(255,255,255,.3)">✕</button>
-      </div>
-      <div style="padding:14px;">
-        <div class="tt-travel-controls" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:12px;">
-          <div id="ttTravelEmployeeWrap"><label class="form-label">Employee Profile</label><select id="ttTravelEmployee" class="form-control" onchange="travelSelectEmployee(this.value)"></select></div>
-          <div><label class="form-label">Month</label><input type="month" id="ttTravelMonth" class="form-control" onchange="travelSelectMonth(this.value)"></div>
-        </div>
-        <div id="ttTravelStats" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 16px;"></div>
-        <div style="padding:14px;border:1px solid rgba(56,189,248,.24);border-radius:18px;background:linear-gradient(135deg,rgba(14,165,233,.09),rgba(99,102,241,.08));margin-bottom:16px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;"><strong id="ttTravelFormTitle" style="font-size:14px">＋ Add Visit</strong><span style="font-size:10px;color:var(--text-muted)">Multiple visits on same date supported</span></div>
-          <input type="hidden" id="ttTravelEntryId">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;">
-            <div><label class="form-label">Visit Date *</label><input type="date" id="ttTravelDate" class="form-control" required></div>
-            <div><label class="form-label">From / Starting Place *</label><input type="text" id="ttTravelFrom" class="form-control" placeholder="e.g. Office, Bhubaneswar" maxlength="180"></div>
-            <div><label class="form-label">To / Visited Place *</label><input type="text" id="ttTravelTo" class="form-control" placeholder="e.g. Customer, Cuttack" maxlength="180"></div>
-            <div><label class="form-label">Distance (KM) *</label><input type="number" id="ttTravelKm" class="form-control" min="0" max="99999" step="0.1" placeholder="e.g. 24.5" inputmode="decimal"></div>
-            <div><label class="form-label">Visit Purpose</label><input type="text" id="ttTravelPurpose" class="form-control" placeholder="Service / Sales / Delivery" maxlength="180"></div>
-            <div><label class="form-label">Notes (optional)</label><input type="text" id="ttTravelNotes" class="form-control" placeholder="Extra details" maxlength="300"></div>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;"><button class="btn btn-primary" onclick="saveTravelEntry()">💾 Save Visit</button><button class="btn btn-outline" onclick="resetTravelForm()">＋ New / Clear</button><button class="btn btn-print" onclick="printTravelMonthlyReport()">🖨️ Print / Save PDF</button></div>
-          <div style="font-size:10.5px;color:var(--text-muted);margin-top:9px;line-height:1.5">PDF mein employee name, month, date-wise route, daily visits aur total KM aayega. Android print screen mein “Save as PDF” select karein.</div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap"><strong style="font-size:14px">📅 Monthly Visit History</strong><span id="ttTravelCount" style="font-size:11px;color:var(--text-muted)"></span></div>
-        <div id="ttTravelHistory"></div>
-        <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn btn-outline" onclick="closeTravelExpenses()">Close</button></div>
-      </div></div>`;
-    document.body.appendChild(modal);
-    var style=document.createElement('style');style.textContent=`.tt-travel-card input,.tt-travel-card select{width:100%;min-width:0;border-radius:11px;padding:11px 12px;border:1px solid var(--border);background:var(--card);color:var(--text-main);font:inherit;font-size:13px;outline:none}.tt-travel-card input:focus,.tt-travel-card select:focus{border-color:#38bdf8;box-shadow:0 0 0 3px rgba(56,189,248,.14)}.tt-travel-stat{padding:12px 9px;border-radius:15px;border:1px solid var(--border);background:var(--card);box-shadow:0 4px 18px rgba(15,23,42,.05);min-width:0}.tt-travel-stat small{display:block;color:var(--text-muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.35px}.tt-travel-stat strong{display:block;font-size:19px;margin-top:4px;color:var(--text-main);overflow-wrap:anywhere}.tt-travel-day{border:1px solid var(--border);border-radius:15px;overflow:hidden;margin-bottom:10px;background:var(--card)}.tt-travel-day-head{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 12px;background:linear-gradient(110deg,rgba(14,165,233,.11),rgba(99,102,241,.08));border-bottom:1px solid var(--border)}.tt-travel-entry{padding:12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.tt-travel-entry:last-child{border-bottom:0}.tt-travel-route{font-size:13px;font-weight:800;line-height:1.45;overflow-wrap:anywhere}.tt-travel-meta{font-size:11px;color:var(--text-muted);line-height:1.6;margin-top:4px;overflow-wrap:anywhere}.tt-travel-actions{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}.tt-travel-actions button{font-size:11px;padding:6px 8px}@media(max-width:480px){.tt-travel-entry{flex-direction:column}.tt-travel-actions{width:100%}.tt-travel-actions button{flex:1}.tt-travel-stat strong{font-size:16px}}`;
-    document.head.appendChild(style);
-  }
-  window.openTravelExpenses=function(){
-    if(!currentEmp()){alert('Pehle employee account se login karein.');return;}
-    ensureModal();activeMonth=activeMonth||monthNow();
-    activeEmployeeId=isAdmin()?String(currentEmp().id):String(currentEmp().id);
-    var wrap=el('ttTravelEmployeeWrap'),sel=el('ttTravelEmployee');
-    if(isAdmin()){
-      wrap.style.display='block';
-      var emps=employees();
-      sel.innerHTML=emps.map(function(e){return '<option value="'+safe(e.id)+'">'+safe(e.name)+' — '+safe(e.role||'Staff')+'</option>';}).join('');
-      if(!emps.some(function(e){return String(e.id)===String(activeEmployeeId);})&&emps.length)activeEmployeeId=String(emps[0].id);
-      sel.value=activeEmployeeId;
-    }else{wrap.style.display='none';}
-    el('ttTravelMonth').value=activeMonth;
-    el('ttTravelModal').style.display='flex';
-    resetTravelForm();renderTravelExpenses();
-  };
-  window.closeTravelExpenses=function(){if(el('ttTravelModal'))el('ttTravelModal').style.display='none';};
-  window.travelSelectEmployee=function(id){if(!isAdmin())return;activeEmployeeId=String(id);resetTravelForm();renderTravelExpenses();};
-  window.travelSelectMonth=function(m){if(!m)return;activeMonth=m;resetTravelForm();renderTravelExpenses();};
-  window.resetTravelForm=function(){editId=null;['ttTravelEntryId','ttTravelFrom','ttTravelTo','ttTravelKm','ttTravelPurpose','ttTravelNotes'].forEach(function(id){if(el(id))el(id).value='';});if(el('ttTravelDate'))el('ttTravelDate').value=activeMonth?activeMonth+'-01':new Date().toISOString().slice(0,10);if(el('ttTravelFormTitle'))el('ttTravelFormTitle').textContent='＋ Add Visit';};
-  function userCanEdit(row){return isAdmin()||String(row.employeeId)===String(currentEmp()&&currentEmp().id);}
-  window.saveTravelEntry=function(){
-    var date=el('ttTravelDate').value,from=el('ttTravelFrom').value.trim(),to=el('ttTravelTo').value.trim(),km=Number(el('ttTravelKm').value);
-    if(!activeEmployeeId){alert('Employee select karein.');return;}
-    if(!date||!from||!to||el('ttTravelKm').value===''||!Number.isFinite(km)||km<0){alert('Date, From, To aur valid KM bharna zaroori hai.');return;}
-    if(date.slice(0,7)!==activeMonth){if(!confirm('Visit selected month se alag date ka hai. Report ko is date ke month par switch karke save karein?'))return;activeMonth=date.slice(0,7);if(el('ttTravelMonth'))el('ttTravelMonth').value=activeMonth;}
-    var rows=getRows(),id=el('ttTravelEntryId').value||editId;
-    var existing=id?rows.find(function(r){return String(r.id)===String(id);}):null;
-    if(existing&&!userCanEdit(existing)){alert('Is entry ko edit karne ki permission nahi hai.');return;}
-    var emp=selectedEmployee();
-    var row={id:id||('TRV-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)),employeeId:activeEmployeeId,employeeName:emp.name||'Employee',date:date,from:from,to:to,km:Math.round(km*100)/100,purpose:el('ttTravelPurpose').value.trim(),notes:el('ttTravelNotes').value.trim(),createdAt:existing?existing.createdAt:Date.now(),updatedAt:Date.now(),createdBy:existing?existing.createdBy:(currentEmp()&&currentEmp().name||'Staff')};
-    if(existing){rows=rows.map(function(r){return String(r.id)===String(id)?row:r;});}else rows.push(row);
-    saveRows(rows);resetTravelForm();renderTravelExpenses();if(typeof ttShowSuccessToast==='function')ttShowSuccessToast(existing?'Travel visit updated.':'Travel visit saved.');
-  };
-  window.editTravelEntry=function(id){var r=getRows().find(function(x){return String(x.id)===String(id);});if(!r||!userCanEdit(r))return alert('Permission denied.');if(!isAdmin()&&String(r.employeeId)!==String(currentEmp()&&currentEmp().id))return alert('Sirf apna travel data edit kar sakte hain.');editId=r.id;el('ttTravelEntryId').value=r.id;el('ttTravelDate').value=r.date;el('ttTravelFrom').value=r.from||'';el('ttTravelTo').value=r.to||'';el('ttTravelKm').value=r.km;el('ttTravelPurpose').value=r.purpose||'';el('ttTravelNotes').value=r.notes||'';el('ttTravelFormTitle').textContent='✏️ Edit Visit';var f=el('ttTravelFormTitle');if(f)f.scrollIntoView({behavior:'smooth',block:'center'});};
-  window.deleteTravelEntry=function(id){var rows=getRows(),r=rows.find(function(x){return String(x.id)===String(id);});if(!r||!userCanEdit(r))return alert('Permission denied.');if(!confirm('Is travel visit ko permanently delete karein?'))return;saveRows(rows.filter(function(x){return String(x.id)!==String(id);}));if(window.cloudSync&&typeof window.cloudSync.deleteItem==='function')window.cloudSync.deleteItem(STORE_KEY,id).catch(function(e){console.warn('Cloud delete failed',e);});renderTravelExpenses();};
-  function renderTravelExpenses(){
-    if(!el('ttTravelHistory'))return;
-    var emp=selectedEmployee(),rows=getRows().filter(function(r){return String(r.employeeId)===String(emp.id)&&String(r.date||'').slice(0,7)===activeMonth;}).sort(function(a,b){return String(b.date).localeCompare(String(a.date))||Number(b.createdAt||0)-Number(a.createdAt||0);});
-    var total=rows.reduce(function(s,r){return s+(Number(r.km)||0);},0),days=new Set(rows.map(function(r){return r.date;})).size;
-    el('ttTravelStats').innerHTML='<div class="tt-travel-stat"><small>Total Distance</small><strong>'+moneyKm(total)+' <span style="font-size:11px">KM</span></strong></div><div class="tt-travel-stat"><small>Total Visits</small><strong>'+rows.length+'</strong></div><div class="tt-travel-stat"><small>Visit Days</small><strong>'+days+'</strong></div>';
-    el('ttTravelCount').textContent=rows.length+' visit(s) · '+monthLabel(activeMonth);
-    if(!rows.length){el('ttTravelHistory').innerHTML='<div style="text-align:center;padding:26px 14px;border:1px dashed var(--border);border-radius:16px;color:var(--text-muted)"><div style="font-size:28px;margin-bottom:8px">🗺️</div><strong style="color:var(--text-main)">No visits for this month</strong><div style="font-size:12px;margin-top:5px">Upar form se pehli visit add karein.</div></div>';return;}
-    var groups={};rows.forEach(function(r){(groups[r.date]||(groups[r.date]=[])).push(r);});
-    el('ttTravelHistory').innerHTML=Object.keys(groups).sort().reverse().map(function(date){var list=groups[date],dayKm=list.reduce(function(a,r){return a+(Number(r.km)||0);},0);return '<section class="tt-travel-day"><div class="tt-travel-day-head"><strong>📅 '+safe(new Date(date+'T12:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}))+'</strong><strong style="white-space:nowrap">'+moneyKm(dayKm)+' KM</strong></div>'+list.map(function(r){return '<div class="tt-travel-entry"><div style="min-width:0;flex:1"><div class="tt-travel-route">'+safe(r.from)+' <span style="color:#0ea5e9">→</span> '+safe(r.to)+'</div><div class="tt-travel-meta"><strong>'+moneyKm(r.km)+' KM</strong>'+(r.purpose?' · '+safe(r.purpose):'')+(r.notes?'<br>'+safe(r.notes):'')+'</div></div><div class="tt-travel-actions"><button class="btn btn-outline btn-sm" onclick="editTravelEntry('+JSON.stringify(String(r.id))+')">✏️ Edit</button><button class="btn btn-danger-sm btn-sm" onclick="deleteTravelEntry('+JSON.stringify(String(r.id))+')">🗑 Delete</button></div></div>';}).join('')+'</section>';}).join('');
-  }
-  window.renderTravelExpenses=renderTravelExpenses;
-  window.printTravelMonthlyReport=function(){
-    var emp=selectedEmployee(),rows=getRows().filter(function(r){return String(r.employeeId)===String(emp.id)&&String(r.date||'').slice(0,7)===activeMonth;}).sort(function(a,b){return String(a.date).localeCompare(String(b.date))||Number(a.createdAt||0)-Number(b.createdAt||0);});
-    if(!rows.length){alert('Is month ke liye koi travel data nahi hai.');return;}
-    var total=rows.reduce(function(s,r){return s+(Number(r.km)||0);},0),days={};rows.forEach(function(r){(days[r.date]||(days[r.date]=[])).push(r);});
-    var html='<div style="font-family:Arial,sans-serif;color:#111"><div style="text-align:center;border-bottom:2px solid #0a2540;padding-bottom:12px;margin-bottom:14px"><h2 style="margin:0 0 5px;color:#0a2540">TWIN TOWN EXPRESS SERVICES PVT LTD</h2><h3 style="margin:0">MONTHLY TRAVEL EXPENSE / VISIT REPORT</h3><div style="margin-top:8px;font-size:13px">Month: <b>'+safe(monthLabel(activeMonth))+'</b></div></div><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-size:13px"><div>Employee Name: <b>'+safe(emp.name||'Employee')+'</b></div><div>Total Visits: <b>'+rows.length+'</b></div><div>Total Distance: <b>'+moneyKm(total)+' KM</b></div></div><table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr style="background:#eaf2f8"><th style="border:1px solid #9ca3af;padding:7px">Date</th><th style="border:1px solid #9ca3af;padding:7px">From</th><th style="border:1px solid #9ca3af;padding:7px">To / Visited Place</th><th style="border:1px solid #9ca3af;padding:7px">Purpose / Notes</th><th style="border:1px solid #9ca3af;padding:7px;text-align:right">KM</th></tr></thead><tbody>';
-    rows.forEach(function(r){html+='<tr><td style="border:1px solid #9ca3af;padding:7px;white-space:nowrap">'+safe(new Date(r.date+'T12:00:00').toLocaleDateString('en-IN'))+'</td><td style="border:1px solid #9ca3af;padding:7px">'+safe(r.from)+'</td><td style="border:1px solid #9ca3af;padding:7px">'+safe(r.to)+'</td><td style="border:1px solid #9ca3af;padding:7px">'+safe(r.purpose||'')+(r.notes?'<br><span style="color:#555">'+safe(r.notes)+'</span>':'')+'</td><td style="border:1px solid #9ca3af;padding:7px;text-align:right">'+moneyKm(r.km)+'</td></tr>';});
-    html+='</tbody><tfoot><tr><td colspan="4" style="border:1px solid #9ca3af;padding:9px;text-align:right;font-weight:bold">MONTH TOTAL</td><td style="border:1px solid #9ca3af;padding:9px;text-align:right;font-weight:bold">'+moneyKm(total)+' KM</td></tr></tfoot></table><div style="margin-top:35px;display:flex;justify-content:space-between;font-size:11px"><span>Employee Signature: __________________</span><span>Authorized Signature: __________________</span></div><div style="margin-top:18px;color:#555;font-size:9px">Generated from TTESPL ERP · '+safe(new Date().toLocaleString('en-IN'))+'</div></div>';
-    if(typeof ttPrintHtml==='function')ttPrintHtml('Travel Report - '+(emp.name||'Employee')+' - '+monthLabel(activeMonth),html);else{var w=window.open('','_blank');w.document.write(html);w.document.close();w.print();}
-  };
-})();
-</script>
-
-</body>');
+      w.document.write('<title>' + esc(m.fileName || 'File') + '</title><body style="margin:0;background:#525659;"><iframe src="' + m.fileData + '" style="width:100%;height:100vh;border:0;"></iframe></body>');
       return;
     }
   } catch (e) {}
@@ -8300,9 +8063,9 @@ window.saveQuotationOnly=saveQuotationOnly; window.renderQuotationHistory=render
 </script>
 
 
-
 <!-- TTESPL PREMIUM TRAVEL EXPENSES MODULE -->
 <script>
+
 (function(){
   'use strict';
   var STORE_KEY='TRAVEL_EXPENSES';
@@ -8320,6 +8083,13 @@ window.saveQuotationOnly=saveQuotationOnly; window.renderQuotationHistory=render
     try { if(typeof setStored==='function') setStored(STORE_KEY,rows); else localStorage.setItem((window.DB_PREFIX||'TTESPL_ERP_')+STORE_KEY,JSON.stringify(rows)); }
     catch(e){console.error('Travel save failed',e);alert('Save nahi ho paya. Device storage check karein.');}
     window.ttTravelExpenses=rows;
+    // Persist locally first, then sync changed records in the background.
+    if(window.cloudSync && typeof window.cloudSync.pushKey==='function'){
+      window.cloudSync.pushKey(STORE_KEY, rows).catch(function(e){
+        console.warn('Travel cloud sync failed; local copy is retained.', e);
+        if(typeof ttShowSoftToast==='function') ttShowSoftToast('Travel saved on this device; cloud sync will retry when available.','error');
+      });
+    }
   }
   function monthNow(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
   function monthLabel(m){if(!m)return '';var a=m.split('-');return new Date(Number(a[0]),Number(a[1])-1,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'});}
@@ -8417,6 +8187,7 @@ window.saveQuotationOnly=saveQuotationOnly; window.renderQuotationHistory=render
     if(typeof ttPrintHtml==='function')ttPrintHtml('Travel Report - '+(emp.name||'Employee')+' - '+monthLabel(activeMonth),html);else{var w=window.open('','_blank');w.document.write(html);w.document.close();w.print();}
   };
 })();
+
 </script>
 
 </body>
