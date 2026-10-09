@@ -17,6 +17,32 @@
   var did = function (id) { return String(id).replace(/\//g, '~'); };
   var me = function () { return (typeof currentUser !== 'undefined' && currentUser) ? currentUser.name : ''; };
 
+  // UNSYNCED-DATA PROTECTION: pehle jab kisi order/lead/service ka cloud push
+  // kisi bhi wajah se fail hota tha (size, net, permission waghera), to us
+  // device ka local data to sahi rehta tha, LEKIN thodi hi der me agla real-time
+  // cloud snapshot (jisme wo naya/update hua record abhi tak nahi pahuncha tha)
+  // aakar seedha "ordersData = list" karke is device ki memory me CHALU change
+  // ko purane cloud data se OVERWRITE kar deta tha. Agle kisi bhi save par ye
+  // purana (galat) data wapas localStorage me bhi likha jaata, aur app reopen
+  // karne par us device ka kiya hua kaam hamesha ke liye gayab ho jaata tha -
+  // chahe push sirf 1 baar fail hua ho. Ab jab bhi kisi key (ORDERS, LEADS,
+  // SERVICES waghera) ka cloud push abhi tak confirm nahi hua hai, us key ke
+  // liye aane wale cloud snapshot ko IGNORE kiya jaata hai (jab tak push safal
+  // na ho jaye) - taaki local (abhi tak un-synced) data kabhi overwrite/delete
+  // na ho. Jaise hi push safal hota hai, agla cloud snapshot normal tarike se
+  // wapas apply hone lagta hai.
+  var dbPrefix = function () { return (typeof window !== 'undefined' && window.DB_PREFIX) ? window.DB_PREFIX : 'TTESPL_ERP_'; };
+  var pendingFlagKey = function (key) { return dbPrefix() + 'SYNC_PENDING_' + key; };
+  var markPending = function (key, on) {
+    try {
+      if (on) localStorage.setItem(pendingFlagKey(key), '1');
+      else localStorage.removeItem(pendingFlagKey(key));
+    } catch (e) {}
+  };
+  var isPending = function (key) {
+    try { return !!localStorage.getItem(pendingFlagKey(key)); } catch (e) { return false; }
+  };
+
   var CFG = {
     apiKey: "AIzaSyAjsq2wbyXmt8_MjEazM9mAYd5vlZW0dy4",
     authDomain: "ttespl.firebaseapp.com",
@@ -73,6 +99,15 @@
     // data kabhi overwrite nahi hoga, chahe dono ek saath login ho.
     var lastCloud = {};
 
+    // App pichli baar band/crash hui ho aur tab OFFLINE_QUEUE me kisi key ka
+    // data bhejna reh gaya ho, to is naye session ke shuru hote hi us key ko
+    // turant "pending" maan lo - taaki pehla hi cloud snapshot us purane
+    // un-synced data ko galti se overwrite na kar de.
+    try {
+      var _oq = JSON.parse(localStorage.getItem(dbPrefix() + 'OFFLINE_QUEUE') || '{}');
+      Object.keys(_oq).forEach(function (k) { if (MAP[k]) markPending(k, true); });
+    } catch (e) {}
+
     // Direct Real-Time Cloud Methods with Persistence Guarantee
     window.cloudSync = {
       saveDoc: function (key, item) {
@@ -110,6 +145,11 @@
           });
         }
         if (!toSend.length) return Promise.resolve();
+
+        // Push shuru hote hi is key ko "pending" maan lo - jab tak Firestore se
+        // pakka confirm na ho jaye ki ye data safal save ho gaya, tab tak koi
+        // bhi aane wala cloud snapshot is key ka local data overwrite nahi karega.
+        markPending(key, true);
 
         // DOCUMENT SIZE SAFEGUARD (orders): har partial "due payment" collect hote
         // waqt uska proof photo order.payments[] array ke andar HAMESHA ke liye jama
@@ -162,7 +202,7 @@
         // na hi app ko pata chalta tha - upar wala UI hamesha theek dikhata rehta
         // tha jabki data cloud me ja hi nahi raha tha. Ab failure clearly dikhega
         // aur error upar (index.html ke retry/offline-queue) tak bhi jayega.
-        return commitAll(prepared).then(function () { setSync('Live Cloud', true); })
+        return commitAll(prepared).then(function () { setSync('Live Cloud', true); markPending(key, false); })
           .catch(function (e) {
             console.error('Cloud pushKey Error:', e);
             var msg = (e && e.message) || '';
@@ -171,7 +211,7 @@
               // poori tarah hata kar bhejo - taaki status/amount jaisi zaroori
               // cheezein size ki wajah se kabhi bhi cloud jaane se na ruke.
               var shrunk = toSend.map(function (it) { return col === 'orders' ? shrinkOrderForCloud(it, true) : it; });
-              return commitAll(shrunk).then(function () { setSync('Live Cloud', true); })
+              return commitAll(shrunk).then(function () { setSync('Live Cloud', true); markPending(key, false); })
                 .catch(function (e2) { console.error('Cloud pushKey retry Error:', e2); setSync('Offline', false); throw e2; });
             }
             setSync('Offline', false); throw e;
@@ -311,20 +351,30 @@
         list.forEach(function (it) { if (it && it.id != null) cacheNow[it.id] = JSON.stringify(it); });
         lastCloud[key] = cacheNow;
 
-        switch (key) {
-          case 'LEADS': leadsData = list; break;
-          case 'ORDERS': ordersData = list; break;
-          case 'SERVICES': serviceCallsData = list; break;
-          case 'INVENTORY': sampleInventory = list; break;
-          case 'MACHINERY': machineryDatabase = list; break;
-          case 'CUSTOMERS': customerDatabase = list; break;
-          case 'STAFF':
-            if (list.length > 0) registeredEmployees = list;
-            break;
-          case 'MACHINE_PARTS':
-            machinePartsData = list;
-            if (typeof window.machinePartsData !== 'undefined') window.machinePartsData = list;
-            break;
+        if (isPending(key)) {
+          // Is device ka is key ka data abhi tak cloud me confirm-save nahi hua
+          // hai (push chal raha hai ya pehle fail ho chuka hai) - is round ka
+          // cloud snapshot isliye jaan-boojh kar ignore kiya ja raha hai, taaki
+          // abhi tak un-synced local kaam (naya order/delivery/payment) galti
+          // se purane cloud data se overwrite/delete na ho jaye. Push safal
+          // hote hi agla snapshot normal tarike se apply hoga.
+          console.warn('Cloud snapshot skipped for', key, '- local changes still pending upload.');
+        } else {
+          switch (key) {
+            case 'LEADS': leadsData = list; break;
+            case 'ORDERS': ordersData = list; break;
+            case 'SERVICES': serviceCallsData = list; break;
+            case 'INVENTORY': sampleInventory = list; break;
+            case 'MACHINERY': machineryDatabase = list; break;
+            case 'CUSTOMERS': customerDatabase = list; break;
+            case 'STAFF':
+              if (list.length > 0) registeredEmployees = list;
+              break;
+            case 'MACHINE_PARTS':
+              machinePartsData = list;
+              if (typeof window.machinePartsData !== 'undefined') window.machinePartsData = list;
+              break;
+          }
         }
 
         if (!initialLoadDone) {
