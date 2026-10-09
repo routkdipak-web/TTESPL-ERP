@@ -1548,7 +1548,6 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
         <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Maniac Line', this)"><span class="cat-chip-icon">⚡</span><span class="cat-chip-label">Maniac Line</span><span class="cat-chip-count"><span id="catCountManiac">0</span></span></button>
         <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Maxshine Gear & Tools', this)"><span class="cat-chip-icon">🛠️</span><span class="cat-chip-label">Maxshine</span><span class="cat-chip-count"><span id="catCountMaxshine">0</span></span></button>
         <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Vista Car Care', this)"><span class="cat-chip-icon">🚗</span><span class="cat-chip-label">Vista</span><span class="cat-chip-count"><span id="catCountVista">0</span></span></button>
-        <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Fireball', this)"><span class="cat-chip-icon">🔥</span><span class="cat-chip-label">Fireball</span><span class="cat-chip-count"><span id="catCountFireball">0</span></span></button>
         <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Machine Spares', this)"><span class="cat-chip-icon">⚙️</span><span class="cat-chip-label">Spares</span><span class="cat-chip-count"><span id="catCountSpares">0</span></span></button>
         <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('CUSTOMERS', this)"><span class="cat-chip-icon">👥</span><span class="cat-chip-label">Customers</span><span class="cat-chip-count"><span id="catCountCust">0</span></span></button>
       </div>
@@ -2202,16 +2201,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       </div>
       <div class="form-group">
         <label class="form-label">Category</label>
-        <select id="stkCategory">
-            <option value="Machines & Equipment">Machines</option>
-            <option value="Ma-Fra Chemicals">Ma-Fra Chemical</option>
-            <option value="Mafra Detailing">Ma-Fra Detailing</option>
-            <option value="Maniac Line">Maniac Line</option>
-            <option value="Maxshine Gear & Tools">Maxshine</option>
-            <option value="Vista Car Care">Vista</option>
-            <option value="Machine Spares">Spares</option>
-            <option value="Fireball">Fireball</option>
-          </select>
+        <input type="text" id="stkCategory" placeholder="e.g. Spares - HRC">
       </div>
     </div>
     <div class="grid-2">
@@ -3197,7 +3187,6 @@ window.addEventListener('resize', function () { ttUpdateNavPill(); });
    hai + pending offline changes bhi push ho jate hain - koi existing listener
    ya onclick handler isse nahi chhua jata, sirf touch gesture upar add hua hai. */
 (function () {
-  return; // TTESPL request: disable app's custom pull-down refresh gesture.
   let startY = 0, pulling = false, triggered = false;
   const THRESHOLD = 68;
   // SETTLE GUARD: iOS/Android par upar scroll karte waqt momentum se scrollTop
@@ -5408,7 +5397,6 @@ function updateCategoryCounts() {
   setEl('catCountManiac', byCat['Maniac Line'] || 0);
   setEl('catCountMaxshine', byCat['Maxshine Gear & Tools'] || 0);
   setEl('catCountVista', byCat['Vista Car Care'] || 0);
-  setEl('catCountFireball', byCat['Fireball'] || 0);
   setEl('catCountSpares', byCat['Machine Spares'] || 0);
   setEl('catCountCust', customerDatabase.length);
 }
@@ -5572,7 +5560,7 @@ function openAddPartModal(partObj = null) {
     editId.value = "";
     document.getElementById('stkName').value = "";
     document.getElementById('stkCode').value = "";
-    document.getElementById('stkCategory').value = "Machines & Equipment";
+    document.getElementById('stkCategory').value = "Machine Spares";
     document.getElementById('stkMachine').value = "";
     document.getElementById('stkHsn').value = "84139190";
     document.getElementById('stkQty').value = "0";
@@ -5597,9 +5585,9 @@ function saveStockItemAction() {
 
   if(editId) {
     const item = sampleInventory.find(x => x.id === parseInt(editId));
-    if(item) { item.name = name; item.code = code; item.category = cat; item.stock = stock; item.dealerPrice = dealerPrice; item.rate = rate; item.machine = document.getElementById("stkMachine").value.trim(); item.hsn = document.getElementById("stkHsn").value.trim(); item.desc = document.getElementById("stkDesc").value.trim(); }
+    if(item) { item.name = name; item.code = code; item.category = cat; item.stock = stock; item.dealerPrice = dealerPrice; item.rate = rate; }
   } else {
-    sampleInventory.unshift({ id: Date.now(), name, code, category: cat, stock, dealerPrice, rate, machine: document.getElementById("stkMachine").value.trim(), hsn: document.getElementById("stkHsn").value.trim(), desc: document.getElementById("stkDesc").value.trim() });
+    sampleInventory.unshift({ id: Date.now(), name, code, category: cat, stock, dealerPrice, rate });
   }
 
   setStored("INVENTORY", sampleInventory);
@@ -6951,7 +6939,7 @@ function buildQuotationHtml(q) {
 </div>`;
 }
 
-function printQuotationLegacy() {
+function printQuotation() {
   const custName = document.getElementById('quotCustName').value.trim();
   if (!custName) { alert('Customer ka naam daalo'); return; }
   const rows = document.querySelectorAll('#quotItemsBody .quot-item-row');
@@ -7832,97 +7820,6 @@ window.addEventListener('popstate', function (e) {
     window.switchTab(tab, navBtns[idx] || null, true);
   }
 });
-
-
-/* ===== TTESPL QUOTATION SAVE + CLOUD HISTORY + EDIT/RESEND ===== */
-window.quotEditingId = null;
-function ttGetQuotationHistory() {
-  try { return JSON.parse(localStorage.getItem(DB_PREFIX + 'QUOTATIONS_HISTORY_FULL') || '[]'); } catch(e) { return []; }
-}
-function ttStoreQuotation(q) {
-  let hist = ttGetQuotationHistory();
-  const ix = hist.findIndex(x => String(x.id) === String(q.id));
-  if (ix >= 0) hist[ix] = q; else hist.unshift(q);
-  hist.sort((a,b) => (Number(b.updatedAt || b.createdAt || 0) - Number(a.updatedAt || a.createdAt || 0)));
-  try { localStorage.setItem(DB_PREFIX + 'QUOTATIONS_HISTORY_FULL', JSON.stringify(hist.slice(0,500))); } catch(e) { console.warn('Quotation local history:',e); }
-  if (window.cloudSync && typeof window.cloudSync.saveDoc === 'function') {
-    window.cloudSync.saveDoc('QUOTATIONS', q).catch(e => console.warn('Quotation cloud save failed', e));
-  }
-  renderQuotationHistory();
-}
-function ttQuotationFromForm() {
-  const custName = document.getElementById('quotCustName').value.trim();
-  if (!custName) { alert('Customer ka naam daalo'); return null; }
-  const rows = Array.from(document.querySelectorAll('#quotItemsBody .quot-item-row'));
-  const items = rows.map(r => {
-    const qty = Number(r.querySelector('.qit-qty').value) || 0;
-    const rate = Number(r.querySelector('.qit-rate').value) || 0;
-    const disc = Number(r.querySelector('.qit-disc').value) || 0;
-    return {name:r.querySelector('.qit-name').value.trim() || 'Item', hsn:r.querySelector('.qit-hsn').value.trim() || '-', qty, rate, disc, amount:Math.round((qty*rate*(1-disc/100)/1.18)*100)/100};
-  }).filter(i => i.name && i.qty > 0);
-  if (!items.length) { alert('Kam se kam ek item aur quantity add karo'); return null; }
-  const t = quotRecalc();
-  const editing = window.quotEditingId ? ttGetQuotationHistory().find(x => String(x.id) === String(window.quotEditingId)) : null;
-  return { id: editing ? editing.id : quotNextId(), date: editing ? editing.date : new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}), custName,
-    custPhone:document.getElementById('quotCustPhone').value.trim(), custAddr:document.getElementById('quotCustAddr').value.trim(), custGst:document.getElementById('quotCustGst').value.trim(),
-    payMode:document.getElementById('quotPayMode').value.trim() || 'Cash/Online', items, totalNoGst:t.totalNoGst,cgst:t.cgst,sgst:t.sgst,svc:t.svc,roundOff:t.roundOff,final:t.final,
-    createdAt: editing ? (editing.createdAt || Date.now()) : Date.now(), updatedAt:Date.now() };
-}
-function saveQuotationOnly() {
-  const q = ttQuotationFromForm(); if (!q) return;
-  ttStoreQuotation(q); window.quotEditingId = q.id;
-  alert('Quotation ' + q.id + ' history me save ho gaya. Ab aap edit, PDF/print ya resend kar sakte hain.');
-}
-function ttLoadQuotation(qid) {
-  const q = ttGetQuotationHistory().find(x => String(x.id) === String(qid));
-  if (!q) { alert('Quotation nahi mila.'); return; }
-  window.quotEditingId = q.id;
-  document.getElementById('quotCustName').value=q.custName||'';
-  document.getElementById('quotCustPhone').value=q.custPhone||'';
-  document.getElementById('quotCustGst').value=q.custGst||'';
-  document.getElementById('quotCustAddr').value=q.custAddr||'';
-  document.getElementById('quotServiceCharge').value=Number(q.svc)||0;
-  document.getElementById('quotPayMode').value=q.payMode||'Cash/Online';
-  const body=document.getElementById('quotItemsBody'); body.innerHTML='';
-  (q.items||[]).forEach(it=>{ quotAddItemRow(); const r=body.lastElementChild; r.querySelector('.qit-name').value=it.name||''; r.querySelector('.qit-hsn').value=it.hsn||''; r.querySelector('.qit-qty').value=it.qty||1; r.querySelector('.qit-rate').value=it.rate||0; r.querySelector('.qit-disc').value=it.disc||0; });
-  quotRecalc(); document.getElementById('quotationHistoryPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-function ttQuotationPdf(qid) {
-  const q=ttGetQuotationHistory().find(x=>String(x.id)===String(qid));
-  if(!q) return alert('Quotation nahi mila.');
-  ttPrintHtml('Quotation '+q.id, buildQuotationHtml(q));
-}
-function ttResendQuotation(qid) {
-  const q=ttGetQuotationHistory().find(x=>String(x.id)===String(qid)); if(!q) return alert('Quotation nahi mila.');
-  const itemsTxt=(q.items||[]).map(i=>`${i.name} x${i.qty} - Rs.${Number(i.amount||0).toFixed(2)}`).join('\n');
-  const msg=`TWIN TOWN EXPRESS SERVICES PVT LTD\nQuotation: ${q.id}\nCustomer: ${q.custName}\n-----------------------\n${itemsTxt}\n-----------------------\nTotal: Rs.${q.final}\n\nRasulgarh, Bhubaneswar`;
-  ttNativeShareOrFallback({title:`TTESPL Quotation ${q.id}`,text:msg},()=>ttPrintHtml('Quotation '+q.id,buildQuotationHtml(q)));
-}
-function renderQuotationHistory() {
-  const panel=document.getElementById('quotationHistoryPanel'); if(!panel) return;
-  const q=(document.getElementById('quotHistorySearch')?.value||'').trim().toLowerCase();
-  const hist=ttGetQuotationHistory().filter(x=>(x.custName||'').toLowerCase().includes(q)||(x.id||'').toLowerCase().includes(q)||(x.custPhone||'').includes(q));
-  const list=document.getElementById('quotationHistoryList'); if(!list) return;
-  list.innerHTML=hist.length?hist.map(x=>`<div class="card" style="padding:10px;margin:8px 0;"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start;"><div><strong>${esc(x.id)}</strong><div style="font-size:12px;margin-top:3px;">${esc(x.custName||'')} · ${esc(x.date||'')}</div><div style="font-weight:800;color:var(--accent);margin-top:4px;">₹${ttInr(x.final||0)}</div></div><div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;"><button class="btn btn-outline btn-sm" onclick="ttLoadQuotation('${String(x.id).replace(/'/g,"\\'")}')">✏️ Edit</button><button class="btn btn-print btn-sm" onclick="ttQuotationPdf('${String(x.id).replace(/'/g,"\\'")}')">PDF/Print</button><button class="btn btn-wa btn-sm" onclick="ttResendQuotation('${String(x.id).replace(/'/g,"\\'")}')">Share</button></div></div></div>`).join(''):'<div style="padding:12px;color:var(--text-muted);font-size:12px;">Koi saved quotation nahi mila.</div>';
-}
-const __ttOpenQuotationModalBase = openQuotationModal;
-openQuotationModal = function() {
-  __ttOpenQuotationModalBase();
-  window.quotEditingId = null;
-  const m=document.getElementById('quotationModal'); const card=m && m.querySelector('.auth-card');
-  if(card && !document.getElementById('quotationHistoryPanel')) {
-    const panel=document.createElement('div'); panel.id='quotationHistoryPanel'; panel.style.cssText='margin-top:16px;padding-top:12px;border-top:2px solid var(--border);';
-    panel.innerHTML=`<div style="font-weight:800;margin-bottom:8px;">📚 Quotation History</div><input id="quotHistorySearch" type="search" placeholder="🔍 Customer name, phone or quotation no. search" oninput="renderQuotationHistory()" style="margin-bottom:8px;"><div id="quotationHistoryList"></div>`;
-    card.appendChild(panel);
-    const actions=card.querySelector('button[onclick="printQuotation()"]')?.parentElement;
-    if(actions) { actions.insertAdjacentHTML('afterbegin','<button class="btn btn-accent" style="flex:1;" onclick="saveQuotationOnly()">💾 Save</button>'); actions.querySelector('button[onclick="printQuotation()"]')?.insertAdjacentHTML('beforebegin','<button class="btn btn-print" style="flex:1;" onclick="ttPrintCurrentQuotation()">📄 Save / PDF</button>'); }
-  }
-  renderQuotationHistory();
-};
-function ttPrintCurrentQuotation() { const q=ttQuotationFromForm(); if(!q)return; ttStoreQuotation(q); window.quotEditingId=q.id; ttPrintHtml('Quotation '+q.id,buildQuotationHtml(q)); }
-printQuotation = function() { const q=ttQuotationFromForm(); if(!q)return; ttStoreQuotation(q); window.quotEditingId=q.id; const itemsTxt=q.items.map(i=>`${i.name} x${i.qty} - Rs.${Number(i.amount||0).toFixed(2)}`).join('\n'); const msg=`TWIN TOWN EXPRESS SERVICES PVT LTD\nQuotation: ${q.id}\nCustomer: ${q.custName}\n-----------------------\n${itemsTxt}\n-----------------------\nTotal: Rs.${q.final}\n\nRasulgarh, Bhubaneswar`; ttNativeShareOrFallback({title:`TTESPL Quotation ${q.id}`,text:msg},()=>ttPrintHtml('Quotation '+q.id,buildQuotationHtml(q))); };
-window.saveQuotationOnly=saveQuotationOnly; window.renderQuotationHistory=renderQuotationHistory; window.ttLoadQuotation=ttLoadQuotation; window.ttQuotationPdf=ttQuotationPdf; window.ttResendQuotation=ttResendQuotation;
-
 </script>
 
 </body>
