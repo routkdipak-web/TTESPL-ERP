@@ -43,6 +43,20 @@
     try { return !!localStorage.getItem(pendingFlagKey(key)); } catch (e) { return false; }
   };
 
+  // UNDEFINED-VALUE SAFEGUARD: Firestore SDK kisi bhi document me "undefined"
+  // value dekhte hi use turant (synchronously) reject kar deta hai - bina kisi
+  // retry/error-toast ke, poora save chupchaap ruk jata hai. Cloud me jaane se
+  // pehle har "undefined" ko yahan null me badal dete hain (saveDoc aur pushKey
+  // dono use karte hain), taaki koi bhi save sirf iss wajah se kabhi na ruke.
+  function sanitizeForFirestore(val) {
+    if (val === undefined) return null;
+    if (val === null || typeof val !== 'object') return val;
+    if (Array.isArray(val)) return val.map(sanitizeForFirestore);
+    var out = {};
+    Object.keys(val).forEach(function (k) { out[k] = sanitizeForFirestore(val[k]); });
+    return out;
+  }
+
   var CFG = {
     apiKey: "AIzaSyAjsq2wbyXmt8_MjEazM9mAYd5vlZW0dy4",
     authDomain: "ttespl.firebaseapp.com",
@@ -114,9 +128,13 @@
         var col = MAP[key];
         if (!col || !item || item.id == null) return Promise.resolve();
         setSync('Saving...', true);
-        return F.setDoc(F.doc(db, col, did(item.id)), item, { merge: true })
-          .then(function () { setSync('Live Cloud', true); })
-          .catch(function (e) { console.error('Cloud Save Error:', e); setSync('Offline', false); });
+        try {
+          return F.setDoc(F.doc(db, col, did(item.id)), sanitizeForFirestore(item), { merge: true })
+            .then(function () { setSync('Live Cloud', true); })
+            .catch(function (e) { console.error('Cloud Save Error:', e); setSync('Offline', false); });
+        } catch (e) {
+          console.error('Cloud Save Error:', e); setSync('Offline', false); return Promise.reject(e);
+        }
       },
 
       deleteItem: function (key, id) {
@@ -181,20 +199,30 @@
         }
 
         var prepared = toSend.map(function (it) {
-          if (col === 'orders' && sizeOf(it) > SAFE_LIMIT) return shrinkOrderForCloud(it, false);
-          return it;
+          var out = (col === 'orders' && sizeOf(it) > SAFE_LIMIT) ? shrinkOrderForCloud(it, false) : it;
+          return sanitizeForFirestore(out);
         });
 
         function commitAll(list) {
-          var jobs = [];
-          for (var i = 0; i < list.length; i += 400) {
-            var b = F.writeBatch(db);
-            list.slice(i, i + 400).forEach(function (it) {
-              if (it && it.id != null) b.set(F.doc(db, col, did(it.id)), it, { merge: true });
-            });
-            jobs.push(b.commit());
+          try {
+            var jobs = [];
+            for (var i = 0; i < list.length; i += 400) {
+              var b = F.writeBatch(db);
+              list.slice(i, i + 400).forEach(function (it) {
+                if (it && it.id != null) b.set(F.doc(db, col, did(it.id)), it, { merge: true });
+              });
+              jobs.push(b.commit());
+            }
+            return Promise.all(jobs);
+          } catch (e) {
+            // SYNC-THROW SAFEGUARD: Firestore SDK kabhi-kabhi (jaise koi field
+            // uska bharosemand data-type na ho) .set() ke andar hi turant error
+            // "throw" kar deta tha, jo normal Promise .catch() tak kabhi
+            // pahunchta hi nahi tha - isse poora save chupchaap, bina kisi
+            // retry/offline-queue ke, ruk jata tha. Ab aisi error bhi reject
+            // hui Promise ki tarah hi retry/offline-queue tak pahunchti hai.
+            return Promise.reject(e);
           }
-          return Promise.all(jobs);
         }
 
         // BUG FIX: pehle yahan koi .catch() nahi tha, isliye jab bhi ye save cloud
@@ -210,7 +238,7 @@
               // Aakhri koshish: is batch ke sabhi orders se purane proof photos
               // poori tarah hata kar bhejo - taaki status/amount jaisi zaroori
               // cheezein size ki wajah se kabhi bhi cloud jaane se na ruke.
-              var shrunk = toSend.map(function (it) { return col === 'orders' ? shrinkOrderForCloud(it, true) : it; });
+              var shrunk = toSend.map(function (it) { return sanitizeForFirestore(col === 'orders' ? shrinkOrderForCloud(it, true) : it); });
               return commitAll(shrunk).then(function () { setSync('Live Cloud', true); markPending(key, false); })
                 .catch(function (e2) { console.error('Cloud pushKey retry Error:', e2); setSync('Offline', false); throw e2; });
             }
