@@ -36,8 +36,7 @@
     ORDERS: 'orders',
     SERVICES: 'services',
     MACHINE_PARTS: 'machine_parts',
-    QUOTATIONS: 'quotations',
-    TRAVEL_EXPENSES: 'travel_expenses'
+    QUOTATIONS: 'quotations'
   };
 
   function setSync(text, ok) {
@@ -272,20 +271,6 @@
           case 'CUSTOMERS': customerDatabase = list; break;
           case 'STAFF':
             if (list.length > 0) registeredEmployees = list;
-            break;
-          case 'TRAVEL_EXPENSES':
-            // If the cloud collection is still empty but this device has locally saved
-            // visits, preserve them and push them once instead of erasing local-only data.
-            var localTravel = [];
-            try { localTravel = JSON.parse(localStorage.getItem((window.DB_PREFIX || 'TTESPL_ERP_') + 'TRAVEL_EXPENSES') || '[]') || []; } catch(e) {}
-            if (!list.length && localTravel.length) {
-              window.ttTravelExpenses = localTravel;
-              if (window.cloudSync && typeof window.cloudSync.pushKey === 'function') window.cloudSync.pushKey('TRAVEL_EXPENSES', localTravel).catch(function(e){ console.warn('Travel initial sync failed',e); });
-            } else {
-              try { localStorage.setItem((window.DB_PREFIX || 'TTESPL_ERP_') + 'TRAVEL_EXPENSES', JSON.stringify(list)); } catch(e) {}
-              window.ttTravelExpenses = list;
-            }
-            if (typeof window.renderTravelExpenses === 'function') window.renderTravelExpenses();
             break;
           case 'QUOTATIONS':
             try { localStorage.setItem((window.DB_PREFIX || 'TTESPL_ERP_') + 'QUOTATIONS_HISTORY_FULL', JSON.stringify(list.sort(function(a,b){ return Number(b.updatedAt||b.createdAt||0)-Number(a.updatedAt||a.createdAt||0); }))); } catch(e) {}
