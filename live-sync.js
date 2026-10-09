@@ -35,8 +35,7 @@
     LEADS: 'leads',
     ORDERS: 'orders',
     SERVICES: 'services',
-    MACHINE_PARTS: 'machine_parts',
-    QUOTATIONS: 'quotations'
+    MACHINE_PARTS: 'machine_parts'
   };
 
   function setSync(text, ok) {
@@ -271,10 +270,6 @@
           case 'CUSTOMERS': customerDatabase = list; break;
           case 'STAFF':
             if (list.length > 0) registeredEmployees = list;
-            break;
-          case 'QUOTATIONS':
-            try { localStorage.setItem((window.DB_PREFIX || 'TTESPL_ERP_') + 'QUOTATIONS_HISTORY_FULL', JSON.stringify(list.sort(function(a,b){ return Number(b.updatedAt||b.createdAt||0)-Number(a.updatedAt||a.createdAt||0); }))); } catch(e) {}
-            if (typeof renderQuotationHistory === 'function') renderQuotationHistory();
             break;
           case 'MACHINE_PARTS':
             machinePartsData = list;
