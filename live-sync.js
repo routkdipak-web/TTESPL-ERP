@@ -82,6 +82,36 @@
     // data kabhi overwrite nahi hoga, chahe dono ek saath login ho.
     var lastCloud = {};
 
+    // OUTBOX: jo changes abhi cloud tak confirm nahi hue unki id phone me likhi rehti hai.
+    // App beech me band ho jaye to bhi agli baar khulte hi wo changes khud cloud par
+    // jaate hain (aur tab tak screen par bhi local wala naya data dikhta hai).
+    var OUTBOX_KEY = 'TTESPL_ERP_OUTBOX', obSeq = Date.now(), obFlushed = {};
+    function obRead() { try { return JSON.parse(localStorage.getItem(OUTBOX_KEY) || '{}') || {}; } catch (e) { return {}; } }
+    function obWrite(o) { try { localStorage.setItem(OUTBOX_KEY, JSON.stringify(o)); } catch (e) {} }
+    function obAdd(key, ids) {
+      var o = obRead(), m = o[key] || {}, seq = ++obSeq;
+      ids.forEach(function (i) { m[String(i)] = seq; });
+      o[key] = m; obWrite(o); return seq;
+    }
+    function obDone(key, ids, seq) {
+      var o = obRead(), m = o[key]; if (!m) return;
+      ids.forEach(function (i) { if (m[String(i)] === seq) delete m[String(i)]; });
+      if (!Object.keys(m).length) delete o[key]; else o[key] = m;
+      obWrite(o);
+    }
+    function shrinkItem(it) {
+      var n; try { n = JSON.stringify(it).length; } catch (e) { return it; }
+      if (n < 900000) return it;
+      var c = {}; Object.keys(it).forEach(function (k) {
+        var v = it[k];
+        c[k] = (typeof v === 'string' && v.length > 120000 && v.indexOf('data:') === 0) ? '' : v;
+      });
+      console.warn('Doc 1MB limit ke paas tha, badi photo cloud copy se hata di', it.id);
+      return c;
+    }
+
+    function fromCacheEarly(snap) { return !!(snap.metadata && snap.metadata.fromCache); }
+
     function migrateLocal(key, list, fromCache) {
       var flag = 'TTESPL_ERP_MIGRATED_' + key, done = false, local = null;
       try { done = !!localStorage.getItem(flag); } catch (e) {}
@@ -144,6 +174,10 @@
         }
         if (!toSend.length) return Promise.resolve();
 
+        var sentIds = toSend.map(function (it) { return it.id; });
+        var sentSeq = obAdd(key, sentIds);
+        toSend = toSend.map(shrinkItem);
+
         var jobs = [];
         for (var i = 0; i < toSend.length; i += 400) {
           var b = F.writeBatch(db);
@@ -157,7 +191,7 @@
         // na hi app ko pata chalta tha - upar wala UI hamesha theek dikhata rehta
         // tha jabki data cloud me ja hi nahi raha tha. Ab failure clearly dikhega
         // aur error upar (index.html ke retry/offline-queue) tak bhi jayega.
-        return Promise.all(jobs).then(function () { setSync('Live Cloud', true); })
+        return Promise.all(jobs).then(function () { obDone(key, sentIds, sentSeq); setSync('Live Cloud', true); })
           .catch(function (e) { console.error('Cloud pushKey Error:', e); setSync('Offline', false); throw e; });
       },
 
@@ -308,6 +342,29 @@
           });
         }
         lastCloud[key] = cacheNow;
+
+        // Jo local changes abhi cloud tak nahi pahunche (outbox) unhe cloud list ke upar rakho
+        // aur ek baar dobara bhejo - isse "delivered" wapas "pending" nahi hota.
+        var obMap = obRead()[key];
+        if (obMap && !(MIGRATE_KEYS[key] && key === 'COMPANY_DETAILS')) {
+          var localArr = null;
+          try { localArr = JSON.parse(localStorage.getItem('TTESPL_ERP_' + key) || 'null'); } catch (e) {}
+          if (Array.isArray(localArr)) {
+            var unsent = [];
+            Object.keys(obMap).forEach(function (id) {
+              var li = localArr.filter(function (x) { return x && String(x.id) === id; })[0];
+              if (!li) return;
+              var ix = -1;
+              for (var q = 0; q < list.length; q++) { if (list[q] && String(list[q].id) === id) { ix = q; break; } }
+              if (ix >= 0) list[ix] = li; else list.push(li);
+              unsent.push(li);
+            });
+            if (unsent.length && !obFlushed[key] && !fromCacheEarly(snap)) {
+              obFlushed[key] = true;
+              window.cloudSync.pushKey(key, unsent).catch(function () { obFlushed[key] = false; });
+            }
+          }
+        }
 
         // Naye synced keys: device ka purana local data ek baar cloud par chadhao
         var fromCache = !!(snap.metadata && snap.metadata.fromCache);
