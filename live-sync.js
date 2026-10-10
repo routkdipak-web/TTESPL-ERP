@@ -35,8 +35,17 @@
     LEADS: 'leads',
     ORDERS: 'orders',
     SERVICES: 'services',
-    MACHINE_PARTS: 'machine_parts'
+    MACHINE_PARTS: 'machine_parts',
+    QUOTATIONS: 'quotations',
+    TRAVEL: 'travel_expenses',
+    CRM_RECORDS: 'crm_records',
+    COMPANY_DETAILS: 'company_settings'
   };
+
+  // Naye optional collections: inke error/rules ki wajah se app 'Offline' nahi dikhayega
+  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true };
+  // Inka purana local data pehli baar cloud par automatically upload hota hai (ek baar)
+  var MIGRATE_KEYS = OPTIONAL_KEYS;
 
   function setSync(text, ok) {
     var t = $('syncText'), d = $('syncDot');
@@ -73,6 +82,27 @@
     // data kabhi overwrite nahi hoga, chahe dono ek saath login ho.
     var lastCloud = {};
 
+    function migrateLocal(key, list, fromCache) {
+      var flag = 'TTESPL_ERP_MIGRATED_' + key, done = false, local = null;
+      try { done = !!localStorage.getItem(flag); } catch (e) {}
+      if (done) return list;
+      try { local = JSON.parse(localStorage.getItem('TTESPL_ERP_' + key) || 'null'); } catch (e) {}
+      var isCompany = key === 'COMPANY_DETAILS';
+      var localList = isCompany
+        ? (local && typeof local === 'object' && !Array.isArray(local) ? [Object.assign({}, local, { id: 'company' })] : [])
+        : (Array.isArray(local) ? local.filter(function (i) { return i && i.id != null; }) : []);
+      if (!localList.length) { if (!fromCache) { try { localStorage.setItem(flag, '1'); } catch (e) {} } return list; }
+      // Server abhi nahi aaya aur cache khali hai: local data screen se mat hatao
+      if (fromCache) return list.length ? list : localList;
+      var have = {};
+      list.forEach(function (i) { if (i && i.id != null) have[i.id] = 1; });
+      var extra = localList.filter(function (i) { return !have[i.id]; });
+      try { localStorage.setItem(flag, '1'); } catch (e) {}
+      if (!extra.length) return list;
+      window.cloudSync.pushKey(key, extra).catch(function () { try { localStorage.removeItem(flag); } catch (e) {} });
+      return list.concat(extra);
+    }
+
     // Direct Real-Time Cloud Methods with Persistence Guarantee
     window.cloudSync = {
       saveDoc: function (key, item) {
@@ -95,6 +125,9 @@
 
       pushKey: function (key, arr) {
         var col = MAP[key];
+        if (key === 'COMPANY_DETAILS' && arr && !Array.isArray(arr) && typeof arr === 'object') {
+          arr = [Object.assign({}, arr, { id: 'company' })];
+        }
         if (!col || !Array.isArray(arr)) return Promise.resolve();
 
         // Sirf wahi items bhejo jo is device par sach me badle hain (cache se alag) -
@@ -215,16 +248,23 @@
     }
     function flushRender() {
       renderTimer = null;
-      if (pendingRender.LEADS && typeof renderLeads === 'function') renderLeads();
+      // PERF: sirf jo tab abhi screen par khula hai wahi dobara draw hota hai; baaki tabs
+      // switchTab par khud fresh draw ho jaate hain (isliye data kabhi purana nahi dikhta).
+      function vis(t) { var p = document.getElementById('view-' + t); return !p || p.classList.contains('active'); }
+      if (pendingRender.LEADS && vis('leads') && typeof renderLeads === 'function') renderLeads();
       if (pendingRender.ORDERS) {
-        if (typeof renderOrders === 'function') renderOrders();
-        if (typeof renderBilling === 'function') renderBilling('all');
+        if (vis('orders') && typeof renderOrders === 'function') renderOrders();
+        if (vis('billing') && typeof renderBilling === 'function') renderBilling('all');
       }
-      if (pendingRender.SERVICES && typeof renderServices === 'function') renderServices();
-      if (pendingRender.INVENTORY && typeof renderStockList === 'function') renderStockList();
+      if (pendingRender.SERVICES && vis('services') && typeof renderServices === 'function') renderServices();
+      if (pendingRender.INVENTORY && vis('inventory') && typeof renderStockList === 'function') renderStockList();
       if (pendingRender.CUSTOMERS && typeof renderCustomerList === 'function') renderCustomerList();
       if (pendingRender.STAFF && typeof populateDropdownsAndDatalists === 'function') populateDropdownsAndDatalists();
       if (pendingRender.MACHINE_PARTS && typeof updateGlobalReminders === 'function') updateGlobalReminders();
+      if (pendingRender.QUOTATIONS && typeof window.ttRenderQuotHistoryIfOpen === 'function') window.ttRenderQuotHistoryIfOpen();
+      if (pendingRender.TRAVEL && typeof window.ttRenderTravelIfOpen === 'function') window.ttRenderTravelIfOpen();
+      if (pendingRender.CRM_RECORDS && typeof window.ttRenderCrmIfOpen === 'function') window.ttRenderCrmIfOpen();
+      if (pendingRender.COMPANY_DETAILS && typeof window.ttRenderCompanyIfOpen === 'function') window.ttRenderCompanyIfOpen();
       if (typeof renderDashboard === 'function') renderDashboard();
       if (typeof updateAdminDeleteVisibility === 'function') updateAdminDeleteVisibility();
       setSync('Live Cloud', true);
@@ -238,7 +278,7 @@
     // ho jata (ya 4 second guzar nahi jate), screen ko bilkul nahi chhedte - jo pehle
     // se dikh raha hai wahi dikhta rehta hai. Fir ek hi saaf, turant update hota hai.
     // Uske baad se hamesha wala normal (250ms wala) tarika chalta hai.
-    var initialKeysPending = Object.keys(MAP).length;
+    var initialKeysPending = Object.keys(MAP).filter(function (k) { return !OPTIONAL_KEYS[k]; }).length;
     var initialLoadDone = false;
     // SKELETON LOADER HOOK: index.html ke render functions isko check karke
     // decide karte hain ki "no data" dikhana hai ya shimmer placeholder -
@@ -254,12 +294,24 @@
         var list = [];
         snap.forEach(function (d) { list.push(d.data()); });
 
-        // Is collection ka sabse latest "jaisa cloud me hai waisa" snapshot cache karo -
-        // pushKey isi se compare karke decide karta hai ki kaun se items sach me local
-        // badlav hain (dobara bhejne hain) aur kaun se sirf purane/untouched hain (skip).
-        var cacheNow = {};
-        list.forEach(function (it) { if (it && it.id != null) cacheNow[it.id] = JSON.stringify(it); });
+        // Cache incremental: sirf badle hue docs dobara stringify hote hain (pehle har
+        // snapshot par SAARE docs hote the) - bade data me bhi smooth rehta hai.
+        var cacheNow = lastCloud[key];
+        if (!cacheNow) {
+          cacheNow = {};
+          list.forEach(function (it) { if (it && it.id != null) cacheNow[it.id] = JSON.stringify(it); });
+        } else {
+          snap.docChanges().forEach(function (ch) {
+            var o = ch.doc.data();
+            if (!o || o.id == null) return;
+            if (ch.type === 'removed') delete cacheNow[o.id]; else cacheNow[o.id] = JSON.stringify(o);
+          });
+        }
         lastCloud[key] = cacheNow;
+
+        // Naye synced keys: device ka purana local data ek baar cloud par chadhao
+        var fromCache = !!(snap.metadata && snap.metadata.fromCache);
+        if (MIGRATE_KEYS[key]) list = migrateLocal(key, list, fromCache);
 
         switch (key) {
           case 'LEADS': leadsData = list; break;
@@ -271,6 +323,19 @@
           case 'STAFF':
             if (list.length > 0) registeredEmployees = list;
             break;
+          case 'QUOTATIONS': quotationsData = list; break;
+          case 'TRAVEL': travelData = list; break;
+          case 'CRM_RECORDS': crmRecordsData = list; window.crmRecordsData = list; break;
+          case 'COMPANY_DETAILS':
+            if (list.length) {
+              var co = Object.assign({}, list[0]); delete co.id;
+              try { localStorage.setItem('TTESPL_ERP_COMPANY_DETAILS', JSON.stringify(co)); } catch (e) {}
+              if (typeof COMPANY_DETAILS_DEFAULTS !== 'undefined') {
+                companyDetailsData = Object.assign({}, COMPANY_DETAILS_DEFAULTS, co);
+                window.companyDetailsData = companyDetailsData;
+              }
+            }
+            break;
           case 'MACHINE_PARTS':
             machinePartsData = list;
             if (typeof window.machinePartsData !== 'undefined') window.machinePartsData = list;
@@ -279,7 +344,7 @@
 
         if (!initialLoadDone) {
           pendingRender[key] = true;
-          initialKeysPending--;
+          if (!OPTIONAL_KEYS[key]) initialKeysPending--;
           if (initialKeysPending <= 0) {
             initialLoadDone = true;
             window.ttCloudInitialLoadDone = true;
@@ -291,6 +356,7 @@
         }
       }, function (err) {
         console.error('Stream error:', key, err);
+        if (OPTIONAL_KEYS[key]) return;
         setSync('Offline', false);
       });
     });
