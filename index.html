@@ -2552,7 +2552,7 @@ body { animation: none !important; touch-action: manipulation; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="master-data.js?v=4"></script>
-<script src="live-sync.js?v=10"></script>
+<script src="live-sync.js?v=11"></script>
 
 <script>
     
@@ -3229,6 +3229,9 @@ function ttCloudPush(key, val, attemptsLeft) {
     // situation me app chup-chaap kuch nahi karta tha aur data kahin nahi jaata tha
     ttWithTimeout(window.cloudSync.pushKey(key, val), 10000).catch(function (e) {
       console.error('Cloud push failed, retrying', key, e);
+      if (attemptsLeft === 25 && e && e.code && e.code !== 'unavailable') {
+        ttShowErrorToast('Cloud save error (' + key + '): ' + e.code, null);
+      }
       if (typeof navigator !== 'undefined' && navigator.onLine === false) { ttQueueOffline(key, val); return; }
       if (attemptsLeft > 0) setTimeout(function () { ttCloudPush(key, val, attemptsLeft - 1); }, 2000);
       else {
@@ -3459,7 +3462,18 @@ window.ttShowSuccessToast = ttShowSuccessToast;
 
 function setStored(key, val) {
   try {
-    localStorage.setItem(DB_PREFIX + key, JSON.stringify(val));
+    try {
+      localStorage.setItem(DB_PREFIX + key, JSON.stringify(val));
+    } catch (qe) {
+      // Phone ki local storage (≈5MB) photos se bhar jaye to pehle yahin error aakar
+      // CLOUD PUSH bhi ruk jata tha (delivery cloud tak nahi jati thi). Ab cloud push
+      // hamesha hota hai; local me photo-rahit halki copy rakhte hain.
+      console.warn('Local storage full, light copy save', key, qe);
+      try {
+        const light = JSON.stringify(val, function (k, v) { return (typeof v === 'string' && v.length > 5000 && v.indexOf('data:') === 0) ? '' : v; });
+        localStorage.setItem(DB_PREFIX + key, light);
+      } catch (qe2) { console.warn('Light copy bhi save nahi hui', key); }
+    }
     // NOTE: yaha se koi bhi record automatically cloud se delete nahi kiya jata -
     // data hamesha cloud me surakshit rehta hai. Delete sirf kisi explicit delete button se hi hoga.
     ttCloudPush(key, val);
@@ -5026,7 +5040,7 @@ function handleDeliveryPhotoCaptured(event) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    ttCompressImageSafe(e.target.result).then(function(cd) {
+    ttCompressImageSafe(e.target.result, 760, 0.55, 220000).then(function(cd) {
       currentDeliveryPhotoBase64 = cd;
       const preview = document.getElementById('deliveryPhotoPreview');
       preview.src = currentDeliveryPhotoBase64;
@@ -5101,7 +5115,7 @@ function handlePaymentProofCaptured(event) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    ttCompressImageSafe(e.target.result).then(function(cd) {
+    ttCompressImageSafe(e.target.result, 760, 0.55, 220000).then(function(cd) {
       currentPaymentProofBase64 = cd;
       const preview = document.getElementById('payProofPreview');
       preview.src = currentPaymentProofBase64;
@@ -5886,7 +5900,7 @@ function downloadFile(content, fileName, mimeType) {
 }
 
 /* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
-const TT_APP_VERSION = 'v6';
+const TT_APP_VERSION = 'v7';
 let pendingChat = [];
 window.pendingChat = pendingChat;
 
@@ -6663,11 +6677,11 @@ function ttCompressImage(dataUrl, maxDim, quality) {
 // phir bhi bada reh sakta hai - tab ye khud-ba-khud ek aur round chhoti size/quality
 // me compress karta hai, jab tak safe size na aa jaye. Purana ttCompressImage() waisa
 // hi rehta hai (kahin aur use ho raha ho to kuch nahi tootega) - ye ek extra wrapper hai.
-function ttCompressImageSafe(dataUrl, maxDim, quality) {
-  maxDim = maxDim || 900; quality = quality || 0.6;
+function ttCompressImageSafe(dataUrl, maxDim, quality, maxLen) {
+  maxDim = maxDim || 900; quality = quality || 0.6; maxLen = maxLen || 600000;
   return ttCompressImage(dataUrl, maxDim, quality).then(function (out) {
-    if (out && out.length > 600000 && maxDim > 450) {
-      return ttCompressImageSafe(out, Math.round(maxDim * 0.75), Math.max(0.4, quality - 0.15));
+    if (out && out.length > maxLen && maxDim > 450) {
+      return ttCompressImageSafe(out, Math.round(maxDim * 0.75), Math.max(0.4, quality - 0.15), maxLen);
     }
     return out;
   });
@@ -6841,6 +6855,7 @@ function buildTallyInvoiceHtml(o) {
       <div style="padding:5px 6px;font-size:10px;">Customer's Seal and Signature</div>
       <div style="padding:5px 6px;border-left:1px solid #000;text-align:right;font-size:10.5px;">for <strong>TWINTOWN EXPRESS SERVICES PVT LTD</strong><br><br><br>Authorised Signatory</div>
     </div>
+    <div style="padding:5px 8px;border-top:1px solid #000;font-size:8.5px;line-height:1.35;page-break-inside:avoid;"><strong style="font-size:9.5px;"><u>Terms &amp; Conditions for Invoice / Bill</u></strong><ol style="margin:2px 0 0 14px;padding:0;"><li><b>Payment Due Date:</b> Full payment must be settled within 7–15 days from the invoice date.</li><li><b>Payment Mode:</b> For bill amounts exceeding ₹5,000, payment via Cheque is compulsory. Otherwise, payments can be made via Bank Transfer, UPI, or Cheque.</li><li><b>Late Fee:</b> A late interest charge of 1.5% per month will be applicable on payments delayed past the due date.</li><li><b>Goods Return Policy:</b> Goods once sold cannot be returned or exchanged.</li><li><b>Warranty / Guarantee:</b> Warranty or guarantee terms are subject strictly to the manufacturer's/company's standard policy.</li><li><b>Jurisdiction:</b> All legal disputes are subject to the exclusive jurisdiction of the courts in Bhubaneswar.</li></ol></div>
   </div>
   <div style="text-align:center;font-size:10px;margin-top:4px;">This is a Computer Generated Invoice</div>
 </div>`;
@@ -7075,6 +7090,7 @@ function buildQuotationHtml(q) {
       <div style="padding:5px 6px;font-size:10px;"><strong>Company's Bank Details</strong><br>A/c Name: TWINTOWN EXPRESS SERVICES PVT LTD<br>Bank Name: ICICI BANK (CUTTACK ROAD)<br>A/c No. &amp; IFSC: 150005501249 | ICIC0001500</div>
       <div style="padding:5px 6px;border-left:1px solid #000;text-align:right;font-size:10.5px;">for <strong>TWINTOWN EXPRESS SERVICES PVT LTD</strong><br><br><br>Authorised Signatory</div>
     </div>
+    <div style="padding:5px 8px;border-top:1px solid #000;font-size:8.5px;line-height:1.35;page-break-inside:avoid;"><strong style="font-size:9.5px;"><u>Terms &amp; Conditions for Quotation</u></strong><ol style="margin:2px 0 0 14px;padding:0;"><li><b>Validity Period:</b> This quotation is valid for 30 days from the date of issue.</li><li><b>Payment Terms:</b> An advance payment of 50% is required to initiate the work. The remaining balance must be cleared prior to product delivery/installation.</li><li><b>Taxes:</b> All quoted prices are Exclusive of GST.</li><li><b>Scope of Work:</b> The quoted prices apply strictly to the items and services listed in this quotation. Any additional work or items requested later will incur extra charges.</li><li><b>Delivery &amp; Installation Time:</b> Delivery/installation will be completed within 15–30 days after receiving the advance payment.</li><li><b>Cancellation Policy:</b> The advance payment is non-refundable in the event of order cancellation after confirmation.</li></ol></div>
   </div>
   <div style="text-align:center;font-size:10px;margin-top:4px;">This is a Computer Generated Quotation</div>
 </div>`;
