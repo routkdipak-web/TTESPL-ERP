@@ -1030,6 +1030,98 @@ body.tt-ready #authScreen .auth-card{animation:ttCardIn 1s cubic-bezier(.16,1,.3
 /* small global polish */
 input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16);transition:box-shadow .25s;}
 @media (prefers-reduced-motion:reduce){#authScreen *,#ttSplash *{animation-duration:.01s !important;animation-iteration-count:1 !important;}}
+
+/* ===== v5: Premium glass refresh + performance ===== */
+html, body { overscroll-behavior-y: none; overscroll-behavior-x: none; }
+body { animation: none !important; touch-action: manipulation; }
+.view-panel, .auth-card, .chat-messenger-stream, #stockListContainer, #trvLog, #qhList { overscroll-behavior: contain; }
+
+:root { --g-shadow: 0 8px 26px rgba(10,37,64,.12); --g-tint: 0,180,216; }
+#view-dashboard { --g-tint: 0,180,216; }
+#view-leads { --g-tint: 251,113,133; }
+#view-orders { --g-tint: 251,191,36; }
+#view-services { --g-tint: 167,139,250; }
+#view-inventory, #view-catalog { --g-tint: 52,211,153; }
+#view-billing { --g-tint: 244,114,182; }
+#view-chat { --g-tint: 96,229,229; }
+
+.view-panel .card {
+  background:
+    linear-gradient(135deg, rgba(var(--g-tint), .14), rgba(var(--g-tint), 0) 60%),
+    linear-gradient(150deg, rgba(255,255,255,.76), rgba(255,255,255,.46));
+  border: 1px solid rgba(255,255,255,.7);
+  border-left: 3px solid rgba(var(--g-tint), .85);
+  box-shadow: var(--g-shadow), inset 0 1px 0 rgba(255,255,255,.85);
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  backdrop-filter: blur(12px) saturate(1.5);
+}
+[data-theme="dark"] .view-panel .card {
+  background:
+    linear-gradient(135deg, rgba(var(--g-tint), .16), rgba(var(--g-tint), 0) 60%),
+    linear-gradient(150deg, rgba(30,41,59,.66), rgba(15,23,42,.5));
+  border-color: rgba(255,255,255,.12);
+  border-left-color: rgba(var(--g-tint), .85);
+  box-shadow: 0 10px 28px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08);
+}
+/* Lambi lists: off-screen cards skip rendering (smooth scroll) */
+#ordersListContainer > .card, #leadsListContainer > .card, #serviceListContainer > .card,
+#stockListContainer > .card, #billingListContainer > .card, #catalogListContainer > .card {
+  content-visibility: auto; contain-intrinsic-size: auto 130px;
+}
+.view-panel .page-top-header-banner {
+  background: linear-gradient(135deg, rgba(10,37,64,.8), rgba(var(--g-tint), .42));
+  border: 1px solid rgba(255,255,255,.3);
+  box-shadow: 0 8px 24px rgba(var(--g-tint), .22), inset 0 1px 0 rgba(255,255,255,.25);
+}
+.view-panel .sub-tab-btn {
+  background: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.65);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+.view-panel .sub-tab-btn.active {
+  background: linear-gradient(135deg, rgba(10,37,64,.92), rgba(var(--g-tint), .75)); color: #fff;
+}
+[data-theme="dark"] .view-panel .sub-tab-btn { background: rgba(30,41,59,.55); border-color: rgba(255,255,255,.1); }
+[data-theme="dark"] .view-panel .sub-tab-btn.active { color: #fff; }
+
+.auth-overlay { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.auth-overlay .auth-card {
+  -webkit-backdrop-filter: blur(16px) saturate(1.6); backdrop-filter: blur(16px) saturate(1.6);
+  border: 1px solid rgba(255,255,255,.55);
+}
+.profile-dropdown-card { max-height: calc(100dvh - 80px); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+/* ---- Performance ---- */
+.view-panel.active .card:nth-child(n+6) { animation: none; }
+.cat-chip::after { animation: none; }
+.cat-chip.active::after { animation: catShimmer 3.5s infinite linear; }
+.low-stock-card-pulse { animation: none; border-color: rgba(239,68,68,.6); }
+#fabMenu:not(.show) .fab-action-btn::after { animation: none; }
+
+/* ---- Travel expenses + quotation history ---- */
+.tt-trv-summary {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 14px 16px; margin-bottom: 12px; border-radius: 16px; color: #fff;
+  background: linear-gradient(135deg, rgba(10,37,64,.92), rgba(0,180,216,.75));
+  box-shadow: 0 10px 26px rgba(0,180,216,.28), inset 0 1px 0 rgba(255,255,255,.3);
+}
+.tt-trv-add {
+  padding: 12px; border-radius: 16px; margin-bottom: 4px;
+  background: rgba(255,255,255,.45); border: 1px solid rgba(255,255,255,.65);
+}
+[data-theme="dark"] .tt-trv-add { background: rgba(30,41,59,.5); border-color: rgba(255,255,255,.1); }
+.tt-trv-dayhead {
+  display: flex; justify-content: space-between; font-size: 12px; font-weight: 800;
+  color: var(--text-main); padding: 6px 4px 4px; border-bottom: 1px dashed var(--border); margin: 8px 0 6px;
+}
+.tt-trv-row {
+  background: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.7);
+  border-radius: 14px; padding: 8px; margin-bottom: 8px;
+}
+[data-theme="dark"] .tt-trv-row { background: rgba(30,41,59,.55); border-color: rgba(255,255,255,.1); }
+.tt-trv-top { display: grid; grid-template-columns: 1fr 84px 40px; gap: 6px; margin-bottom: 6px; }
+.tt-trv-bottom { display: grid; grid-template-columns: 1fr 18px 1fr; gap: 6px; align-items: center; text-align: center; }
+.tt-trv-row input { padding: 8px 10px; font-size: 13px; }
+#quotSerialLabel { font-size: 11.5px; color: var(--text-muted); margin-bottom: 10px; }
 </style>
 </head>
 <body data-theme="light">
@@ -1354,6 +1446,16 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
   <span style="font-size:10px; color:#38bdf8;">Notion Style</span>
 </div>
 
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); openTravelExpenses(); closeProfileDrawer();">
+        <div class="profile-menu-item-left"><span>🧳</span><span>Travel Expenses</span></div>
+        <span style="font-size:10px; color:#fbbf24;">Daily Km</span>
+      </div>
+
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); openQuotationHistory(); closeProfileDrawer();">
+        <div class="profile-menu-item-left"><span>📝</span><span>Quotation History</span></div>
+        <span style="font-size:10px; color:#a78bfa;">Edit / Resend</span>
+      </div>
+
       <div class="profile-menu-item" onclick="triggerAppHaptic(); openGlobalSearchModal(); closeProfileDrawer();">
         <div class="profile-menu-item-left">
           <span>🔍</span>
@@ -1534,7 +1636,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       </div>
 
       <div style="margin-bottom:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <input type="text" id="stockFilterInput" placeholder="🔍 Master Search: Type ANY product, machine, chemical, spare, polisher, code..." oninput="filterStockList(this.value)" style="flex:1; font-size:14px; padding:12px 16px; border-width:2px; box-shadow:var(--shadow-sm);">
+        <input type="text" id="stockFilterInput" placeholder="🔍 Master Search: Type ANY product, machine, chemical, spare, polisher, code..." oninput="ttDeb('stk',filterStockList,this.value)" style="flex:1; font-size:14px; padding:12px 16px; border-width:2px; box-shadow:var(--shadow-sm);">
         <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; cursor:pointer; background:var(--card); padding:10px 14px; border-radius:10px; border:1.5px solid var(--border);">
           <input type="checkbox" id="onlyAvailableStockCheck" onchange="renderStockList()" style="width:18px; height:18px; accent-color:var(--success);"> Only Available Stock (>0)
         </label>
@@ -1549,6 +1651,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
         <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Maxshine Gear & Tools', this)"><span class="cat-chip-icon">🛠️</span><span class="cat-chip-label">Maxshine</span><span class="cat-chip-count"><span id="catCountMaxshine">0</span></span></button>
         <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Vista Car Care', this)"><span class="cat-chip-icon">🚗</span><span class="cat-chip-label">Vista</span><span class="cat-chip-count"><span id="catCountVista">0</span></span></button>
         <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Machine Spares', this)"><span class="cat-chip-icon">⚙️</span><span class="cat-chip-label">Spares</span><span class="cat-chip-count"><span id="catCountSpares">0</span></span></button>
+        <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Fireball', this)"><span class="cat-chip-icon">🔥</span><span class="cat-chip-label">Fireball</span><span class="cat-chip-count"><span id="catCountFireball">0</span></span></button>
         <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('CUSTOMERS', this)"><span class="cat-chip-icon">👥</span><span class="cat-chip-label">Customers</span><span class="cat-chip-count"><span id="catCountCust">0</span></span></button>
       </div>
 
@@ -1579,7 +1682,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       </div>
 
       <div class="form-group autocomplete-wrapper" style="margin-bottom:12px;">
-        <input type="text" id="catalogSearchInput" placeholder="🔍 Product, machine, chemical, brand type karein..." oninput="handleCatalogSearchInput(this.value)" autocomplete="off">
+        <input type="text" id="catalogSearchInput" placeholder="🔍 Product, machine, chemical, brand type karein..." oninput="ttDeb('cat',handleCatalogSearchInput,this.value)" autocomplete="off">
         <div class="solid-suggestion-box" id="catalogSuggestionBox" style="display:none;"></div>
       </div>
 
@@ -1951,6 +2054,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
     </div>
     <div style="display:flex; gap:10px; margin-bottom:14px;">
       <button class="btn btn-outline btn-sm btn-block" onclick="triggerAppHaptic(); editFromDetailModal()">✏️ Edit Item Details</button>
+      <button class="btn btn-wa btn-sm btn-block" onclick="triggerAppHaptic(); ttShareProduct(activeStockDetailId)">📤 Share</button>
     </div>
     <div style="font-size:13.5px; font-weight:800; color:var(--text-main); margin-bottom:8px;">📋 Sales History:</div>
     <div id="detSalesHistory" style="max-height:240px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:6px;"></div>
@@ -1965,7 +2069,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeGlobalSearchModal()">✕</button>
     </div>
     <div class="form-group" style="margin-bottom:10px;">
-      <input type="text" id="globalSearchInput" placeholder="Customer, order ref, machine, item code, phone..." oninput="performGlobalSearch(this.value)">
+      <input type="text" id="globalSearchInput" placeholder="Customer, order ref, machine, item code, phone..." oninput="ttDeb('gs',performGlobalSearch,this.value)">
     </div>
     <div id="globalSearchResults"></div>
   </div>
@@ -2201,7 +2305,16 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
       </div>
       <div class="form-group">
         <label class="form-label">Category</label>
-        <input type="text" id="stkCategory" placeholder="e.g. Spares - HRC">
+        <select id="stkCategory">
+          <option value="Machines &amp; Equipment">Machines</option>
+          <option value="Ma-Fra Chemicals">Ma-Fra Chemical</option>
+          <option value="Mafra Detailing">Ma-Fra Detailing</option>
+          <option value="Maniac Line">Maniac Line</option>
+          <option value="Maxshine Gear &amp; Tools">Maxshine</option>
+          <option value="Vista Car Care">Vista</option>
+          <option value="Machine Spares">Spares</option>
+          <option value="Fireball">Fireball</option>
+        </select>
       </div>
     </div>
     <div class="grid-2">
@@ -2348,7 +2461,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
     </div>
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
-      <input type="text" id="crmSearchInput" placeholder="🔍 Search shop, client or phone..." oninput="renderCrmRecords()" style="flex:1; font-size:13px; padding:8px 12px;">
+      <input type="text" id="crmSearchInput" placeholder="🔍 Search shop, client or phone..." oninput="ttDeb('crm',renderCrmRecords)" style="flex:1; font-size:13px; padding:8px 12px;">
       <button class="btn btn-accent btn-sm" onclick="openCrmEditModal()">+ New Visit / Client</button>
     </div>
 
@@ -2439,7 +2552,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(0,180,216,.16)
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="master-data.js?v=4"></script>
-<script src="live-sync.js?v=8"></script>
+<script src="live-sync.js?v=10"></script>
 
 <script>
     
@@ -2598,7 +2711,8 @@ function saveCrmRecord() {
       id: 'CRM-' + Date.now(),
       shopName, ownerName, phone, stage, visitDate, address, notes, custId,
       shopPhoto: tempShopPhoto, cardPhoto: tempCardPhoto,
-      addedBy: currentUser ? currentUser.name : 'Staff'
+      addedBy: currentUser ? currentUser.name : 'Staff',
+      empId: currentUser ? String(currentUser.id != null ? currentUser.id : currentUser.mobile) : ''
     };
     crmRecordsData.unshift(newRec);
   }
@@ -2610,10 +2724,29 @@ function saveCrmRecord() {
 }
 window.saveCrmRecord = saveCrmRecord;
 
+function ttCrmVisible(r) {
+  if (isAdminUser()) return true;
+  if (!currentUser) return false;
+  const mine = String(currentUser.id != null ? currentUser.id : currentUser.mobile);
+  if (r.empId != null && r.empId !== '') return String(r.empId) === mine;
+  return r.addedBy === currentUser.name; // purane records (empId nahi) naam se match
+}
 function renderCrmRecords() {
   const box = document.getElementById('crmRecordsContainer');
   const q = (document.getElementById('crmSearchInput').value || "").toLowerCase().trim();
-  let list = crmRecordsData;
+  // Employee-wise: staff sirf apne records dekhta hai, admin sabke (employee filter ke saath)
+  if (isAdminUser() && box && !document.getElementById('crmEmpFilter')) {
+    box.insertAdjacentHTML('beforebegin', '<select id="crmEmpFilter" onchange="renderCrmRecords()" style="width:100%;margin-bottom:8px;font-size:13px;padding:8px 12px;"></select>');
+  }
+  const empSel = document.getElementById('crmEmpFilter');
+  if (empSel) {
+    const names = Array.from(new Set(crmRecordsData.map(x => x.addedBy).filter(Boolean))).sort();
+    const cur = empSel.value;
+    empSel.innerHTML = '<option value="">👥 Sabhi Employees</option>' + names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+    empSel.value = names.indexOf(cur) >= 0 ? cur : '';
+  }
+  let list = crmRecordsData.filter(ttCrmVisible);
+  if (empSel && empSel.value) list = list.filter(x => x.addedBy === empSel.value);
   if (q) list = list.filter(x => (x.shopName && x.shopName.toLowerCase().includes(q)) || (x.ownerName && x.ownerName.toLowerCase().includes(q)) || (x.phone && x.phone.includes(q)));
 
   if (list.length === 0) {
@@ -2669,6 +2802,7 @@ function deleteCrmRecord(id) {
   if (confirm("Confirm delete this CRM record?")) {
     crmRecordsData = crmRecordsData.filter(x => x.id !== id);
     setStored("CRM_RECORDS", crmRecordsData);
+    try { if (window.cloudSync) window.cloudSync.deleteItem('CRM_RECORDS', id); } catch (e) {}
     renderCrmRecords();
   }
 }
@@ -2676,8 +2810,9 @@ window.deleteCrmRecord = deleteCrmRecord;
 
 function printDailyCrmReport() {
   const today = new Date().toISOString().split('T')[0];
-  const todayList = crmRecordsData.filter(x => x.visitDate === today);
-  const targetList = todayList.length ? todayList : crmRecordsData.slice(0, 20);
+  const myCrm = crmRecordsData.filter(ttCrmVisible);
+  const todayList = myCrm.filter(x => x.visitDate === today);
+  const targetList = todayList.length ? todayList : myCrm.slice(0, 20);
 
   const th = 'style="padding:6px 8px; border:1px solid #000; background:#0a2540; color:#fff; font-size:11px;"';
   const td = 'style="padding:6px 8px; border:1px solid #000; font-size:11px; vertical-align:top;"';
@@ -3217,6 +3352,7 @@ window.addEventListener('resize', function () { ttUpdateNavPill(); });
   }, { passive: true, capture: true });
 
   document.addEventListener('touchstart', function (e) {
+    if (window.TT_DISABLE_PTR) { pulling = false; return; }
     if (!e.touches || e.touches.length !== 1) return;
     const sp = scrollParent(e.target);
     const root = document.scrollingElement || document.documentElement;
@@ -4223,7 +4359,8 @@ function ttRepositionVisibleSuggestionBoxes() {
     }
   });
 }
-window.addEventListener('scroll', ttRepositionVisibleSuggestionBoxes, true);
+var _ttRepoRaf = 0;
+window.addEventListener('scroll', function () { if (_ttRepoRaf) return; _ttRepoRaf = requestAnimationFrame(function () { _ttRepoRaf = 0; ttRepositionVisibleSuggestionBoxes(); }); }, { capture: true, passive: true });
 window.addEventListener('resize', ttRepositionVisibleSuggestionBoxes);
 
 function handleCustomerAutocomplete(inputEl, targetInputId) {
@@ -5398,6 +5535,7 @@ function updateCategoryCounts() {
   setEl('catCountMaxshine', byCat['Maxshine Gear & Tools'] || 0);
   setEl('catCountVista', byCat['Vista Car Care'] || 0);
   setEl('catCountSpares', byCat['Machine Spares'] || 0);
+  setEl('catCountFireball', byCat['Fireball'] || 0);
   setEl('catCountCust', customerDatabase.length);
 }
 
@@ -5464,6 +5602,7 @@ function renderStockList() {
         </div>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px; border-top:1px solid var(--border); padding-top:6px;">
+        <button class="btn btn-wa btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); ttShareProduct('${item.id}')">📤 Share</button>
         <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); editStockItemPrompt(${item.id})">✏️ Edit</button>
         ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="event.stopPropagation(); triggerAppHaptic(); deleteStockItem(${item.id})">🗑️</button>` : ''}
       </div>
@@ -5548,7 +5687,7 @@ function openAddPartModal(partObj = null) {
     editId.value = partObj.id;
     document.getElementById('stkName').value = partObj.name;
     document.getElementById('stkCode').value = partObj.code;
-    document.getElementById('stkCategory').value = partObj.category || "";
+    ttSetStockCategory(partObj.category);
     document.getElementById('stkMachine').value = partObj.machine || "";
     document.getElementById('stkHsn').value = partObj.hsn || "";
     document.getElementById('stkQty').value = partObj.stock;
@@ -5560,7 +5699,7 @@ function openAddPartModal(partObj = null) {
     editId.value = "";
     document.getElementById('stkName').value = "";
     document.getElementById('stkCode').value = "";
-    document.getElementById('stkCategory').value = "Machine Spares";
+    ttSetStockCategory('Machine Spares');
     document.getElementById('stkMachine').value = "";
     document.getElementById('stkHsn').value = "84139190";
     document.getElementById('stkQty').value = "0";
@@ -5585,9 +5724,9 @@ function saveStockItemAction() {
 
   if(editId) {
     const item = sampleInventory.find(x => x.id === parseInt(editId));
-    if(item) { item.name = name; item.code = code; item.category = cat; item.stock = stock; item.dealerPrice = dealerPrice; item.rate = rate; }
+    if(item) { item.name = name; item.code = code; item.category = cat; item.stock = stock; item.dealerPrice = dealerPrice; item.rate = rate; item.machine = document.getElementById('stkMachine').value.trim(); item.hsn = document.getElementById('stkHsn').value.trim() || item.hsn || '84139190'; item.desc = document.getElementById('stkDesc').value.trim(); }
   } else {
-    sampleInventory.unshift({ id: Date.now(), name, code, category: cat, stock, dealerPrice, rate });
+    sampleInventory.unshift({ id: Date.now(), name, code, category: cat, stock, dealerPrice, rate, machine: document.getElementById('stkMachine').value.trim(), hsn: document.getElementById('stkHsn').value.trim() || '84139190', desc: document.getElementById('stkDesc').value.trim() });
   }
 
   setStored("INVENTORY", sampleInventory);
@@ -5747,7 +5886,7 @@ function downloadFile(content, fileName, mimeType) {
 }
 
 /* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
-const TT_APP_VERSION = 'v4';
+const TT_APP_VERSION = 'v6';
 let pendingChat = [];
 window.pendingChat = pendingChat;
 
@@ -6709,7 +6848,7 @@ function buildTallyInvoiceHtml(o) {
 window.buildTallyInvoiceHtml = buildTallyInvoiceHtml;
 
 /* ===== QUOTATION (Service/Leads se banayi ja sakti he) ===== */
-function openQuotationModal() {
+function openQuotationModalBase() {
   let m = document.getElementById('quotationModal');
   if (!m) {
     m = document.createElement('div');
@@ -6717,7 +6856,8 @@ function openQuotationModal() {
     m.className = 'auth-overlay';
     m.style.display = 'none';
     m.innerHTML = `<div class="auth-card" style="max-width:520px;">
-      <div class="card-header"><span class="card-title">📝 New Quotation</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('quotationModal').style.display='none'">✕</button></div>
+      <div class="card-header"><span class="card-title">📝 Quotation</span><div style="display:flex;gap:6px;"><button class="btn btn-outline btn-sm" onclick="openQuotationHistory()">🕘 History</button><button class="btn btn-accent btn-sm" onclick="ttSaveAndPrintQuotation()">💾 Save/Print</button><button class="btn btn-outline btn-sm" onclick="document.getElementById('quotationModal').style.display='none'">✕</button></div></div>
+      <input type="hidden" id="quotEditId"><div id="quotSerialLabel"></div>
 
       <label class="form-label">Customer</label>
       <div style="position:relative; margin-bottom:10px;">
@@ -6742,7 +6882,8 @@ function openQuotationModal() {
       <div id="quotTotalsBox" style="background:var(--card-glass); border:1px solid var(--card-glass-border); border-radius:10px; padding:10px 12px; margin-bottom:14px; font-size:13px;"></div>
 
       <div style="display:flex; gap:8px;">
-        <button class="btn btn-primary" style="flex:2;" onclick="printQuotation()">🖨️ Print / Share Quotation</button>
+        <button class="btn btn-primary" style="flex:1;" onclick="printQuotation()">📤 Share</button>
+        <button class="btn btn-accent" style="flex:1;" onclick="ttSaveAndPrintQuotation()">💾 Save / Print</button>
         <button class="btn btn-outline" style="flex:1;" onclick="document.getElementById('quotationModal').style.display='none'">Close</button>
       </div>
     </div>`;
@@ -6939,7 +7080,7 @@ function buildQuotationHtml(q) {
 </div>`;
 }
 
-function printQuotation() {
+function printQuotationLegacy() {
   const custName = document.getElementById('quotCustName').value.trim();
   if (!custName) { alert('Customer ka naam daalo'); return; }
   const rows = document.querySelectorAll('#quotItemsBody .quot-item-row');
@@ -7649,10 +7790,12 @@ function filterCatalog(q) {
         <div style="flex:1;">
           <strong style="font-size:14.5px; color:var(--text-main);">${esc(i.name)}</strong>
           <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">${esc(i.subCategory || 'Catalog')}</div>
+          ${ttCatalogCardPrices(i)}
           ${i.desc ? `<div style="font-size:12px; color:var(--text-muted); margin-top:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(i.desc)}</div>` : ''}
         </div>
         <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
           <button class="btn btn-outline btn-sm" style="padding:4px 8px;" title="Web par search karein" onclick="event.stopPropagation(); triggerAppHaptic(); openCatalogWebSearch('${esc(i.name).replace(/'/g, "\\'")}')">🌐</button>
+          <button class="btn btn-wa btn-sm" style="padding:4px 8px;" title="Share (Customer Price only)" onclick="event.stopPropagation(); triggerAppHaptic(); ttShareProduct('${i.id}')">📤</button>
           <span style="font-size:18px;">›</span>
         </div>
       </div>
@@ -7738,7 +7881,7 @@ function openCatalogDetail(id) {
     ${row('Model / Code', [i.machine && i.machine !== i.name ? i.machine : '', i.code].filter(Boolean).join(' • '))}
     ${row('Description', i.desc)}
     ${row('Technical Data / Specs', i.specs)}
-    ${(i.rate > 0) ? row('Indicative Price', '₹' + Number(i.rate).toLocaleString('en-IN')) : ''}
+    <div id="catalogPriceBlock">${ttCatalogPriceBlockHtml(i)}</div>
     <div id="catalogAiBox" style="margin:4px 0 10px; padding:10px 12px; border-radius:12px; background:var(--bg); border:1px dashed var(--border); font-size:12.5px; line-height:1.5; color:var(--text-main);">
       <div style="font-weight:800; font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:4px;">🤖 AI Summary (Google Search se)</div>
       <div id="catalogAiBoxBody">⏳ Dhoond raha hai...</div>
@@ -7782,6 +7925,609 @@ async function fetchCatalogAiSummary(productName) {
   }
 }
 window.fetchCatalogAiSummary = fetchCatalogAiSummary;
+
+/* ===== TTESPL UPGRADE v5: Quotation History, Travel Expenses, Catalog dual pricing, Product share ===== */
+var quotationsData = getStored("QUOTATIONS", []);
+var travelData = getStored("TRAVEL", []);
+// Pull-to-refresh (custom) ab band hai - native overscroll bhi CSS se band kiya gaya hai
+window.TT_DISABLE_PTR = true;
+
+function ttH(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+window.ttH = ttH;
+
+/* ================= QUOTATION: history + serial + save/print ================= */
+function ttQuotPad(n) { return String(n).padStart(4, '0'); }
+
+function ttPeekNextQuotSerial() {
+  var max = 0;
+  (quotationsData || []).forEach(function (q) { var n = Number(q && q.serial) || 0; if (n > max) max = n; });
+  var counter = 0;
+  try { counter = Number(localStorage.getItem(DB_PREFIX + 'QUOT_SERIAL_COUNTER') || 0) || 0; } catch (e) {}
+  return Math.max(max, counter) + 1;
+}
+
+function ttUpdateQuotSerialLabel() {
+  var el = document.getElementById('quotSerialLabel');
+  if (!el) return;
+  var idEl = document.getElementById('quotEditId');
+  var id = idEl ? idEl.value : '';
+  var rec = id ? (quotationsData || []).find(function (q) { return q && q.id === id; }) : null;
+  if (rec) el.innerHTML = '✏️ Editing <b>' + ttH(rec.id) + '</b> (Serial #' + ttH(rec.serial) + ') — save karne par yahi quotation update hoga';
+  else el.innerHTML = '🔢 Next Serial: <b>QTN-' + ttQuotPad(ttPeekNextQuotSerial()) + '</b> (auto)';
+}
+
+function openQuotationModal() {
+  openQuotationModalBase();
+  var e = document.getElementById('quotEditId');
+  if (e) e.value = '';
+  ttUpdateQuotSerialLabel();
+}
+window.openQuotationModal = openQuotationModal;
+
+function ttCollectQuotationForm() {
+  var custName = document.getElementById('quotCustName').value.trim();
+  if (!custName) { alert('Customer ka naam daalo'); return null; }
+  var rows = document.querySelectorAll('#quotItemsBody .quot-item-row');
+  var items = Array.from(rows).map(function (r) {
+    var qty = Number(r.querySelector('.qit-qty').value) || 0;
+    var rate = Number(r.querySelector('.qit-rate').value) || 0;
+    var disc = Number(r.querySelector('.qit-disc').value) || 0;
+    var lineInclusive = qty * rate * (1 - disc / 100);
+    var lineTaxable = Math.round((lineInclusive / 1.18) * 100) / 100;
+    return {
+      name: r.querySelector('.qit-name').value.trim() || 'Item',
+      hsn: r.querySelector('.qit-hsn').value.trim() || '-',
+      qty: qty, rate: rate, disc: disc, amount: lineTaxable
+    };
+  });
+  if (items.length === 0) { alert('Kam se kam ek item add karo'); return null; }
+  var t = quotRecalc();
+  return {
+    custName: custName,
+    custPhone: document.getElementById('quotCustPhone').value.trim(),
+    custAddr: document.getElementById('quotCustAddr').value.trim(),
+    custGst: document.getElementById('quotCustGst').value.trim(),
+    payMode: document.getElementById('quotPayMode').value.trim() || 'Cash/Online',
+    items: items, totalNoGst: t.totalNoGst, cgst: t.cgst, sgst: t.sgst, svc: t.svc, roundOff: t.roundOff, final: t.final
+  };
+}
+
+function ttPersistQuotation(form) {
+  var editEl = document.getElementById('quotEditId');
+  var editId = editEl ? editEl.value : '';
+  var by = currentUser ? currentUser.name : 'Staff';
+  var rec = editId ? (quotationsData || []).find(function (q) { return q && q.id === editId; }) : null;
+  if (rec) {
+    Object.assign(rec, form, { updatedAt: Date.now(), updatedBy: by });
+  } else {
+    var serial = ttPeekNextQuotSerial();
+    try { localStorage.setItem(DB_PREFIX + 'QUOT_SERIAL_COUNTER', String(serial)); } catch (e) {}
+    rec = Object.assign({}, form, {
+      id: 'QTN-' + ttQuotPad(serial),
+      serial: serial,
+      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      createdAt: Date.now(),
+      createdBy: by
+    });
+    if (!Array.isArray(quotationsData)) quotationsData = [];
+    quotationsData.unshift(rec);
+  }
+  setStored("QUOTATIONS", quotationsData);
+  if (editEl) editEl.value = rec.id;
+  ttUpdateQuotSerialLabel();
+  return rec;
+}
+
+function ttQuotPlain(q) {
+  var itemsTxt = (q.items || []).map(function (i) { return i.name + ' x' + i.qty + ' - Rs.' + Number(i.amount || 0).toFixed(2); }).join('\n');
+  return 'TWIN TOWN EXPRESS SERVICES PVT LTD\nQuotation: ' + q.id + '\nCustomer: ' + q.custName + '\n-----------------------\n' + itemsTxt + '\n-----------------------\nTotal: Rs.' + q.final + '\n\nRasulgarh, Bhubaneswar';
+}
+
+// SHARE (pehle jaisa) - ab quotation history me bhi save hoti hai
+function printQuotation() {
+  var form = ttCollectQuotationForm();
+  if (!form) return;
+  var q = ttPersistQuotation(form);
+  ttNativeShareOrFallback(
+    { title: 'TTESPL Quotation ' + q.id, text: ttQuotPlain(q) },
+    function () { ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q)); }
+  );
+}
+window.printQuotation = printQuotation;
+
+// SAVE / PRINT: history me save + PDF dialog
+function ttSaveAndPrintQuotation() {
+  var form = ttCollectQuotationForm();
+  if (!form) return;
+  var q = ttPersistQuotation(form);
+  ttShowSuccessToast('Quotation ' + q.id + ' history me save ho gayi.');
+  ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q));
+}
+window.ttSaveAndPrintQuotation = ttSaveAndPrintQuotation;
+
+function ttEditQuotation(id) {
+  var q = (quotationsData || []).find(function (x) { return x && x.id === id; });
+  if (!q) return;
+  var hm = document.getElementById('quotationHistoryModal');
+  if (hm) hm.style.display = 'none';
+  openQuotationModal();
+  document.getElementById('quotCustName').value = q.custName || '';
+  document.getElementById('quotCustPhone').value = q.custPhone || '';
+  document.getElementById('quotCustGst').value = q.custGst || '';
+  document.getElementById('quotCustAddr').value = q.custAddr || '';
+  document.getElementById('quotServiceCharge').value = q.svc || 0;
+  document.getElementById('quotPayMode').value = q.payMode || 'Cash/Online';
+  var body = document.getElementById('quotItemsBody');
+  body.innerHTML = '';
+  var items = (q.items && q.items.length) ? q.items : [{}];
+  items.forEach(function (it) {
+    quotAddItemRow();
+    var rows = body.querySelectorAll('.quot-item-row');
+    var r = rows[rows.length - 1];
+    r.querySelector('.qit-name').value = it.name || '';
+    r.querySelector('.qit-hsn').value = (it.hsn && it.hsn !== '-') ? it.hsn : '';
+    r.querySelector('.qit-qty').value = it.qty != null ? it.qty : 1;
+    r.querySelector('.qit-rate').value = it.rate != null ? it.rate : 0;
+    r.querySelector('.qit-disc').value = it.disc != null ? it.disc : 0;
+  });
+  document.getElementById('quotEditId').value = id;
+  quotRecalc();
+  ttUpdateQuotSerialLabel();
+}
+window.ttEditQuotation = ttEditQuotation;
+
+function ttEnsureQuotHistoryModal() {
+  var m = document.getElementById('quotationHistoryModal');
+  if (m) return m;
+  m = document.createElement('div');
+  m.id = 'quotationHistoryModal';
+  m.className = 'auth-overlay';
+  m.style.display = 'none';
+  m.style.zIndex = '3100';
+  m.innerHTML = '<div class="auth-card" style="max-width:560px;">' +
+    '<div class="card-header"><span class="card-title">🕘 Quotation History</span>' +
+    '<div style="display:flex;gap:6px;"><button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); ttNewQuotationFromHistory()">+ New</button>' +
+    '<button class="btn btn-outline btn-sm" onclick="document.getElementById(\'quotationHistoryModal\').style.display=\'none\'">✕</button></div></div>' +
+    '<div class="grid-2" style="margin-bottom:8px;">' +
+    '<input type="text" id="qhSearch" placeholder="🔍 Customer / phone / serial..." oninput="ttRenderQuotationHistory()" autocomplete="off">' +
+    '<select id="qhCust" onchange="ttRenderQuotationHistory()"><option value="">All Customers</option></select></div>' +
+    '<div id="qhCount" style="font-size:11.5px;color:var(--text-muted);margin-bottom:8px;"></div>' +
+    '<div id="qhList" style="max-height:58vh;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div></div>';
+  document.body.appendChild(m);
+  return m;
+}
+
+function openQuotationHistory() {
+  var m = ttEnsureQuotHistoryModal();
+  ttRenderQuotationHistory();
+  m.style.display = 'flex';
+}
+window.openQuotationHistory = openQuotationHistory;
+
+function ttNewQuotationFromHistory() {
+  var hm = document.getElementById('quotationHistoryModal');
+  if (hm) hm.style.display = 'none';
+  openQuotationModal();
+}
+window.ttNewQuotationFromHistory = ttNewQuotationFromHistory;
+
+function ttRenderQuotationHistory() {
+  var box = document.getElementById('qhList');
+  if (!box) return;
+  var all = (quotationsData || []).filter(Boolean).slice().sort(function (a, b) { return (Number(b.serial) || 0) - (Number(a.serial) || 0); });
+
+  var sel = document.getElementById('qhCust');
+  var cur = sel.value;
+  var names = [];
+  all.forEach(function (q) { if (q.custName && names.indexOf(q.custName) < 0) names.push(q.custName); });
+  names.sort(function (a, b) { return a.localeCompare(b); });
+  var optHtml = '<option value="">All Customers (' + names.length + ')</option>' + names.map(function (n) { return '<option value="' + ttH(n) + '">' + ttH(n) + '</option>'; }).join('');
+  if (sel._sig !== optHtml) { sel.innerHTML = optHtml; sel._sig = optHtml; }
+  sel.value = names.indexOf(cur) >= 0 ? cur : '';
+
+  var term = (document.getElementById('qhSearch').value || '').toLowerCase().trim();
+  var custSel = sel.value;
+  var list = all.filter(function (q) {
+    if (custSel && q.custName !== custSel) return false;
+    if (!term) return true;
+    return (q.custName || '').toLowerCase().indexOf(term) >= 0 || String(q.custPhone || '').indexOf(term) >= 0 || (q.id || '').toLowerCase().indexOf(term) >= 0;
+  });
+  document.getElementById('qhCount').textContent = list.length + ' quotation' + (list.length === 1 ? '' : 's') + ' (sabse naya upar, serial ke hisab se)';
+
+  if (!list.length) {
+    box.innerHTML = '<div class="empty-state"><span class="empty-icon">📝</span><div class="empty-sub">Koi quotation nahi mili.</div></div>';
+    return;
+  }
+  var isAdm = isAdminUser();
+  box.innerHTML = list.map(function (q) {
+    return '<div class="card" style="padding:10px 12px;margin-bottom:8px;">' +
+      '<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;">' +
+      '<div style="min-width:0;"><span class="badge badge-info" style="font-size:10px;">#' + ttQuotPad(Number(q.serial) || 0) + '</span> ' +
+      '<strong style="font-size:13.5px;color:var(--text-main);">' + ttH(q.custName) + '</strong>' +
+      '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + ttH(q.id) + ' • ' + ttH(q.date || '') + (q.custPhone ? ' • ' + ttH(q.custPhone) : '') + '</div>' +
+      (q.updatedAt ? '<div style="font-size:10px;color:var(--text-muted);">Updated by ' + ttH(q.updatedBy || '') + '</div>' : '') + '</div>' +
+      '<strong style="font-size:15px;color:var(--accent);white-space:nowrap;">₹' + Number(q.final || 0).toLocaleString('en-IN') + '</strong></div>' +
+      '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">' +
+      '<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttEditQuotation(\'' + q.id + '\')">✏️ Edit</button>' +
+      '<button class="btn btn-wa btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttShareQuotationRecord(\'' + q.id + '\')">📤 Resend</button>' +
+      '<button class="btn btn-print btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttPrintQuotationRecord(\'' + q.id + '\')">🖨️ Print</button>' +
+      (isAdm ? '<button class="btn btn-danger-sm btn-sm" onclick="triggerAppHaptic(); ttDeleteQuotation(\'' + q.id + '\')">🗑️</button>' : '') +
+      '</div></div>';
+  }).join('');
+}
+window.ttRenderQuotationHistory = ttRenderQuotationHistory;
+
+function ttShareQuotationRecord(id) {
+  var q = (quotationsData || []).find(function (x) { return x && x.id === id; });
+  if (!q) return;
+  ttNativeShareOrFallback(
+    { title: 'TTESPL Quotation ' + q.id, text: ttQuotPlain(q) },
+    function () { ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q)); }
+  );
+}
+function ttPrintQuotationRecord(id) {
+  var q = (quotationsData || []).find(function (x) { return x && x.id === id; });
+  if (!q) return;
+  ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q));
+}
+function ttDeleteQuotation(id) {
+  if (!isAdminUser()) { alert('Admin only!'); return; }
+  if (!confirm('Quotation ' + id + ' delete karein?')) return;
+  try { if (window.cloudSync && window.cloudSync.deleteItem) window.cloudSync.deleteItem('QUOTATIONS', id); } catch (e) {}
+  quotationsData = (quotationsData || []).filter(function (q) { return q && q.id !== id; });
+  setStored("QUOTATIONS", quotationsData);
+  ttRenderQuotationHistory();
+}
+window.ttShareQuotationRecord = ttShareQuotationRecord;
+window.ttPrintQuotationRecord = ttPrintQuotationRecord;
+window.ttDeleteQuotation = ttDeleteQuotation;
+
+window.ttRenderQuotHistoryIfOpen = function () {
+  var m = document.getElementById('quotationHistoryModal');
+  if (m && m.style.display === 'flex' && document.activeElement !== document.getElementById('qhSearch')) ttRenderQuotationHistory();
+  ttUpdateQuotSerialLabel();
+};
+
+/* ================= STOCK: category select helper ================= */
+function ttSetStockCategory(v) {
+  var sel = document.getElementById('stkCategory');
+  if (!sel) return;
+  v = v || 'Machine Spares';
+  sel.querySelectorAll('option[data-extra]').forEach(function (o) { o.remove(); });
+  var found = Array.prototype.some.call(sel.options, function (o) { return o.value === v; });
+  if (!found) {
+    var o = document.createElement('option');
+    o.value = v; o.textContent = v; o.setAttribute('data-extra', '1');
+    sel.appendChild(o);
+  }
+  sel.value = v;
+}
+window.ttSetStockCategory = ttSetStockCategory;
+
+/* ================= PRODUCT SHARE (sirf Customer Price) + CATALOG DUAL PRICING ================= */
+function ttShareProduct(id) {
+  var i = (sampleInventory || []).find(function (x) { return String(x.id) === String(id); });
+  if (!i) { alert('Product nahi mila.'); return; }
+  var cp = Number(i.rate) || 0;
+  var lines = [i.name];
+  var cat = [i.category, i.subCategory].filter(Boolean).join(' → ');
+  if (cat) lines.push('Category: ' + cat);
+  if (i.code) lines.push('Code: ' + i.code);
+  if (i.machine && i.machine !== i.name) lines.push('Model: ' + i.machine);
+  if (i.desc) lines.push('\n' + String(i.desc).slice(0, 500));
+  if (i.specs) lines.push('\nSpecs: ' + String(i.specs).slice(0, 400));
+  lines.push('\nCustomer Price: ' + (cp > 0 ? '₹' + cp.toLocaleString('en-IN') : 'On request'));
+  lines.push('\nTWIN TOWN EXPRESS SERVICES PVT LTD\nRasulgarh, Bhubaneswar');
+  var plain = lines.join('\n');
+  ttNativeShareOrFallback({ title: i.name, text: plain }, function () {
+    window.open('https://wa.me/?text=' + encodeURIComponent(plain), '_blank');
+  });
+}
+window.ttShareProduct = ttShareProduct;
+
+function ttCatalogCardPrices(i) {
+  var cp = Number(i.rate) || 0, dp = Number(i.dealerPrice) || 0;
+  return '<div style="font-size:11.5px;margin-top:6px;display:flex;gap:10px;flex-wrap:wrap;">' +
+    '<span style="color:var(--success);font-weight:800;">👤 Customer: ' + (cp > 0 ? '₹' + cp.toLocaleString('en-IN') : '—') + '</span>' +
+    '<span style="color:var(--cyan);font-weight:800;">🏷️ Dealer: ' + (dp > 0 ? '₹' + dp.toLocaleString('en-IN') : '—') + '</span></div>';
+}
+window.ttCatalogCardPrices = ttCatalogCardPrices;
+
+function ttCatalogPriceBlockHtml(i) {
+  var cp = Number(i.rate) || 0, dp = Number(i.dealerPrice) || 0;
+  var fmt = function (n) { return n > 0 ? '₹' + n.toLocaleString('en-IN') : 'Not set'; };
+  return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
+    '<div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.35);border-radius:12px;padding:10px;"><div style="font-size:10.5px;font-weight:800;color:var(--success);">CUSTOMER PRICE</div><div style="font-size:17px;font-weight:900;color:var(--text-main);">' + fmt(cp) + '</div></div>' +
+    '<div style="background:rgba(0,180,216,.12);border:1px solid rgba(0,180,216,.35);border-radius:12px;padding:10px;"><div style="font-size:10.5px;font-weight:800;color:var(--cyan);">DEALER PRICE</div><div style="font-size:17px;font-weight:900;color:var(--text-main);">' + fmt(dp) + '</div></div></div>' +
+    '<div style="display:flex;gap:8px;margin-bottom:6px;">' +
+    '<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttOpenCatalogPriceEdit(\'' + i.id + '\')">✏️ Edit Prices</button>' +
+    '<button class="btn btn-wa btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttShareProduct(\'' + i.id + '\')">📤 Share</button></div>' +
+    '<div style="font-size:10.5px;color:var(--text-muted);margin-bottom:12px;">Share karne par sirf Customer Price jaata hai — Dealer Price kabhi share nahi hota.</div>';
+}
+window.ttCatalogPriceBlockHtml = ttCatalogPriceBlockHtml;
+
+function ttOpenCatalogPriceEdit(id) {
+  var i = (sampleInventory || []).find(function (x) { return String(x.id) === String(id); });
+  if (!i) return;
+  var m = document.getElementById('catalogPriceModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'catalogPriceModal';
+    m.className = 'auth-overlay';
+    m.style.display = 'none';
+    m.style.zIndex = '3200';
+    document.body.appendChild(m);
+  }
+  m.innerHTML = '<div class="auth-card" style="max-width:380px;">' +
+    '<div class="card-header"><span class="card-title">✏️ Edit Prices</span><button class="btn btn-outline btn-sm" onclick="document.getElementById(\'catalogPriceModal\').style.display=\'none\'">✕</button></div>' +
+    '<div style="font-size:12.5px;font-weight:700;margin-bottom:10px;">' + ttH(i.name) + '</div>' +
+    '<input type="hidden" id="cpItemId" value="' + ttH(i.id) + '">' +
+    '<div class="form-group"><label class="form-label">👤 Customer Price (₹)</label><input type="number" id="cpCustomer" min="0" step="any" value="' + (Number(i.rate) || 0) + '"></div>' +
+    '<div class="form-group"><label class="form-label">🏷️ Dealer Price (₹)</label><input type="number" id="cpDealer" min="0" step="any" value="' + (Number(i.dealerPrice) || 0) + '"></div>' +
+    '<button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); ttSaveCatalogPrices()">💾 Save Prices</button></div>';
+  m.style.display = 'flex';
+}
+function ttSaveCatalogPrices() {
+  var id = document.getElementById('cpItemId').value;
+  var i = (sampleInventory || []).find(function (x) { return String(x.id) === String(id); });
+  if (!i) return;
+  var cp = parseFloat(document.getElementById('cpCustomer').value) || 0;
+  var dp = parseFloat(document.getElementById('cpDealer').value) || 0;
+  if (cp < 0 || dp < 0) { alert('Price negative nahi ho sakta.'); return; }
+  i.rate = cp;
+  i.dealerPrice = dp;
+  setStored("INVENTORY", sampleInventory);
+  document.getElementById('catalogPriceModal').style.display = 'none';
+  var pb = document.getElementById('catalogPriceBlock');
+  if (pb) pb.innerHTML = ttCatalogPriceBlockHtml(i);
+  if (typeof renderCatalog === 'function') renderCatalog();
+  if (typeof renderStockList === 'function') renderStockList();
+}
+window.ttOpenCatalogPriceEdit = ttOpenCatalogPriceEdit;
+window.ttSaveCatalogPrices = ttSaveCatalogPrices;
+
+/* ================= TRAVEL EXPENSES (per employee) ================= */
+var ttTravelState = { month: '', empKey: '' };
+
+function ttTravelMyKey() {
+  if (!currentUser) return '';
+  return String(currentUser.id != null ? currentUser.id : currentUser.mobile);
+}
+function ttTravelViewKey() { return ttTravelState.empKey || ttTravelMyKey(); }
+function ttTravelCanEdit(rec) { return isAdminUser() || String(rec.empId) === ttTravelMyKey(); }
+function ttTravelEmpName(key) {
+  var e = (registeredEmployees || []).find(function (x) { return String(x.id) === String(key); });
+  if (e) return e.name;
+  return (currentUser && ttTravelMyKey() === String(key)) ? currentUser.name : 'Employee';
+}
+function ttFmtKm(n) { return String(Math.round((Number(n) || 0) * 100) / 100); }
+function ttTravelMonthLabel() {
+  var p = String(ttTravelState.month || '').split('-');
+  if (p.length < 2) return '';
+  return new Date(Number(p[0]), Number(p[1]) - 1, 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+}
+function ttTravelDayLabel(d) {
+  var dt = new Date(d + 'T00:00:00');
+  return isNaN(dt) ? d : dt.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' });
+}
+function ttTravelMonthRecords() {
+  var key = ttTravelViewKey(), mon = ttTravelState.month;
+  return (travelData || []).filter(function (r) {
+    return r && String(r.empId) === String(key) && String(r.date || '').slice(0, 7) === mon;
+  }).sort(function (a, b) {
+    if (a.date === b.date) return (a.createdAt || 0) - (b.createdAt || 0);
+    return a.date < b.date ? -1 : 1;
+  });
+}
+
+function ttEnsureTravelModal() {
+  var m = document.getElementById('travelExpenseModal');
+  if (m) return m;
+  m = document.createElement('div');
+  m.id = 'travelExpenseModal';
+  m.className = 'auth-overlay';
+  m.style.display = 'none';
+  m.style.zIndex = '3100';
+  m.innerHTML = '<div class="auth-card" style="max-width:560px;">' +
+    '<div class="card-header"><span class="card-title">🧳 Travel Expenses</span>' +
+    '<div style="display:flex;gap:6px;"><button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); ttTravelPrint()">💾 Save / Print</button>' +
+    '<button class="btn btn-outline btn-sm" onclick="document.getElementById(\'travelExpenseModal\').style.display=\'none\'">✕</button></div></div>' +
+    '<div id="trvEmpRow" style="display:none;margin-bottom:8px;"><label class="form-label">👤 Employee (Admin view)</label><select id="trvEmpSelect" onchange="ttTravelSwitchEmp(this.value)"></select></div>' +
+    '<div id="trvSummary" class="tt-trv-summary"></div>' +
+    '<div class="form-group"><label class="form-label">📅 Month</label><input type="month" id="trvMonth" onchange="ttTravelSetMonth(this.value)"></div>' +
+    '<div class="tt-trv-add">' +
+    '<div class="grid-2"><div class="form-group"><label class="form-label">Date</label><input type="date" id="trvDate"></div>' +
+    '<div class="form-group"><label class="form-label">Distance (Km)</label><input type="number" id="trvKm" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 12.5"></div></div>' +
+    '<div class="grid-2"><div class="form-group"><label class="form-label">From</label><input type="text" id="trvFrom" placeholder="e.g. Rasulgarh Office"></div>' +
+    '<div class="form-group"><label class="form-label">To</label><input type="text" id="trvTo" placeholder="e.g. Cuttack Workshop"></div></div>' +
+    '<button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); ttTravelAdd()">➕ Add Visit (ek date par kai places add kar sakte hain)</button></div>' +
+    '<div style="font-size:13px;font-weight:800;margin:14px 0 8px;">📋 Monthly Log (editable)</div>' +
+    '<div id="trvLog" style="max-height:44vh;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div></div>';
+  document.body.appendChild(m);
+  return m;
+}
+
+function openTravelExpenses() {
+  if (!currentUser) { alert('Pehle login karein.'); return; }
+  var m = ttEnsureTravelModal();
+  if (!ttTravelState.month) {
+    var now = new Date();
+    ttTravelState.month = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  }
+  ttTravelState.empKey = ttTravelMyKey();
+  m.style.display = 'flex';
+  ttRenderTravel(true);
+}
+window.openTravelExpenses = openTravelExpenses;
+
+function ttTravelSetMonth(v) {
+  if (!v) return;
+  ttTravelState.month = v;
+  ttRenderTravel();
+}
+function ttTravelSwitchEmp(v) {
+  ttTravelState.empKey = v || ttTravelMyKey();
+  ttRenderTravel();
+}
+window.ttTravelSetMonth = ttTravelSetMonth;
+window.ttTravelSwitchEmp = ttTravelSwitchEmp;
+
+function ttRenderTravel(full) {
+  var m = document.getElementById('travelExpenseModal');
+  if (!m) return;
+  var isAdm = isAdminUser();
+  var row = document.getElementById('trvEmpRow');
+  row.style.display = isAdm ? 'block' : 'none';
+  if (isAdm) {
+    var sel = document.getElementById('trvEmpSelect');
+    sel.innerHTML = (registeredEmployees || []).map(function (e) {
+      return '<option value="' + ttH(String(e.id)) + '">' + ttH(e.name) + ' — ' + ttH(e.role || '') + '</option>';
+    }).join('');
+    sel.value = ttTravelViewKey();
+  }
+  document.getElementById('trvMonth').value = ttTravelState.month;
+  var dEl = document.getElementById('trvDate');
+  if ((full || !dEl.value) && !dEl.value) dEl.value = new Date().toISOString().split('T')[0];
+
+  var recs = ttTravelMonthRecords();
+  var total = recs.reduce(function (s, r) { return s + (Number(r.km) || 0); }, 0);
+  document.getElementById('trvSummary').innerHTML =
+    '<div><div style="font-size:11px;opacity:.85;">' + ttH(ttTravelEmpName(ttTravelViewKey())) + ' • ' + ttH(ttTravelMonthLabel()) + '</div>' +
+    '<div style="font-size:24px;font-weight:900;"><span id="trvTotalKm">' + ttFmtKm(total) + '</span> Km</div></div>' +
+    '<div style="text-align:right;font-size:11px;opacity:.9;">Visits<br><b id="trvVisitCount" style="font-size:18px;">' + recs.length + '</b></div>';
+
+  var log = document.getElementById('trvLog');
+  if (!recs.length) {
+    log.innerHTML = '<div class="empty-state"><span class="empty-icon">🧳</span><div class="empty-sub">Is mahine koi travel entry nahi hai.</div></div>';
+    return;
+  }
+  var html = '', lastDate = '';
+  recs.forEach(function (r) {
+    if (r.date !== lastDate) {
+      lastDate = r.date;
+      var dayTotal = recs.filter(function (x) { return x.date === r.date; }).reduce(function (s, x) { return s + (Number(x.km) || 0); }, 0);
+      html += '<div class="tt-trv-dayhead"><span>' + ttH(ttTravelDayLabel(r.date)) + '</span><b data-trv-day="' + ttH(r.date) + '">' + ttFmtKm(dayTotal) + ' km</b></div>';
+    }
+    var dis = ttTravelCanEdit(r) ? '' : ' disabled';
+    html += '<div class="tt-trv-row"><div class="tt-trv-top">' +
+      '<input type="date" value="' + ttH(r.date) + '" onchange="ttTravelUpdate(\'' + r.id + '\',\'date\',this.value)"' + dis + '>' +
+      '<input type="number" step="0.1" min="0" inputmode="decimal" value="' + ttH(r.km) + '" onchange="ttTravelUpdate(\'' + r.id + '\',\'km\',this.value)"' + dis + '>' +
+      '<button class="btn btn-danger-sm" onclick="triggerAppHaptic(); ttTravelDelete(\'' + r.id + '\')"' + dis + '>🗑️</button></div>' +
+      '<div class="tt-trv-bottom"><input type="text" value="' + ttH(r.from) + '" placeholder="From" onchange="ttTravelUpdate(\'' + r.id + '\',\'from\',this.value)"' + dis + '>' +
+      '<span>➜</span><input type="text" value="' + ttH(r.to) + '" placeholder="To" onchange="ttTravelUpdate(\'' + r.id + '\',\'to\',this.value)"' + dis + '></div></div>';
+  });
+  log.innerHTML = html;
+}
+
+function ttTravelRefreshTotals() {
+  var recs = ttTravelMonthRecords();
+  var total = recs.reduce(function (s, r) { return s + (Number(r.km) || 0); }, 0);
+  var t = document.getElementById('trvTotalKm'); if (t) t.textContent = ttFmtKm(total);
+  var c = document.getElementById('trvVisitCount'); if (c) c.textContent = recs.length;
+  document.querySelectorAll('[data-trv-day]').forEach(function (el) {
+    var d = el.getAttribute('data-trv-day');
+    var s = recs.filter(function (r) { return r.date === d; }).reduce(function (a, r) { return a + (Number(r.km) || 0); }, 0);
+    el.textContent = ttFmtKm(s) + ' km';
+  });
+}
+
+function ttTravelAdd() {
+  var date = document.getElementById('trvDate').value;
+  var from = document.getElementById('trvFrom').value.trim();
+  var to = document.getElementById('trvTo').value.trim();
+  var km = parseFloat(document.getElementById('trvKm').value);
+  if (!date || !from || !to || !(km > 0)) { alert('Date, From, To aur Km (0 se zyada) bharna zaroori hai.'); return; }
+  var key = ttTravelViewKey();
+  var rec = {
+    id: 'TRV' + Date.now() + Math.random().toString(36).slice(2, 6),
+    empId: key, empName: ttTravelEmpName(key),
+    date: date, from: from, to: to, km: km,
+    createdAt: Date.now(), createdBy: currentUser ? currentUser.name : 'Staff'
+  };
+  if (!Array.isArray(travelData)) travelData = [];
+  travelData.push(rec);
+  setStored("TRAVEL", travelData);
+  ttTravelState.month = date.slice(0, 7);
+  document.getElementById('trvFrom').value = to; // agla visit usi jagah se shuru
+  document.getElementById('trvTo').value = '';
+  document.getElementById('trvKm').value = '';
+  ttRenderTravel();
+}
+window.ttTravelAdd = ttTravelAdd;
+
+function ttTravelUpdate(id, field, val) {
+  var r = (travelData || []).find(function (x) { return x && x.id === id; });
+  if (!r || !ttTravelCanEdit(r)) return;
+  if (field === 'km') r.km = Math.max(0, parseFloat(val) || 0);
+  else if (field === 'date') { if (!val) return; r.date = val; }
+  else r[field] = String(val).trim();
+  r.updatedAt = Date.now();
+  setStored("TRAVEL", travelData);
+  if (field === 'date') ttRenderTravel(); else ttTravelRefreshTotals();
+}
+window.ttTravelUpdate = ttTravelUpdate;
+
+function ttTravelDelete(id) {
+  var r = (travelData || []).find(function (x) { return x && x.id === id; });
+  if (!r || !ttTravelCanEdit(r)) return;
+  if (!confirm('Ye travel entry delete karein?')) return;
+  try { if (window.cloudSync && window.cloudSync.deleteItem) window.cloudSync.deleteItem('TRAVEL', id); } catch (e) {}
+  travelData = (travelData || []).filter(function (x) { return x && x.id !== id; });
+  setStored("TRAVEL", travelData);
+  ttRenderTravel();
+}
+window.ttTravelDelete = ttTravelDelete;
+
+function ttTravelPrint() {
+  var recs = ttTravelMonthRecords();
+  if (!recs.length) { alert('Is mahine koi travel entry nahi hai.'); return; }
+  var name = ttTravelEmpName(ttTravelViewKey());
+  var monthLabel = ttTravelMonthLabel();
+  var B = 'border:1px solid #000;padding:5px 7px;font-size:11.5px;';
+  var rows = '', sl = 0, lastDate = '', total = 0;
+  var dayTotals = {};
+  recs.forEach(function (r) { dayTotals[r.date] = (dayTotals[r.date] || 0) + (Number(r.km) || 0); total += Number(r.km) || 0; });
+  recs.forEach(function (r, idx) {
+    sl++;
+    var dateCell = r.date !== lastDate ? ttH(new Date(r.date + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })) : '';
+    lastDate = r.date;
+    rows += '<tr><td style="' + B + 'text-align:center;">' + sl + '</td><td style="' + B + '">' + dateCell + '</td><td style="' + B + '">' + ttH(r.from) + '</td><td style="' + B + '">' + ttH(r.to) + '</td><td style="' + B + 'text-align:right;">' + ttFmtKm(r.km) + '</td></tr>';
+    var next = recs[idx + 1];
+    if (!next || next.date !== r.date) {
+      rows += '<tr style="background:#eef2f7;"><td colspan="4" style="' + B + 'text-align:right;font-weight:700;">Day Total</td><td style="' + B + 'text-align:right;font-weight:700;">' + ttFmtKm(dayTotals[r.date]) + '</td></tr>';
+    }
+  });
+  var html = '<div style="font-family:Arial,Helvetica,sans-serif;color:#000;">' +
+    '<div style="text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px;"><strong style="font-size:17px;">TWINTOWN EXPRESS SERVICES PVT LTD</strong><br><span style="font-size:13px;">Travel Expense Report</span></div>' +
+    '<table style="width:100%;margin-bottom:12px;font-size:12.5px;"><tr><td><strong>Employee Name:</strong> ' + ttH(name) + '</td><td style="text-align:right;"><strong>Month:</strong> ' + ttH(monthLabel) + '</td></tr>' +
+    '<tr><td><strong>Total Visits:</strong> ' + recs.length + '</td><td style="text-align:right;"><strong>Generated:</strong> ' + new Date().toLocaleDateString('en-GB') + '</td></tr></table>' +
+    '<table style="width:100%;border-collapse:collapse;"><thead><tr style="background:#0a2540;color:#fff;"><th style="' + B + 'width:34px;">Sl</th><th style="' + B + '">Date</th><th style="' + B + '">From</th><th style="' + B + '">To</th><th style="' + B + 'text-align:right;">Distance (Km)</th></tr></thead><tbody>' + rows +
+    '<tr style="background:#dbeafe;"><td colspan="4" style="' + B + 'text-align:right;font-weight:800;font-size:13px;">TOTAL KILOMETERS</td><td style="' + B + 'text-align:right;font-weight:800;font-size:13px;">' + ttFmtKm(total) + ' Km</td></tr></tbody></table>' +
+    '<div style="display:flex;justify-content:space-between;margin-top:36px;font-size:12px;"><div>Employee Signature: ______________</div><div>Authorised Signatory: ______________</div></div></div>';
+  ttPrintHtml('Travel Expenses - ' + name + ' - ' + monthLabel, html);
+}
+window.ttTravelPrint = ttTravelPrint;
+
+window.ttRenderTravelIfOpen = function () {
+  var m = document.getElementById('travelExpenseModal');
+  if (!m || m.style.display !== 'flex') return;
+  var ae = document.activeElement;
+  if (ae && m.contains(ae) && (ae.tagName === 'INPUT' || ae.tagName === 'SELECT')) return; // typing ke beech re-render nahi
+  ttRenderTravel();
+};
+
+
+/* ===== v6: debounce helper (smooth typing in big lists) ===== */
+var _ttDebT = {};
+function ttDeb(k, fn, v) {
+  clearTimeout(_ttDebT[k]);
+  _ttDebT[k] = setTimeout(function () { fn(v); }, 160);
+}
+window.ttDeb = ttDeb;
+window.ttRenderCrmIfOpen = function () { try { var m = document.getElementById('crmRecordsContainer'); if (m && m.offsetParent !== null) renderCrmRecords(); } catch (e) {} };
+window.ttRenderCompanyIfOpen = function () { try { if (typeof renderCompanyDetailsView === 'function') renderCompanyDetailsView(); } catch (e) {} };
 
 /* ===== BACK BUTTON FIX ===== */
 /* Android/browser ka back button ab poora app band karne ki jagah - pehle khula
