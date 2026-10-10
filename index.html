@@ -1676,7 +1676,8 @@ body { animation: none !important; touch-action: manipulation; }
           <div class="page-top-title"><span>📖</span> <span>Product Catalog</span></div>
           <div class="page-top-sub">Sirf jaankari ke liye - description, technical data & accessories. Isse koi bill/order nahi banta.</div>
         </div>
-        <div style="display:flex; gap:6px;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+          <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); ttCatProdEdit()">➕ Add Product</button>
           <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); switchTab('inventory', document.querySelectorAll('.nav-item')[4])">← Back to Stock</button>
         </div>
       </div>
@@ -2552,7 +2553,7 @@ body { animation: none !important; touch-action: manipulation; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="master-data.js?v=4"></script>
-<script src="live-sync.js?v=11"></script>
+<script src="live-sync.js?v=12"></script>
 
 <script>
     
@@ -5900,7 +5901,7 @@ function downloadFile(content, fileName, mimeType) {
 }
 
 /* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
-const TT_APP_VERSION = 'v8';
+const TT_APP_VERSION = 'v9';
 let pendingChat = [];
 window.pendingChat = pendingChat;
 
@@ -7802,15 +7803,18 @@ function getCatalogItems() {
 
 function renderCatalog() {
   const items = getCatalogItems();
-  const subs = Array.from(new Set(items.map(i => i.subCategory).filter(Boolean))).sort();
+  const cats = (typeof catalogCatsData !== 'undefined' && Array.isArray(catalogCatsData)) ? catalogCatsData.slice().sort((x, y) => String(x.name).localeCompare(String(y.name))) : [];
+  if (activeCatalogSub !== 'ALL' && !cats.some(c => String(c.id) === String(activeCatalogSub))) activeCatalogSub = 'ALL';
 
   const tabsBox = document.getElementById('catalogSubTabs');
   if (tabsBox) {
     tabsBox.innerHTML = `<button class="sub-tab-btn ${activeCatalogSub === 'ALL' ? 'active' : ''}" onclick="triggerAppHaptic(); selectCatalogSub('ALL', this)">🌟 All (${items.length})</button>` +
-      subs.map(s => {
-        const c = items.filter(i => i.subCategory === s).length;
-        return `<button class="sub-tab-btn ${activeCatalogSub === s ? 'active' : ''}" onclick="triggerAppHaptic(); selectCatalogSub('${esc(s).replace(/'/g, "\\'")}', this)">${esc(s)} (${c})</button>`;
-      }).join('');
+      cats.map(c => {
+        const n = items.filter(i => String(i.catalogCat) === String(c.id)).length;
+        return `<button class="sub-tab-btn ${String(activeCatalogSub) === String(c.id) ? 'active' : ''}" onclick="triggerAppHaptic(); selectCatalogSub('${ttH(c.id)}', this)">${ttH(c.name)} (${n})</button>`;
+      }).join('') +
+      (activeCatalogSub !== 'ALL' ? `<button class="sub-tab-btn" onclick="triggerAppHaptic(); ttCatManage('${ttH(activeCatalogSub)}')">⚙️ Manage</button>` : '') +
+      `<button class="sub-tab-btn" onclick="triggerAppHaptic(); ttCatManage()">➕ Category</button>`;
   }
   filterCatalog(document.getElementById('catalogSearchInput') ? document.getElementById('catalogSearchInput').value : '');
 }
@@ -7827,7 +7831,7 @@ window.selectCatalogSub = selectCatalogSub;
 function filterCatalog(q) {
   q = String(q || '').toLowerCase().trim();
   let list = getCatalogItems();
-  if (activeCatalogSub !== 'ALL') list = list.filter(i => i.subCategory === activeCatalogSub);
+  if (activeCatalogSub !== 'ALL') list = list.filter(i => String(i.catalogCat) === String(activeCatalogSub));
   if (q) list = list.filter(i => (i.name && i.name.toLowerCase().includes(q)) || (i.subCategory && i.subCategory.toLowerCase().includes(q)) || (i.desc && i.desc.toLowerCase().includes(q)));
 
   const box = document.getElementById('catalogListContainer');
@@ -7841,7 +7845,7 @@ function filterCatalog(q) {
       <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
         <div style="flex:1;">
           <strong style="font-size:14.5px; color:var(--text-main);">${esc(i.name)}</strong>
-          <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">${esc(i.subCategory || 'Catalog')}</div>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">${esc((typeof ttCatCatName === 'function' && ttCatCatName(i)) || 'Catalog')}</div>
           ${ttCatalogCardPrices(i)}
           ${i.desc ? `<div style="font-size:12px; color:var(--text-muted); margin-top:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(i.desc)}</div>` : ''}
         </div>
@@ -7934,6 +7938,7 @@ function openCatalogDetail(id) {
     ${row('Description', i.desc)}
     ${row('Technical Data / Specs', i.specs)}
     <div id="catalogPriceBlock">${ttCatalogPriceBlockHtml(i)}</div>
+    <button class="btn btn-outline btn-sm btn-block" style="margin-bottom:10px;" onclick="triggerAppHaptic(); ttCatProdEdit('${i.id}')">✏️ Edit Product Details</button>
     <div id="catalogAiBox" style="margin:4px 0 10px; padding:10px 12px; border-radius:12px; background:var(--bg); border:1px dashed var(--border); font-size:12.5px; line-height:1.5; color:var(--text-main);">
       <div style="font-weight:800; font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:4px;">🤖 AI Summary (Google Search se)</div>
       <div id="catalogAiBoxBody">⏳ Dhoond raha hai...</div>
@@ -8582,6 +8587,165 @@ function ttDeb(k, fn, v) {
 window.ttDeb = ttDeb;
 window.ttRenderCrmIfOpen = function () { try { var m = document.getElementById('crmRecordsContainer'); if (m && m.offsetParent !== null) renderCrmRecords(); } catch (e) {} };
 window.ttRenderCompanyIfOpen = function () { try { if (typeof renderCompanyDetailsView === 'function') renderCompanyDetailsView(); } catch (e) {} };
+
+/* ===== v9: Product Catalog - Add/Edit Product + custom Categories (cloud synced) ===== */
+var catalogCatsData = getStored("CATALOG_CATS", []);
+window.ttRenderCatalogIfOpen = function () {
+  try { var p = document.getElementById('view-catalog'); if (p && p.classList.contains('active')) renderCatalog(); } catch (e) {}
+};
+function ttCatCatName(i) {
+  if (!i || !i.catalogCat) return '';
+  var c = (catalogCatsData || []).filter(function (x) { return String(x.id) === String(i.catalogCat); })[0];
+  return c ? c.name : '';
+}
+window.ttCatCatName = ttCatCatName;
+
+function ttCatModal(id, z) {
+  var m = document.getElementById(id);
+  if (!m) { m = document.createElement('div'); m.id = id; m.className = 'auth-overlay'; m.style.display = 'none'; m.style.zIndex = z || '3200'; document.body.appendChild(m); }
+  return m;
+}
+
+/* ---- Add / Edit product ---- */
+function ttCatProdEdit(id) {
+  var i = id ? (sampleInventory || []).filter(function (x) { return String(x.id) === String(id); })[0] : null;
+  if (id && !i) return;
+  var d = document.getElementById('catalogDetailModal'); if (d) d.style.display = 'none';
+  var m = ttCatModal('catalogProdModal', '3200');
+  var opts = '<option value="">— Koi category nahi —</option>' + (catalogCatsData || []).map(function (c) {
+    return '<option value="' + ttH(c.id) + '"' + (i && String(i.catalogCat) === String(c.id) ? ' selected' : '') + '>' + ttH(c.name) + '</option>';
+  }).join('');
+  var v = function (x) { return ttH(x == null ? '' : x); };
+  m.innerHTML = '<div class="auth-card" style="max-width:480px;max-height:92dvh;overflow-y:auto;">' +
+    '<div class="card-header"><span class="card-title">' + (i ? '✏️ Edit Product' : '➕ Add Product') + '</span><button class="btn btn-outline btn-sm" onclick="document.getElementById(\'catalogProdModal\').style.display=\'none\'">✕</button></div>' +
+    '<input type="hidden" id="cpeId" value="' + v(i ? i.id : '') + '">' +
+    '<div class="form-group"><label class="form-label">Product Name *</label><input type="text" id="cpeName" value="' + v(i && i.name) + '" placeholder="e.g. AR-680 (1Φ)"></div>' +
+    '<div class="form-group"><label class="form-label">Category</label><select id="cpeCat">' + opts + '</select></div>' +
+    '<div class="form-group"><label class="form-label">Model / Code</label><input type="text" id="cpeCode" value="' + v(i && i.code) + '" placeholder="e.g. CAT-1040"></div>' +
+    '<div class="form-group"><label class="form-label">HSN (Quotation ke liye)</label><input type="text" id="cpeHsn" value="' + v(i && i.hsn) + '" placeholder="e.g. 84243000"></div>' +
+    '<div class="form-group"><label class="form-label">Description</label><textarea id="cpeDesc" rows="3" style="width:100%;">' + v(i && i.desc) + '</textarea></div>' +
+    '<div class="form-group"><label class="form-label">Technical Data / Specs</label><textarea id="cpeSpecs" rows="4" style="width:100%;">' + v(i && i.specs) + '</textarea></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
+      '<div class="form-group"><label class="form-label">👤 Customer Price (₹)</label><input type="number" id="cpeCust" min="0" step="any" value="' + (i ? (Number(i.rate) || 0) : '') + '"></div>' +
+      '<div class="form-group"><label class="form-label">🏷️ Dealer Price (₹)</label><input type="number" id="cpeDeal" min="0" step="any" value="' + (i ? (Number(i.dealerPrice) || 0) : '') + '"></div></div>' +
+    '<button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); ttCatProdSave()">💾 Save Product</button>' +
+    (i && isAdminUser() ? '<button class="btn btn-danger-sm btn-block" style="margin-top:8px;" onclick="ttCatProdDelete(\'' + v(i.id) + '\')">🗑️ Delete Product (Admin)</button>' : '') +
+    '</div>';
+  m.style.display = 'flex';
+}
+function ttCatProdSave() {
+  var name = document.getElementById('cpeName').value.trim();
+  if (!name) { alert('Product ka naam daalo'); return; }
+  var id = document.getElementById('cpeId').value;
+  var cust = parseFloat(document.getElementById('cpeCust').value) || 0;
+  var deal = parseFloat(document.getElementById('cpeDeal').value) || 0;
+  if (cust < 0 || deal < 0) { alert('Price negative nahi ho sakta.'); return; }
+  var f = {
+    name: name,
+    code: document.getElementById('cpeCode').value.trim(),
+    hsn: document.getElementById('cpeHsn').value.trim(),
+    desc: document.getElementById('cpeDesc').value.trim(),
+    specs: document.getElementById('cpeSpecs').value.trim(),
+    catalogCat: document.getElementById('cpeCat').value || '',
+    rate: cust, dealerPrice: deal
+  };
+  var item = id ? (sampleInventory || []).filter(function (x) { return String(x.id) === String(id); })[0] : null;
+  if (item) {
+    Object.keys(f).forEach(function (k) { item[k] = f[k]; });
+  } else {
+    var nid = Date.now();
+    while ((sampleInventory || []).some(function (x) { return x.id === nid; })) nid++;
+    sampleInventory.unshift(Object.assign({ id: nid, category: 'Catalog Equipment', subCategory: '' }, f));
+  }
+  setStored("INVENTORY", sampleInventory);
+  document.getElementById('catalogProdModal').style.display = 'none';
+  renderCatalog();
+  try { updateCategoryCounts(); } catch (e) {}
+  try { if (typeof ttShowSuccessToast === 'function') ttShowSuccessToast(item ? 'Product update ho gaya.' : 'Product catalog mein add ho gaya.'); } catch (e) {}
+}
+function ttCatProdDelete(id) {
+  if (!isAdminUser()) { alert('Admin only!'); return; }
+  if (!confirm('Is product ko delete kar dein?')) return;
+  sampleInventory = sampleInventory.filter(function (x) { return String(x.id) !== String(id); });
+  setStored("INVENTORY", sampleInventory);
+  try { if (window.cloudSync) window.cloudSync.deleteItem('INVENTORY', id); } catch (e) {}
+  document.getElementById('catalogProdModal').style.display = 'none';
+  renderCatalog();
+}
+
+/* ---- Categories ---- */
+var ttCatSel = {};      // product id -> true (checked in modal)
+var ttCatEditId = '';
+function ttCatManage(catId) {
+  ttCatEditId = catId || '';
+  ttCatSel = {};
+  var c = catId ? (catalogCatsData || []).filter(function (x) { return String(x.id) === String(catId); })[0] : null;
+  if (catId && !c) return;
+  getCatalogItems().forEach(function (i) { if (c && String(i.catalogCat) === String(c.id)) ttCatSel[String(i.id)] = true; });
+  var m = ttCatModal('catalogCatModal', '3200');
+  m.innerHTML = '<div class="auth-card" style="max-width:480px;max-height:92dvh;display:flex;flex-direction:column;">' +
+    '<div class="card-header"><span class="card-title">' + (c ? '⚙️ Category Manage' : '➕ New Category') + '</span><button class="btn btn-outline btn-sm" onclick="document.getElementById(\'catalogCatModal\').style.display=\'none\'">✕</button></div>' +
+    '<div class="form-group"><label class="form-label">Category ka naam *</label><input type="text" id="ccName" value="' + ttH(c ? c.name : '') + '" placeholder="e.g. High Pressure Washers"></div>' +
+    '<div class="form-group" style="margin-bottom:6px;"><label class="form-label">Is category mein products select karein (<span id="ccCount">0</span>)</label><input type="text" id="ccSearch" placeholder="🔍 Product search..." oninput="ttDeb(\'cc\', ttCatRenderPick)"></div>' +
+    '<div id="ccList" style="flex:1;overflow-y:auto;min-height:120px;max-height:46dvh;border:1px solid var(--border);border-radius:12px;padding:6px;margin-bottom:10px;"></div>' +
+    '<button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); ttCatSave()">💾 Save Category</button>' +
+    (c ? '<button class="btn btn-danger-sm btn-block" style="margin-top:8px;" onclick="ttCatDelete()">🗑️ Category Delete (products delete nahi honge)</button>' : '') +
+    '</div>';
+  m.style.display = 'flex';
+  ttCatRenderPick();
+}
+function ttCatRenderPick() {
+  var box = document.getElementById('ccList'); if (!box) return;
+  var q = (document.getElementById('ccSearch').value || '').toLowerCase().trim();
+  var list = getCatalogItems().filter(function (i) { return !q || (i.name && i.name.toLowerCase().indexOf(q) >= 0) || (i.code && String(i.code).toLowerCase().indexOf(q) >= 0); });
+  box.innerHTML = list.length ? list.map(function (i) {
+    var other = ttCatCatName(i);
+    var here = ttCatEditId && String(i.catalogCat) === String(ttCatEditId);
+    return '<label style="display:flex;align-items:center;gap:10px;padding:8px 6px;border-bottom:1px solid var(--border);cursor:pointer;">' +
+      '<input type="checkbox" style="width:18px;height:18px;flex:none;" ' + (ttCatSel[String(i.id)] ? 'checked' : '') + ' onchange="ttCatTick(\'' + ttH(i.id) + '\', this.checked)">' +
+      '<span style="flex:1;font-size:13px;color:var(--text-main);">' + ttH(i.name) + (other && !here ? '<span style="display:block;font-size:10.5px;color:var(--text-muted);">Abhi: ' + ttH(other) + ' (select karne par yahan aa jayega)</span>' : '') + '</span></label>';
+  }).join('') : '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:12.5px;">Koi product nahi mila.</div>';
+  var n = Object.keys(ttCatSel).length; var el = document.getElementById('ccCount'); if (el) el.textContent = n;
+}
+function ttCatTick(id, on) {
+  if (on) ttCatSel[String(id)] = true; else delete ttCatSel[String(id)];
+  var el = document.getElementById('ccCount'); if (el) el.textContent = Object.keys(ttCatSel).length;
+}
+function ttCatSave() {
+  var name = document.getElementById('ccName').value.trim();
+  if (!name) { alert('Category ka naam daalo'); return; }
+  var dup = (catalogCatsData || []).some(function (c) { return c.name.toLowerCase() === name.toLowerCase() && String(c.id) !== String(ttCatEditId); });
+  if (dup) { alert('Is naam ki category pehle se hai.'); return; }
+  var cat = ttCatEditId ? catalogCatsData.filter(function (c) { return String(c.id) === String(ttCatEditId); })[0] : null;
+  if (cat) { cat.name = name; }
+  else { cat = { id: 'CC' + Date.now(), name: name, createdBy: currentUser ? currentUser.name : '' }; catalogCatsData.push(cat); }
+  var changed = false;
+  getCatalogItems().forEach(function (i) {
+    var on = !!ttCatSel[String(i.id)];
+    if (on && String(i.catalogCat) !== String(cat.id)) { i.catalogCat = cat.id; changed = true; }
+    else if (!on && String(i.catalogCat) === String(cat.id)) { i.catalogCat = ''; changed = true; }
+  });
+  setStored("CATALOG_CATS", catalogCatsData);
+  if (changed) setStored("INVENTORY", sampleInventory);
+  document.getElementById('catalogCatModal').style.display = 'none';
+  activeCatalogSub = cat.id;
+  renderCatalog();
+}
+function ttCatDelete() {
+  var c = catalogCatsData.filter(function (x) { return String(x.id) === String(ttCatEditId); })[0];
+  if (!c || !confirm('"' + c.name + '" category delete karein? Products catalog mein bane rahenge (sirf All mein dikhenge).')) return;
+  var changed = false;
+  getCatalogItems().forEach(function (i) { if (String(i.catalogCat) === String(c.id)) { i.catalogCat = ''; changed = true; } });
+  catalogCatsData = catalogCatsData.filter(function (x) { return String(x.id) !== String(c.id); });
+  setStored("CATALOG_CATS", catalogCatsData);
+  try { if (window.cloudSync) window.cloudSync.deleteItem('CATALOG_CATS', c.id); } catch (e) {}
+  if (changed) setStored("INVENTORY", sampleInventory);
+  document.getElementById('catalogCatModal').style.display = 'none';
+  activeCatalogSub = 'ALL';
+  renderCatalog();
+}
+window.ttCatProdEdit = ttCatProdEdit; window.ttCatProdSave = ttCatProdSave; window.ttCatProdDelete = ttCatProdDelete;
+window.ttCatManage = ttCatManage; window.ttCatSave = ttCatSave; window.ttCatDelete = ttCatDelete; window.ttCatTick = ttCatTick; window.ttCatRenderPick = ttCatRenderPick;
 
 /* ===== BACK BUTTON FIX ===== */
 /* Android/browser ka back button ab poora app band karne ki jagah - pehle khula
