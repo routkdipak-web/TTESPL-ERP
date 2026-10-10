@@ -5900,7 +5900,7 @@ function downloadFile(content, fileName, mimeType) {
 }
 
 /* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
-const TT_APP_VERSION = 'v7';
+const TT_APP_VERSION = 'v8';
 let pendingChat = [];
 window.pendingChat = pendingChat;
 
@@ -6951,6 +6951,7 @@ function quotAddItemRow() {
     <div style="position:relative; margin-bottom:6px;">
       <input type="text" class="qit-name" placeholder="Type product name..." oninput="handleQuotItemInput(this)" style="width:100%;">
       <div class="solid-suggestion-box"></div>
+      <div class="qit-desc" style="display:none;font-size:9px;line-height:1.3;color:var(--text-muted);margin-top:3px;white-space:pre-wrap;"></div>
     </div>
     <div style="display:flex; gap:6px; align-items:center;">
       <input type="text" class="qit-hsn" placeholder="HSN" style="width:70px; font-size:12px;">
@@ -6969,19 +6970,53 @@ function handleQuotItemInput(inputEl) {
   if (!row) return;
   const box = row.querySelector('.solid-suggestion-box');
   if (!val) { box.style.display = 'none'; return; }
-  const matches = (sampleInventory || []).filter(p =>
-    (p.name && p.name.toLowerCase().includes(val)) || (p.code && p.code.toLowerCase().includes(val))
-  ).slice(0, 8);
+  // Typing se naya naam likha to purana catalog description hata do
+  if (row.dataset.descFor && row.dataset.descFor !== inputEl.value.trim()) ttQuotSetDesc(row, '', '');
+  // SIRF QUOTATION me: Product Catalog ke products bhi searchable (pehle catalog wale, phir stock)
+  const hit = p => [p.name, p.code, p.subCategory, p.machine].some(f => f && String(f).toLowerCase().includes(val));
+  const all = (sampleInventory || []).filter(hit);
+  const matches = all.filter(p => p.category === 'Catalog Equipment').concat(all.filter(p => p.category !== 'Catalog Equipment')).slice(0, 10);
   if (matches.length === 0) { box.style.display = 'none'; return; }
   box.innerHTML = matches.map(p => `
-    <div class="suggestion-item" onmousedown="selectQuotItemSuggestion(this, '${encodeURIComponent(p.name || '')}', '${p.hsn || ''}', ${p.rate || 0})">
+    <div class="suggestion-item" onmousedown="ttSelQuotItem(this, '${encodeURIComponent(String(p.id))}')">
       <div style="flex:1;">
-        <strong style="font-size:12.5px; color:var(--text-main);">${p.name}</strong>
-        <div class="suggestion-sub">SKU: ${p.code || 'N/A'}</div>
+        <strong style="font-size:12.5px; color:var(--text-main);">${ttH(p.name)}</strong>
+        <div class="suggestion-sub">${p.category === 'Catalog Equipment' ? '📚 Catalog' + (p.subCategory ? ' • ' + ttH(p.subCategory) : '') : 'SKU: ' + ttH(p.code || 'N/A')}</div>
       </div>
       <strong style="color:var(--accent); font-size:13px;">₹${p.rate || 0}</strong>
     </div>`).join('');
   box.style.display = 'block';
+}
+function ttQuotSetDesc(row, desc, specs) {
+  row.dataset.desc = desc || '';
+  row.dataset.specs = specs || '';
+  const el = row.querySelector('.qit-desc');
+  if (!el) return;
+  const clip = s => s.length > 260 ? s.slice(0, 260) + '…' : s;
+  const parts = [];
+  if (desc) parts.push(clip(String(desc)));
+  if (specs) parts.push('Tech: ' + clip(String(specs)));
+  el.textContent = parts.join('\n');
+  el.style.display = parts.length ? 'block' : 'none';
+  if (!parts.length) delete row.dataset.descFor;
+}
+function ttSelQuotItem(el, encId) {
+  const row = el.closest('.quot-item-row');
+  if (!row) return;
+  const id = decodeURIComponent(encId);
+  const p = (sampleInventory || []).find(x => String(x.id) === id);
+  if (!p) return;
+  row.querySelector('.qit-name').value = p.name || '';
+  row.querySelector('.qit-hsn').value = p.hsn || '';
+  row.querySelector('.qit-rate').value = p.rate || 0; // Customer Price (Dealer Price kabhi nahi)
+  row.querySelector('.solid-suggestion-box').style.display = 'none';
+  if (p.category === 'Catalog Equipment') {
+    row.dataset.descFor = (p.name || '').trim();
+    ttQuotSetDesc(row, p.desc || '', p.specs || '');
+  } else {
+    ttQuotSetDesc(row, '', '');
+  }
+  quotRecalc();
 }
 function selectQuotItemSuggestion(el, encName, hsn, rate) {
   const row = el.closest('.quot-item-row');
@@ -7039,7 +7074,7 @@ function buildQuotationHtml(q) {
   const meta = (l, v) => `<div style="${B}border-width:0 0 1px 1px;padding:2px 5px;min-height:28px;"><div style="font-size:9.5px;">${l}</div><div style="font-weight:700;font-size:11px;">${v || ''}</div></div>`;
   const itemRows = q.items.map((i, n) => `<tr>
     <td style="${cell}border-left:1px solid #000;text-align:center;">${n + 1}</td>
-    <td style="${cell}border-left:1px solid #000;">${esc(i.name)}</td>
+    <td style="${cell}border-left:1px solid #000;">${esc(i.name)}${(i.desc || i.specs) ? `<div style="font-size:7.5px;line-height:1.25;color:#333;margin-top:2px;white-space:pre-wrap;">${i.desc ? ttH(i.desc) : ''}${(i.desc && i.specs) ? '\n' : ''}${i.specs ? '<b>Technical:</b> ' + ttH(i.specs) : ''}</div>` : ''}</td>
     <td style="${cell}border-left:1px solid #000;text-align:center;">${esc(i.hsn)}</td>
     <td style="${cell}border-left:1px solid #000;text-align:center;">18</td>
     <td style="${cell}border-left:1px solid #000;text-align:center;">${i.qty}</td>
@@ -7112,7 +7147,8 @@ function printQuotationLegacy() {
     return {
       name: r.querySelector('.qit-name').value.trim() || 'Item',
       hsn: r.querySelector('.qit-hsn').value.trim() || '-',
-      qty, rate, disc, amount: lineTaxable
+      qty, rate, disc, amount: lineTaxable,
+      desc: r.dataset.desc || '', specs: r.dataset.specs || ''
     };
   }).filter(i => i.name);
   if (items.length === 0) { alert('Kam se kam ek item add karo'); return; }
@@ -7995,7 +8031,8 @@ function ttCollectQuotationForm() {
     return {
       name: r.querySelector('.qit-name').value.trim() || 'Item',
       hsn: r.querySelector('.qit-hsn').value.trim() || '-',
-      qty: qty, rate: rate, disc: disc, amount: lineTaxable
+      qty: qty, rate: rate, disc: disc, amount: lineTaxable,
+      desc: r.dataset.desc || '', specs: r.dataset.specs || ''
     };
   });
   if (items.length === 0) { alert('Kam se kam ek item add karo'); return null; }
@@ -8087,6 +8124,7 @@ function ttEditQuotation(id) {
     r.querySelector('.qit-qty').value = it.qty != null ? it.qty : 1;
     r.querySelector('.qit-rate').value = it.rate != null ? it.rate : 0;
     r.querySelector('.qit-disc').value = it.disc != null ? it.disc : 0;
+    if (it.desc || it.specs) { r.dataset.descFor = (it.name || '').trim(); ttQuotSetDesc(r, it.desc || '', it.specs || ''); }
   });
   document.getElementById('quotEditId').value = id;
   quotRecalc();
