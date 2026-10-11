@@ -9749,10 +9749,11 @@ window.ttRenderBrandsIfOpen = function () {
   var DBN = 'TTESPL_CatalogDB', STORE = 'brand_catalogs', MAXPDF = 250 * 1024 * 1024;
   function idb() {
     return new Promise(function (res, rej) {
-      var r = indexedDB.open(DBN, 1);
+      var r = indexedDB.open(DBN, 2);
       r.onupgradeneeded = function (e) {
         var db = e.target.result;
-        if (!db.objectStoreNames.contains(STORE)) { var s = db.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true }); s.createIndex('brand', 'brand', { unique: false }); }
+        var st = db.objectStoreNames.contains(STORE) ? e.target.transaction.objectStore(STORE) : db.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
+        if (!st.indexNames.contains('brand')) st.createIndex('brand', 'brand', { unique: false });
       };
       r.onsuccess = function () { res(r.result); }; r.onerror = function () { rej(r.error); };
     });
@@ -9766,7 +9767,7 @@ window.ttRenderBrandsIfOpen = function () {
       });
     });
   }
-  function pdfList(brand) { return idbReq('readonly', function (s) { return s.index('brand').getAll(brand); }).then(function (a) { return (a || []).sort(function (x, y) { return String(y.uploadedAt).localeCompare(String(x.uploadedAt)); }); }); }
+  function pdfList(brand) { return idbReq('readonly', function (s) { return s.indexNames.contains('brand') ? s.index('brand').getAll(brand) : s.getAll(); }).then(function (a) { return (a || []).filter(function (r) { return r && r.brand === brand; }); }).then(function (a) { return (a || []).sort(function (x, y) { return String(y.uploadedAt).localeCompare(String(x.uploadedAt)); }); }); }
   function pdfGet(id) { return idbReq('readonly', function (s) { return s.get(id); }); }
   function pdfDel(id) { return idbReq('readwrite', function (s) { return s.delete(id); }); }
   function pdfAdd(rec) { return idbReq('readwrite', function (s) { return s.add(rec); }); }
