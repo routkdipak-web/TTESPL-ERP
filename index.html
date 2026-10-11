@@ -1245,6 +1245,52 @@ body:has(.auth-overlay[style*="display:flex"]) #ttAmbient i { animation-play-sta
 #ttAmbient.lite i { animation: none !important; }
 .tt-skeleton { background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.38)); }
 [data-theme="dark"] .tt-skeleton { background: linear-gradient(135deg, rgba(40,55,80,.7), rgba(20,32,52,.5)); }
+
+/* ===== v14: WhatsApp PDF / Customer dashboard / Follow-up / Brands / PDF viewer ===== */
+.tt14-card{max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+.tt14-status{font-size:12px;font-weight:700;padding:8px 10px;border-radius:12px;margin-bottom:10px;background:rgba(0,180,216,.10);border:1px solid rgba(0,180,216,.35);color:var(--text-main);}
+.tt14-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.tt14-tiles>div{background:rgba(127,127,127,.09);border:1px solid var(--border);border-radius:12px;padding:8px 4px;text-align:center;min-width:0;}
+.tt14-tiles small{display:block;font-size:9px;font-weight:800;color:var(--text-muted);letter-spacing:.3px;}
+.tt14-tiles b{display:block;font-size:13px;font-weight:800;color:var(--text-main);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tt14-sec{font-size:13px;font-weight:800;color:var(--text-main);margin:14px 0 6px;}
+.tt14-row{background:rgba(127,127,127,.07);border:1px solid var(--border);border-radius:12px;padding:8px 10px;margin-bottom:6px;font-size:12.5px;color:var(--text-main);}
+.tt14-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.tt14-empty{text-align:center;font-size:12px;color:var(--text-muted);padding:12px 8px;border:1px dashed var(--border);border-radius:12px;}
+.tt14-fu{margin-top:8px;padding:8px 10px;border-radius:12px;background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.25);}
+.tt14-pill{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;background:rgba(127,127,127,.15);color:var(--text-muted);}
+.tt14-pill.ok{background:rgba(22,163,74,.16);color:#16a34a;}
+.tt14-pill.due{background:rgba(245,158,11,.20);color:#b45309;}
+.tt14-pill.bad{background:rgba(225,29,72,.14);color:#e11d48;}
+.tt14-lnk{background:none;border:0;color:var(--cyan,#0891b2);font-weight:800;font-size:11px;margin-left:8px;cursor:pointer;}
+.tt14-backup{position:fixed;left:10px;right:10px;bottom:78px;z-index:2400;display:flex;gap:8px;align-items:center;padding:10px 12px;border-radius:16px;font-size:12.5px;color:var(--text-main);
+  background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(255,244,214,.92));border:1px solid rgba(245,158,11,.5);box-shadow:0 10px 28px rgba(10,37,64,.22);}
+[data-theme="dark"] .tt14-backup{background:linear-gradient(135deg,rgba(24,36,56,.97),rgba(40,32,14,.95));}
+@media (min-width:700px){.tt14-backup{left:auto;right:18px;max-width:460px;}}
+.tt14-brand{display:flex;gap:12px;align-items:center;padding:10px;margin-bottom:8px;border-radius:16px;cursor:pointer;border:1px solid var(--border);
+  background:linear-gradient(135deg,rgba(255,255,255,.80),rgba(255,248,226,.60));box-shadow:0 6px 16px rgba(10,37,64,.08);}
+[data-theme="dark"] .tt14-brand{background:linear-gradient(135deg,rgba(30,45,68,.85),rgba(20,30,48,.80));}
+.tt14-brand:active{transform:scale(.985);}
+.tt14-logo{border-radius:14px;object-fit:contain;background:#fff;border:1px solid var(--border);flex-shrink:0;}
+.tt14-logo-ph{display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;background:linear-gradient(135deg,#0ea5e9,#6366f1);border:0;}
+.tt14-kv{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;padding:5px 0;color:var(--text-main);word-break:break-word;}
+.tt14-kv a{color:var(--cyan,#0891b2);text-decoration:none;font-weight:700;}
+.tt14-about{font-size:12.5px;line-height:1.5;color:var(--text-main);background:rgba(127,127,127,.07);border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:8px;}
+.tt-hdr-right{display:flex;align-items:center;gap:8px;position:relative;z-index:10000;}
+.tt-hdr-btn{display:flex;align-items:center;gap:5px;height:34px;min-width:34px;justify-content:center;padding:0 9px;border-radius:12px;cursor:pointer;color:#fff;font-weight:800;font-size:11px;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.25);}
+.tt-hdr-btn span.l{display:none;}
+@media (min-width:420px){.tt-hdr-btn span.l{display:inline;}}
+.tt-hdr-btn:active{transform:scale(.94);}
+/* PDF viewer */
+#tt14Viewer{background:#0b1220;}
+.tt14-vw{display:flex;flex-direction:column;width:100%;height:100%;}
+.tt14-vbar{display:flex;gap:6px;align-items:center;padding:8px 10px;background:#101a2e;color:#fff;border-bottom:1px solid rgba(255,255,255,.12);}
+.tt14-vtitle{flex:1;min-width:0;font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tt14-vpg{font-size:11px;opacity:.8;white-space:nowrap;}
+.tt14-vbody{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:8px;background:#1b2740;}
+.tt14-pg{margin:0 auto 10px;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.4);contain:strict;}
+.tt14-vmsg{color:#e2e8f0;text-align:center;padding:40px 16px;font-size:13px;line-height:1.6;}
 </style>
 </head>
 <body data-theme="light">
@@ -1527,12 +1573,15 @@ body:has(.auth-overlay[style*="display:flex"]) #ttAmbient i { animation-play-sta
     </div>
 
     <!-- Right: Single Profile Avatar Touch Button -->
+    <div class="tt-hdr-right">
+      <button type="button" class="tt-hdr-btn" id="ttBrandBtn" onclick="triggerAppHaptic(); ttOpenBrands()" title="Brands &amp; Catalogs"><span>🏢</span><span class="l">Brands</span></button>
     <div class="profile-menu-wrapper">
       <div class="profile-avatar-btn" id="profileHeaderTriggerBtn" onclick="triggerAppHaptic(); toggleProfileDrawer(event)" title="Profile & App Menu">
         <div class="profile-avatar-img" id="headerProfileAvatarInitial">D</div>
         <div class="profile-avatar-role-dot admin" id="headerProfileDot"></div>
         <span style="font-size:10px; font-weight:800; margin:0 2px;">▾</span>
       </div>
+    </div>
     </div>
   </header>
 
@@ -2565,6 +2614,7 @@ body:has(.auth-overlay[style*="display:flex"]) #ttAmbient i { animation-play-sta
     <div class="card-header no-print">
       <strong class="card-title">🖨️ GST Tax Invoice Preview</strong>
       <div style="display:flex; gap:8px;">
+        <button class="btn btn-wa btn-sm" onclick="triggerAppHaptic(); ttShareCurrentInvoice()">📎 WhatsApp PDF</button>
         <button class="btn btn-print btn-sm" onclick="triggerAppHaptic(); executeInvoicePrint()">🖨️ Print / Save as PDF</button>
         <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeInvoicePrintModal()">✕ Close</button>
       </div>
@@ -2676,7 +2726,7 @@ body:has(.auth-overlay[style*="display:flex"]) #ttAmbient i { animation-play-sta
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="master-data.js?v=4"></script>
-<script src="live-sync.js?v=16"></script>
+<script src="live-sync.js?v=17"></script>
 
 <script>
     
@@ -5703,10 +5753,15 @@ function renderStockList() {
     customerDatabase.slice(0, STOCK_RENDER_CAP).forEach(cust => {
       const card = document.createElement('div');
       card.className = 'card';
+      card.style.cursor = 'pointer';
+      card.onclick = () => { triggerAppHaptic(); ttCustDash(cust.id); };
       card.innerHTML = `
         <div class="card-header">
           <div><strong>${cust.name}</strong><div style="font-size:11px; color:var(--text-muted);">${cust.phone}</div></div>
-          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); editCustomerPrompt(${cust.id})">✏️ Edit</button>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); ttCustDash(${cust.id})">📊 Dashboard</button>
+            <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); editCustomerPrompt(${cust.id})">✏️ Edit</button>
+          </div>
         </div>
         <div style="font-size:11.5px; color:var(--text-muted);">📍 ${cust.address || 'Odisha'} | GSTIN: ${cust.gst || 'Unregistered'}</div>
       `;
@@ -6027,7 +6082,7 @@ function downloadFile(content, fileName, mimeType) {
 }
 
 /* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
-const TT_APP_VERSION = 'v13';
+const TT_APP_VERSION = 'v14';
 let pendingChat = [];
 window.pendingChat = pendingChat;
 
@@ -8278,7 +8333,8 @@ function ttEnsureQuotHistoryModal() {
     '<div class="grid-2" style="margin-bottom:8px;">' +
     '<input type="text" id="qhSearch" placeholder="🔍 Customer / phone / serial..." oninput="ttRenderQuotationHistory()" autocomplete="off">' +
     '<select id="qhCust" onchange="ttRenderQuotationHistory()"><option value="">All Customers</option></select></div>' +
-    '<div id="qhCount" style="font-size:11.5px;color:var(--text-muted);margin-bottom:8px;"></div>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;"><div id="qhCount" style="font-size:11.5px;color:var(--text-muted);"></div>' +
+    '<button id="qhFuBtn" class="btn btn-outline btn-sm" style="white-space:nowrap;" onclick="triggerAppHaptic(); ttFuToggle()">📞 Follow-up due</button></div>' +
     '<div id="qhList" style="max-height:58vh;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div></div>';
   document.body.appendChild(m);
   return m;
@@ -8316,6 +8372,7 @@ function ttRenderQuotationHistory() {
   var custSel = sel.value;
   var list = all.filter(function (q) {
     if (custSel && q.custName !== custSel) return false;
+    if (window.__ttQhFuOnly && !(window.ttFuNextDue && ttFuNextDue(q))) return false;
     if (!term) return true;
     return (q.custName || '').toLowerCase().indexOf(term) >= 0 || String(q.custPhone || '').indexOf(term) >= 0 || (q.id || '').toLowerCase().indexOf(term) >= 0;
   });
@@ -8334,6 +8391,7 @@ function ttRenderQuotationHistory() {
       '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + ttH(q.id) + ' • ' + ttH(q.date || '') + (q.custPhone ? ' • ' + ttH(q.custPhone) : '') + '</div>' +
       (q.updatedAt ? '<div style="font-size:10px;color:var(--text-muted);">Updated by ' + ttH(q.updatedBy || '') + '</div>' : '') + '</div>' +
       '<strong style="font-size:15px;color:var(--accent);white-space:nowrap;">₹' + Number(q.final || 0).toLocaleString('en-IN') + '</strong></div>' +
+      (window.ttFuStrip ? ttFuStrip(q) : '') +
       '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">' +
       '<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttEditQuotation(\'' + q.id + '\')">✏️ Edit</button>' +
       '<button class="btn btn-wa btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttShareQuotationRecord(\'' + q.id + '\')">📤 Resend</button>' +
@@ -9250,6 +9308,730 @@ function ttBuildQuotationPaged(q) {
       clearTimeout(t); t = setTimeout(function () { amb.classList.remove('scrolling'); }, 220);
     }, { passive: true, capture: true });
   } catch (e) {}
+})();
+
+/* =====================================================================
+   v14 FEATURES: WhatsApp PDF share, Customer Dashboard, Item Sales History,
+   7-day Backup reminder, Quotation follow-up sequence, Brand pages + local PDF viewer
+   (purana koi function delete nahi kiya - sirf wrap/extend)
+   ===================================================================== */
+var brandsData = getStored("BRANDS", []);
+window.brandsData = brandsData;
+window.ttRenderBrandsIfOpen = function () {
+  var m = document.getElementById('tt14BrandModal');
+  if (m && m.style.display === 'flex' && typeof window.ttBrandsRerender === 'function') window.ttBrandsRerender();
+};
+
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var H = function (s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
+  };
+  var INR = function (n) { return '₹' + Number(n || 0).toLocaleString('en-IN'); };
+  var last10 = function (p) { return String(p || '').replace(/\D/g, '').slice(-10); };
+  var isAdm = function () { try { return typeof isAdminUser === 'function' && isAdminUser(); } catch (e) { return false; } };
+  var meName = function () { try { return (currentUser && currentUser.name) || ''; } catch (e) { return ''; } };
+  var lsGet = function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  var lsSet = function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} };
+
+  function notice(title, body, icon, onClick) {
+    var c = $('broadcastToastContainer');
+    if (!c) return;
+    var t = document.createElement('div');
+    t.className = 'broadcast-toast tt-toast-success';
+    t.innerHTML = '<div class="toast-content"><div class="toast-icon">' + (icon || '✅') + '</div><div style="flex:1;"><div class="toast-title">' + H(title) +
+      '</div><div class="toast-body">' + H(body) + '</div></div><button class="toast-close" onclick="this.closest(\'.broadcast-toast\').remove()">✕</button></div>';
+    if (onClick) t.querySelector('.toast-content').addEventListener('click', function (e) {
+      if (e.target.closest('.toast-close')) return; t.remove(); onClick();
+    });
+    c.prepend(t);
+    setTimeout(function () { if (t.parentElement) t.remove(); }, 8000);
+  }
+  function ensureModal(id, z, maxW) {
+    var m = $(id);
+    if (!m) {
+      m = document.createElement('div');
+      m.id = id; m.className = 'auth-overlay'; m.style.display = 'none'; m.style.zIndex = String(z || 3200);
+      m.innerHTML = '<div class="auth-card tt14-card" style="max-width:' + (maxW || 560) + 'px;"></div>';
+      document.body.appendChild(m);
+    }
+    return m;
+  }
+  function setModal(m, html) { m.firstChild.innerHTML = html; }
+  function closeM(id) { var m = $(id); if (m) m.style.display = 'none'; }
+  window.tt14Close = closeM;
+  function waUrl(phone, text) {
+    var p = last10(phone);
+    return (p ? 'https://wa.me/91' + p : 'https://wa.me/') + '?text=' + encodeURIComponent(text);
+  }
+  function downloadBlob(blob, name) {
+    var u = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(u); }, 60000);
+  }
+
+  /* ================= 1. PDF ENGINE (koi external library nahi - offline bhi chalega) ================= */
+  function buildPdf(pages) {
+    var enc = new TextEncoder(), parts = [], len = 0, offs = [];
+    function push(x) { var u = typeof x === 'string' ? enc.encode(x) : x; parts.push(u); len += u.length; }
+    var PW = 595.28, PH = 841.89, n = pages.length, kids = [];
+    for (var i = 0; i < n; i++) kids.push((3 + 3 * i) + ' 0 R');
+    push('%PDF-1.4\n%âãÏÓ\n');
+    offs[1] = len; push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+    offs[2] = len; push('2 0 obj\n<< /Type /Pages /Count ' + n + ' /Kids [' + kids.join(' ') + '] >>\nendobj\n');
+    pages.forEach(function (p, i) {
+      var pid = 3 + 3 * i, cid = 4 + 3 * i, iid = 5 + 3 * i;
+      var ih = Math.min(PH, PW * p.h / p.w);
+      var content = 'q ' + PW.toFixed(2) + ' 0 0 ' + ih.toFixed(2) + ' 0 ' + (PH - ih).toFixed(2) + ' cm /Im0 Do Q';
+      offs[pid] = len;
+      push(pid + ' 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + PW + ' ' + PH + '] /Resources << /XObject << /Im0 ' + iid + ' 0 R >> >> /Contents ' + cid + ' 0 R >>\nendobj\n');
+      offs[cid] = len;
+      push(cid + ' 0 obj\n<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream\nendobj\n');
+      offs[iid] = len;
+      push(iid + ' 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + p.w + ' /Height ' + p.h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + p.data.length + ' >>\nstream\n');
+      push(p.data);
+      push('\nendstream\nendobj\n');
+    });
+    var total = 3 + 3 * n, xref = len, x = 'xref\n0 ' + total + '\n0000000000 65535 f \n';
+    for (var k = 1; k < total; k++) x += String(offs[k]).padStart(10, '0') + ' 00000 n \n';
+    push(x + 'trailer\n<< /Size ' + total + ' /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF');
+    return new Blob(parts, { type: 'application/pdf' });
+  }
+  function loadImg(src) {
+    return new Promise(function (res, rej) {
+      var im = new Image(); im.onload = function () { res(im); }; im.onerror = function () { rej(new Error('img-load')); }; im.src = src;
+    });
+  }
+  async function sheetsToPdf(html) {
+    var host = document.createElement('div');
+    host.style.cssText = 'position:fixed;left:-12000px;top:0;width:210mm;pointer-events:none;';
+    host.innerHTML = html; document.body.appendChild(host);
+    try {
+      var sheets = [].slice.call(host.querySelectorAll('.tt-sheet'));
+      if (!sheets.length) throw new Error('no-sheets');
+      var pages = [], SC = 2;
+      for (var i = 0; i < sheets.length; i++) {
+        var el = sheets[i], r = el.getBoundingClientRect(), W = Math.round(r.width), Hh = Math.round(r.height);
+        var clone = el.cloneNode(true); clone.style.margin = '0'; clone.style.boxShadow = 'none';
+        var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + Hh + '"><foreignObject x="0" y="0" width="' + W + '" height="' + Hh + '">' +
+          new XMLSerializer().serializeToString(clone) + '</foreignObject></svg>';
+        var img = await loadImg('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
+        var cv = document.createElement('canvas'); cv.width = W * SC; cv.height = Hh * SC;
+        var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+        cx.scale(SC, SC); cx.drawImage(img, 0, 0, W, Hh);
+        var blob = await new Promise(function (res) { cv.toBlob(res, 'image/jpeg', 0.92); });
+        if (!blob) throw new Error('toBlob');
+        pages.push({ data: new Uint8Array(await blob.arrayBuffer()), w: cv.width, h: cv.height });
+        cv.width = cv.height = 0;
+        await new Promise(function (res) { setTimeout(res, 0); });
+      }
+      return buildPdf(pages);
+    } finally { host.remove(); }
+  }
+  window.ttSheetsToPdf = sheetsToPdf;
+
+  window.ttShareDoc = function (o) {
+    var m = ensureModal('tt14ShareModal', 3500, 420);
+    window.__tt14Share = o;
+    setModal(m,
+      '<div class="card-header"><span class="card-title">📤 ' + H(o.title) + '</span><button class="btn btn-outline btn-sm" onclick="tt14Close(\'tt14ShareModal\')">✕</button></div>' +
+      '<div id="tt14ShStatus" class="tt14-status">⏳ PDF ban rahi hai…</div>' +
+      '<button class="btn btn-wa btn-block" onclick="triggerAppHaptic(); tt14ShareGo(\'wa\')">📎 WhatsApp par PDF bhejo</button>' +
+      '<button class="btn btn-primary btn-block" style="margin-top:8px;" onclick="triggerAppHaptic(); tt14ShareGo(\'save\')">💾 PDF Phone me Save karo</button>' +
+      '<button class="btn btn-outline btn-block" style="margin-top:8px;" onclick="triggerAppHaptic(); tt14ShareGo(\'text\')">💬 Sirf Text (WhatsApp message)</button>' +
+      '<button class="btn btn-outline btn-block" style="margin-top:8px;" onclick="triggerAppHaptic(); tt14ShareGo(\'print\')">🖨️ Print / Save as PDF</button>');
+    m.style.display = 'flex';
+    o._blob = null; o._err = null;
+    var st = function (t) { var e = $('tt14ShStatus'); if (e) e.innerHTML = t; };
+    o._p = sheetsToPdf(o.html()).then(function (b) {
+      o._blob = b; st('✅ PDF taiyaar (' + Math.max(1, Math.round(b.size / 1024)) + ' KB)'); return b;
+    }).catch(function (e) {
+      o._err = e; console.warn('PDF build fail', e);
+      st('⚠️ PDF direct nahi ban payi - <b>Print / Save as PDF</b> ya <b>Text</b> use karein.'); return null;
+    });
+  };
+  window.tt14ShareGo = async function (mode) {
+    var o = window.__tt14Share; if (!o) return;
+    if (mode === 'text') { closeM('tt14ShareModal'); try { o.textFn(); } catch (e) { console.error(e); } return; }
+    if (mode === 'print') { closeM('tt14ShareModal'); try { o.printFn(); } catch (e) { console.error(e); } return; }
+    var blob = await o._p;
+    if (!blob) { closeM('tt14ShareModal'); try { o.printFn(); } catch (e) {} return; }
+    if (mode === 'save') { downloadBlob(blob, o.fileName); notice('PDF save', o.fileName + ' download ho gayi', '💾'); return; }
+    var file = null;
+    try { file = new File([blob], o.fileName, { type: 'application/pdf' }); } catch (e) {}
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: o.title, text: o.msg }); closeM('tt14ShareModal'); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    downloadBlob(blob, o.fileName);
+    closeM('tt14ShareModal');
+    notice('PDF ready', 'PDF download ho gayi - WhatsApp me 📎 attach karke bhejein', '📎');
+    setTimeout(function () { window.open(waUrl(o.phone, o.msg), '_blank'); }, 700);
+  };
+
+  /* Invoice share: purana text-share function safe rakha (shareOrderWhatsAppText) */
+  var _origOrderShare = window.shareOrderWhatsApp;
+  window.shareOrderWhatsAppText = _origOrderShare;
+  window.shareOrderWhatsApp = function (ordId) {
+    var o = (ordersData || []).find(function (x) { return String(x.id) === String(ordId); });
+    if (!o || typeof buildTallyInvoiceHtml !== 'function') return _origOrderShare && _origOrderShare(ordId);
+    ttShareDoc({
+      title: 'Invoice ' + o.id, fileName: 'TTESPL_Invoice_' + o.id + '.pdf', phone: o.phone,
+      msg: 'Namaste ' + (o.customerName || '') + ' ji,\nTwin Town Express Services Pvt Ltd ki taraf se Invoice ' + o.id + ' (Total ' + INR(o.totalAmount) + ') ki PDF attached hai.\nDhanyavaad!',
+      html: function () { return buildTallyInvoiceHtml(o); },
+      textFn: function () { _origOrderShare(ordId); },
+      printFn: function () { ttPrintHtml('Tax Invoice ' + o.id, buildTallyInvoiceHtml(o)); }
+    });
+  };
+  var _origOpenInv = window.openInvoicePrintModal;
+  window.openInvoicePrintModal = function (ordId) { window.__ttCurInvoiceId = ordId; return _origOpenInv.apply(this, arguments); };
+  window.ttShareCurrentInvoice = function () { if (window.__ttCurInvoiceId != null) window.shareOrderWhatsApp(window.__ttCurInvoiceId); };
+
+  function quotShare(q) {
+    ttShareDoc({
+      title: 'Quotation ' + q.id, fileName: 'TTESPL_Quotation_' + q.id + '.pdf', phone: q.custPhone,
+      msg: 'Namaste ' + (q.custName || '') + ' ji,\nTwin Town Express Services Pvt Ltd ki taraf se Quotation ' + q.id + ' (Total ' + INR(q.final) + ') ki PDF attached hai.\nDhanyavaad!',
+      html: function () { return buildQuotationHtml(q); },
+      textFn: function () { ttNativeShareOrFallback({ title: 'TTESPL Quotation ' + q.id, text: ttQuotPlain(q) }, function () { ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q)); }); },
+      printFn: function () { ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q)); }
+    });
+  }
+  var _origPrintQuotation = window.printQuotation;
+  window.printQuotationTextOnly = _origPrintQuotation;
+  window.printQuotation = function () {
+    var form = ttCollectQuotationForm(); if (!form) return;
+    quotShare(ttPersistQuotation(form));
+  };
+  var _origShareQRec = window.ttShareQuotationRecord;
+  window.ttShareQuotationRecordText = _origShareQRec;
+  window.ttShareQuotationRecord = function (id) {
+    var q = (quotationsData || []).find(function (x) { return x && x.id === id; });
+    if (!q) return; quotShare(q);
+  };
+
+  /* ================= 2. CUSTOMER DASHBOARD (Master Data) ================= */
+  function custOrders(c) {
+    var p = last10(c.phone), n = String(c.name || '').trim().toLowerCase();
+    return (ordersData || []).filter(function (o) {
+      if (!o) return false;
+      if (p && last10(o.phone) === p) return true;
+      return !!n && String(o.customerName || '').trim().toLowerCase() === n;
+    });
+  }
+  function stBadge(s) { return s === 'Delivered' ? 'badge-delivered' : (s === 'Cancelled' ? 'badge-danger' : 'badge-info'); }
+  window.ttCustDash = function (id) {
+    var c = (customerDatabase || []).find(function (x) { return String(x.id) === String(id); });
+    if (!c) return;
+    var all = custOrders(c), orders = all.filter(function (o) { return o.status !== 'Cancelled'; });
+    var billed = 0, recv = 0, due = 0, pays = [];
+    orders.forEach(function (o) {
+      billed += Number(o.totalAmount) || 0; recv += Number(o.recvAmount) || 0; due += Number(o.dueAmount) || 0;
+      var arr = Array.isArray(o.payments) ? o.payments : [], sum = 0;
+      arr.forEach(function (p) {
+        sum += Number(p.amount) || 0;
+        pays.push({ date: String(p.at || '').slice(0, 10) || o.orderDate || '', amt: Number(p.amount) || 0, mode: p.mode || '', ref: o.id, by: p.by || '' });
+      });
+      var first = (Number(o.recvAmount) || 0) - sum;
+      if (first > 0) pays.push({ date: o.orderDate || '', amt: first, mode: o.payMode || '', ref: o.id, by: o.bookedBy || '', adv: true });
+    });
+    pays.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+    var sorted = all.slice().sort(function (a, b) { return String(b.orderDate || '').localeCompare(String(a.orderDate || '')); });
+    var qs = (quotationsData || []).filter(function (q) {
+      return q && ((last10(c.phone) && last10(q.custPhone) === last10(c.phone)) || String(q.custName || '').trim().toLowerCase() === String(c.name || '').trim().toLowerCase());
+    }).sort(function (a, b) { return (b.serial || 0) - (a.serial || 0); });
+    var dates = orders.map(function (o) { return o.orderDate || ''; }).filter(Boolean).sort();
+    var h = [];
+    h.push('<div class="card-header"><div style="min-width:0;"><span class="card-title" style="display:block;">📊 ' + H(c.name) + '</span>' +
+      '<div style="font-size:11.5px;color:var(--text-muted);">' + H(c.phone || '') + (c.address ? ' • ' + H(c.address) : '') + (c.gst && c.gst !== 'Unregistered' ? ' • GST ' + H(c.gst) : '') + '</div></div>' +
+      '<button class="btn btn-outline btn-sm" onclick="tt14Close(\'tt14CustModal\')">✕</button></div>');
+    h.push('<div class="tt14-tiles"><div><small>ORDERS</small><b>' + orders.length + '</b></div><div><small>BILLED</small><b>' + INR(billed) + '</b></div>' +
+      '<div><small>RECEIVED</small><b style="color:var(--success,#16a34a);">' + INR(recv) + '</b></div><div><small>DUE</small><b style="color:' + (due > 0 ? 'var(--danger,#e11d48)' : 'var(--success,#16a34a)') + ';">' + INR(due) + '</b></div></div>');
+    h.push('<div style="font-size:11.5px;color:var(--text-muted);margin:8px 0;">Pehla order: <b>' + H(dates[0] || '-') + '</b> • Aakhri order: <b>' + H(dates[dates.length - 1] || '-') + '</b> • Quotations: <b>' + qs.length + '</b></div>');
+    h.push('<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">' +
+      (c.phone ? '<a class="btn btn-outline btn-sm" style="flex:1;text-align:center;text-decoration:none;" href="tel:' + H(last10(c.phone)) + '">📞 Call</a>' : '') +
+      (due > 0 ? '<button class="btn btn-wa btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttCustDueMsg(\'' + H(c.id) + '\')">💬 Due Reminder (' + INR(due) + ')</button>' : '') + '</div>');
+    h.push('<div class="tt14-sec">📦 Orders (date-wise)</div>');
+    if (!sorted.length) h.push('<div class="tt14-empty">Is customer ka abhi koi order nahi.</div>');
+    sorted.slice(0, 60).forEach(function (o) {
+      var names = (o.items || []).map(function (i) { return i.name; });
+      h.push('<div class="tt14-row"><div style="display:flex;justify-content:space-between;gap:8px;"><div><b>' + H(o.orderDate || '-') + '</b> • ' + H(o.id) +
+        ' <span class="badge ' + stBadge(o.status) + '" style="font-size:9.5px;">' + H(o.status || '') + '</span></div><b>' + INR(o.totalAmount) + '</b></div>' +
+        '<div class="tt14-sub">' + H(names.slice(0, 3).join(', ')) + (names.length > 3 ? ' +' + (names.length - 3) + ' aur' : '') + '</div>' +
+        '<div class="tt14-sub">Paid <b>' + INR(o.recvAmount) + '</b> • Due <b style="color:' + ((o.dueAmount || 0) > 0 ? 'var(--danger,#e11d48)' : 'inherit') + ';">' + INR(o.dueAmount) + '</b></div></div>');
+    });
+    if (sorted.length > 60) h.push('<div class="tt14-empty">…aur ' + (sorted.length - 60) + ' purane orders</div>');
+    h.push('<div class="tt14-sec">💰 Payment Timeline</div>');
+    if (!pays.length) h.push('<div class="tt14-empty">Abhi koi payment record nahi.</div>');
+    pays.slice(0, 80).forEach(function (p) {
+      h.push('<div class="tt14-row" style="display:flex;justify-content:space-between;gap:8px;"><div><b>' + H(p.date || '-') + '</b> • ' + H(p.ref) +
+        '<div class="tt14-sub">' + H(p.adv ? 'Order ke time' : 'Due collect') + (p.mode ? ' • ' + H(p.mode) : '') + (p.by ? ' • ' + H(p.by) : '') + '</div></div>' +
+        '<b style="color:var(--success,#16a34a);">+ ' + INR(p.amt) + '</b></div>');
+    });
+    if (qs.length) {
+      h.push('<div class="tt14-sec">📝 Quotations</div>');
+      qs.slice(0, 20).forEach(function (q) {
+        h.push('<div class="tt14-row" style="display:flex;justify-content:space-between;gap:8px;"><div><b>' + H(q.id) + '</b> • ' + H(q.date || '') +
+          (q.fuStatus ? ' • ' + (q.fuStatus === 'won' ? '✅ Won' : '❌ Lost') : '') + '</div><b>' + INR(q.final) + '</b></div>');
+      });
+    }
+    var m = ensureModal('tt14CustModal', 3200, 600);
+    setModal(m, h.join('')); m.style.display = 'flex';
+  };
+  window.ttCustDueMsg = function (id) {
+    var c = (customerDatabase || []).find(function (x) { return String(x.id) === String(id); }); if (!c) return;
+    var due = custOrders(c).filter(function (o) { return o.status !== 'Cancelled' && (o.dueAmount || 0) > 0; });
+    var tot = due.reduce(function (s, o) { return s + (Number(o.dueAmount) || 0); }, 0);
+    var msg = 'Namaste ' + c.name + ' ji,\nTwin Town Express Services Pvt Ltd (Rasulgarh, BBSR) ki taraf se yaad dila rahe hain ki aapka ' + INR(tot) +
+      ' baaki hai (Invoice: ' + due.map(function (o) { return o.id; }).join(', ') + ').\nKripya jaldi payment kar dein. UPI / Bank details chahiye to bata dijiye.\nDhanyavaad!';
+    window.open(waUrl(c.phone, msg), '_blank');
+  };
+
+  /* ================= 3. ITEM SALES HISTORY (Stock detail) ================= */
+  window.ttRenderItemSales = function (id) {
+    var box = $('detSalesHistory'); if (!box) return;
+    var item = (sampleInventory || []).find(function (x) { return String(x.id) === String(id); });
+    if (!item) { box.innerHTML = ''; return; }
+    var nm = String(item.name || '').trim().toLowerCase(), rows = [];
+    (ordersData || []).forEach(function (o) {
+      if (!o || o.status === 'Cancelled') return;
+      (o.items || []).forEach(function (it) {
+        var same = (it.id != null && String(it.id) === String(item.id)) || (nm && String(it.name || '').trim().toLowerCase() === nm);
+        if (same) rows.push({ date: o.orderDate || '', cust: o.customerName || '', qty: Number(it.qty) || 0, rate: Number(it.rate) || (Number(it.total) / (Number(it.qty) || 1)), total: Number(it.total) || 0, id: o.id, st: o.status });
+      });
+    });
+    rows.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+    var sold = rows.filter(function (r) { return r.st === 'Delivered'; });
+    var q = sold.reduce(function (s, r) { return s + r.qty; }, 0), rev = sold.reduce(function (s, r) { return s + r.total; }, 0);
+    var pend = rows.filter(function (r) { return r.st !== 'Delivered'; }).reduce(function (s, r) { return s + r.qty; }, 0);
+    if (!rows.length) { box.innerHTML = '<div class="tt14-empty">Is item ki abhi koi sale nahi hui.</div>'; return; }
+    var h = ['<div class="tt14-tiles" style="grid-template-columns:repeat(4,1fr);margin:4px;"><div><small>SOLD</small><b>' + q + '</b></div><div><small>REVENUE</small><b>' + INR(rev) +
+      '</b></div><div><small>AVG RATE</small><b>' + INR(q ? Math.round(rev / q) : 0) + '</b></div><div><small>BOOKED</small><b>' + pend + '</b></div></div>'];
+    rows.slice(0, 60).forEach(function (r) {
+      h.push('<div class="tt14-row"><div style="display:flex;justify-content:space-between;gap:8px;"><div><b>' + H(r.date || '-') + '</b> • ' + H(r.cust) +
+        '</div><b>' + r.qty + ' × ' + INR(Math.round(r.rate)) + '</b></div><div class="tt14-sub">' + H(r.id) + ' • ' +
+        '<span class="badge ' + stBadge(r.st) + '" style="font-size:9px;">' + H(r.st || '') + '</span> • Total ' + INR(r.total) + '</div></div>');
+    });
+    if (rows.length > 60) h.push('<div class="tt14-empty">…aur ' + (rows.length - 60) + ' purani entries</div>');
+    box.innerHTML = h.join('');
+  };
+  var _origStockDetail = window.openStockDetailModal;
+  window.openStockDetailModal = function (id) {
+    var r = _origStockDetail.apply(this, arguments);
+    try { ttRenderItemSales(id); } catch (e) { console.error(e); }
+    return r;
+  };
+
+  /* ================= 4. BACKUP REMINDER (7 din) ================= */
+  var BK = 'TTESPL_ERP_LAST_BACKUP_AT', BKS = 'TTESPL_ERP_BACKUP_SNOOZE_UNTIL', WEEK = 7 * 86400000;
+  var _origDlBackup = window.downloadFullBackup;
+  window.downloadFullBackup = function () {
+    var r = _origDlBackup.apply(this, arguments);
+    lsSet(BK, String(Date.now())); var b = $('tt14BackupBar'); if (b) b.remove();
+    return r;
+  };
+  var _origOpenBackup = window.openBackupModal;
+  window.openBackupModal = function () {
+    var r = _origOpenBackup.apply(this, arguments);
+    try {
+      var m = $('backupModal'), line = $('ttLastBackupLine');
+      if (m && !line) {
+        line = document.createElement('div'); line.id = 'ttLastBackupLine'; line.className = 'tt14-status';
+        var first = m.querySelector('.auth-card'); if (first) first.insertBefore(line, first.children[1] || null);
+      }
+      var t = parseInt(lsGet(BK) || '0', 10);
+      if (line) line.textContent = t ? '🕒 Last backup: ' + new Date(t).toLocaleDateString('en-GB') + ' (' + Math.floor((Date.now() - t) / 86400000) + ' din pehle)' : '🕒 Abhi tak koi backup nahi liya gaya';
+    } catch (e) {}
+    return r;
+  };
+  function backupCheck() {
+    if (!isAdm() || $('tt14BackupBar')) return;
+    var t = parseInt(lsGet(BK) || '0', 10), sn = parseInt(lsGet(BKS) || '0', 10), now = Date.now();
+    if (t && now - t < WEEK) return;
+    if (sn && now < sn) return;
+    var days = t ? Math.floor((now - t) / 86400000) : null;
+    var b = document.createElement('div'); b.id = 'tt14BackupBar'; b.className = 'tt14-backup';
+    b.innerHTML = '<div style="flex:1;min-width:0;"><b>💾 Backup Reminder</b><div style="font-size:11.5px;opacity:.85;">' +
+      (days == null ? 'Abhi tak koi backup nahi liya.' : H(days) + ' din se backup nahi liya.') + ' Data safe rakhne ke liye abhi download kar lo.</div></div>' +
+      '<button class="btn btn-primary btn-sm" id="tt14BkGo">⬇️ Backup Lo</button><button class="btn btn-outline btn-sm" id="tt14BkLater">Baad me</button>';
+    document.body.appendChild(b);
+    $('tt14BkGo').onclick = function () { try { triggerAppHaptic(); } catch (e) {} downloadFullBackup(); notice('Backup', 'Backup file download ho gayi', '💾'); };
+    $('tt14BkLater').onclick = function () { lsSet(BKS, String(Date.now() + 86400000)); b.remove(); };
+  }
+
+  /* ================= 5. QUOTATION FOLLOW-UP SEQUENCE ================= */
+  var FU = [{ n: 1, d: 2 }, { n: 2, d: 5 }, { n: 3, d: 10 }];
+  var DAY = 86400000;
+  function dStart(ts) { var d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); }
+  function fuInfo(q) {
+    if (!q || !q.createdAt) return null;
+    if (q.fuStatus === 'won' || q.fuStatus === 'lost') return { closed: q.fuStatus };
+    var done = q.fuDone || {}, base = dStart(q.createdAt), today = dStart(Date.now());
+    var steps = FU.map(function (s) { return { n: s.n, d: s.d, due: base + s.d * DAY, done: !!done[s.n] }; });
+    var next = steps.filter(function (s) { return !s.done; })[0] || null;
+    return { steps: steps, next: next, today: today, isDue: !!(next && today >= next.due), late: next ? Math.floor((today - next.due) / DAY) : 0 };
+  }
+  function fuMine(q) { return isAdm() || (q && q.createdBy === meName()); }
+  window.ttFuNextDue = function (q) {
+    var f = fuInfo(q);
+    return (f && !f.closed && f.isDue && Date.now() - q.createdAt < 45 * DAY && fuMine(q)) ? f.next : null;
+  };
+  function fuMsg(q, step) {
+    var valid = new Date((q.createdAt || Date.now()) + 30 * DAY).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    var head = 'Namaste ' + (q.custName || '') + ' ji,\nTwin Town Express Services Pvt Ltd (TTESPL) se.\n';
+    var ref = 'Humne aapko Quotation ' + q.id + ' (' + INR(q.final) + ') bheja tha.';
+    if (step === 1) return head + ref + ' Kya aapne dekh liya? Koi sawal ho to bataiye.\nDhanyavaad!';
+    if (step === 2) return head + ref + ' Agar kisi item, quantity ya price me badlav chahiye to bata dijiye - hum aapko best offer denge.\nDhanyavaad!';
+    return head + ref + ' Ye quotation ' + valid + ' tak valid hai. Confirm karte hi hum order process kar denge.\nKya hum aage badhein?\nDhanyavaad!';
+  }
+  function fuSave() { setStored("QUOTATIONS", quotationsData); try { ttRenderQuotationHistory(); } catch (e) {} fuBadge(); }
+  window.ttFuStrip = function (q) {
+    var f = fuInfo(q); if (!f) return '';
+    var mine = fuMine(q), id = H(q.id);
+    if (f.closed) {
+      return '<div class="tt14-fu"><span class="tt14-pill ' + (f.closed === 'won' ? 'ok' : 'bad') + '">' + (f.closed === 'won' ? '✅ Order mila (Won)' : '❌ Lost') + '</span>' +
+        (mine ? '<button class="tt14-lnk" onclick="triggerAppHaptic(); ttFuSet(\'' + id + '\',\'\')">↩ Reopen</button>' : '') + '</div>';
+    }
+    var pills = f.steps.map(function (s) {
+      return '<span class="tt14-pill ' + (s.done ? 'ok' : (s.due <= f.today ? 'due' : '')) + '">' + (s.done ? '✓ ' : '') + 'Day ' + s.d + '</span>';
+    }).join('');
+    var h = '<div class="tt14-fu"><div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;">📞 ' + pills + '</div>';
+    if (f.next) {
+      var when = f.isDue ? (f.late > 0 ? '<b style="color:var(--danger,#e11d48);">' + f.late + ' din late</b>' : '<b style="color:var(--warning,#d97706);">Aaj due</b>')
+        : new Date(f.next.due).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ' ko';
+      h += '<div class="tt14-sub" style="margin-top:4px;">Follow-up #' + f.next.n + ' (Day ' + f.next.d + '): ' + when + '</div>';
+    } else h += '<div class="tt14-sub" style="margin-top:4px;">Teeno follow-up ho chuke hain.</div>';
+    if (mine) {
+      h += '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">' +
+        (f.next ? '<button class="btn btn-wa btn-sm" style="flex:2;" onclick="triggerAppHaptic(); ttFuSend(\'' + id + '\')">📲 Follow-up bhejo</button>' : '') +
+        '<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttFuSet(\'' + id + '\',\'won\')">✅ Won</button>' +
+        '<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttFuSet(\'' + id + '\',\'lost\')">❌ Lost</button></div>';
+    }
+    return h + '</div>';
+  };
+  window.ttFuSend = function (id) {
+    var q = (quotationsData || []).find(function (x) { return x && x.id === id; }); var f = fuInfo(q);
+    if (!q || !f || !f.next) return;
+    var n = f.next.n;
+    window.open(waUrl(q.custPhone, fuMsg(q, n)), '_blank');
+    q.fuDone = Object.assign({}, q.fuDone || {}); q.fuDone[n] = Date.now(); q.fuBy = meName();
+    fuSave(); notice('Follow-up #' + n, q.custName + ' - done mark ho gaya', '📲');
+  };
+  window.ttFuSet = function (id, st) {
+    var q = (quotationsData || []).find(function (x) { return x && x.id === id; }); if (!q) return;
+    q.fuStatus = st || ''; q.fuBy = meName(); fuSave();
+  };
+  window.ttFuToggle = function () {
+    window.__ttQhFuOnly = !window.__ttQhFuOnly;
+    var b = $('qhFuBtn'); if (b) b.classList.toggle('btn-accent', !!window.__ttQhFuOnly);
+    try { ttRenderQuotationHistory(); } catch (e) {}
+  };
+  window.ttFuOpen = function () { window.__ttQhFuOnly = true; openQuotationHistory(); var b = $('qhFuBtn'); if (b) b.classList.add('btn-accent'); };
+  function fuCount() { return (quotationsData || []).filter(function (q) { return q && ttFuNextDue(q); }).length; }
+  function fuBadge() {
+    try {
+      var n = fuCount();
+      var it = Array.prototype.find.call(document.querySelectorAll('.profile-menu-item'), function (e) { return (e.getAttribute('onclick') || '').indexOf('openQuotationHistory') >= 0; });
+      if (it) { var s = it.lastElementChild; if (s) { s.textContent = n ? '📞 ' + n + ' follow-up' : 'Edit / Resend'; s.style.color = n ? '#f59e0b' : '#a78bfa'; s.style.fontWeight = n ? '800' : ''; } }
+    } catch (e) {}
+    return n;
+  }
+  var _origRQHIO = window.ttRenderQuotHistoryIfOpen;
+  window.ttRenderQuotHistoryIfOpen = function () { var r = _origRQHIO && _origRQHIO.apply(this, arguments); fuBadge(); return r; };
+  function fuDailyToast() {
+    var n = fuCount(); if (!n) return;
+    var key = 'TTESPL_ERP_FU_TOAST_DAY', today = new Date().toISOString().slice(0, 10);
+    if (lsGet(key) === today) return; lsSet(key, today);
+    notice('📞 Quotation Follow-up', n + ' quotation ka follow-up due hai - tap karke dekho', '📞', function () { ttFuOpen(); });
+  }
+
+  /* ================= 6. BRANDS (header) + LOCAL PDF CATALOG ================= */
+  var DBN = 'TTESPL_CatalogDB', STORE = 'brand_catalogs', MAXPDF = 250 * 1024 * 1024;
+  function idb() {
+    return new Promise(function (res, rej) {
+      var r = indexedDB.open(DBN, 1);
+      r.onupgradeneeded = function (e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE)) { var s = db.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true }); s.createIndex('brand', 'brand', { unique: false }); }
+      };
+      r.onsuccess = function () { res(r.result); }; r.onerror = function () { rej(r.error); };
+    });
+  }
+  function idbReq(mode, fn) {
+    return idb().then(function (db) {
+      return new Promise(function (res, rej) {
+        var tx = db.transaction(STORE, mode), out = fn(tx.objectStore(STORE));
+        tx.oncomplete = function () { res(out && out.result !== undefined ? out.result : undefined); };
+        tx.onerror = function () { rej(tx.error); }; tx.onabort = function () { rej(tx.error || new Error('abort')); };
+      });
+    });
+  }
+  function pdfList(brand) { return idbReq('readonly', function (s) { return s.index('brand').getAll(brand); }).then(function (a) { return (a || []).sort(function (x, y) { return String(y.uploadedAt).localeCompare(String(x.uploadedAt)); }); }); }
+  function pdfGet(id) { return idbReq('readonly', function (s) { return s.get(id); }); }
+  function pdfDel(id) { return idbReq('readwrite', function (s) { return s.delete(id); }); }
+  function pdfAdd(rec) { return idbReq('readwrite', function (s) { return s.add(rec); }); }
+  function pdfDelBrand(brand) { return pdfList(brand).then(function (a) { return Promise.all(a.map(function (r) { return pdfDel(r.id); })); }); }
+
+  var curBrand = null; // detail me khula brand id
+  function brandById(id) { return (brandsData || []).find(function (b) { return b && String(b.id) === String(id); }); }
+  function logoHtml(b, sz) {
+    sz = sz || 46;
+    return b.logo ? '<img class="tt14-logo" style="width:' + sz + 'px;height:' + sz + 'px;" src="' + H(b.logo) + '" alt="">'
+      : '<div class="tt14-logo tt14-logo-ph" style="width:' + sz + 'px;height:' + sz + 'px;font-size:' + Math.round(sz * 0.42) + 'px;">' + H(String(b.name || '?').trim().slice(0, 2).toUpperCase()) + '</div>';
+  }
+  window.ttOpenBrands = function () { curBrand = null; var m = ensureModal('tt14BrandModal', 3300, 640); renderBrandList(); m.style.display = 'flex'; };
+  window.ttBrandsRerender = function () { if ($('tt14BrandForm')) return; if (curBrand) { if (brandById(curBrand)) renderBrandDetail(curBrand); else renderBrandList(); } else if (!$('tt14BrandForm')) renderBrandList(); };
+  function renderBrandList() {
+    curBrand = null;
+    var m = ensureModal('tt14BrandModal', 3300, 640), list = (brandsData || []).filter(Boolean).slice().sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
+    var h = ['<div class="card-header"><span class="card-title">🏢 Our Brands</span><div style="display:flex;gap:6px;">' +
+      (isAdm() ? '<button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); ttBrandForm(\'\')">+ Add Brand</button>' : '') +
+      '<button class="btn btn-outline btn-sm" onclick="tt14Close(\'tt14BrandModal\')">✕</button></div></div>'];
+    if (!list.length) {
+      h.push('<div class="tt14-empty" style="padding:18px 8px;">Abhi koi brand add nahi hua.' + (isAdm() ? '<br>Neeche se quick add karo ya <b>+ Add Brand</b> dabao:' : '') + '</div>');
+      if (isAdm()) h.push('<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">' + ['Annovi Reverberi', 'Ma-Fra', 'Maniac Line', 'Maxshine', 'Vista', 'Fireball'].map(function (n) {
+        return '<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ttBrandForm(\'\',\'' + H(n) + '\')">+ ' + H(n) + '</button>'; }).join('') + '</div>');
+    }
+    list.forEach(function (b) {
+      h.push('<div class="tt14-brand" onclick="triggerAppHaptic(); ttBrandOpen(\'' + H(b.id) + '\')">' + logoHtml(b, 48) +
+        '<div style="min-width:0;flex:1;"><b style="font-size:14px;display:block;">' + H(b.name) + '</b><div class="tt14-sub" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
+        H(b.tagline || b.about || 'Tap karke details / catalog dekho') + '</div></div><span style="opacity:.5;">›</span></div>');
+    });
+    setModal(m, h.join(''));
+  }
+  window.ttBrandOpen = function (id) { curBrand = id; renderBrandDetail(id); };
+  window.ttBrandBack = function () { renderBrandList(); };
+  function renderBrandDetail(id) {
+    var b = brandById(id); if (!b) return renderBrandList();
+    var m = ensureModal('tt14BrandModal', 3300, 640);
+    var row = function (ic, v, href) { return v ? '<div class="tt14-kv"><span>' + ic + '</span>' + (href ? '<a href="' + H(href) + '" target="_blank" rel="noopener">' + H(v) + '</a>' : '<div>' + H(v) + '</div>') + '</div>' : ''; };
+    var site = b.website ? (/^https?:/i.test(b.website) ? b.website : 'https://' + b.website) : '';
+    setModal(m,
+      '<div class="card-header"><button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ttBrandBack()">← Brands</button><div style="display:flex;gap:6px;">' +
+      (isAdm() ? '<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ttBrandForm(\'' + H(b.id) + '\')">✏️ Edit</button>' : '') +
+      '<button class="btn btn-outline btn-sm" onclick="tt14Close(\'tt14BrandModal\')">✕</button></div></div>' +
+      '<div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;">' + logoHtml(b, 64) + '<div style="min-width:0;"><b style="font-size:17px;display:block;">' + H(b.name) + '</b>' +
+      (b.tagline ? '<div class="tt14-sub">' + H(b.tagline) + '</div>' : '') + '</div></div>' +
+      (b.about ? '<div class="tt14-about">' + H(b.about).replace(/\n/g, '<br>') + '</div>' : '') +
+      row('👤', b.contact) + row('📞', b.phone, b.phone ? 'tel:' + last10(b.phone) : '') + row('✉️', b.email, b.email ? 'mailto:' + b.email : '') +
+      row('🌐', b.website, site) + row('📍', b.address) + row('🧾', b.gst ? 'GSTIN: ' + b.gst : '') +
+      '<div class="tt14-sec" style="display:flex;justify-content:space-between;align-items:center;">📚 Catalogs (is phone me offline save)' +
+      '<label class="btn btn-primary btn-sm" style="margin:0;cursor:pointer;">+ PDF Upload<input type="file" accept="application/pdf,.pdf" multiple style="display:none;" onchange="ttCatUpload(\'' + H(b.id) + '\', this)"></label></div>' +
+      '<div id="tt14CatList" class="tt14-sub">Loading…</div>');
+    loadCats(b.id);
+  }
+  async function loadCats(bid) {
+    var box = $('tt14CatList'); if (!box) return;
+    try {
+      var list = await pdfList(bid); box = $('tt14CatList'); if (!box || curBrand !== bid) return;
+      if (!list.length) { box.innerHTML = '<div class="tt14-empty">Koi catalog nahi. <b>+ PDF Upload</b> se apni PDF (250 MB tak) save karo - ek baar save hone ke baad internet ke bina bhi khulegi.</div>'; return; }
+      box.innerHTML = list.map(function (r) {
+        return '<div class="tt14-row" style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><div style="min-width:0;"><b style="word-break:break-word;">' + H(r.name) +
+          '</b><div class="tt14-sub">' + (r.size / 1048576).toFixed(1) + ' MB • ' + H(new Date(r.uploadedAt).toLocaleDateString('en-GB')) + '</div></div>' +
+          '<div style="display:flex;gap:6px;flex-shrink:0;"><button class="btn btn-wa btn-sm" onclick="triggerAppHaptic(); ttPdfOpen(' + r.id + ')">👁 Open</button>' +
+          '<button class="btn btn-danger-sm btn-sm" onclick="triggerAppHaptic(); ttCatDelete(' + r.id + ',\'' + H(bid) + '\')">🗑️</button></div></div>';
+      }).join('');
+    } catch (e) { box.innerHTML = '<div class="tt14-empty">⚠️ Catalog storage khul nahi paya (' + H(e && e.message) + ').</div>'; }
+  }
+  window.ttCatUpload = async function (bid, input) {
+    var files = Array.prototype.slice.call(input.files || []); input.value = '';
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      if (!/pdf/i.test(f.type) && !/\.pdf$/i.test(f.name)) { notice('PDF nahi hai', f.name, '⚠️'); continue; }
+      if (f.size > MAXPDF) { notice('Bahut badi file', f.name + ' 250 MB se badi hai', '⚠️'); continue; }
+      try { await pdfAdd({ brand: bid, name: f.name, size: f.size, blob: f, uploadedAt: new Date().toISOString(), by: meName() }); notice('Catalog saved', f.name, '📚'); }
+      catch (e) { notice('Save nahi hua', (e && e.name === 'QuotaExceededError') ? 'Phone me jagah kam hai' : (e && e.message) || f.name, '⚠️'); }
+    }
+    if (curBrand === bid) loadCats(bid);
+  };
+  window.ttCatDelete = async function (id, bid) {
+    if (!confirm('Ye catalog PDF is phone se hata dein?')) return;
+    try { await pdfDel(id); } catch (e) {}
+    loadCats(bid);
+  };
+
+  /* ---- Brand add/edit form ---- */
+  var formLogo = '';
+  window.ttBrandForm = function (id, prefill) {
+    if (!isAdm()) { alert('Sirf Admin brand add/edit kar sakta hai.'); return; }
+    var b = id ? brandById(id) : null; formLogo = b ? (b.logo || '') : '';
+    var m = ensureModal('tt14BrandModal', 3300, 640), v = function (k) { return b ? H(b[k] || '') : ''; };
+    setModal(m,
+      '<div id="tt14BrandForm"></div><div class="card-header"><span class="card-title">' + (b ? '✏️ Brand Edit' : '➕ Naya Brand') + '</span>' +
+      '<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ' + (b ? 'ttBrandOpen(\'' + H(b.id) + '\')' : 'ttBrandBack()') + '">✕</button></div>' +
+      '<input type="hidden" id="tt14BId" value="' + H(id || '') + '">' +
+      '<div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;"><div id="tt14BLogoPrev">' + logoHtml({ logo: formLogo, name: b ? b.name : (prefill || '?') }, 64) + '</div>' +
+      '<label class="btn btn-outline btn-sm" style="margin:0;cursor:pointer;">🖼️ Logo chuno<input type="file" accept="image/*" style="display:none;" onchange="ttBrandLogoPick(this)"></label>' +
+      '<button class="btn btn-outline btn-sm" onclick="ttBrandLogoClear()">Hatao</button></div>' +
+      '<div class="form-group"><label>Brand Name *</label><input type="text" id="tt14BName" value="' + (b ? v('name') : H(prefill || '')) + '" placeholder="e.g. Annovi Reverberi"></div>' +
+      '<div class="form-group"><label>Tagline</label><input type="text" id="tt14BTag" value="' + v('tagline') + '" placeholder="e.g. High pressure plunger pumps"></div>' +
+      '<div class="form-group"><label>About / Details</label><textarea id="tt14BAbout" rows="4" placeholder="Company ke baare me, products, dealership details…">' + v('about') + '</textarea></div>' +
+      '<div class="grid-2"><div class="form-group"><label>Contact Person</label><input type="text" id="tt14BContact" value="' + v('contact') + '"></div>' +
+      '<div class="form-group"><label>Phone</label><input type="tel" id="tt14BPhone" value="' + v('phone') + '"></div></div>' +
+      '<div class="grid-2"><div class="form-group"><label>Email</label><input type="email" id="tt14BEmail" value="' + v('email') + '"></div>' +
+      '<div class="form-group"><label>Website</label><input type="text" id="tt14BWeb" value="' + v('website') + '"></div></div>' +
+      '<div class="form-group"><label>Address</label><input type="text" id="tt14BAddr" value="' + v('address') + '"></div>' +
+      '<div class="form-group"><label>GSTIN</label><input type="text" id="tt14BGst" value="' + v('gst') + '"></div>' +
+      '<div style="display:flex;gap:8px;margin-top:6px;"><button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); ttBrandSave()">💾 Save</button>' +
+      (b ? '<button class="btn btn-danger-sm" onclick="triggerAppHaptic(); ttBrandDelete(\'' + H(b.id) + '\')">🗑️ Delete</button>' : '') + '</div>');
+  };
+  function logoPrev() { var p = $('tt14BLogoPrev'); if (p) p.innerHTML = logoHtml({ logo: formLogo, name: ($('tt14BName') || {}).value || '?' }, 64); }
+  window.ttBrandLogoClear = function () { formLogo = ''; logoPrev(); };
+  window.ttBrandLogoPick = function (input) {
+    var f = input.files && input.files[0]; input.value = ''; if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      var im = new Image();
+      im.onload = function () {
+        var out = '', max = 256;
+        for (var attempt = 0; attempt < 3; attempt++) {
+          var s = Math.min(1, max / Math.max(im.width, im.height)), cv = document.createElement('canvas');
+          cv.width = Math.max(1, Math.round(im.width * s)); cv.height = Math.max(1, Math.round(im.height * s));
+          var cx = cv.getContext('2d'); cx.drawImage(im, 0, 0, cv.width, cv.height);
+          out = cv.toDataURL('image/png');
+          if (out.length > 90000) { cx.globalCompositeOperation = 'destination-over'; cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); out = cv.toDataURL('image/jpeg', 0.82); }
+          if (out.length <= 90000) break; max = Math.round(max * 0.65);
+        }
+        formLogo = out.length <= 90000 ? out : ''; if (!formLogo) notice('Logo bada hai', 'Chhota logo chuno', '⚠️'); logoPrev();
+      };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(f);
+  };
+  window.ttBrandSave = function () {
+    var g = function (id) { return ($(id).value || '').trim(); }, name = g('tt14BName');
+    if (!name) { alert('Brand ka naam daalo'); return; }
+    var id = $('tt14BId').value, b = id ? brandById(id) : null;
+    var dup = (brandsData || []).some(function (x) { return x && String(x.name).toLowerCase() === name.toLowerCase() && String(x.id) !== String(id); });
+    if (dup) { alert('Is naam ka brand pehle se hai.'); return; }
+    var data = { name: name, tagline: g('tt14BTag'), about: g('tt14BAbout'), contact: g('tt14BContact'), phone: g('tt14BPhone'), email: g('tt14BEmail'), website: g('tt14BWeb'), address: g('tt14BAddr'), gst: g('tt14BGst'), logo: formLogo, updatedAt: Date.now(), updatedBy: meName() };
+    if (b) Object.assign(b, data); else { b = Object.assign({ id: 'BR' + Date.now(), createdAt: Date.now(), createdBy: meName() }, data); if (!Array.isArray(brandsData)) brandsData = []; brandsData.push(b); }
+    window.brandsData = brandsData; setStored("BRANDS", brandsData);
+    notice('Brand saved', name, '🏢'); ttBrandOpen(b.id);
+  };
+  window.ttBrandDelete = async function (id) {
+    if (!isAdm()) return; var b = brandById(id); if (!b) return;
+    if (!confirm('Brand "' + b.name + '" delete karein? (Is phone ki uski catalog PDFs bhi hat jayengi)')) return;
+    try { if (window.cloudSync && window.cloudSync.deleteItem) window.cloudSync.deleteItem('BRANDS', id); } catch (e) {}
+    brandsData = (brandsData || []).filter(function (x) { return x && String(x.id) !== String(id); });
+    window.brandsData = brandsData; setStored("BRANDS", brandsData);
+    try { await pdfDelBrand(id); } catch (e) {}
+    renderBrandList();
+  };
+
+  /* ---- Lag-free PDF viewer (pdf.js lazy load; sirf dikhne wale pages render hote hain) ---- */
+  var PDFJS_VER = '4.10.38', V = { lib: null, pdf: null, url: null, obs: null, vis: new Set(), done: {}, chain: Promise.resolve(), tok: 0, zoom: 1, ar: 1.414, n: 0, blob: null, name: '' };
+  window.TT_PDFJS_BASE = window.TT_PDFJS_BASE || ('https://cdn.jsdelivr.net/npm/pdfjs-dist@' + PDFJS_VER + '/legacy/build/');
+  async function loadPdfJs() {
+    if (V.lib) return V.lib;
+    var base = window.TT_PDFJS_BASE;
+    var lib = await import(base + (window.TT_PDFJS_MAIN || 'pdf.min.mjs'));
+    var wtxt = await (await fetch(base + (window.TT_PDFJS_WORKER || 'pdf.worker.min.mjs'))).text();
+    lib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([wtxt], { type: 'text/javascript' }));
+    V.lib = lib; return lib;
+  }
+  function ensureViewer() {
+    var v = $('tt14Viewer');
+    if (v) return v;
+    v = document.createElement('div'); v.id = 'tt14Viewer'; v.className = 'auth-overlay'; v.style.display = 'none'; v.style.zIndex = '3700'; v.style.padding = '0'; v.style.alignItems = 'stretch';
+    v.innerHTML = '<div class="tt14-vw"><div class="tt14-vbar"><button class="btn btn-outline btn-sm" onclick="ttPdfClose()">✕</button>' +
+      '<div class="tt14-vtitle" id="tt14VTitle"></div><span id="tt14VPg" class="tt14-vpg"></span>' +
+      '<button class="btn btn-outline btn-sm" onclick="ttPdfZoom(-0.25)">−</button><button class="btn btn-outline btn-sm" onclick="ttPdfZoom(0.25)">＋</button>' +
+      '<button class="btn btn-outline btn-sm" onclick="ttPdfSave()">⬇️</button></div><div class="tt14-vbody" id="tt14VBody"></div></div>';
+    document.body.appendChild(v);
+    new MutationObserver(function () { if (v.style.display === 'none') pdfCleanup(); }).observe(v, { attributes: true, attributeFilter: ['style'] });
+    return v;
+  }
+  function pdfCleanup() {
+    V.tok++; V.vis.clear(); V.done = {};
+    if (V.obs) { try { V.obs.disconnect(); } catch (e) {} V.obs = null; }
+    if (V.pdf) { try { V.pdf.destroy(); } catch (e) {} V.pdf = null; }
+    if (V.url) { try { URL.revokeObjectURL(V.url); } catch (e) {} V.url = null; }
+    var b = $('tt14VBody'); if (b) b.innerHTML = '';
+    V.blob = null;
+  }
+  window.ttPdfClose = function () { var v = $('tt14Viewer'); if (v) v.style.display = 'none'; };
+  window.ttPdfSave = function () { if (V.blob) downloadBlob(V.blob, V.name || 'catalog.pdf'); };
+  function pgW() { var b = $('tt14VBody'); return Math.max(200, ((b && b.clientWidth) || 360) - 16) * V.zoom; }
+  function layoutPages() {
+    var w = pgW(), body = $('tt14VBody'); if (!body) return;
+    Array.prototype.forEach.call(body.children, function (d) {
+      var ar = parseFloat(d.dataset.ar) || V.ar; d.style.width = w + 'px'; d.style.height = Math.round(w * ar) + 'px';
+    });
+  }
+  function observeAll() {
+    var body = $('tt14VBody'); if (!body) return;
+    if (V.obs) V.obs.disconnect();
+    V.vis.clear();
+    V.obs = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        var i = +e.target.dataset.i;
+        if (e.isIntersecting) { V.vis.add(i); queueRender(i); } else { V.vis.delete(i); freePage(e.target, i); }
+      });
+      var cur = Math.min.apply(null, Array.from(V.vis).concat([1e9])); var pg = $('tt14VPg'); if (pg && cur < 1e9) pg.textContent = (cur + 1) + ' / ' + V.n;
+    }, { root: body, rootMargin: '900px 0px' });
+    Array.prototype.forEach.call(body.children, function (d) { V.obs.observe(d); });
+  }
+  function freePage(d, i) {
+    var c = d.querySelector('canvas'); if (c) { c.width = c.height = 0; c.remove(); }
+    delete V.done[i];
+  }
+  function queueRender(i) {
+    var tok = V.tok;
+    V.chain = V.chain.then(function () { if (tok !== V.tok || !V.vis.has(i)) return; return renderPage(i, tok); }).catch(function () {});
+  }
+  async function renderPage(i, tok) {
+    var w = pgW(), key = Math.round(w), body = $('tt14VBody'); if (!body || !V.pdf) return;
+    if (V.done[i] === key) return;
+    var d = body.children[i]; if (!d) return;
+    var page = await V.pdf.getPage(i + 1); if (tok !== V.tok) return;
+    var vp0 = page.getViewport({ scale: 1 }), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var vp = page.getViewport({ scale: (w / vp0.width) * dpr });
+    var cv = document.createElement('canvas'); cv.width = Math.floor(vp.width); cv.height = Math.floor(vp.height);
+    cv.style.cssText = 'width:100%;height:100%;display:block;';
+    await page.render({ canvasContext: cv.getContext('2d'), viewport: vp, canvas: cv }).promise;
+    if (tok !== V.tok) { cv.width = cv.height = 0; return; }
+    var old = d.querySelector('canvas'); if (old) { old.width = old.height = 0; old.remove(); }
+    d.dataset.ar = String(vp0.height / vp0.width); d.style.height = Math.round(w * vp0.height / vp0.width) + 'px';
+    d.appendChild(cv); V.done[i] = key; d.classList.add('ready');
+    try { page.cleanup(); } catch (e) {}
+  }
+  window.ttPdfZoom = function (dz) {
+    if (!V.pdf) return; V.zoom = Math.max(0.6, Math.min(3, V.zoom + dz)); V.done = {};
+    var body = $('tt14VBody'); Array.prototype.forEach.call(body.children, function (d) { var c = d.querySelector('canvas'); if (c) { c.width = c.height = 0; c.remove(); } });
+    layoutPages(); observeAll();
+  };
+  window.ttPdfOpen = async function (id) {
+    var rec; try { rec = await pdfGet(id); } catch (e) {}
+    if (!rec || !rec.blob) { notice('Catalog nahi mila', '', '⚠️'); return; }
+    var v = ensureViewer(); pdfCleanup();
+    V.blob = rec.blob; V.name = rec.name; V.zoom = 1; V.chain = Promise.resolve();
+    $('tt14VTitle').textContent = rec.name; $('tt14VPg').textContent = '';
+    var body = $('tt14VBody'); body.innerHTML = '<div class="tt14-vmsg">⏳ PDF khul rahi hai…</div>'; v.style.display = 'flex';
+    var fallback = function (why) {
+      body.innerHTML = '<div class="tt14-vmsg">⚠️ In-app viewer nahi chal paya (' + H(why) + ').<br>Pehli baar viewer load karne ke liye internet chahiye.<br><br>' +
+        '<button class="btn btn-primary btn-sm" onclick="ttPdfExternal()">Browser me kholo</button> <button class="btn btn-outline btn-sm" onclick="ttPdfSave()">⬇️ Download</button></div>';
+    };
+    try {
+      var lib = await loadPdfJs(); V.url = URL.createObjectURL(rec.blob);
+      var tok = V.tok;
+      V.pdf = await lib.getDocument({ url: V.url, disableAutoFetch: true, isEvalSupported: false }).promise;
+      if (tok !== V.tok) return;
+      V.n = V.pdf.numPages; var p1 = await V.pdf.getPage(1), vp = p1.getViewport({ scale: 1 }); V.ar = vp.height / vp.width;
+      body.innerHTML = ''; var frag = document.createDocumentFragment();
+      for (var i = 0; i < V.n; i++) { var d = document.createElement('div'); d.className = 'tt14-pg'; d.dataset.i = i; frag.appendChild(d); }
+      body.appendChild(frag); layoutPages(); observeAll();
+      $('tt14VPg').textContent = '1 / ' + V.n;
+    } catch (e) { console.warn('pdf viewer', e); if (V.tok >= 0) fallback((e && e.message) || 'error'); }
+  };
+  window.ttPdfExternal = function () { if (V.blob) { var u = URL.createObjectURL(V.blob); window.open(u, '_blank'); setTimeout(function () { URL.revokeObjectURL(u); }, 120000); } };
+
+  /* ================= HOOK UP ================= */
+  setInterval(function () { try { backupCheck(); } catch (e) {} }, 60000);
+  setTimeout(function () { try { backupCheck(); fuBadge(); } catch (e) {} }, 6000);
+  setTimeout(function () { try { fuDailyToast(); } catch (e) {} }, 9000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) { try { backupCheck(); fuBadge(); } catch (e) {} } });
 })();
 
 /* ===== BACK BUTTON FIX ===== */
