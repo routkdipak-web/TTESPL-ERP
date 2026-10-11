@@ -40,11 +40,12 @@
     TRAVEL: 'travel_expenses',
     CRM_RECORDS: 'crm_records',
     COMPANY_DETAILS: 'company_settings',
-    CATALOG_CATS: 'catalog_categories'
+    CATALOG_CATS: 'catalog_categories',
+    BRANDS: 'brands'
   };
 
   // Naye optional collections: inke error/rules ki wajah se app 'Offline' nahi dikhayega
-  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true, CATALOG_CATS: true };
+  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true, CATALOG_CATS: true, BRANDS: true };
   // Inka purana local data pehli baar cloud par automatically upload hota hai (ek baar)
   var MIGRATE_KEYS = OPTIONAL_KEYS;
 
@@ -300,6 +301,7 @@
       if (pendingRender.TRAVEL && typeof window.ttRenderTravelIfOpen === 'function') window.ttRenderTravelIfOpen();
       if ((pendingRender.CATALOG_CATS || pendingRender.INVENTORY) && typeof window.ttRenderCatalogIfOpen === 'function') window.ttRenderCatalogIfOpen();
       if (pendingRender.CRM_RECORDS && typeof window.ttRenderCrmIfOpen === 'function') window.ttRenderCrmIfOpen();
+      if (pendingRender.BRANDS && typeof window.ttRenderBrandsIfOpen === 'function') window.ttRenderBrandsIfOpen();
       if (pendingRender.COMPANY_DETAILS && typeof window.ttRenderCompanyIfOpen === 'function') window.ttRenderCompanyIfOpen();
       if (typeof renderDashboard === 'function') renderDashboard();
       if (typeof updateAdminDeleteVisibility === 'function') updateAdminDeleteVisibility();
@@ -385,6 +387,7 @@
           case 'QUOTATIONS': quotationsData = list; break;
           case 'TRAVEL': travelData = list; break;
           case 'CATALOG_CATS': catalogCatsData = list; break;
+          case 'BRANDS': brandsData = list; window.brandsData = list; break;
           case 'CRM_RECORDS': crmRecordsData = list; window.crmRecordsData = list; break;
           case 'COMPANY_DETAILS':
             if (list.length) {
