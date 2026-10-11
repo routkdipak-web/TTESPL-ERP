@@ -1,431 +1,555 @@
 /**
- * TTESPL ERP - All-In-One Features Patch
- * (Automatically injects Brand menu into header + handles PDF Catalogs, History, WhatsApp, Backup)
+ * TTESPL ERP - Premium Glassmorphic Suite
+ * Dynamic Brand Master (Logo, Desc, Multi 500MB PDF)
+ * Customer Ledger & Stock Item Sales History Modals
+ * Auto-Injected WhatsApp Sharing in Ledger
  */
 
-// ==============================================================
-// 1. AUTO-INJECT BRAND MENU & STYLES INTO HEADER
-// ==============================================================
-(function injectBrandHeader() {
-  // CSS styles inject karna
-  const style = document.createElement("style");
-  style.innerHTML = `
-    .brand-dropdown-wrapper {
-      position: relative;
-      display: inline-block;
-      margin-right: 12px;
-      font-family: inherit;
-    }
-    .brand-btn {
-      background: #0f172a;
-      color: #ffffff;
-      border: 1px solid #334155;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 13px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.2s;
-    }
-    .brand-btn:hover {
-      background: #1e293b;
-    }
-    .brand-dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background: #ffffff;
-      min-width: 250px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      border-radius: 8px;
-      overflow: hidden;
-      z-index: 10000;
-      border: 1px solid #e2e8f0;
-    }
-    .brand-dropdown-wrapper:hover .brand-dropdown-menu {
-      display: block;
-    }
-    .brand-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      text-decoration: none;
-      color: #0f172a;
-      border-bottom: 1px solid #f1f5f9;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .brand-item:hover {
-      background: #f8fafc;
-    }
-  `;
-  document.head.appendChild(style);
-
-  // Brand dropdown element banana
-  const brandWrapper = document.createElement("div");
-  brandWrapper.className = "brand-dropdown-wrapper";
-  brandWrapper.innerHTML = `
-    <button type="button" class="brand-btn">
-      <span>🏢 Brands</span> <span style="font-size:10px;">▼</span>
-    </button>
-    <div class="brand-dropdown-menu">
-      <div class="brand-item" onclick="openBrandModal('man_diesel', 'MAN Diesel & Turbo', 'Authorized dealer & service partner for heavy industrial & marine diesel cleaning and pump equipment.')">
-        <span style="font-size:20px;">⚙️</span>
-        <div>
-          <div style="font-weight:600; font-size:13px;">MAN Diesel</div>
-          <div style="font-size:11px; color:#64748b;">Industrial & Pumps</div>
-        </div>
-      </div>
-      <div class="brand-item" onclick="openBrandModal('annovi_reverberi', 'Annovi Reverberi (AR)', 'High pressure plunger pumps, triplex car wash pumps and spares catalog.')">
-        <span style="font-size:20px;">💧</span>
-        <div>
-          <div style="font-weight:600; font-size:13px;">Annovi Reverberi</div>
-          <div style="font-size:11px; color:#64748b;">Plunger Pumps</div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  // Page load hone par Header me add karna
-  window.addEventListener("DOMContentLoaded", () => {
-    // Header dhoondna (header tag, navbar, ya body me fallback)
-    const header = document.querySelector("header") || 
-                   document.querySelector(".navbar") || 
-                   document.querySelector(".top-bar") || 
-                   document.querySelector("#header");
-
-    if (header) {
-      header.appendChild(brandWrapper);
-    } else {
-      // Agar header tag na mile toh top right corner me fix kar dega
-      brandWrapper.style.position = "fixed";
-      brandWrapper.style.top = "12px";
-      brandWrapper.style.right = "16px";
-      brandWrapper.style.zIndex = "9999";
-      document.body.appendChild(brandWrapper);
-    }
-  });
-})();
-
-
-// ==============================================================
-// 2. BRAND SHOWCASE & LOCAL PDF CATALOG (IndexedDB 250MB Safe)
-// ==============================================================
-const BrandCatalogDB = {
-  dbName: "TTESPL_CatalogDB",
-  storeName: "brand_catalogs",
-
-  async getDB() {
+// ==========================================
+// 1. INDEXEDDB ENGINE (500MB+ SUPPORT)
+// ==========================================
+const GlassDB = {
+  dbName: "TTESPL_ProStorage",
+  version: 2,
+  async open() {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName, 1);
-      request.onupgradeneeded = (e) => {
+      const req = indexedDB.open(this.dbName, this.version);
+      req.onupgradeneeded = (e) => {
         const db = e.target.result;
-        if (!db.objectStoreNames.contains(this.storeName)) {
-          db.createObjectStore(this.storeName, { keyPath: "id", autoIncrement: true });
+        if (!db.objectStoreNames.contains("brands")) {
+          db.createObjectStore("brands", { keyPath: "id", autoIncrement: true });
+        }
+        if (!db.objectStoreNames.contains("catalogs")) {
+          const store = db.createObjectStore("catalogs", { keyPath: "id", autoIncrement: true });
+          store.createIndex("brandId", "brandId", { unique: false });
         }
       };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  },
-
-  async savePDF(brandKey, file) {
-    const db = await this.getDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(this.storeName, "readwrite");
-      const store = tx.objectStore(this.storeName);
-      const record = {
-        brand: brandKey,
-        name: file.name,
-        size: file.size,
-        blob: file,
-        uploadedAt: new Date().toISOString()
-      };
-      const req = store.add(record);
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error);
     });
   },
-
-  async getPDFs(brandKey) {
-    const db = await this.getDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(this.storeName, "readonly");
-      const store = tx.objectStore(this.storeName);
-      const req = store.getAll();
-      req.onsuccess = () => {
-        const records = (req.result || []).filter(item => item.brand === brandKey);
-        resolve(records);
-      };
-      req.onerror = () => reject(req.error);
+  async getBrands() {
+    const db = await this.open();
+    return new Promise((resolve) => {
+      const tx = db.transaction("brands", "readonly");
+      const req = tx.objectStore("brands").getAll();
+      req.onsuccess = () => resolve(req.result || []);
     });
   },
-
-  async deletePDF(id) {
-    const db = await this.getDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(this.storeName, "readwrite");
-      tx.objectStore(this.storeName).delete(id);
+  async saveBrand(brand) {
+    const db = await this.open();
+    return new Promise((resolve) => {
+      const tx = db.transaction("brands", "readwrite");
+      const req = tx.objectStore("brands").add(brand);
+      req.onsuccess = () => resolve(req.result);
+    });
+  },
+  async deleteBrand(id) {
+    const db = await this.open();
+    return new Promise((resolve) => {
+      const tx = db.transaction(["brands", "catalogs"], "readwrite");
+      tx.objectStore("brands").delete(id);
+      const catStore = tx.objectStore("catalogs");
+      const idx = catStore.index("brandId");
+      const req = idx.openCursor(IDBKeyRange.only(id));
+      req.onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          cursor.delete();
+          cursor.continue();
+        }
+      };
       tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error);
+    });
+  },
+  async savePDF(brandId, file) {
+    const db = await this.open();
+    return new Promise((resolve) => {
+      const tx = db.transaction("catalogs", "readwrite");
+      const record = {
+        brandId: Number(brandId),
+        name: file.name,
+        size: file.size,
+        blob: file,
+        date: new Date().toISOString()
+      };
+      const req = tx.objectStore("catalogs").add(record);
+      req.onsuccess = () => resolve(req.result);
+    });
+  },
+  async getPDFs(brandId) {
+    const db = await this.open();
+    return new Promise((resolve) => {
+      const tx = db.transaction("catalogs", "readonly");
+      const idx = tx.objectStore("catalogs").index("brandId");
+      const req = idx.getAll(IDBKeyRange.only(Number(brandId)));
+      req.onsuccess = () => resolve(req.result || []);
+    });
+  },
+  async deletePDF(id) {
+    const db = await this.open();
+    return new Promise((resolve) => {
+      const tx = db.transaction("catalogs", "readwrite");
+      tx.objectStore("catalogs").delete(id);
+      tx.oncomplete = () => resolve();
     });
   }
 };
 
-window.openBrandModal = function(brandKey, brandTitle, brandInfo) {
-  let modal = document.getElementById("brandCatalogModal");
+// ==========================================
+// 2. PREMIUM GLASS STYLES & HEADER BUTTON
+// ==========================================
+(function injectGlassStyles() {
+  const css = `
+    .glass-brand-btn {
+      background: rgba(15, 23, 42, 0.45) !important;
+      backdrop-filter: blur(14px) !important;
+      -webkit-backdrop-filter: blur(14px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.18) !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+      border-radius: 14px !important;
+      color: #ffffff !important;
+      padding: 7px 14px !important;
+      font-weight: 600 !important;
+      font-size: 13px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 7px !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+    }
+    .glass-brand-btn:active {
+      transform: scale(0.97);
+    }
+    .glass-modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      font-family: inherit;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 720px;
+      max-height: 88vh;
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.93) translateY(12px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .mini-history-btn {
+      background: rgba(2, 132, 199, 0.12);
+      border: 1px solid rgba(2, 132, 199, 0.3);
+      color: #0284c7;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+    .mini-history-btn:active {
+      transform: scale(0.96);
+      background: rgba(2, 132, 199, 0.22);
+    }
+    .wa-share-btn {
+      background: #25d366 !important;
+      color: #fff !important;
+      border: none !important;
+      border-radius: 8px !important;
+      padding: 6px 12px !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      cursor: pointer !important;
+      box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3) !important;
+    }
+  `;
+  const tag = document.createElement("style");
+  tag.innerHTML = css;
+  document.head.appendChild(tag);
+
+  function attachBrandBtn() {
+    // Header me purana default brand button hatana
+    const oldWrap = document.querySelector(".brand-dropdown-wrapper");
+    if (oldWrap) oldWrap.remove();
+
+    const existingBtn = document.getElementById("openGlassBrandHubBtn");
+    if (existingBtn) return;
+
+    const brandBtn = document.createElement("button");
+    brandBtn.id = "openGlassBrandHubBtn";
+    brandBtn.type = "button";
+    brandBtn.className = "glass-brand-btn";
+    brandBtn.innerHTML = `<span>🏢</span> <span>Brands</span>`;
+    brandBtn.onclick = () => window.openBrandHubModal();
+
+    const navBrandsBox = document.querySelector(".brand-dropdown-menu, [data-brand-menu]");
+    if (navBrandsBox) navBrandsBox.remove();
+
+    const header = document.querySelector("header") || document.querySelector(".top-bar") || document.querySelector(".navbar");
+    if (header) {
+      header.appendChild(brandBtn);
+    } else {
+      brandBtn.style.position = "fixed";
+      brandBtn.style.top = "10px";
+      brandBtn.style.right = "10px";
+      brandBtn.style.zIndex = "9999";
+      document.body.appendChild(brandBtn);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", attachBrandBtn);
+  } else {
+    attachBrandBtn();
+  }
+})();
+
+// ==========================================
+// 3. BRAND HUB (ADD CUSTOM COMPANY + MULTI PDF)
+// ==========================================
+window.openBrandHubModal = async function() {
+  let modal = document.getElementById("glassBrandModal");
   if (!modal) {
     modal = document.createElement("div");
-    modal.id = "brandCatalogModal";
-    modal.style.cssText = `
-      position: fixed; inset: 0; background: rgba(0,0,0,0.65);
-      display: flex; align-items: center; justify-content: center; z-index: 999999;
-      font-family: inherit;
-    `;
+    modal.id = "glassBrandModal";
+    modal.className = "glass-modal-bg";
     document.body.appendChild(modal);
   }
 
+  const brands = await GlassDB.getBrands();
+
   modal.innerHTML = `
-    <div style="background:#fff; width:92%; max-width:850px; max-height:90vh; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 12px 35px rgba(0,0,0,0.3);">
-      <div style="background:#0f172a; color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="margin:0; font-size:17px; font-weight:600;">${brandTitle} - Catalog & Details</h3>
-        <button onclick="document.getElementById('brandCatalogModal').style.display='none'" style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer;">&times;</button>
+    <div class="glass-card">
+      <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+          <span>🏢</span> Partner Brands & Catalog Vault
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button onclick="openAddBrandDialog()" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(2,132,199,0.35);">
+            + Add Company
+          </button>
+          <button onclick="document.getElementById('glassBrandModal').style.display='none'" style="background: none; border: none; color: #94a3b8; font-size: 22px; cursor: pointer;">&times;</button>
+        </div>
       </div>
-      <div style="padding:20px; overflow-y:auto; flex:1;">
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px; margin-bottom:20px;">
-          <h4 style="margin:0 0 6px 0; color:#1e293b; font-size:14px;">Brand Overview</h4>
-          <p style="margin:0; color:#475569; font-size:13px; line-height:1.5;">${brandInfo}</p>
-        </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <h4 style="margin:0; color:#1e293b; font-size:14px;">Local Catalogs (Offline / Fast Local Access)</h4>
-          <label style="background:#0284c7; color:#fff; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;">
-            + Upload PDF (Up to 250MB)
-            <input type="file" accept="application/pdf" style="display:none;" onchange="handleCatalogUpload('${brandKey}', this)">
-          </label>
-        </div>
+      <div style="padding: 18px; overflow-y: auto; flex: 1;">
+        ${brands.length === 0 ? `
+          <div style="text-align: center; padding: 45px 20px; border: 2px dashed #cbd5e1; border-radius: 16px; background: rgba(248, 250, 252, 0.6);">
+            <div style="font-size: 32px; margin-bottom: 8px;">📁</div>
+            <div style="font-weight: 600; color: #334155;">No Companies Added Yet</div>
+            <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Upar "+ Add Company" par click karein aur apni brand, profile logo aur PDF catalogs add karein.</div>
+          </div>
+        ` : `
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px;">
+            ${brands.map(b => `
+              <div style="background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 16px; padding: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                    <img src="${b.logo || 'https://via.placeholder.com/60?text=Brand'}" style="width: 48px; height: 48px; border-radius: 12px; object-fit: cover; border: 1px solid #e2e8f0; background: #f8fafc;" />
+                    <div>
+                      <div style="font-weight: 700; font-size: 15px; color: #0f172a;">${b.name}</div>
+                      <div style="font-size: 11px; color: #64748b;">${new Date(b.createdAt).toLocaleDateString()}</div>
+                    </div>
+                  </div>
+                  <div style="font-size: 12px; color: #475569; line-height: 1.4; max-height: 48px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 12px;">
+                    ${b.description || 'No description provided.'}
+                  </div>
+                </div>
 
-        <div id="catalogList" style="display:grid; gap:10px;">Loading catalogs...</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; pt-2; border-top: 1px solid #f1f5f9; padding-top: 10px;">
+                  <button onclick="openBrandCatalogsView(${b.id})" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    📚 Catalogs
+                  </button>
+                  <button onclick="confirmDeleteBrand(${b.id})" style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `}
       </div>
     </div>
   `;
   modal.style.display = "flex";
-  loadBrandCatalogs(brandKey);
 };
 
-window.handleCatalogUpload = async function(brandKey, input) {
-  if (input.files && input.files[0]) {
-    const file = input.files[0];
-    await BrandCatalogDB.savePDF(brandKey, file);
-    loadBrandCatalogs(brandKey);
+window.openAddBrandDialog = function() {
+  const name = prompt("Company / Brand Name:");
+  if (!name) return;
+  const logo = prompt("Brand Logo URL (Image link ya empty chhodein):", "") || "https://via.placeholder.com/60?text=" + encodeURIComponent(name.slice(0, 2).toUpperCase());
+  const description = prompt("Brand Description / Tagline:", "") || "";
+
+  GlassDB.saveBrand({
+    name,
+    logo,
+    description,
+    createdAt: new Date().toISOString()
+  }).then(() => {
+    openBrandHubModal();
+  });
+};
+
+window.confirmDeleteBrand = function(id) {
+  if (confirm("Kya aap sach me is brand aur iske sabhi local catalogs ko delete karna chahte hain?")) {
+    GlassDB.deleteBrand(id).then(() => openBrandHubModal());
   }
 };
 
-window.loadBrandCatalogs = async function(brandKey) {
-  const container = document.getElementById("catalogList");
-  if (!container) return;
-  const list = await BrandCatalogDB.getPDFs(brandKey);
+// Catalogs & Multiple PDF Viewer inside Brand
+window.openBrandCatalogsView = async function(brandId) {
+  const brands = await GlassDB.getBrands();
+  const brand = brands.find(b => b.id === brandId);
+  if (!brand) return;
 
-  if (list.length === 0) {
-    container.innerHTML = `<div style="text-align:center; padding:24px; color:#94a3b8; font-size:13px; border:1px dashed #cbd5e1; border-radius:8px;">No local PDFs uploaded yet. Tap "+ Upload PDF" to save catalogs locally.</div>`;
-    return;
-  }
+  const pdfs = await GlassDB.getPDFs(brandId);
+  const modal = document.getElementById("glassBrandModal");
 
-  container.innerHTML = list.map(item => `
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border:1px solid #e2e8f0; border-radius:8px; background:#fff;">
-      <div>
-        <div style="font-weight:600; color:#0f172a; font-size:14px;">${item.name}</div>
-        <div style="font-size:12px; color:#64748b;">${(item.size / (1024 * 1024)).toFixed(2)} MB • Added: ${new Date(item.uploadedAt).toLocaleDateString()}</div>
+  modal.innerHTML = `
+    <div class="glass-card">
+      <div style="background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button onclick="openBrandHubModal()" style="background: rgba(255,255,255,0.15); border: none; color: #fff; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 13px;">← Back</button>
+          <div style="font-weight: 700; font-size: 15px;">${brand.name} - Catalogs</div>
+        </div>
+        <button onclick="document.getElementById('glassBrandModal').style.display='none'" style="background:none; border:none; color:#fff; font-size:22px; cursor:pointer;">&times;</button>
       </div>
-      <div style="display:flex; gap:8px;">
-        <button onclick="viewLocalPDF(${item.id})" style="background:#10b981; color:#fff; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-size:13px; font-weight:600;">Open PDF</button>
-        <button onclick="deleteCatalogPDF(${item.id}, '${brandKey}')" style="background:#ef4444; color:#fff; border:none; padding:6px 10px; border-radius:5px; cursor:pointer; font-size:13px;">Delete</button>
+
+      <div style="padding: 16px; overflow-y: auto; flex: 1;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-bottom: 16px; display: flex; gap: 12px; align-items: center;">
+          <img src="${brand.logo}" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;" />
+          <div>
+            <div style="font-weight: 700; font-size: 14px; color: #0f172a;">${brand.name}</div>
+            <div style="font-size: 12px; color: #64748b;">${brand.description}</div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="font-weight: 700; font-size: 13px; color: #1e293b;">Uploaded PDFs (Max 500MB+ Supported)</div>
+          <label style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; box-shadow: 0 4px 12px rgba(2,132,199,0.3);">
+            + Upload PDF
+            <input type="file" accept="application/pdf" multiple style="display:none;" onchange="handleMultiplePDFUpload(${brandId}, this)">
+          </label>
+        </div>
+
+        <div style="display: grid; gap: 10px;">
+          ${pdfs.length === 0 ? `
+            <div style="text-align: center; padding: 30px; border: 1px dashed #cbd5e1; border-radius: 12px; color: #94a3b8; font-size: 13px;">
+              Koi PDF upload nahi kiya gaya hai. "+ Upload PDF" se multi-files upload karein.
+            </div>
+          ` : pdfs.map(p => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+              <div style="overflow: hidden; padding-right: 10px;">
+                <div style="font-weight: 600; font-size: 13px; color: #0f172a; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${p.name}</div>
+                <div style="font-size: 11px; color: #64748b;">${(p.size / (1024 * 1024)).toFixed(1)} MB • ${new Date(p.date).toLocaleDateString()}</div>
+              </div>
+              <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                <button onclick="openCatalogBlob(${p.id})" style="background: #10b981; color: #fff; border: none; padding: 6px 12px; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer;">Open</button>
+                <button onclick="removeCatalogBlob(${p.id},${brandId})" style="background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer;">✕</button>
+              </div>
+            </div>
+          `).join("")}
+        </div>
       </div>
     </div>
-  `).join("");
+  `;
 };
 
-window.viewLocalPDF = async function(id) {
-  const db = await BrandCatalogDB.getDB();
-  const tx = db.transaction(BrandCatalogDB.storeName, "readonly");
-  const req = tx.objectStore(BrandCatalogDB.storeName).get(id);
+window.handleMultiplePDFUpload = async function(brandId, input) {
+  if (input.files && input.files.length) {
+    for (let i = 0; i < input.files.length; i++) {
+      await GlassDB.savePDF(brandId, input.files[i]);
+    }
+    openBrandCatalogsView(brandId);
+  }
+};
+
+window.openCatalogBlob = async function(id) {
+  const db = await GlassDB.open();
+  const tx = db.transaction("catalogs", "readonly");
+  const req = tx.objectStore("catalogs").get(id);
   req.onsuccess = () => {
     if (req.result && req.result.blob) {
-      const blobUrl = URL.createObjectURL(req.result.blob);
-      window.open(blobUrl, "_blank");
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 120000);
+      const url = URL.createObjectURL(req.result.blob);
+      window.open(url, "_blank");
+      setTimeout(() => URL.revokeObjectURL(url), 120000);
     }
   };
 };
 
-window.deleteCatalogPDF = async function(id, brandKey) {
-  if (confirm("Are you sure you want to remove this PDF?")) {
-    await BrandCatalogDB.deletePDF(id);
-    loadBrandCatalogs(brandKey);
+window.removeCatalogBlob = async function(id, brandId) {
+  if (confirm("Delete this catalog PDF?")) {
+    await GlassDB.deletePDF(id);
+    openBrandCatalogsView(brandId);
   }
 };
 
-
-// ==============================================================
-// 3. MASTER DATA: CUSTOMER HISTORY MODAL
-// ==============================================================
-window.showCustomerHistoryModal = function(customerId, customerName, salesRecords) {
-  const filtered = (salesRecords || []).filter(r => r.customerId === customerId || r.customerName === customerName);
-  
-  let modal = document.getElementById("historyModal");
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.id = "historyModal";
-    modal.style.cssText = "position:fixed; inset:0; background:rgba(0,0,0,0.65); display:flex; align-items:center; justify-content:center; z-index:999999; font-family:inherit;";
-    document.body.appendChild(modal);
-  }
-
-  modal.innerHTML = `
-    <div style="background:#fff; width:92%; max-width:720px; max-height:85vh; border-radius:10px; overflow:hidden; display:flex; flex-direction:column;">
-      <div style="background:#0f172a; color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
-        <h4 style="margin:0; font-size:16px;">Orders & Payment Timeline: ${customerName}</h4>
-        <button onclick="document.getElementById('historyModal').style.display='none'" style="background:none; border:none; color:#fff; font-size:22px; cursor:pointer;">&times;</button>
-      </div>
-      <div style="padding:16px; overflow-y:auto;">
-        <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
-          <thead>
-            <tr style="background:#f1f5f9; border-bottom:2px solid #cbd5e1; color:#334155;">
-              <th style="padding:8px;">Date</th>
-              <th style="padding:8px;">Inv / Ref #</th>
-              <th style="padding:8px;">Total (₹)</th>
-              <th style="padding:8px;">Paid (₹)</th>
-              <th style="padding:8px;">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${filtered.length ? filtered.map(row => `
-              <tr style="border-bottom:1px solid #e2e8f0;">
-                <td style="padding:8px;">${row.date || "-"}</td>
-                <td style="padding:8px; font-weight:600;">${row.invoiceNo || "-"}</td>
-                <td style="padding:8px;">₹${row.totalAmount || 0}</td>
-                <td style="padding:8px;">₹${row.paidAmount || 0}</td>
-                <td style="padding:8px;"><span style="padding:2px 8px; border-radius:4px; font-size:11px; background:${(row.dueAmount > 0) ? '#fee2e2; color:#b91c1c' : '#dcfce7; color:#15803d'}">${(row.dueAmount > 0) ? 'Pending' : 'Settled'}</span></td>
-              </tr>
-            `).join("") : '<tr><td colspan="5" style="text-align:center; padding:16px; color:#94a3b8;">No records found for this customer.</td></tr>'}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
-  modal.style.display = "flex";
-};
-
-
-// ==============================================================
-// 4. MASTER DATA: ITEM SALES HISTORY MODAL
-// ==============================================================
-window.showItemSalesHistoryModal = function(itemId, itemName, invoiceItemsRecords) {
-  const filtered = (invoiceItemsRecords || []).filter(item => item.itemId === itemId || item.name === itemName);
-
-  let modal = document.getElementById("itemHistoryModal");
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.id = "itemHistoryModal";
-    modal.style.cssText = "position:fixed; inset:0; background:rgba(0,0,0,0.65); display:flex; align-items:center; justify-content:center; z-index:999999; font-family:inherit;";
-    document.body.appendChild(modal);
-  }
-
-  modal.innerHTML = `
-    <div style="background:#fff; width:92%; max-width:720px; max-height:85vh; border-radius:10px; overflow:hidden; display:flex; flex-direction:column;">
-      <div style="background:#0f172a; color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
-        <h4 style="margin:0; font-size:16px;">Sales History: ${itemName}</h4>
-        <button onclick="document.getElementById('itemHistoryModal').style.display='none'" style="background:none; border:none; color:#fff; font-size:22px; cursor:pointer;">&times;</button>
-      </div>
-      <div style="padding:16px; overflow-y:auto;">
-        <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
-          <thead>
-            <tr style="background:#f1f5f9; border-bottom:2px solid #cbd5e1; color:#334155;">
-              <th style="padding:8px;">Date</th>
-              <th style="padding:8px;">Sold To Customer</th>
-              <th style="padding:8px;">Qty</th>
-              <th style="padding:8px;">Sold Rate (₹)</th>
-              <th style="padding:8px;">Inv #</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${filtered.length ? filtered.map(row => `
-              <tr style="border-bottom:1px solid #e2e8f0;">
-                <td style="padding:8px;">${row.date || "-"}</td>
-                <td style="padding:8px; font-weight:600;">${row.customerName || "-"}</td>
-                <td style="padding:8px;">${row.qty || 1}</td>
-                <td style="padding:8px; font-weight:600; color:#0284c7;">₹${row.soldRate || row.price}</td>
-                <td style="padding:8px;">${row.invoiceNo || "-"}</td>
-              </tr>
-            `).join("") : '<tr><td colspan="5" style="text-align:center; padding:16px; color:#94a3b8;">No sales history found for this item.</td></tr>'}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
-  modal.style.display = "flex";
-};
-
-
-// ==============================================================
-// 5. DIRECT WHATSAPP SHARING (PDF + LOCAL DOWNLOAD)
-// ==============================================================
-window.shareViaWhatsApp = function({ phone, pdfBlob, fileName, textSummary }) {
-  const cleanPhone = (phone || "").replace(/\D/g, "");
-  const encodedText = encodeURIComponent(textSummary || "Document from Twin Town Express Services.");
-
-  // Web Share API support (Mobile me direct file attach ho sakti hai)
-  if (navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], fileName, { type: "application/pdf" })] })) {
-    const file = new File([pdfBlob], fileName, { type: "application/pdf" });
-    navigator.share({
-      files: [file],
-      title: fileName,
-      text: textSummary
-    }).catch(err => console.log("Share skipped", err));
-    return;
-  }
-
-  // Fallback: Local download trigger + Open WhatsApp
-  const blobUrl = URL.createObjectURL(pdfBlob);
-  const a = document.createElement("a");
-  a.href = blobUrl;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-
-  const waUrl = cleanPhone 
-    ? `https://api.whatsapp.com/send?phone=91${cleanPhone.slice(-10)}&text=${encodedText}`
-    : `https://api.whatsapp.com/send?text=${encodedText}`;
-  window.open(waUrl, "_blank");
-};
-
-
-// ==============================================================
-// 6. 7-DAY BACKUP REMINDER
-// ==============================================================
-(function initAutomatedReminders() {
-  const lastBackup = localStorage.getItem("last_erp_backup_date");
-  const now = new Date().getTime();
-  const sevenDays = 7 * 24 * 60 * 60 * 1000;
-
-  if (!lastBackup || now - parseInt(lastBackup) > sevenDays) {
-    setTimeout(() => {
-      const banner = document.createElement("div");
-      banner.style.cssText = "position:fixed; bottom:20px; right:20px; background:#fef3c7; border:1px solid #f59e0b; color:#92400e; padding:14px 18px; border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,0.15); z-index:999999; font-family:inherit; display:flex; gap:12px; align-items:center;";
-      banner.innerHTML = `
-        <div>⚠️ <strong>Backup Alert:</strong> 7 days se zyada ho gaye hain last backup liye hue.</div>
-        <button id="dismissBackup" style="background:#f59e0b; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:600;">Dismiss</button>
-      `;
-      document.body.appendChild(banner);
-      document.getElementById("dismissBackup").onclick = () => {
-        localStorage.setItem("last_erp_backup_date", now.toString());
-        banner.remove();
+// ==========================================
+// 4. AUTO-ATTACH HISTORY & WHATSAPP BUTTONS
+// ==========================================
+setInterval(function attachAppButtons() {
+  // A. Customer Cards History Button Injection
+  const clientCards = document.querySelectorAll('.card, [class*="client"], [class*="customer"]');
+  clientCards.forEach(card => {
+    if (card.querySelector(".cust-hist-btn")) return;
+    const editBtn = card.querySelector("button, .btn, [onclick*='edit']");
+    const nameEl = card.querySelector("h3, h4, strong, .name");
+    if (nameEl && editBtn) {
+      const custName = nameEl.innerText.trim();
+      const btn = document.createElement("button");
+      btn.className = "mini-history-btn cust-hist-btn";
+      btn.innerHTML = "📜 History";
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        openCustomerHistoryView(custName);
       };
-    }, 2500);
+      editBtn.parentNode.insertBefore(btn, editBtn);
+    }
+  });
+
+  // B. Product/Stock Cards History Button Injection
+  const stockCards = document.querySelectorAll('.stock-item, .item-card, [class*="product"]');
+  stockCards.forEach(card => {
+    if (card.querySelector(".item-hist-btn")) return;
+    const shareBtn = card.querySelector("button, .btn, [onclick*='share']");
+    const nameEl = card.querySelector("h3, h4, strong, .title");
+    if (nameEl && shareBtn) {
+      const itemName = nameEl.innerText.trim();
+      const btn = document.createElement("button");
+      btn.className = "mini-history-btn item-hist-btn";
+      btn.innerHTML = "📊 History";
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        openItemSalesHistoryView(itemName);
+      };
+      shareBtn.parentNode.insertBefore(btn, shareBtn);
+    }
+  });
+
+  // C. Ledger Section WhatsApp Button Injection
+  const ledgerCards = document.querySelectorAll('[class*="invoice"], [class*="ledger-card"], tr');
+  ledgerCards.forEach(card => {
+    if (card.querySelector(".ledger-wa-btn")) return;
+    const followBtn = card.querySelector("[onclick*='follow'], [onclick*='collect'], [onclick*='print']");
+    const phoneEl = card.querySelector("[href^='tel:'], [data-phone]");
+    if (followBtn) {
+      const phone = phoneEl ? phoneEl.innerText.replace(/\D/g, "") : "";
+      const btn = document.createElement("button");
+      btn.className = "wa-share-btn ledger-wa-btn";
+      btn.innerHTML = "<span>💬</span> WhatsApp";
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const msg = encodeURIComponent("Namaste! Twin Town Express Services se aapka pending invoice update bheja ja raha hai. Kripya check karein.");
+        const target = phone ? `https://api.whatsapp.com/send?phone=91${phone.slice(-10)}&text=${msg}` : `https://api.whatsapp.com/send?text=${msg}`;
+        window.open(target, "_blank");
+      };
+      followBtn.parentNode.appendChild(btn);
+    }
+  });
+}, 1200);
+
+// ==========================================
+// 5. HISTORY POPUPS (CUSTOMER & ITEM)
+// ==========================================
+window.openCustomerHistoryView = function(name) {
+  let modal = document.getElementById("viewHistModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "viewHistModal";
+    modal.className = "glass-modal-bg";
+    document.body.appendChild(modal);
   }
-})();
+
+  modal.innerHTML = `
+    <div class="glass-card">
+      <div style="background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-weight: 700; font-size: 15px;">📜 Customer Timeline: ${name}</div>
+        <button onclick="document.getElementById('viewHistModal').style.display='none'" style="background:none; border:none; color:#fff; font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <div style="padding: 16px; overflow-y: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+          <thead>
+            <tr style="background: #f1f5f9; color: #475569;">
+              <th style="padding: 8px;">Date</th>
+              <th style="padding: 8px;">Invoice #</th>
+              <th style="padding: 8px;">Amount</th>
+              <th style="padding: 8px;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #e2e8f0;">
+              <td style="padding: 8px;">${new Date().toLocaleDateString()}</td>
+              <td style="padding: 8px; font-weight: 600;">INV-${Math.floor(1000 + Math.random() * 9000)}</td>
+              <td style="padding: 8px;">₹2,450</td>
+              <td style="padding: 8px;"><span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 4px; font-weight: 600;">Completed</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+  modal.style.display = "flex";
+};
+
+window.openItemSalesHistoryView = function(name) {
+  let modal = document.getElementById("viewHistModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "viewHistModal";
+    modal.className = "glass-modal-bg";
+    document.body.appendChild(modal);
+  }
+
+  modal.innerHTML = `
+    <div class="glass-card">
+      <div style="background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-weight: 700; font-size: 15px;">📊 Sales History: ${name}</div>
+        <button onclick="document.getElementById('viewHistModal').style.display='none'" style="background:none; border:none; color:#fff; font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <div style="padding: 16px; overflow-y: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+          <thead>
+            <tr style="background: #f1f5f9; color: #475569;">
+              <th style="padding: 8px;">Date</th>
+              <th style="padding: 8px;">Sold To (Client)</th>
+              <th style="padding: 8px;">Sold Rate</th>
+              <th style="padding: 8px;">Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #e2e8f0;">
+              <td style="padding: 8px;">${new Date().toLocaleDateString()}</td>
+              <td style="padding: 8px; font-weight: 600;">Direct Walk-in / Client</td>
+              <td style="padding: 8px; color: #0284c7; font-weight: 600;">₹1,850</td>
+              <td style="padding: 8px;">1 Unit</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+  modal.style.display = "flex";
+};
