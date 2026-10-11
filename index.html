@@ -1207,6 +1207,44 @@ input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 3px rgba(0,200,255
 @keyframes ttGlassShimmer { to { transform: translateX(100%); } }
 
 @media print{#tallyInvoiceBody{zoom:1 !important;} #tallyInvoiceBody .tt-sheet{margin:0 !important;box-shadow:none !important;}}
+
+/* ===== v13: LAG FIX - glass look same, par GPU par bojh bahut kam ===== */
+/* Cards par backdrop-filter hata diya (smooth background par blur ka koi farak nahi dikhta,
+   par har card har frame re-blur hota tha = lag aur adha-adha flash). */
+.card, .view-panel .card, .card:not(.stat-card), .view-panel .card:not(.stat-card),
+#ordersListContainer > .card, #leadsListContainer > .card, #serviceListContainer > .card,
+#stockListContainer > .card, #billingListContainer > .card, #catalogListContainer > .card,
+.view-panel .sub-tab-btn, .tt-skeleton {
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+.card:not(.stat-card), .view-panel .card:not(.stat-card) {
+  background:
+    linear-gradient(135deg, rgba(var(--g-tint, 0,180,216), .10), rgba(var(--g-tint, 0,180,216), 0) 55%),
+    linear-gradient(135deg, rgba(255,255,255,.90) 0%, rgba(255,248,226,.74) 100%);
+  box-shadow: 0 10px 26px rgba(10,37,64,.10), inset 0 1px 2px rgba(255,255,255,.9), inset 0 -2px 6px rgba(0,0,0,.04);
+  contain: layout style;
+}
+[data-theme="dark"] .card:not(.stat-card), [data-theme="dark"] .view-panel .card:not(.stat-card) {
+  background:
+    linear-gradient(135deg, rgba(var(--g-tint, 0,180,216), .14), rgba(var(--g-tint, 0,180,216), 0) 55%),
+    linear-gradient(135deg, rgba(20,29,46,.90) 0%, rgba(12,26,50,.78) 100%);
+  box-shadow: 0 10px 28px rgba(0,0,0,.42), inset 0 1px 2px rgba(255,255,255,.16), inset 0 -2px 6px rgba(0,0,0,.3);
+}
+/* Popup (modal) ke andar: ek hi blur layer (overlay), card par nahi */
+.auth-overlay { -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.auth-overlay .auth-card {
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  background: linear-gradient(160deg, rgba(255,255,255,.95), rgba(243,248,253,.93));
+}
+[data-theme="dark"] .auth-overlay .auth-card { background: linear-gradient(160deg, rgba(22,32,52,.97), rgba(13,22,40,.96)); }
+.auth-overlay .auth-card .card { contain: none; }
+/* Modal khula ho to ya scroll chal raha ho to background orbs ruk jaate hain */
+body:has(.auth-overlay[style*="display: flex"]) #ttAmbient i,
+body:has(.auth-overlay[style*="display:flex"]) #ttAmbient i { animation-play-state: paused !important; }
+#ttAmbient.scrolling i { animation-play-state: paused !important; }
+#ttAmbient.lite i { animation: none !important; }
+.tt-skeleton { background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.38)); }
+[data-theme="dark"] .tt-skeleton { background: linear-gradient(135deg, rgba(40,55,80,.7), rgba(20,32,52,.5)); }
 </style>
 </head>
 <body data-theme="light">
@@ -2638,7 +2676,7 @@ input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 3px rgba(0,200,255
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="master-data.js?v=4"></script>
-<script src="live-sync.js?v=15"></script>
+<script src="live-sync.js?v=16"></script>
 
 <script>
     
@@ -5989,7 +6027,7 @@ function downloadFile(content, fileName, mimeType) {
 }
 
 /* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
-const TT_APP_VERSION = 'v12';
+const TT_APP_VERSION = 'v13';
 let pendingChat = [];
 window.pendingChat = pendingChat;
 
@@ -9196,6 +9234,23 @@ function ttBuildQuotationPaged(q) {
     ${TT_TERMS_QUOTE}`;
   return ttPaginate({ head, colgroup, thead, rows, amounts, ncols: 9, cont, finalTrs: '', finalBlocks, footnote: 'This is a Computer Generated Quotation' });
 }
+
+/* ===== v13: smoothness guards ===== */
+(function () {
+  try {
+    var amb = document.getElementById('ttAmbient');
+    if (!amb) return;
+    // Kamzor/budget phone: orbs static rahenge (look same, animation band)
+    var weak = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 3);
+    if (weak) amb.classList.add('lite');
+    // Scroll ke dauraan animation ruk jaye - scroll hamesha 60fps
+    var t = 0;
+    window.addEventListener('scroll', function () {
+      if (!amb.classList.contains('scrolling')) amb.classList.add('scrolling');
+      clearTimeout(t); t = setTimeout(function () { amb.classList.remove('scrolling'); }, 220);
+    }, { passive: true, capture: true });
+  } catch (e) {}
+})();
 
 /* ===== BACK BUTTON FIX ===== */
 /* Android/browser ka back button ab poora app band karne ki jagah - pehle khula
