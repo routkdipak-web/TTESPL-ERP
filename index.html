@@ -1285,11 +1285,17 @@ body:has(.auth-overlay[style*="display:flex"]) #ttAmbient i { animation-play-sta
 /* PDF viewer */
 #tt14Viewer{background:#0b1220;}
 .tt14-vw{display:flex;flex-direction:column;width:100%;height:100%;}
+.tt14-vbar,.tt14-vtool{display:flex;gap:6px;align-items:center;padding:7px 10px;background:#101a2e;color:#fff;}
 .tt14-vbar{display:flex;gap:6px;align-items:center;padding:8px 10px;background:#101a2e;color:#fff;border-bottom:1px solid rgba(255,255,255,.12);}
+.tt14-vbar2{padding:5px 10px;background:#0d1627;}
 .tt14-vtitle{flex:1;min-width:0;font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.tt14-vpg{font-size:11px;opacity:.8;white-space:nowrap;}
-.tt14-vbody{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:8px;background:#1b2740;}
-.tt14-pg{margin:0 auto 10px;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.4);contain:strict;}
+.tt14-vpg{font-size:11.5px;color:#e2e8f0;white-space:nowrap;font-weight:700;}
+.tt14-vbody{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:#1b2740;touch-action:pan-x pan-y;position:relative;}
+.tt14-vinner{position:relative;padding:8px 0;min-width:100%;}
+.tt14-pg{margin:0 auto 10px;background:#e9eef6;box-shadow:0 4px 14px rgba(0,0,0,.4);contain:layout paint;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:28px;font-weight:800;}
+.tt14-pg::before{content:attr(data-n);}
+.tt14-pg.ready{background:#fff;}
+.tt14-pg.ready::before{display:none;}
 .tt14-vmsg{color:#e2e8f0;text-align:center;padding:40px 16px;font-size:13px;line-height:1.6;}
 </style>
 </head>
@@ -6082,7 +6088,7 @@ function downloadFile(content, fileName, mimeType) {
 }
 
 /* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
-const TT_APP_VERSION = 'v14';
+const TT_APP_VERSION = 'v15';
 let pendingChat = [];
 window.pendingChat = pendingChat;
 
@@ -9057,17 +9063,20 @@ function ttPaginate(cfg) {
     var capNon = Math.floor(inner - headH - theadH - contH - 6);
     var capFin = Math.floor(inner - headH - theadH - finTrH - finBlkH - 6);
 
-    // Last page par jitni zyada rows aa sakein (suffix), baaki pehle ke pages me
-    var n = cfg.rows.length, k = n, s = 0;
-    while (k > 0 && s + hts[k - 1] <= capFin) { s += hts[k - 1]; k--; }
-    var pages = [], cur = [], sum = 0;
-    for (var i = 0; i < k; i++) {
+    // Tally jaisa: pehle pages rows se bhar do (jab tak fill na ho), akhri page par kam se kam ek row +
+    // niche tax/total block. Agar bhare hue akhri page par block nahi baithta to uski sirf akhri row akhri page par jati hai.
+    var n = cfg.rows.length, pages = [], cur = [], sum = 0;
+    for (var i = 0; i < n; i++) {
       if (cur.length && sum + hts[i] > capNon) { pages.push(cur); cur = []; sum = 0; }
       cur.push(i); sum += hts[i];
     }
     if (cur.length) pages.push(cur);
-    var fin = []; for (var j = k; j < n; j++) fin.push(j);
-    pages.push(fin);
+    if (!pages.length) pages.push([]);
+    var lastP = pages[pages.length - 1], lsum = 0;
+    lastP.forEach(function (r) { lsum += hts[r]; });
+    if (lsum > capFin) {
+      if (lastP.length > 1) pages.push([lastP.pop()]); else pages.push([]);
+    }
 
     var cum = 0;
     pages.forEach(function (idx, p) {
@@ -9119,6 +9128,23 @@ function buildTallyInvoiceHtml(o) {
 }
 window.buildTallyInvoiceHtml = buildTallyInvoiceHtml;
 
+/* v15: purane bills me HSN/Disc missing ho to inventory / MRP se nikaalo (data change nahi hota, sirf print) */
+function ttItemHsn(it) {
+  var DEF = '84139190', h = String((it && it.hsn) || '').trim();
+  if (h && h !== DEF) return h;
+  try {
+    var inv = (typeof sampleInventory !== 'undefined' && Array.isArray(sampleInventory)) ? sampleInventory : [];
+    var nm = String((it && it.name) || '').trim().toLowerCase();
+    var p = inv.find(function (x) { return it && it.id != null && String(x.id) === String(it.id); }) ||
+            inv.find(function (x) { return nm && String(x.name || '').trim().toLowerCase() === nm; });
+    var ph = p ? String(p.hsn || '').trim() : '';
+    if (ph && ph !== DEF) return ph;
+  } catch (e) {}
+  return h || DEF;
+}
+function ttFmtDisc(d) { d = Number(d) || 0; return d > 0 ? String(Number(d.toFixed(2))) : ''; }
+window.ttItemHsn = ttItemHsn;
+
 function ttBuildInvoicePaged(o) {
   const cust = customerDatabase.find(c => (c.phone && c.phone === o.phone) || c.name === o.customerName) || {};
   const gstNo = cust.gst || '';
@@ -9128,7 +9154,11 @@ function ttBuildInvoicePaged(o) {
     const incl = Number(it.total) || 0;
     const taxable = Math.round(incl / 1.18 * 100) / 100;
     const qty = Number(it.qty) || 1;
-    return { name: it.name, hsn: it.hsn || '84139190', qty, inclRate: qty ? incl / qty : incl, rate: qty ? taxable / qty : taxable, disc: it.disc || 0, taxable, incl };
+    const inclRate = qty ? incl / qty : incl;
+    let mrp = Number(it.mrp) || 0, disc = Number(it.disc) || 0;
+    if (!(mrp > 0)) mrp = (disc > 0 && disc < 100) ? inclRate / (1 - disc / 100) : inclRate;
+    if (!(disc > 0) && mrp > inclRate + 0.005) disc = Math.round((1 - inclRate / mrp) * 10000) / 100;
+    return { name: it.name, hsn: ttItemHsn(it), qty, inclRate, rate: qty ? taxable / qty : taxable, mrp, disc, taxable, incl };
   });
   const sumTaxable = Math.round(items.reduce((s, i) => s + i.taxable, 0) * 100) / 100;
   const total = Number(o.totalAmount) || 0;
@@ -9184,27 +9214,28 @@ function ttBuildInvoicePaged(o) {
       </div>
     </div>`;
 
-  const colgroup = '<colgroup><col style="width:4%"><col style="width:26%"><col style="width:9%"><col style="width:6%"><col style="width:9%"><col style="width:11%"><col style="width:10%"><col style="width:5%"><col style="width:6%"><col style="width:14%"></colgroup>';
+  const colgroup = '<colgroup><col style="width:4%"><col style="width:21%"><col style="width:9%"><col style="width:5%"><col style="width:7%"><col style="width:9%"><col style="width:6%"><col style="width:10%"><col style="width:9%"><col style="width:5%"><col style="width:15%"></colgroup>';
   const thead = `<thead><tr style="text-align:center;">
         <th style="${B}${cell}">SI No.</th><th style="${B}${cell}">Description of Goods</th><th style="${B}${cell}">HSN/SAC</th>
-        <th style="${B}${cell}">GST Rate</th><th style="${B}${cell}">Quantity</th><th style="${B}${cell}">Rate (Incl. of Tax)</th>
-        <th style="${B}${cell}">Rate</th><th style="${B}${cell}">per</th><th style="${B}${cell}">Disc. %</th><th style="${B}${cell}">Amount</th></tr></thead>`;
+        <th style="${B}${cell}">GST Rate</th><th style="${B}${cell}">Quantity</th><th style="${B}${cell}">MRP</th><th style="${B}${cell}">Disc. %</th>
+        <th style="${B}${cell}">Rate (Incl. of Tax)</th><th style="${B}${cell}">Rate</th><th style="${B}${cell}">per</th><th style="${B}${cell}">Amount</th></tr></thead>`;
   const rows = items.map((i, n) => `<tr>
           <td style="${cell}${L}text-align:center;">${n + 1}</td><td style="${cell}${L}word-wrap:break-word;"><strong>${esc(i.name)}</strong></td>
           <td style="${cell}${L}">${esc(i.hsn)}</td><td style="${cell}${L}text-align:center;">18 %</td>
-          <td style="${cell}${L}text-align:right;"><strong>${i.qty} PCS</strong></td><td style="${cell}${L}text-align:right;">${ttInr(i.inclRate)}</td>
+          <td style="${cell}${L}text-align:right;"><strong>${i.qty} PCS</strong></td><td style="${cell}${L}text-align:right;">${ttInr(i.mrp)}</td>
+          <td style="${cell}${L}text-align:center;">${ttFmtDisc(i.disc)}</td><td style="${cell}${L}text-align:right;">${ttInr(i.inclRate)}</td>
           <td style="${cell}${L}text-align:right;">${ttInr(i.rate)}</td><td style="${cell}${L}text-align:center;">PCS</td>
-          <td style="${cell}${L}text-align:center;">${i.disc || ''}</td><td style="${cell}${L}border-right:1px solid #000;text-align:right;"><strong>${ttInr(i.taxable)}</strong></td></tr>`);
+          <td style="${cell}${L}border-right:1px solid #000;text-align:right;"><strong>${ttInr(i.taxable)}</strong></td></tr>`);
   const amounts = items.map(i => i.taxable);
-  const cont = (sub, nextPage) => `<tr><td colspan="9" style="${L}${B}border-width:1px 0 0 1px;text-align:right;font-weight:700;padding:3px 5px;">Sub-total (carried forward)</td><td style="${B}border-width:1px 1px 0 1px;text-align:right;font-weight:700;padding:3px 5px;">${ttInr(sub)}</td></tr>
-    <tr><td colspan="10" style="${B}border-width:0 1px 1px 1px;text-align:right;font-style:italic;padding:3px 6px;">continued to page number ${nextPage}</td></tr>`;
-  const sumRow = (label, val) => `<tr><td colspan="9" style="text-align:right;font-weight:800;padding:2px 5px;${L}">${label}</td><td style="text-align:right;padding:2px 5px;${L}border-right:1px solid #000;font-weight:700;">${val}</td></tr>`;
+  const cont = (sub, nextPage) => `<tr><td colspan="10" style="${L}${B}border-width:1px 0 0 1px;text-align:right;font-weight:700;padding:3px 5px;">Sub-total (carried forward)</td><td style="${B}border-width:1px 1px 0 1px;text-align:right;font-weight:700;padding:3px 5px;">${ttInr(sub)}</td></tr>
+    <tr><td colspan="11" style="${B}border-width:0 1px 1px 1px;text-align:right;font-style:italic;padding:3px 6px;">continued to page number ${nextPage}</td></tr>`;
+  const sumRow = (label, val) => `<tr><td colspan="10" style="text-align:right;font-weight:800;padding:2px 5px;${L}">${label}</td><td style="text-align:right;padding:2px 5px;${L}border-right:1px solid #000;font-weight:700;">${val}</td></tr>`;
   const finalTrs =
     (intra ? sumRow('CGST', ttInr(half)) + sumRow('SGST', ttInr(half)) : sumRow('IGST', ttInr(tax))) +
     (Math.abs(roundOff) >= 0.005 ? sumRow('ROUND OFF', ttInr(roundOff)) : '') +
     (courierCharge > 0 ? sumRow('Courier / Transport Charges', ttInr(courierCharge)) : '') +
-    `<tr style="height:10px;"><td colspan="10" style="${L}border-right:1px solid #000;"></td></tr>
-     <tr><td colspan="4" style="${B}text-align:right;font-weight:800;padding:3px 5px;">Total</td><td style="${B}text-align:right;font-weight:800;padding:3px 5px;">${items.reduce((s, i) => s + i.qty, 0)} PCS</td><td colspan="4" style="${B}"></td><td style="${B}text-align:right;font-weight:800;font-size:13px;padding:3px 5px;">₹ ${ttInr(total)}</td></tr>`;
+    `<tr style="height:10px;"><td colspan="11" style="${L}border-right:1px solid #000;"></td></tr>
+     <tr><td colspan="4" style="${B}text-align:right;font-weight:800;padding:3px 5px;">Total</td><td style="${B}text-align:right;font-weight:800;padding:3px 5px;">${items.reduce((s, i) => s + i.qty, 0)} PCS</td><td colspan="5" style="${B}"></td><td style="${B}text-align:right;font-weight:800;font-size:13px;padding:3px 5px;">₹ ${ttInr(total)}</td></tr>`;
   const finalBlocks = `
     <div style="padding:4px 6px;display:flex;justify-content:space-between;"><span>Amount Chargeable (in words)<br><strong style="font-size:12px;">${ttWords(total)}</strong></span><span style="font-size:10px;">E. &amp; O.E</span></div>
     <table style="width:100%;border-collapse:collapse;font-size:10.5px;text-align:right;border-top:1px solid #000;">
@@ -9223,7 +9254,7 @@ function ttBuildInvoicePaged(o) {
       <div style="padding:5px 6px;border-left:1px solid #000;text-align:right;font-size:10.5px;">for <strong>TWINTOWN EXPRESS SERVICES PVT LTD</strong><br><br><br>Authorised Signatory</div>
     </div>
     ${TT_TERMS_INVOICE}`;
-  return ttPaginate({ head, colgroup, thead, rows, amounts, ncols: 10, cont, finalTrs, finalBlocks, footnote: 'This is a Computer Generated Invoice' });
+  return ttPaginate({ head, colgroup, thead, rows, amounts, ncols: 11, cont, finalTrs, finalBlocks, footnote: 'This is a Computer Generated Invoice' });
 }
 
 /* ---------- QUOTATION ---------- */
@@ -9245,8 +9276,9 @@ function ttBuildQuotationPaged(q) {
     <td style="${cell}${L}text-align:center;">18</td>
     <td style="${cell}${L}text-align:center;">${i.qty}</td>
     <td style="${cell}${L}text-align:right;">${ttInr(i.rate)}</td>
+    <td style="${cell}${L}text-align:center;">${ttFmtDisc(i.disc)}</td>
+    <td style="${cell}${L}text-align:right;">${ttInr((Number(i.rate) || 0) * (1 - (Number(i.disc) || 0) / 100))}</td>
     <td style="${cell}${L}text-align:center;">Nos</td>
-    <td style="${cell}${L}text-align:center;">${i.disc} %</td>
     <td style="${cell}${L}border-right:1px solid #000;text-align:right;">₹${ttInr(i.amount)}</td></tr>`);
   const amounts = q.items.map(i => Number(i.amount) || 0);
   const head = (pageNo) => ttDocHead('QUOTATION', pageNo, '(ORIGINAL FOR RECIPIENT)') + `
@@ -9266,13 +9298,13 @@ function ttBuildQuotationPaged(q) {
       <strong>${esc(q.custName)}</strong><br>${esc(q.custAddr || '')}<br>${q.custPhone ? 'Contact: ' + esc(q.custPhone) + '<br>' : ''}
       GSTIN/UIN : ${esc(q.custGst || 'Unregistered')}
     </div>`;
-  const colgroup = '<colgroup><col style="width:5%"><col style="width:33%"><col style="width:10%"><col style="width:7%"><col style="width:7%"><col style="width:12%"><col style="width:6%"><col style="width:8%"><col style="width:12%"></colgroup>';
+  const colgroup = '<colgroup><col style="width:4%"><col style="width:27%"><col style="width:9%"><col style="width:5%"><col style="width:6%"><col style="width:11%"><col style="width:6%"><col style="width:11%"><col style="width:6%"><col style="width:15%"></colgroup>';
   const thead = `<thead><tr style="text-align:center;">
         <th style="${B}${cell}">SI No.</th><th style="${B}${cell}">Description of Goods</th><th style="${B}${cell}">HSN/SAC</th>
-        <th style="${B}${cell}">GST Rate</th><th style="${B}${cell}">Qty.</th><th style="${B}${cell}">Rate</th>
-        <th style="${B}${cell}">per</th><th style="${B}${cell}">Disc. %</th><th style="${B}${cell}">Amount</th></tr></thead>`;
-  const cont = (sub, nextPage) => `<tr><td colspan="8" style="${B}border-width:1px 0 0 1px;text-align:right;font-weight:700;padding:3px 5px;">Sub-total (carried forward)</td><td style="${B}border-width:1px 1px 0 1px;text-align:right;font-weight:700;padding:3px 5px;">₹${ttInr(sub)}</td></tr>
-    <tr><td colspan="9" style="${B}border-width:0 1px 1px 1px;text-align:right;font-style:italic;padding:3px 6px;">continued to page number ${nextPage}</td></tr>`;
+        <th style="${B}${cell}">GST Rate</th><th style="${B}${cell}">Qty.</th><th style="${B}${cell}">MRP</th>
+        <th style="${B}${cell}">Disc. %</th><th style="${B}${cell}">Rate (Incl. of Tax)</th><th style="${B}${cell}">per</th><th style="${B}${cell}">Amount</th></tr></thead>`;
+  const cont = (sub, nextPage) => `<tr><td colspan="9" style="${B}border-width:1px 0 0 1px;text-align:right;font-weight:700;padding:3px 5px;">Sub-total (carried forward)</td><td style="${B}border-width:1px 1px 0 1px;text-align:right;font-weight:700;padding:3px 5px;">₹${ttInr(sub)}</td></tr>
+    <tr><td colspan="10" style="${B}border-width:0 1px 1px 1px;text-align:right;font-style:italic;padding:3px 6px;">continued to page number ${nextPage}</td></tr>`;
   const trow = (a, b, extra) => `<div style="display:flex;justify-content:space-between;padding:2px 6px;border-left:1px solid #000;border-top:1px solid #000;${extra || ''}"><span>${a}</span><strong>${b}</strong></div>`;
   const finalBlocks = `
     <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #000;">
@@ -9290,7 +9322,7 @@ function ttBuildQuotationPaged(q) {
       <div style="padding:5px 6px;border-left:1px solid #000;text-align:right;font-size:10.5px;">for <strong>TWINTOWN EXPRESS SERVICES PVT LTD</strong><br><br><br>Authorised Signatory</div>
     </div>
     ${TT_TERMS_QUOTE}`;
-  return ttPaginate({ head, colgroup, thead, rows, amounts, ncols: 9, cont, finalTrs: '', finalBlocks, footnote: 'This is a Computer Generated Quotation' });
+  return ttPaginate({ head, colgroup, thead, rows, amounts, ncols: 10, cont, finalTrs: '', finalBlocks, footnote: 'This is a Computer Generated Quotation' });
 }
 
 /* ===== v13: smoothness guards ===== */
@@ -9921,112 +9953,208 @@ window.ttRenderBrandsIfOpen = function () {
     renderBrandList();
   };
 
-  /* ---- Lag-free PDF viewer (pdf.js lazy load; sirf dikhne wale pages render hote hain) ---- */
-  var PDFJS_VER = '4.10.38', V = { lib: null, pdf: null, url: null, obs: null, vis: new Set(), done: {}, chain: Promise.resolve(), tok: 0, zoom: 1, ar: 1.414, n: 0, blob: null, name: '' };
+  /* ---- Lag-free PDF viewer v2 (pinch / double-tap zoom, page jump, priority render, Open with) ---- */
+  var PDFJS_VER = '4.10.38', ZMIN = 0.5, ZMAX = 4, PXCAP = 6e6;
+  var V = { lib: null, pdf: null, url: null, obs: null, vis: new Set(), done: {}, busy: new Set(), running: 0, tok: 0, zoom: 1, ar: 1.414, n: 0, blob: null, name: '', cur: 0 };
   window.TT_PDFJS_BASE = window.TT_PDFJS_BASE || ('https://cdn.jsdelivr.net/npm/pdfjs-dist@' + PDFJS_VER + '/legacy/build/');
   async function loadPdfJs() {
     if (V.lib) return V.lib;
     var base = window.TT_PDFJS_BASE;
     var lib = await import(base + (window.TT_PDFJS_MAIN || 'pdf.min.mjs'));
-    var wtxt = await (await fetch(base + (window.TT_PDFJS_WORKER || 'pdf.worker.min.mjs'))).text();
-    lib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([wtxt], { type: 'text/javascript' }));
+    lib.GlobalWorkerOptions.workerSrc = base + (window.TT_PDFJS_WORKER || 'pdf.worker.min.mjs');
     V.lib = lib; return lib;
   }
   function ensureViewer() {
     var v = $('tt14Viewer');
     if (v) return v;
     v = document.createElement('div'); v.id = 'tt14Viewer'; v.className = 'auth-overlay'; v.style.display = 'none'; v.style.zIndex = '3700'; v.style.padding = '0'; v.style.alignItems = 'stretch';
-    v.innerHTML = '<div class="tt14-vw"><div class="tt14-vbar"><button class="btn btn-outline btn-sm" onclick="ttPdfClose()">✕</button>' +
-      '<div class="tt14-vtitle" id="tt14VTitle"></div><span id="tt14VPg" class="tt14-vpg"></span>' +
-      '<button class="btn btn-outline btn-sm" onclick="ttPdfZoom(-0.25)">−</button><button class="btn btn-outline btn-sm" onclick="ttPdfZoom(0.25)">＋</button>' +
-      '<button class="btn btn-outline btn-sm" onclick="ttPdfSave()">⬇️</button></div><div class="tt14-vbody" id="tt14VBody"></div></div>';
+    v.innerHTML = '<div class="tt14-vw">' +
+      '<div class="tt14-vbar"><button class="btn btn-outline btn-sm" onclick="ttPdfClose()">✕</button><div class="tt14-vtitle" id="tt14VTitle"></div>' +
+      '<button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); ttPdfOpenWith()">↗ Open with</button>' +
+      '<button class="btn btn-outline btn-sm" onclick="ttPdfSave()">⬇️</button></div>' +
+      '<div class="tt14-vbar tt14-vbar2"><button class="btn btn-outline btn-sm" onclick="ttPdfZoom(-0.25)">−</button><span id="tt14VZ" class="tt14-vpg" style="min-width:42px;text-align:center;">100%</span>' +
+      '<button class="btn btn-outline btn-sm" onclick="ttPdfZoom(0.25)">＋</button><button class="btn btn-outline btn-sm" onclick="ttPdfFit()">Fit</button><span style="flex:1;"></span>' +
+      '<button class="btn btn-outline btn-sm" onclick="ttPdfStep(-1)">‹</button><button class="btn btn-outline btn-sm" onclick="ttPdfGoto()"><span id="tt14VPg">–</span></button>' +
+      '<button class="btn btn-outline btn-sm" onclick="ttPdfStep(1)">›</button></div>' +
+      '<div class="tt14-vbody" id="tt14VBody"><div id="tt14VInner" class="tt14-vinner"></div></div></div>';
     document.body.appendChild(v);
     new MutationObserver(function () { if (v.style.display === 'none') pdfCleanup(); }).observe(v, { attributes: true, attributeFilter: ['style'] });
+    bindGestures();
     return v;
   }
   function pdfCleanup() {
-    V.tok++; V.vis.clear(); V.done = {};
+    V.tok++; V.vis.clear(); V.done = {}; V.busy.clear(); V.running = 0;
     if (V.obs) { try { V.obs.disconnect(); } catch (e) {} V.obs = null; }
     if (V.pdf) { try { V.pdf.destroy(); } catch (e) {} V.pdf = null; }
     if (V.url) { try { URL.revokeObjectURL(V.url); } catch (e) {} V.url = null; }
-    var b = $('tt14VBody'); if (b) b.innerHTML = '';
+    var b = $('tt14VInner'); if (b) { b.innerHTML = ''; b.style.transform = ''; }
     V.blob = null;
   }
   window.ttPdfClose = function () { var v = $('tt14Viewer'); if (v) v.style.display = 'none'; };
   window.ttPdfSave = function () { if (V.blob) downloadBlob(V.blob, V.name || 'catalog.pdf'); };
+  window.ttPdfOpenWith = async function () {
+    if (!V.blob) return;
+    var file = null; try { file = new File([V.blob], V.name || 'catalog.pdf', { type: 'application/pdf' }); } catch (e) {}
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: V.name }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    downloadBlob(V.blob, V.name || 'catalog.pdf');
+    notice('PDF save ho gayi', 'Phone ke Downloads se apne PDF reader (Adobe / Drive / Files) me kholo', '📂');
+  };
   function pgW() { var b = $('tt14VBody'); return Math.max(200, ((b && b.clientWidth) || 360) - 16) * V.zoom; }
   function layoutPages() {
-    var w = pgW(), body = $('tt14VBody'); if (!body) return;
-    Array.prototype.forEach.call(body.children, function (d) {
-      var ar = parseFloat(d.dataset.ar) || V.ar; d.style.width = w + 'px'; d.style.height = Math.round(w * ar) + 'px';
+    var w = pgW(), body = $('tt14VBody'), inner = $('tt14VInner'); if (!body || !inner) return;
+    inner.style.width = Math.max(body.clientWidth, Math.round(w) + 16) + 'px';
+    Array.prototype.forEach.call(inner.children, function (d) {
+      var ar = parseFloat(d.dataset.ar) || V.ar; d.style.width = Math.round(w) + 'px'; d.style.height = Math.round(w * ar) + 'px';
     });
+    var z = $('tt14VZ'); if (z) z.textContent = Math.round(V.zoom * 100) + '%';
   }
   function observeAll() {
-    var body = $('tt14VBody'); if (!body) return;
+    var body = $('tt14VBody'), inner = $('tt14VInner'); if (!body || !inner) return;
     if (V.obs) V.obs.disconnect();
     V.vis.clear();
     V.obs = new IntersectionObserver(function (es) {
       es.forEach(function (e) {
         var i = +e.target.dataset.i;
-        if (e.isIntersecting) { V.vis.add(i); queueRender(i); } else { V.vis.delete(i); freePage(e.target, i); }
+        if (e.isIntersecting) V.vis.add(i); else { V.vis.delete(i); freePage(e.target, i); }
       });
-      var cur = Math.min.apply(null, Array.from(V.vis).concat([1e9])); var pg = $('tt14VPg'); if (pg && cur < 1e9) pg.textContent = (cur + 1) + ' / ' + V.n;
-    }, { root: body, rootMargin: '900px 0px' });
-    Array.prototype.forEach.call(body.children, function (d) { V.obs.observe(d); });
+      updateCur(); pump();
+    }, { root: body, rootMargin: '700px 0px' });
+    Array.prototype.forEach.call(inner.children, function (d) { V.obs.observe(d); });
   }
   function freePage(d, i) {
     var c = d.querySelector('canvas'); if (c) { c.width = c.height = 0; c.remove(); }
-    delete V.done[i];
+    d.classList.remove('ready'); delete V.done[i];
   }
-  function queueRender(i) {
-    var tok = V.tok;
-    V.chain = V.chain.then(function () { if (tok !== V.tok || !V.vis.has(i)) return; return renderPage(i, tok); }).catch(function () {});
+  function updateCur() {
+    var body = $('tt14VBody'), inner = $('tt14VInner'); if (!body || !inner || !inner.children.length) return;
+    var mid = body.scrollTop + body.clientHeight / 2, lo = 0, hi = inner.children.length - 1;
+    while (lo < hi) { var m = (lo + hi + 1) >> 1; if (inner.children[m].offsetTop <= mid) lo = m; else hi = m - 1; }
+    V.cur = lo; var pg = $('tt14VPg'); if (pg) pg.textContent = (lo + 1) + ' / ' + V.n;
+  }
+  function pickNext() {
+    var key = Math.round(pgW()), best = -1, bd = 1e9;
+    V.vis.forEach(function (i) {
+      if (V.done[i] === key || V.busy.has(i)) return;
+      var d = Math.abs(i - V.cur); if (d < bd) { bd = d; best = i; }
+    });
+    return best;
+  }
+  function pump() {
+    if (!V.pdf) return; var tok = V.tok;
+    while (V.running < 2) {
+      var i = pickNext(); if (i < 0) break;
+      V.busy.add(i); V.running++;
+      (function (i) {
+        renderPage(i, tok).catch(function () {}).then(function () {
+          if (tok !== V.tok) return; V.busy.delete(i); V.running--; pump();
+        });
+      })(i);
+    }
   }
   async function renderPage(i, tok) {
-    var w = pgW(), key = Math.round(w), body = $('tt14VBody'); if (!body || !V.pdf) return;
-    if (V.done[i] === key) return;
-    var d = body.children[i]; if (!d) return;
-    var page = await V.pdf.getPage(i + 1); if (tok !== V.tok) return;
-    var vp0 = page.getViewport({ scale: 1 }), dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var vp = page.getViewport({ scale: (w / vp0.width) * dpr });
+    var w = pgW(), key = Math.round(w), inner = $('tt14VInner'); if (!inner || !V.pdf) return;
+    var d = inner.children[i]; if (!d) return;
+    var page = await V.pdf.getPage(i + 1); if (tok !== V.tok || !V.vis.has(i)) return;
+    var vp0 = page.getViewport({ scale: 1 }), dpr = Math.min(window.devicePixelRatio || 1, 2), s = (w / vp0.width) * dpr;
+    var area = vp0.width * s * vp0.height * s; if (area > PXCAP) s *= Math.sqrt(PXCAP / area);
+    var vp = page.getViewport({ scale: s });
     var cv = document.createElement('canvas'); cv.width = Math.floor(vp.width); cv.height = Math.floor(vp.height);
     cv.style.cssText = 'width:100%;height:100%;display:block;';
     await page.render({ canvasContext: cv.getContext('2d'), viewport: vp, canvas: cv }).promise;
-    if (tok !== V.tok) { cv.width = cv.height = 0; return; }
+    if (tok !== V.tok || !V.vis.has(i) || Math.round(pgW()) !== key) { cv.width = cv.height = 0; return; }
     var old = d.querySelector('canvas'); if (old) { old.width = old.height = 0; old.remove(); }
     d.dataset.ar = String(vp0.height / vp0.width); d.style.height = Math.round(w * vp0.height / vp0.width) + 'px';
     d.appendChild(cv); V.done[i] = key; d.classList.add('ready');
     try { page.cleanup(); } catch (e) {}
   }
+  function commitZoom(nz, fx, fy, cx, cy) {
+    nz = Math.max(ZMIN, Math.min(ZMAX, nz));
+    var body = $('tt14VBody'), inner = $('tt14VInner'); if (!body || !inner) return;
+    if (cx == null) { cx = body.scrollLeft + fx; cy = body.scrollTop + fy; }
+    var k = nz / V.zoom;
+    inner.style.transform = ''; inner.style.willChange = '';
+    V.zoom = nz; V.done = {};
+    layoutPages();
+    body.scrollLeft = cx * k - fx; body.scrollTop = cy * k - fy;
+    observeAll();
+  }
   window.ttPdfZoom = function (dz) {
-    if (!V.pdf) return; V.zoom = Math.max(0.6, Math.min(3, V.zoom + dz)); V.done = {};
-    var body = $('tt14VBody'); Array.prototype.forEach.call(body.children, function (d) { var c = d.querySelector('canvas'); if (c) { c.width = c.height = 0; c.remove(); } });
-    layoutPages(); observeAll();
+    var b = $('tt14VBody'); if (!b || !V.pdf) return;
+    commitZoom(V.zoom + dz, b.clientWidth / 2, b.clientHeight / 2);
   };
+  window.ttPdfFit = function () { var b = $('tt14VBody'); if (!b || !V.pdf) return; commitZoom(1, b.clientWidth / 2, b.clientHeight / 2); b.scrollLeft = 0; };
+  window.ttPdfGoto = function () {
+    if (!V.pdf) return;
+    var r = prompt('Kaunse page par jaana hai? (1 - ' + V.n + ')', String(V.cur + 1)); if (r == null) return;
+    var n = Math.max(1, Math.min(V.n, parseInt(r, 10) || 1)), body = $('tt14VBody'), inner = $('tt14VInner');
+    body.scrollTop = inner.children[n - 1].offsetTop - 4;
+  };
+  window.ttPdfStep = function (d) {
+    if (!V.pdf) return; var body = $('tt14VBody'), inner = $('tt14VInner'), n = Math.max(0, Math.min(V.n - 1, V.cur + d));
+    body.scrollTop = inner.children[n].offsetTop - 4;
+  };
+  function bindGestures() {
+    var body = $('tt14VBody'), inner = $('tt14VInner');
+    var G = { mode: null, d0: 1, r: 1, fx: 0, fy: 0, cx: 0, cy: 0, lastTap: 0, lx: 0, ly: 0, moved: false };
+    var dist = function (t) { var a = t[0], b = t[1]; return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) || 1; };
+    body.addEventListener('touchstart', function (e) {
+      if (!V.pdf) return;
+      if (e.touches.length === 2) {
+        var rect = body.getBoundingClientRect(), t = e.touches;
+        G.mode = 'pinch'; G.d0 = dist(t); G.r = 1;
+        G.fx = (t[0].clientX + t[1].clientX) / 2 - rect.left; G.fy = (t[0].clientY + t[1].clientY) / 2 - rect.top;
+        G.cx = body.scrollLeft + G.fx; G.cy = body.scrollTop + G.fy;
+        inner.style.transformOrigin = G.cx + 'px ' + G.cy + 'px'; inner.style.willChange = 'transform';
+      } else if (e.touches.length === 1) { G.lx = e.touches[0].clientX; G.ly = e.touches[0].clientY; G.moved = false; }
+    }, { passive: true });
+    body.addEventListener('touchmove', function (e) {
+      if (G.mode === 'pinch' && e.touches.length === 2) {
+        e.preventDefault();
+        G.r = Math.max(ZMIN / V.zoom, Math.min(ZMAX / V.zoom, dist(e.touches) / G.d0));
+        inner.style.transform = 'scale(' + G.r + ')';
+      } else if (e.touches.length === 1 && Math.hypot(e.touches[0].clientX - G.lx, e.touches[0].clientY - G.ly) > 10) G.moved = true;
+    }, { passive: false });
+    body.addEventListener('touchend', function (e) {
+      if (G.mode === 'pinch') {
+        if (e.touches.length < 2) { G.mode = null; commitZoom(V.zoom * G.r, G.fx, G.fy, G.cx, G.cy); G.lastTap = 0; }
+        return;
+      }
+      if (!V.pdf || G.moved || e.touches.length || e.changedTouches.length !== 1) return;
+      var now = Date.now();
+      if (now - G.lastTap < 300) {
+        var rect = body.getBoundingClientRect(), t = e.changedTouches[0];
+        commitZoom(V.zoom < 1.5 ? 2.5 : 1, t.clientX - rect.left, t.clientY - rect.top); G.lastTap = 0;
+      } else G.lastTap = now;
+    }, { passive: true });
+    var raf = 0;
+    body.addEventListener('scroll', function () {
+      if (raf) return; raf = requestAnimationFrame(function () { raf = 0; updateCur(); pump(); });
+    }, { passive: true });
+  }
   window.ttPdfOpen = async function (id) {
     var rec; try { rec = await pdfGet(id); } catch (e) {}
     if (!rec || !rec.blob) { notice('Catalog nahi mila', '', '⚠️'); return; }
     var v = ensureViewer(); pdfCleanup();
-    V.blob = rec.blob; V.name = rec.name; V.zoom = 1; V.chain = Promise.resolve();
-    $('tt14VTitle').textContent = rec.name; $('tt14VPg').textContent = '';
-    var body = $('tt14VBody'); body.innerHTML = '<div class="tt14-vmsg">⏳ PDF khul rahi hai…</div>'; v.style.display = 'flex';
+    V.blob = rec.blob; V.name = rec.name; V.zoom = 1; V.cur = 0;
+    $('tt14VTitle').textContent = rec.name; $('tt14VPg').textContent = '–'; $('tt14VZ').textContent = '100%';
+    var inner = $('tt14VInner'); inner.style.width = ''; inner.innerHTML = '<div class="tt14-vmsg">⏳ PDF khul rahi hai…</div>'; v.style.display = 'flex';
     var fallback = function (why) {
-      body.innerHTML = '<div class="tt14-vmsg">⚠️ In-app viewer nahi chal paya (' + H(why) + ').<br>Pehli baar viewer load karne ke liye internet chahiye.<br><br>' +
-        '<button class="btn btn-primary btn-sm" onclick="ttPdfExternal()">Browser me kholo</button> <button class="btn btn-outline btn-sm" onclick="ttPdfSave()">⬇️ Download</button></div>';
+      inner.innerHTML = '<div class="tt14-vmsg">⚠️ In-app viewer nahi chal paya (' + H(why) + ').<br>Pehli baar viewer load karne ke liye internet chahiye.<br><br>' +
+        '<button class="btn btn-accent btn-sm" onclick="ttPdfOpenWith()">↗ Open with</button> <button class="btn btn-outline btn-sm" onclick="ttPdfSave()">⬇️ Download</button></div>';
     };
     try {
-      var lib = await loadPdfJs(); V.url = URL.createObjectURL(rec.blob);
-      var tok = V.tok;
-      V.pdf = await lib.getDocument({ url: V.url, disableAutoFetch: true, isEvalSupported: false }).promise;
-      if (tok !== V.tok) return;
-      V.n = V.pdf.numPages; var p1 = await V.pdf.getPage(1), vp = p1.getViewport({ scale: 1 }); V.ar = vp.height / vp.width;
-      body.innerHTML = ''; var frag = document.createDocumentFragment();
-      for (var i = 0; i < V.n; i++) { var d = document.createElement('div'); d.className = 'tt14-pg'; d.dataset.i = i; frag.appendChild(d); }
-      body.appendChild(frag); layoutPages(); observeAll();
-      $('tt14VPg').textContent = '1 / ' + V.n;
-    } catch (e) { console.warn('pdf viewer', e); if (V.tok >= 0) fallback((e && e.message) || 'error'); }
+      var lib = await loadPdfJs(), tok = V.tok; V.url = URL.createObjectURL(rec.blob);
+      var pdf = await lib.getDocument({ url: V.url, disableAutoFetch: true, isEvalSupported: false }).promise;
+      if (tok !== V.tok) { try { pdf.destroy(); } catch (e) {} return; }
+      V.pdf = pdf; V.n = pdf.numPages; var p1 = await pdf.getPage(1), vp = p1.getViewport({ scale: 1 }); V.ar = vp.height / vp.width;
+      inner.innerHTML = ''; var frag = document.createDocumentFragment();
+      for (var i = 0; i < V.n; i++) { var d = document.createElement('div'); d.className = 'tt14-pg'; d.dataset.i = i; d.dataset.n = String(i + 1); frag.appendChild(d); }
+      inner.appendChild(frag); layoutPages(); observeAll(); $('tt14VBody').scrollTop = 0; updateCur();
+    } catch (e) { console.warn('pdf viewer', e); fallback((e && e.message) || 'error'); }
   };
-  window.ttPdfExternal = function () { if (V.blob) { var u = URL.createObjectURL(V.blob); window.open(u, '_blank'); setTimeout(function () { URL.revokeObjectURL(u); }, 120000); } };
+  window.ttPdfExternal = window.ttPdfOpenWith;
 
   /* ================= HOOK UP ================= */
   setInterval(function () { try { backupCheck(); } catch (e) {} }, 60000);
