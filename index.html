@@ -6194,7 +6194,7 @@ function downloadFile(content, fileName, mimeType) {
 }
 
 /* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
-const TT_APP_VERSION = 'v17';
+const TT_APP_VERSION = 'v18';
 let pendingChat = [];
 window.pendingChat = pendingChat;
 
@@ -9251,8 +9251,9 @@ function ttItemHsn(it) {
 function ttFmtDisc(d) { d = Number(d) || 0; return d > 0 ? String(Number(d.toFixed(2))) : ''; }
 window.ttItemHsn = ttItemHsn;
 
-function ttBuildInvoicePaged(o) {
-  const cust = customerDatabase.find(c => (c.phone && c.phone === o.phone) || c.name === o.customerName) || {};
+function ttBuildInvoicePaged(o, opt) {
+  opt = opt || {};
+  const cust = opt.party || (customerDatabase.find(c => (c.phone && c.phone === o.phone) || c.name === o.customerName) || {});
   const gstNo = cust.gst || '';
   const intra = (o.taxType || 'INTRA') !== 'INTER';
   const dt = o.deliveredDate || o.orderDate || '';
@@ -9264,7 +9265,7 @@ function ttBuildInvoicePaged(o) {
     let mrp = Number(it.mrp) || 0, disc = Number(it.disc) || 0;
     if (!(mrp > 0)) mrp = (disc > 0 && disc < 100) ? inclRate / (1 - disc / 100) : inclRate;
     if (!(disc > 0) && mrp > inclRate + 0.005) disc = Math.round((1 - inclRate / mrp) * 10000) / 100;
-    return { name: it.name, hsn: ttItemHsn(it), qty, inclRate, rate: qty ? taxable / qty : taxable, mrp, disc, taxable, incl };
+    return { name: it.name, desc: it.desc, specs: it.specs, hsn: ttItemHsn(it), qty, inclRate, rate: qty ? taxable / qty : taxable, mrp, disc, taxable, incl };
   });
   const sumTaxable = Math.round(items.reduce((s, i) => s + i.taxable, 0) * 100) / 100;
   const total = Number(o.totalAmount) || 0;
@@ -9288,7 +9289,7 @@ function ttBuildInvoicePaged(o) {
   const L = 'border-left:1px solid #000;';
   const meta = (l, v) => `<div style="${B}border-width:0 0 1px 1px;padding:2px 5px;min-height:30px;"><div style="font-size:9.5px;">${l}</div><div style="font-weight:700;font-size:11.5px;">${v || ''}</div></div>`;
 
-  const head = (pageNo) => ttDocHead('Tax Invoice', pageNo, '') + `
+  const head = (pageNo) => ttDocHead(opt.title || 'Tax Invoice', pageNo, opt.sub || '') + `
     <div style="display:grid;grid-template-columns:1.25fr 1fr;">
       <div>
         <div style="padding:5px 6px;border-bottom:1px solid #000;">
@@ -9309,14 +9310,14 @@ function ttBuildInvoicePaged(o) {
       </div>
       <div style="border-left:1px solid #000;">
         <div style="display:grid;grid-template-columns:1fr 1fr;">
-          ${meta('Invoice No.', esc(o.id))}${meta('Dated', esc(dt))}
+          ${meta(opt.noLabel || 'Invoice No.', esc(o.id))}${meta('Dated', esc(dt))}
           ${meta('Delivery Note', '')}${meta('Mode/Terms of Payment', esc(o.payMode && o.payMode !== 'Imported' ? o.payMode : ''))}
           ${meta('Reference No. &amp; Date.', '')}${meta('Other References', '')}
-          ${meta("Buyer's Order No.", '')}${meta('Dated', esc(o.orderDate || ''))}
+          ${meta("Buyer's Order No.", '')}${meta('Dated', esc(opt.noOrderDate ? '' : (o.orderDate || '')))}
           ${meta('Dispatch Doc No.', '')}${meta('Delivery Note Date', '')}
           ${meta('Dispatched through', '')}${meta('Destination', '')}
         </div>
-        <div style="padding:3px 5px;min-height:40px;font-size:9.5px;">Terms of Delivery<br>Billed By: <strong>${esc(o.bookedBy || '')}</strong></div>
+        <div style="padding:3px 5px;min-height:40px;font-size:9.5px;">Terms of Delivery${opt.delivery ? ': <strong>' + esc(opt.delivery) + '</strong>' : ''}<br>${opt.byLabel || 'Billed By'}: <strong>${esc(o.bookedBy || '')}</strong></div>
       </div>
     </div>`;
 
@@ -9326,7 +9327,7 @@ function ttBuildInvoicePaged(o) {
         <th style="${B}${cell}">GST Rate</th><th style="${B}${cell}">Quantity</th><th style="${B}${cell}">MRP</th><th style="${B}${cell}">Disc. %</th>
         <th style="${B}${cell}">Rate (Incl. of Tax)</th><th style="${B}${cell}">Rate</th><th style="${B}${cell}">per</th><th style="${B}${cell}">Amount</th></tr></thead>`;
   const rows = items.map((i, n) => `<tr>
-          <td style="${cell}${L}text-align:center;">${n + 1}</td><td style="${cell}${L}word-wrap:break-word;"><strong>${esc(i.name)}</strong></td>
+          <td style="${cell}${L}text-align:center;">${n + 1}</td><td style="${cell}${L}word-wrap:break-word;"><strong>${esc(i.name)}</strong>${(i.desc || i.specs) ? `<div style="font-size:7.5px;line-height:1.25;color:#333;margin-top:2px;white-space:pre-wrap;">${i.desc ? ttH(i.desc) : ''}${(i.desc && i.specs) ? '\n' : ''}${i.specs ? '<b>Technical:</b> ' + ttH(i.specs) : ''}</div>` : ''}</td>
           <td style="${cell}${L}">${esc(i.hsn)}</td><td style="${cell}${L}text-align:center;">18 %</td>
           <td style="${cell}${L}text-align:right;"><strong>${i.qty} PCS</strong></td><td style="${cell}${L}text-align:right;">${ttInr(i.mrp)}</td>
           <td style="${cell}${L}text-align:center;">${ttFmtDisc(i.disc)}</td><td style="${cell}${L}text-align:right;">${ttInr(i.inclRate)}</td>
@@ -9339,7 +9340,7 @@ function ttBuildInvoicePaged(o) {
   const finalTrs =
     (intra ? sumRow('CGST', ttInr(half)) + sumRow('SGST', ttInr(half)) : sumRow('IGST', ttInr(tax))) +
     (Math.abs(roundOff) >= 0.005 ? sumRow('ROUND OFF', ttInr(roundOff)) : '') +
-    (courierCharge > 0 ? sumRow('Courier / Transport Charges', ttInr(courierCharge)) : '') +
+    (courierCharge > 0 ? sumRow(opt.courierLabel || 'Courier / Transport Charges', ttInr(courierCharge)) : '') +
     `<tr style="height:10px;"><td colspan="11" style="${L}border-right:1px solid #000;"></td></tr>
      <tr><td colspan="4" style="${B}text-align:right;font-weight:800;padding:3px 5px;">Total</td><td style="${B}text-align:right;font-weight:800;padding:3px 5px;">${items.reduce((s, i) => s + i.qty, 0)} PCS</td><td colspan="5" style="${B}"></td><td style="${B}text-align:right;font-weight:800;font-size:13px;padding:3px 5px;">₹ ${ttInr(total)}</td></tr>`;
   const finalBlocks = `
@@ -9351,16 +9352,16 @@ function ttBuildInvoicePaged(o) {
     </table>
     <div style="padding:4px 6px;border-top:1px solid #000;">Tax Amount (in words) : <strong>${ttWords(hsTax)}</strong></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #000;">
-      <div style="padding:5px 6px;font-size:10px;"><u>Declaration</u><br>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.
-        <div style="margin-top:6px;">Received: <strong>₹${ttInr(o.recvAmount)}</strong> &nbsp; Balance Due: <strong style="color:#b91c1c;">₹${ttInr(o.dueAmount)}</strong></div></div>
+      <div style="padding:5px 6px;font-size:10px;"><u>Declaration</u><br>We declare that this ${opt.doc || 'invoice'} shows the actual price of the goods described and that all particulars are true and correct.
+        ${opt.noRecv ? '' : `<div style="margin-top:6px;">Received: <strong>₹${ttInr(o.recvAmount)}</strong> &nbsp; Balance Due: <strong style="color:#b91c1c;">₹${ttInr(o.dueAmount)}</strong></div>`}</div>
       <div style="padding:5px 6px;border-left:1px solid #000;font-size:10.5px;"><strong>Company's Bank Details</strong><br>Bank Name : ICICI BANK AC-150005501249<br>A/c No. : 150005501249<br>Branch &amp; IFS Code : CUTTACK ROAD &amp; ICIC0001500</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #000;min-height:60px;">
       <div style="padding:5px 6px;font-size:10px;">Customer's Seal and Signature</div>
       <div style="padding:5px 6px;border-left:1px solid #000;text-align:right;font-size:10.5px;">for <strong>TWINTOWN EXPRESS SERVICES PVT LTD</strong><br><br><br>Authorised Signatory</div>
     </div>
-    ${TT_TERMS_INVOICE}`;
-  return ttPaginate({ head, colgroup, thead, rows, amounts, ncols: 11, cont, finalTrs, finalBlocks, footnote: 'This is a Computer Generated Invoice' });
+    ${opt.terms || TT_TERMS_INVOICE}`;
+  return ttPaginate({ head, colgroup, thead, rows, amounts, ncols: 11, cont, finalTrs, finalBlocks, footnote: opt.footnote || 'This is a Computer Generated Invoice' });
 }
 
 /* ---------- QUOTATION ---------- */
@@ -9371,6 +9372,19 @@ function buildQuotationHtml(q) {
 window.buildQuotationHtml = buildQuotationHtml;
 
 function ttBuildQuotationPaged(q) {
+  // v18: Quotation ab bilkul Invoice jaisi (columns, tax, split pages, HSN summary) - sirf title/number/terms alag
+  var items = (q.items || []).map(function (i) {
+    var qty = Number(i.qty) || 0, rate = Number(i.rate) || 0, disc = Number(i.disc) || 0;
+    return { id: i.id, name: i.name, hsn: i.hsn, desc: i.desc, specs: i.specs, qty: qty, mrp: rate, disc: disc, rate: rate * (1 - disc / 100), total: qty * rate * (1 - disc / 100) };
+  });
+  var o = { id: q.id, customerName: q.custName, phone: q.custPhone || '', orderDate: q.date, items: items,
+    totalAmount: Number(q.final) || 0, courierCharge: Number(q.svc) || 0, taxType: 'INTRA', payMode: q.payMode || '',
+    bookedBy: q.createdBy || (typeof currentUser !== 'undefined' && currentUser ? currentUser.name : ''), recvAmount: 0, dueAmount: 0 };
+  return ttBuildInvoicePaged(o, { title: 'QUOTATION', noLabel: 'Quotation No.', byLabel: 'Prepared By', delivery: '100% Advance',
+    courierLabel: 'Service & Travel Charges', doc: 'quotation', noRecv: true, noOrderDate: true, terms: TT_TERMS_QUOTE,
+    footnote: 'This is a Computer Generated Quotation', party: { address: q.custAddr || '', gst: q.custGst || '' } });
+}
+function ttBuildQuotationPagedOld(q) {
   const B = 'border:1px solid #000;';
   const cell = 'padding:3px 5px;vertical-align:top;';
   const L = 'border-left:1px solid #000;';
@@ -9936,6 +9950,13 @@ window.ttRenderBrandsIfOpen = function () {
         '<div style="min-width:0;flex:1;"><b style="font-size:14px;display:block;">' + H(b.name) + '</b><div class="tt14-sub" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
         H(b.tagline || b.about || 'Tap karke details / catalog dekho') + '</div></div><span style="opacity:.5;">›</span></div>');
     });
+    if (isAdm()) {
+      var have = {}; list.forEach(function (b) { have[String(b.name || '').trim().toLowerCase()] = 1; });
+      var sug = ['Annovi Reverberi', 'Ma-Fra', 'Maniac Line', 'Maxshine', 'Vista', 'Fireball'].filter(function (n) { return !have[n.toLowerCase()]; });
+      h.push('<button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="triggerAppHaptic(); ttBrandForm(\'\')">➕ Naya Brand Add Karo</button>');
+      if (sug.length && list.length) h.push('<div class="tt14-sub" style="margin:10px 2px 4px;">Quick add:</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + sug.map(function (n) {
+        return '<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ttBrandForm(\'\',\'' + H(n) + '\')">+ ' + H(n) + '</button>'; }).join('') + '</div>');
+    }
     setModal(m, h.join(''));
   }
   window.ttBrandOpen = function (id) { curBrand = id; renderBrandDetail(id); };
