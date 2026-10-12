@@ -1395,6 +1395,68 @@ body:has(.auth-overlay[style*="display:flex"]) #ttAmbient i { animation-play-sta
   .tt-hdr-dust.d4 { width:5px; height:5px; left:-8px; bottom:9px; animation-delay:.5s; }
   body.tt-scrolling .tt-hdr-dust { animation-play-state:paused !important; }
 
+
+  /* ===== v19: popup flash / lag fix ===== */
+  /* 1) overlay par full-screen blur hata do (peeche kuch bhi chale to har frame re-blur hota tha = flash) */
+  .auth-overlay { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; background: rgba(6,14,28,.72) !important; overscroll-behavior: contain; }
+  .auth-overlay .auth-card { overscroll-behavior: contain; backface-visibility: hidden; }
+  /* 2) sheet animation ke baad transform/opacity ka layer chhodo (forwards = permanent compositing layer) */
+  .tt-sheet-card { animation-fill-mode: backwards !important; }
+  .tt-sheet-card.tt-sheet-closing { animation-fill-mode: forwards !important; }
+  /* 3) content-visibility scroll me blank/flash deta tha */
+  .view-panel, .card, .view-panel.active { content-visibility: visible !important; contain-intrinsic-size: auto; }
+  /* 4) popup khula ho to peeche ki saari animations ruk jayein */
+  body:has(.auth-overlay[style*="display: flex"]) .carwash-bg-canvas *, body:has(.auth-overlay[style*="display:flex"]) .carwash-bg-canvas *,
+  body:has(.auth-overlay[style*="display: flex"]) .footer-carwash-canvas *, body:has(.auth-overlay[style*="display:flex"]) .footer-carwash-canvas *,
+  body:has(.auth-overlay[style*="display: flex"]) .tt-hdr-runwrap *, body:has(.auth-overlay[style*="display:flex"]) .tt-hdr-runwrap *,
+  body:has(.auth-overlay[style*="display: flex"]) .racing-dust *, body:has(.auth-overlay[style*="display:flex"]) .racing-dust *,
+  body:has(.auth-overlay[style*="display: flex"]) .brand-logo-round, body:has(.auth-overlay[style*="display:flex"]) .brand-logo-round,
+  body:has(.auth-overlay[style*="display: flex"]) .header-cloud-dot, body:has(.auth-overlay[style*="display:flex"]) .header-cloud-dot,
+  body:has(.auth-overlay[style*="display: flex"]) .brand-title-glow, body:has(.auth-overlay[style*="display:flex"]) .brand-title-glow
+  { animation-play-state: paused !important; }
+
+  /* 5) Order popup: phone par product row ab saaf stacked layout (naam poora dikhta, koi side-scroll nahi) */
+  @media (max-width: 640px) {
+    #orderModal .items-table, #orderModal .items-table tbody { display: block; width: 100%; }
+    #orderModal .items-table thead { display: none; }
+    #orderModal .items-table tr { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px 6px; padding: 10px; margin-bottom: 8px;
+      border-radius: 14px; background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.25); position: relative; }
+    #orderModal .items-table td { display: block; padding: 0; border: 0; min-width: 0; }
+    #orderModal .items-table td:nth-child(1) { grid-column: 1 / -1; }
+    #orderModal .items-table td:nth-child(n+2):nth-child(-n+5)::before { display: block; font-size: 9.5px; font-weight: 800; opacity: .65; margin-bottom: 2px; }
+    #orderModal .items-table td:nth-child(2)::before { content: 'Qty'; }
+    #orderModal .items-table td:nth-child(3)::before { content: 'MRP (₹)'; }
+    #orderModal .items-table td:nth-child(4)::before { content: 'Disc %'; }
+    #orderModal .items-table td:nth-child(5)::before { content: 'Rate (₹)'; }
+    #orderModal .items-table td input { width: 100% !important; min-width: 0; box-sizing: border-box; }
+    #orderModal .items-table td:nth-child(6) { grid-column: 1 / 4; align-self: center; font-size: 13px; }
+    #orderModal .items-table td:nth-child(7) { grid-column: 4; text-align: right; }
+  }
+  .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .auth-overlay .auth-card input, .auth-overlay .auth-card select, .auth-overlay .auth-card textarea { max-width: 100%; min-width: 0; box-sizing: border-box; }
+  @media (max-width: 640px) { #orderModal .grid-3, #serviceModal .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+
+  /* ===== v20: 120Hz smooth - sirf transform/opacity animations (GPU compositor), repaint wali band ===== */
+  /* banner shine: left (layout) -> transform */
+  .page-top-header-banner::before { will-change: transform; animation: topBannerShine 4s infinite linear; }
+  @keyframes topBannerShine { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(500%,0,0); } }
+  /* active chip glow: box-shadow repaint -> static glow */
+  .cat-chip.active { animation: none; }
+  /* low stock pulse: box-shadow repaint -> opacity pulse / static border */
+  .low-stock-pulse { animation: ttLowStockOp 1.5s ease-in-out infinite; box-shadow: 0 0 0 2px rgba(239,68,68,.35); will-change: opacity; }
+  @keyframes ttLowStockOp { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
+  .low-stock-card-pulse { animation: none; border-color: rgba(239,68,68,.6) !important; box-shadow: 0 0 10px 1px rgba(239,68,68,.25); }
+  /* profile dropdown: 98% opaque hai, blur ki zaroorat nahi */
+  .profile-dropdown-card { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  /* GPU layers: sirf jo hamesha chalte hain */
+  .water-spray, .wash-bubble, .dust-particle, .tt-hdr-dust, .tt-runner, .tt-hdr-run, .emblem-car-icon { will-change: transform, opacity; }
+  .carwash-bg-canvas, .footer-carwash-canvas, .tt-hdr-runwrap { contain: strict; }
+  /* touch response */
+  button, .btn, .nav-item, .cat-chip, .profile-menu-item { touch-action: manipulation; }
+  html { scroll-behavior: auto; }
+
 </style>
 </head>
 <body data-theme="light">
@@ -6194,7 +6256,7 @@ function downloadFile(content, fileName, mimeType) {
 }
 
 /* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
-const TT_APP_VERSION = 'v18';
+const TT_APP_VERSION = 'v20';
 let pendingChat = [];
 window.pendingChat = pendingChat;
 
