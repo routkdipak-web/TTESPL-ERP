@@ -1616,6 +1616,282 @@ body:has(.auth-overlay[style*="display: flex"]) .tt-logo-shine { animation-play-
   .brand-logo-round.tt-logo-plate { width: 62px; min-width: 62px; height: 34px; }
   .tt-logo-mask { width: 52px; height: 21px; }
 }
+
+/* ===== v23: Profit & Loss UI + glossy 3D ledger header buttons ===== */
+.tt23-ledbanner { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
+.tt23-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 10px; width: 100%; padding-bottom: 4px; }
+.tt23-gbtn {
+  --b1:#38bdf8; --b2:#0369a1; --b3:#075985;
+  position: relative; display: flex; align-items: center; gap: 8px; justify-content: flex-start;
+  min-height: 46px; padding: 8px 10px; border: 1px solid rgba(255,255,255,.6); border-radius: 16px;
+  color: #fff; font-weight: 800; font-size: 13px; line-height: 1.15; text-align: left; cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0,0,0,.4);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.6) 0%, rgba(255,255,255,.12) 46%, rgba(0,0,0,.10) 50%, rgba(0,0,0,0) 100%),
+    linear-gradient(135deg, var(--b1), var(--b2));
+  box-shadow: 0 1px 0 rgba(255,255,255,.8) inset, 0 -3px 6px rgba(0,0,0,.28) inset, 0 4px 0 var(--b3), 0 10px 16px rgba(0,0,0,.32);
+  transition: transform .12s ease, box-shadow .12s ease; -webkit-tap-highlight-color: transparent;
+}
+.tt23-gbtn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 -2px 5px rgba(0,0,0,.3) inset, 0 1px 0 var(--b3), 0 4px 8px rgba(0,0,0,.3); }
+.tt23-gbtn .ic { flex: none; width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center; font-size: 16px; text-shadow: none;
+  background: rgba(255,255,255,.3); box-shadow: 0 1px 0 rgba(255,255,255,.8) inset, 0 -2px 4px rgba(0,0,0,.22) inset; }
+.tt23-gbtn .tx { min-width: 0; }
+.tt23-gbtn.g-gold { grid-column: 1 / -1; --b1:#fde047; --b2:#f59e0b; --b3:#b45309; color: #3b1d00; text-shadow: 0 1px 0 rgba(255,255,255,.55); font-size: 14.5px; min-height: 52px; }
+.tt23-gbtn.g-cyan { --b1:#67e8f9; --b2:#0891b2; --b3:#155e75; }
+.tt23-gbtn.g-orange { --b1:#fdba74; --b2:#ea580c; --b3:#9a3412; }
+.tt23-gbtn.g-violet { --b1:#c4b5fd; --b2:#7c3aed; --b3:#4c1d95; }
+.tt23-gbtn.g-green { --b1:#86efac; --b2:#16a34a; --b3:#14532d; }
+.tt23-bdg { margin-left: auto; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11.5px; font-weight: 900; color: #fff; background: linear-gradient(180deg,#f87171,#b91c1c); border: 1px solid rgba(255,255,255,.8); text-shadow: none; box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+
+.tt23-card { padding-bottom: 20px; }
+.tt23-filter { margin-bottom: 6px; }
+.tt23-gst { display: flex; align-items: center; gap: 6px; margin: 8px 0 4px; font-size: 12px; font-weight: 700; flex-wrap: wrap; }
+.tt23-gst span { opacity: .75; }
+.tt23-gst button { border: 1px solid rgba(148,163,184,.4); background: rgba(148,163,184,.12); color: inherit; border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 800; cursor: pointer; }
+.tt23-gst button.on { background: linear-gradient(135deg,#0ea5e9,#6366f1); color: #fff; border-color: transparent; }
+.tt23-tabs { margin: 8px 0 8px; }
+.tt23-cnt { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 4px; border-radius: 9px; background: #ef4444; color: #fff; font-size: 10.5px; font-weight: 900; }
+.tt23-out { display: flex; gap: 8px; margin: 6px 0 10px; }
+.tt23-out .btn { flex: 1; }
+.tt23-hero { position: relative; overflow: hidden; border-radius: 20px; padding: 16px; color: #fff; margin: 6px 0 10px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 -4px 10px rgba(0,0,0,.25) inset, 0 12px 24px rgba(0,0,0,.25); }
+.tt23-hero.good { background: linear-gradient(180deg, rgba(255,255,255,.25), rgba(255,255,255,0) 50%), linear-gradient(135deg,#059669,#0d9488 60%,#0369a1); }
+.tt23-hero.bad { background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0) 50%), linear-gradient(135deg,#dc2626,#be185d 70%,#7c2d12); }
+.tt23-hero small { display: block; font-size: 11px; font-weight: 800; letter-spacing: .8px; opacity: .9; }
+.tt23-hero b { display: block; font-size: 30px; font-weight: 900; margin: 2px 0; font-variant-numeric: tabular-nums; }
+.tt23-hero span { font-size: 12px; opacity: .92; }
+.tt23-hero em { position: absolute; right: 12px; top: 8px; font-size: 44px; opacity: .3; font-style: normal; }
+.tt23-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 8px 0; }
+.tt23-tile { border-radius: 14px; padding: 10px; background: rgba(148,163,184,.13); border: 1px solid rgba(148,163,184,.22); box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 4px 10px rgba(0,0,0,.08); min-width: 0; }
+.tt23-tile small { display: block; font-size: 10px; font-weight: 800; letter-spacing: .5px; opacity: .75; }
+.tt23-tile b { display: block; font-size: 15.5px; font-weight: 900; margin-top: 2px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.tt23-tile i { display: block; font-size: 10px; font-style: normal; opacity: .65; margin-top: 1px; }
+.tt23-tile.tt23-pos b, .tt23-pos { color: #059669; } .tt23-tile.tt23-neg b, .tt23-neg { color: #dc2626; }
+.tt23-tile.bad b { color: #dc2626; }
+.tt23-sec { font-size: 12px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; opacity: .8; margin: 14px 2px 6px; }
+.tt23-warn { margin: 8px 0; padding: 10px 12px; border-radius: 14px; font-size: 12.5px; line-height: 1.35; cursor: pointer; background: linear-gradient(135deg, rgba(251,191,36,.25), rgba(239,68,68,.18)); border: 1px solid rgba(245,158,11,.55); }
+.tt23-note { margin-top: 10px; font-size: 11px; opacity: .7; line-height: 1.4; }
+.tt23-empty { text-align: center; padding: 20px 8px; font-size: 13px; opacity: .7; }
+.tt23-tw { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tt23-tbl { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 520px; }
+.tt23-tbl th, .tt23-tbl td { padding: 7px 6px; text-align: right; border-bottom: 1px solid rgba(148,163,184,.25); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tt23-tbl th:first-child, .tt23-tbl td:first-child { text-align: left; }
+.tt23-tbl th { font-size: 10.5px; opacity: .75; text-transform: uppercase; }
+.tt23-line { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 10px; margin-bottom: 5px; border-radius: 12px; background: rgba(148,163,184,.11); border: 1px solid rgba(148,163,184,.18); font-size: 13px; }
+.tt23-line small { display: block; font-size: 11px; opacity: .65; }
+.tt23-click { cursor: pointer; }
+.tt23-row { padding: 10px; margin-bottom: 8px; border-radius: 14px; background: rgba(148,163,184,.11); border: 1px solid rgba(148,163,184,.2); cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,.06); }
+.tt23-row.tt23-unp { border-color: rgba(239,68,68,.5); background: rgba(239,68,68,.07); }
+.tt23-rh { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.tt23-rh b { display: block; font-size: 13.5px; overflow-wrap: anywhere; }
+.tt23-rh small { display: block; font-size: 11px; opacity: .72; margin-top: 1px; }
+.tt23-rp { text-align: right; font-weight: 900; font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tt23-rp small { font-size: 10px; opacity: .6; font-weight: 700; }
+.tt23-edit { flex: none; font-size: 12px; font-weight: 800; padding: 6px 10px; border-radius: 10px; background: rgba(14,165,233,.16); color: #0369a1; }
+.tt23-mini { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 7px; font-size: 11px; opacity: .92; }
+.tt23-mini b { font-variant-numeric: tabular-nums; }
+.tt23-ohbar { display: flex; gap: 8px; margin: 6px 0 8px; }
+@media (min-width: 560px) { .tt23-grid { grid-template-columns: repeat(4, 1fr); } }
+[data-theme="dark"] .tt23-edit { color: #7dd3fc; }
+
+.auth-overlay .auth-card.tt23-card { background: linear-gradient(160deg, #ffffff, #f1f6fc) !important; }
+[data-theme="dark"] .auth-overlay .auth-card.tt23-card { background: linear-gradient(160deg, #18233d, #0d1628) !important; }
+.tt23-tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tt23-tabs .sub-tab-btn { flex: none; }
+
+/* =====================================================================
+   v24: ULTRA-PREMIUM MINIMAL GLASS (Apple / Stripe style)
+   - Pure CSS override layer. No JS / data / formulas touched.
+   - Soft ambient section tint (--g-tint at 4-8% only), 1px glass borders,
+     soft diffused shadows, iOS segmented tabs, flat buttons, refined badges.
+   ===================================================================== */
+:root {
+  --pm-surface: #ffffff;
+  --pm-surface-2: rgba(255,255,255,.78);
+  --pm-border: rgba(226,232,240,.95);
+  --pm-rim: rgba(255,255,255,.95);
+  --pm-track: rgba(100,116,139,.12);
+  --pm-hover: rgba(100,116,139,.10);
+  --pm-shadow: 0 1px 2px rgba(15,23,42,.04), 0 10px 28px -10px rgba(15,23,42,.12);
+  --pm-shadow-sm: 0 1px 2px rgba(15,23,42,.06), 0 2px 6px rgba(15,23,42,.05);
+}
+[data-theme="dark"] {
+  --pm-surface: #121826;
+  --pm-surface-2: rgba(18,24,38,.82);
+  --pm-border: rgba(148,163,184,.16);
+  --pm-rim: rgba(255,255,255,.08);
+  --pm-track: rgba(148,163,184,.14);
+  --pm-hover: rgba(148,163,184,.12);
+  --pm-shadow: 0 1px 2px rgba(0,0,0,.4), 0 14px 32px -12px rgba(0,0,0,.6);
+  --pm-shadow-sm: 0 1px 2px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.3);
+}
+
+/* 1) Base canvas: neutral frosted slate-white / clean obsidian */
+body { background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%) !important; animation: none !important; }
+[data-theme="dark"] body { background: linear-gradient(180deg, #0b0f17 0%, #090c13 100%) !important; }
+
+/* 2) Cards: neutral glass + whisper-light section tint + slim accent line */
+.card:not(.stat-card), .view-panel .card:not(.stat-card) {
+  background:
+    linear-gradient(135deg, rgba(var(--g-tint, 0,180,216), .06) 0%, rgba(var(--g-tint, 0,180,216), .015) 55%, rgba(var(--g-tint, 0,180,216), 0) 100%),
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
+  border: 1px solid var(--pm-border);
+  border-top-color: var(--pm-rim);
+  border-left: 1px solid var(--pm-border);
+  border-radius: 16px;
+  box-shadow: var(--pm-shadow), inset 2px 0 0 rgba(var(--g-tint, 0,180,216), .45), inset 0 1px 0 var(--pm-rim);
+}
+[data-theme="dark"] .card:not(.stat-card), [data-theme="dark"] .view-panel .card:not(.stat-card) {
+  background:
+    linear-gradient(135deg, rgba(var(--g-tint, 0,180,216), .08) 0%, rgba(var(--g-tint, 0,180,216), .02) 55%, rgba(var(--g-tint, 0,180,216), 0) 100%),
+    linear-gradient(180deg, #151c2b, #111826);
+  border: 1px solid var(--pm-border);
+  border-top-color: rgba(255,255,255,.10);
+  border-left: 1px solid var(--pm-border);
+  box-shadow: var(--pm-shadow), inset 2px 0 0 rgba(var(--g-tint, 0,180,216), .5), inset 0 1px 0 var(--pm-rim);
+}
+.card:hover { box-shadow: var(--pm-shadow), inset 2px 0 0 rgba(var(--g-tint, 0,180,216), .6); transform: none; }
+.card[style*="border-top"]:not(.stat-card) { border-top-width: 2px !important; }
+
+/* Stat cards: calm glass, thin top accent, semantic value colours kept */
+.view-panel .stat-card, .stat-card {
+  --st: var(--g-tint, 0,180,216);
+  background:
+    linear-gradient(135deg, rgba(var(--st), .08), rgba(var(--st), 0) 62%),
+    var(--pm-surface) !important;
+  color: var(--text-main) !important;
+  border-style: solid !important; border-width: 1px !important; border-top-width: 2px !important;
+  border-left-color: var(--pm-border) !important; border-right-color: var(--pm-border) !important; border-bottom-color: var(--pm-border) !important;
+  box-shadow: var(--pm-shadow), inset 0 1px 0 var(--pm-rim) !important;
+}
+.stat-card[style*="#0a2540"] { --st: 0,180,216; border-top-color: rgba(0,180,216,.7) !important; }
+.stat-card[style*="--danger-bg"] { --st: 239,68,68; }
+.stat-card[style*="--success-bg"] { --st: 16,185,129; }
+.stat-card[style*="0,180,216"] { --st: 0,180,216; }
+.stat-card::after { opacity: .07; filter: grayscale(1); }
+
+/* Section banners: light glass, dark readable title, no shine animation */
+.page-top-header-banner, .view-panel .page-top-header-banner {
+  background:
+    linear-gradient(135deg, rgba(var(--g-tint, 0,180,216), .07), rgba(var(--g-tint, 0,180,216), 0) 60%),
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.86));
+  border: 1px solid var(--pm-border);
+  box-shadow: var(--pm-shadow), inset 2px 0 0 rgba(var(--g-tint, 0,180,216), .5), inset 0 1px 0 var(--pm-rim);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+[data-theme="dark"] .page-top-header-banner, [data-theme="dark"] .view-panel .page-top-header-banner {
+  background:
+    linear-gradient(135deg, rgba(var(--g-tint, 0,180,216), .10), rgba(var(--g-tint, 0,180,216), 0) 60%),
+    linear-gradient(180deg, #151c2b, #111826);
+}
+.page-top-header-banner::before { display: none !important; animation: none !important; }
+.page-top-title { color: var(--text-main); text-shadow: none; font-weight: 800; letter-spacing: -.1px; }
+.page-top-sub { color: var(--text-muted); }
+
+/* 3) iOS-style segmented sub-tabs + chips */
+.sub-tabs, .tt23-tabs {
+  display: flex; flex-wrap: nowrap; gap: 2px; padding: 3px; margin-bottom: 12px;
+  background: var(--pm-track); border: none !important; border-radius: 12px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.sub-tabs::-webkit-scrollbar { display: none; }
+.sub-tab-btn, .view-panel .sub-tab-btn {
+  flex: none; background: transparent !important; border: 1px solid transparent !important; color: var(--text-muted) !important;
+  box-shadow: none !important; text-shadow: none !important; transform: none !important;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  border-radius: 9px; padding: 7px 14px; font-size: 12.5px; font-weight: 600; letter-spacing: 0;
+  transition: background-color .18s ease, color .18s ease, box-shadow .18s ease;
+}
+.sub-tab-btn:hover, .view-panel .sub-tab-btn:hover { background: var(--pm-hover) !important; }
+.sub-tab-btn.active, .view-panel .sub-tab-btn.active {
+  background: #ffffff !important; color: #0f172a !important; font-weight: 700;
+  border-color: rgba(226,232,240,.95) !important; box-shadow: var(--pm-shadow-sm) !important;
+}
+[data-theme="dark"] .sub-tab-btn.active, [data-theme="dark"] .view-panel .sub-tab-btn.active {
+  background: #263145 !important; color: #f1f5f9 !important; border-color: rgba(148,163,184,.22) !important;
+}
+.tt23-cnt { background: #ef4444; box-shadow: none; }
+
+/* Filter chips / pills -> same segmented language */
+.tt21-chips button, .tt15-chips button, .tt23-gst button {
+  background: var(--pm-track); border: 1px solid transparent; color: var(--text-muted); border-radius: 999px;
+  font-weight: 600; box-shadow: none;
+}
+.tt21-chips button:hover, .tt15-chips button:hover, .tt23-gst button:hover { background: var(--pm-hover); }
+.tt21-chips button.on, .tt15-chips button.on, .tt23-gst button.on {
+  background: #ffffff; color: #0f172a; border-color: rgba(226,232,240,.95); box-shadow: var(--pm-shadow-sm);
+}
+[data-theme="dark"] .tt21-chips button.on, [data-theme="dark"] .tt15-chips button.on, [data-theme="dark"] .tt23-gst button.on { background: #263145; color: #f1f5f9; border-color: rgba(148,163,184,.22); }
+
+/* Stock category chips: flat, no shimmer / 3D */
+.cat-chip, .view-panel .cat-chip {
+  background: var(--pm-track) !important; border: 1px solid transparent !important; box-shadow: none !important;
+  -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--text-muted);
+}
+.cat-chip::after, .cat-chip.active::after { display: none !important; animation: none !important; }
+.cat-chip:hover { background: var(--pm-hover) !important; transform: none; box-shadow: none; }
+.cat-chip.active, .view-panel .cat-chip.active {
+  background: #ffffff !important; color: #0f172a !important; border-color: rgba(226,232,240,.95) !important; box-shadow: var(--pm-shadow-sm) !important;
+}
+[data-theme="dark"] .cat-chip.active, [data-theme="dark"] .view-panel .cat-chip.active { background: #263145 !important; color: #f1f5f9 !important; border-color: rgba(148,163,184,.22) !important; }
+
+/* Ledger header buttons: flat refined glass pills with a soft tinted icon chip */
+.tt23-gbtn {
+  --ic: 14,165,233;
+  background: var(--pm-surface); color: var(--text-main); text-shadow: none;
+  border: 1px solid var(--pm-border); border-radius: 14px; box-shadow: var(--pm-shadow-sm), inset 0 1px 0 var(--pm-rim);
+  font-weight: 700; font-size: 13px; min-height: 46px;
+}
+.tt23-gbtn:active { transform: scale(.985); box-shadow: none; }
+.tt23-gbtn .ic { background: rgba(var(--ic), .12); box-shadow: none; border: 1px solid rgba(var(--ic), .18); border-radius: 10px; }
+.tt23-gbtn.g-gold { --ic: 245,158,11; background: linear-gradient(135deg, rgba(245,158,11,.10), rgba(245,158,11,.02)), var(--pm-surface); border-color: rgba(245,158,11,.35); color: var(--text-main); font-size: 14px; }
+.tt23-gbtn.g-cyan { --ic: 8,145,178; } .tt23-gbtn.g-orange { --ic: 234,88,12; } .tt23-gbtn.g-violet { --ic: 124,58,237; } .tt23-gbtn.g-green { --ic: 22,163,74; }
+.tt23-bdg { background: #ef4444; border: none; box-shadow: none; }
+
+/* Buttons: flat, crisp */
+.btn { box-shadow: none; letter-spacing: 0; }
+.btn-primary, .view-panel .btn-primary, .auth-card .btn-primary {
+  background: #0f2a47; color: #fff; border: 1px solid rgba(255,255,255,.08); box-shadow: 0 1px 2px rgba(15,23,42,.18), inset 0 1px 0 rgba(255,255,255,.12);
+}
+[data-theme="dark"] .btn-primary, [data-theme="dark"] .view-panel .btn-primary { background: #1e4f86; }
+.btn-primary:active, .view-panel .btn-primary:active { transform: scale(.98); box-shadow: none; }
+.btn-outline { background: var(--pm-surface); border: 1px solid var(--pm-border); box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+
+/* Inputs */
+input, select, textarea { border: 1px solid var(--pm-border) !important; border-radius: 12px; }
+input:focus, select:focus, textarea:focus { border-color: rgba(0,180,216,.7) !important; box-shadow: 0 0 0 3px rgba(0,180,216,.14) !important; }
+
+/* Popups */
+.auth-overlay .auth-card { border: 1px solid var(--pm-border); box-shadow: 0 30px 70px -20px rgba(15,23,42,.45), inset 0 1px 0 var(--pm-rim); }
+
+/* 4) Typography: crisp numbers + refined badges */
+.stat-value, .metric-card b, #metricTotalBilled, #metricTotalRecv, #metricTotalDue, .tt21-tile b, .tt23-tile b, .tt23-rp, .tt23-tbl td { font-variant-numeric: tabular-nums; letter-spacing: -.2px; }
+.stat-label, .metric-card small, .tt21-tile small, .tt23-tile small { letter-spacing: .5px; font-weight: 700; }
+.badge, .badge-pending, .badge-success, .badge-delivered, .badge-danger, .badge-due, .badge-info {
+  border-radius: 999px; padding: 3px 10px; font-size: 10.5px; font-weight: 700; letter-spacing: .2px; box-shadow: none; background-image: none;
+}
+.badge-pending { background: rgba(245,158,11,.12); color: #b45309; border: 1px solid rgba(245,158,11,.28); }
+.badge-success, .badge-delivered { background: rgba(16,185,129,.12); color: #047857; border: 1px solid rgba(16,185,129,.28); }
+.badge-danger, .badge-due { background: rgba(239,68,68,.10); color: #b91c1c; border: 1px solid rgba(239,68,68,.26); }
+.badge-info { background: rgba(14,165,233,.10); color: #0369a1; border: 1px solid rgba(14,165,233,.26); }
+[data-theme="dark"] .badge-pending { color: #fbbf24; } [data-theme="dark"] .badge-success, [data-theme="dark"] .badge-delivered { color: #34d399; }
+[data-theme="dark"] .badge-danger, [data-theme="dark"] .badge-due { color: #f87171; } [data-theme="dark"] .badge-info { color: #7dd3fc; }
+
+/* Profit & Loss + report widgets -> calm glass instead of saturated gradients */
+.tt23-hero { color: var(--text-main); box-shadow: var(--pm-shadow), inset 0 1px 0 var(--pm-rim); border: 1px solid var(--pm-border); }
+.tt23-hero.good { background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(16,185,129,.02) 70%), var(--pm-surface); border-color: rgba(16,185,129,.30); }
+.tt23-hero.bad { background: linear-gradient(135deg, rgba(239,68,68,.11), rgba(239,68,68,.02) 70%), var(--pm-surface); border-color: rgba(239,68,68,.30); }
+.tt23-hero.good b { color: #047857; } .tt23-hero.bad b { color: #b91c1c; }
+[data-theme="dark"] .tt23-hero.good b { color: #34d399; } [data-theme="dark"] .tt23-hero.bad b { color: #f87171; }
+.tt23-hero em { opacity: .14; }
+.tt23-tile, .tt23-row, .tt23-line { box-shadow: none; background: var(--pm-surface); border: 1px solid var(--pm-border); }
+.tt21-grand { color: var(--text-main); background: linear-gradient(135deg, rgba(0,180,216,.08), rgba(0,180,216,.01)), var(--pm-surface); border: 1px solid var(--pm-border); }
+.tt21-grand small { opacity: .65; }
+.tt15-hero { box-shadow: var(--pm-shadow); background: linear-gradient(135deg, #1e3a5f, #2563a8 70%, #3b82c4); }
+/* Ambient background orbs: whisper-light so the canvas stays neutral */
+#ttAmbient { opacity: .28; }
+[data-theme="dark"] #ttAmbient { opacity: .35; }
 </style>
 </head>
 <body data-theme="light">
@@ -2194,17 +2470,17 @@ body:has(.auth-overlay[style*="display: flex"]) .tt-logo-shine { animation-play-
 
     <!-- TAB 5: BILLING & LEDGER -->
     <div id="view-billing" class="view-panel">
-      <div class="page-top-header-banner">
+      <div class="page-top-header-banner tt23-ledbanner">
         <div>
           <div class="page-top-title"><span>📑</span> <span>Financial Ledger & Billing</span></div>
           <div class="page-top-sub">Live Dues, Tax Invoices, Collections & Cash Drawer Summary</div>
         </div>
-        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:flex-start;">
-          <button class="btn btn-outline btn-sm" title="All staff sales" style="padding:5px 9px;font-size:11px;" onclick="triggerAppHaptic(); openPerformanceReportModal()">👥 Staff Sales</button>
-          <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openDailyCashClosingModal()">💰 Cash Closing</button>
-          <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); openAgeingAnalysisModal()">⏳ Ageing Analysis</button>
-          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); importLedgerFromJson()">📥 Import Ledger</button>
-          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); downloadBusinessSummaryReport()">📄 Summary Report</button>
+        <div class="tt23-btns">
+          <button class="tt23-gbtn g-gold" id="ttPnlLedBtn" style="display:none;" onclick="triggerAppHaptic(); openProfitLossModal()"><span class="ic">📈</span><span class="tx">Profit &amp; Loss</span><span class="tt23-bdg" id="ttPnlLedBadge" style="display:none;">0</span></button>
+          <button class="tt23-gbtn g-cyan" onclick="triggerAppHaptic(); openPerformanceReportModal()"><span class="ic">👥</span><span class="tx">Staff Sales</span></button>
+          <button class="tt23-gbtn g-orange" onclick="triggerAppHaptic(); openDailyCashClosingModal()"><span class="ic">💰</span><span class="tx">Cash Closing</span></button>
+          <button class="tt23-gbtn g-violet" onclick="triggerAppHaptic(); openAgeingAnalysisModal()"><span class="ic">⏳</span><span class="tx">Ageing Analysis</span></button>
+          <button class="tt23-gbtn g-green" onclick="triggerAppHaptic(); downloadBusinessSummaryReport()"><span class="ic">📄</span><span class="tx">Summary Report</span></button>
         </div>
       </div>
 
@@ -6425,7 +6701,7 @@ function downloadFile(content, fileName, mimeType) {
 }
 
 /* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
-const TT_APP_VERSION = 'v21';
+const TT_APP_VERSION = 'v23';
 let pendingChat = [];
 window.pendingChat = pendingChat;
 
@@ -11287,6 +11563,417 @@ window.ttR2 = ttR2; window.ttDueOf = ttDueOf; window.ttStatusOf = ttStatusOf;
   }
   window.openPerformanceReportModal = function () { renderPerf(); $('performanceReportModal').style.display = 'flex'; };
   window.closePerformanceReportModal = function () { $('performanceReportModal').style.display = 'none'; };
+})();
+
+
+/* =====================================================================
+   v23: PROFIT & LOSS (premium) - sales profit / margin / markup, with-GST / without-GST,
+   monthly overheads (salary, rent, electricity ...), pending cost-price list, PDF / CSV / Share.
+   (old data / formulas untouched - only reads Orders + Stock, writes only new OVERHEADS and Stock prices)
+   ===================================================================== */
+var overheadsData = getStored("OVERHEADS", []);
+window.overheadsData = overheadsData;
+window.ttRenderPnlIfOpen = function () {
+  var m = document.getElementById('ttPnlModal'), f = document.getElementById('ttPnlFormModal'), p = document.getElementById('ttPnlPriceModal');
+  if (m && m.style.display === 'flex' && !(f && f.style.display === 'flex') && !(p && p.style.display === 'flex') && typeof window.ttPnlRender === 'function') window.ttPnlRender();
+  if (typeof window.ttPnlBadge === 'function') window.ttPnlBadge();
+};
+
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var H = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var N = function (x) { return Number(x) || 0; };
+  var r2 = function (x) { return Math.round((N(x) + 1e-9) * 100) / 100; };
+  var INR = function (n) { n = N(n); return (n < 0 ? '-' : '') + '₹' + Math.abs(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+  var PCT = function (n) { n = N(n); return (isFinite(n) ? r2(n) : 0).toFixed(2) + '%'; };
+  var norm = function (s) { return String(s == null ? '' : s).toLowerCase().replace(/\s+/g, ' ').trim(); };
+  var isAdm = function () { try { return typeof isAdminUser === 'function' && isAdminUser(); } catch (e) { return false; } };
+  var CATS = ['Salary', 'Rent', 'Electricity Bill', 'Water Bill', 'Internet / Phone', 'Transport / Fuel', 'Marketing', 'Maintenance', 'Office Supplies', 'Taxes / Fees', 'Other'];
+  var Q = { from: '', to: '', gst: 'ex', tab: 'ov' };
+  var PRESETS = [['today', 'Today'], ['7d', 'Last 7 Days'], ['month', 'This Month'], ['last', 'Last Month'], ['fy', 'This FY'], ['all', 'All Time']];
+
+  function iso(d) { var m = d.getMonth() + 1, dd = d.getDate(); return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (dd < 10 ? '0' : '') + dd; }
+  function preset(k) {
+    var t = new Date(), y = t.getFullYear(), m = t.getMonth();
+    if (k === 'today') return [iso(t), iso(t)];
+    if (k === '7d') { var a = new Date(t); a.setDate(a.getDate() - 6); return [iso(a), iso(t)]; }
+    if (k === 'month') return [iso(new Date(y, m, 1)), iso(new Date(y, m + 1, 0))];
+    if (k === 'last') return [iso(new Date(y, m - 1, 1)), iso(new Date(y, m, 0))];
+    if (k === 'fy') { var fy = m >= 3 ? y : y - 1; return [fy + '-04-01', (fy + 1) + '-03-31']; }
+    return ['', ''];
+  }
+  Q.from = preset('month')[0]; Q.to = preset('month')[1];
+  function inRange(d) { return (!Q.from || d >= Q.from) && (!Q.to || d <= Q.to); }
+  function monthLabel(m) { try { var p = m.split('-'); return new Date(+p[0], +p[1] - 1, 1).toLocaleString('en-IN', { month: 'short', year: 'numeric' }); } catch (e) { return m; } }
+  function frac(month) {
+    if (!Q.from && !Q.to) return 1;
+    var y = +month.slice(0, 4), m = +month.slice(5, 7); if (!y || !m) return 0;
+    var ms = iso(new Date(y, m - 1, 1)), me = iso(new Date(y, m, 0));
+    var a = (Q.from && Q.from > ms) ? Q.from : ms, b = (Q.to && Q.to < me) ? Q.to : me;
+    if (a > b) return 0;
+    var days = Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 864e5) + 1, dim = new Date(y, m, 0).getDate();
+    return Math.min(1, days / dim);
+  }
+  function modal(id, z, w) {
+    var m = $(id);
+    if (!m) { m = document.createElement('div'); m.id = id; m.className = 'auth-overlay'; document.body.appendChild(m); }
+    m.style.zIndex = z; m.setAttribute('data-w', w || 720);
+    return m;
+  }
+  function setModal(m, html) { m.innerHTML = '<div class="auth-card tt23-card" style="max-width:' + (m.getAttribute('data-w') || 720) + 'px;width:100%;">' + html + '</div>'; }
+
+  /* ---------- data ---------- */
+  function invIndex() {
+    var byId = {}, byName = {}, byCode = {};
+    (sampleInventory || []).forEach(function (p) {
+      byId[String(p.id)] = p; var n = norm(p.name); if (n && !byName[n]) byName[n] = p; if (p.code) { var c = norm(p.code); if (!byCode[c]) byCode[c] = p; }
+    });
+    return { byId: byId, byName: byName, byCode: byCode };
+  }
+  function resolve(it, idx) { return idx.byId[String(it.id)] || idx.byName[norm(it.name)] || (it.code ? idx.byCode[norm(it.code)] : null) || null; }
+  function acc() { return { sale: 0, saleAll: 0, cost: 0, unp: 0, unpSale: 0, qty: 0, n: 0 }; }
+  function add(a, L) { a.saleAll += L.sale; a.qty += L.qty; if (L.priced) { a.sale += L.sale; a.cost += L.cost; } else { a.unp++; a.unpSale += L.sale; } }
+  function fin(a) { a.profit = a.sale - a.cost; a.margin = a.sale > 0 ? a.profit / a.sale * 100 : 0; a.markup = a.cost > 0 ? a.profit / a.cost * 100 : 0; return a; }
+  function prodKey(it, p) { return p ? 'i' + p.id : 'n' + norm(it.name); }
+
+  function buildLines(o, idx, f) {
+    return (o.items || []).map(function (it) {
+      var p = resolve(it, idx), qty = N(it.qty), tot = N(it.total) || r2(qty * N(it.rate));
+      var unit = p ? N(p.dealerPrice) : 0, priced = unit > 0;
+      var L = { it: it, p: p, key: prodKey(it, p), name: it.name || (p && p.name) || 'Item', qty: qty, sale: tot * f, priced: priced, unitCost: unit * f, cost: priced ? unit * qty * f : 0, unitSale: qty ? tot * f / qty : 0 };
+      L.profit = priced ? L.sale - L.cost : 0;
+      L.margin = priced && L.sale > 0 ? L.profit / L.sale * 100 : 0;
+      L.markup = priced && L.cost > 0 ? L.profit / L.cost * 100 : 0;
+      return L;
+    });
+  }
+
+  function calc() {
+    var idx = invIndex(), f = Q.gst === 'ex' ? 1 / 1.18 : 1;
+    var orders = (ordersData || []).filter(function (o) { return o && o.status === 'Delivered' && inRange(ttDateOf(o)); });
+    var T = acc(), invs = [], prod = {}, cust = {}, mon = {};
+    orders.forEach(function (o) {
+      var I = { o: o, id: o.id, cust: o.customerName || '', date: ttDateOf(o), lines: buildLines(o, idx, f), a: acc() };
+      var cK = norm(I.cust) || 'unknown', mK = I.date.slice(0, 7);
+      cust[cK] = cust[cK] || { name: I.cust || 'Unknown', a: acc(), inv: 0 }; cust[cK].inv++;
+      mon[mK] = mon[mK] || acc();
+      I.lines.forEach(function (L) {
+        add(I.a, L); add(T, L); add(cust[cK].a, L); add(mon[mK], L);
+        var pr = prod[L.key] = prod[L.key] || { name: L.name, a: acc() }; add(pr.a, L);
+      });
+      fin(I.a); invs.push(I);
+    });
+    fin(T);
+    invs.sort(function (a, b) { return (b.date + b.id).localeCompare(a.date + a.id); });
+    var oh = [], ohCat = {}, ohMon = {}, OH = 0;
+    (overheadsData || []).forEach(function (e) {
+      if (!e || !e.month) return; var amt = N(e.amount) * frac(e.month); if (amt <= 0) return;
+      oh.push({ e: e, amt: amt }); OH += amt; ohCat[e.cat || 'Other'] = (ohCat[e.cat || 'Other'] || 0) + amt; ohMon[e.month] = (ohMon[e.month] || 0) + amt;
+    });
+    var months = {}; Object.keys(mon).forEach(function (k) { months[k] = 1; }); Object.keys(ohMon).forEach(function (k) { months[k] = 1; });
+    var monthRows = Object.keys(months).filter(Boolean).sort().reverse().map(function (k) {
+      var a = fin(mon[k] || acc()); return { m: k, a: a, oh: ohMon[k] || 0, net: a.profit - (ohMon[k] || 0) };
+    });
+    return { T: T, invs: invs, prod: prod, cust: cust, oh: oh, ohCat: ohCat, OH: OH, monthRows: monthRows, net: T.profit - OH, spend: T.cost + OH };
+  }
+
+  /* pending: every product sold (all delivered bills, all time) that has no cost / dealer price */
+  function pending() {
+    var idx = invIndex(), g = {};
+    (ordersData || []).forEach(function (o) {
+      if (!o || o.status !== 'Delivered') return;
+      (o.items || []).forEach(function (it) {
+        var p = resolve(it, idx); if (p && N(p.dealerPrice) > 0) return;
+        var k = prodKey(it, p), qty = N(it.qty), tot = N(it.total) || r2(qty * N(it.rate));
+        var x = g[k] = g[k] || { key: k, name: it.name || (p && p.name) || 'Item', p: p, times: 0, qty: 0, last: 0, lastDate: '', hsn: it.hsn };
+        x.times++; x.qty += qty; var d = ttDateOf(o); if (d >= x.lastDate) { x.lastDate = d; x.last = qty ? tot / qty : tot; }
+        if (p) x.p = p;
+      });
+    });
+    return Object.keys(g).map(function (k) { return g[k]; }).sort(function (a, b) { return b.times - a.times; });
+  }
+  window.ttPnlBadge = function () {
+    var n = 0; try { n = pending().length; } catch (e) {}
+    var b = $('ttPnlLedBadge'); if (b) { b.textContent = n; b.style.display = n ? 'inline-flex' : 'none'; }
+    return n;
+  };
+
+  /* ---------- UI ---------- */
+  function chips() {
+    return '<div class="tt21-chips">' + PRESETS.map(function (p) {
+      var r = preset(p[0]), on = (r[0] === Q.from && r[1] === Q.to);
+      return '<button type="button" class="' + (on ? 'on' : '') + '" onclick="triggerAppHaptic(); ttPnlPreset(\'' + p[0] + '\')">' + p[1] + '</button>'; }).join('') + '</div>';
+  }
+  function filterBar() {
+    return '<div class="tt23-filter">' +
+      '<div class="grid-2"><div class="form-group" style="margin-bottom:6px;"><label class="form-label">From date</label><input type="date" id="ttPnlFrom" value="' + H(Q.from) + '" onchange="ttPnlSet()"></div>' +
+      '<div class="form-group" style="margin-bottom:6px;"><label class="form-label">To date</label><input type="date" id="ttPnlTo" value="' + H(Q.to) + '" onchange="ttPnlSet()"></div></div>' +
+      chips() +
+      '<div class="tt23-gst"><span>Prices basis:</span>' +
+      '<button type="button" class="' + (Q.gst === 'ex' ? 'on' : '') + '" onclick="triggerAppHaptic(); ttPnlGst(\'ex\')">Without GST</button>' +
+      '<button type="button" class="' + (Q.gst === 'inc' ? 'on' : '') + '" onclick="triggerAppHaptic(); ttPnlGst(\'inc\')">With GST</button></div></div>';
+  }
+  function pc(v) { return v > 0.004 ? 'tt23-pos' : (v < -0.004 ? 'tt23-neg' : ''); }
+  function tile(label, val, cls, sub) { return '<div class="tt23-tile ' + (cls || '') + '"><small>' + label + '</small><b>' + val + '</b>' + (sub ? '<i>' + sub + '</i>' : '') + '</div>'; }
+  function outBar(id) {
+    var a = id ? ",'" + H(id) + "'" : '';
+    return '<div class="tt23-out"><button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); ttPnlOut(\'pdf\'' + a + ')">📄 PDF</button><button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ttPnlOut(\'csv\'' + a + ')">⬇️ CSV</button><button class="btn btn-wa btn-sm" onclick="triggerAppHaptic(); ttPnlOut(\'share\'' + a + ')">📤 Share</button></div>';
+  }
+  function warn(C) {
+    var n = pending().length;
+    if (!n) return '';
+    return '<div class="tt23-warn" onclick="triggerAppHaptic(); ttPnlTab(\'pend\')">⚠️ <b>' + n + ' product' + (n > 1 ? 's' : '') + '</b> sold in bills have no cost (dealer) price. ' +
+      (C && C.unp ? C.unp + ' bill line(s) worth ' + INR(C.unpSale) + ' in this period are excluded from profit. ' : '') + 'Tap to update prices →</div>';
+  }
+  function tabsBar() {
+    var n = pending().length;
+    var T = [['ov', '📊 Overview'], ['inv', '🧾 Invoices'], ['prod', '📦 Products'], ['cust', '👤 Customers'], ['oh', '💸 Overheads'], ['pend', '⚠️ Pending Prices' + (n ? ' <span class="tt23-cnt">' + n + '</span>' : '')]];
+    return '<div class="sub-tabs tt23-tabs">' + T.map(function (t) { return '<button type="button" class="sub-tab-btn ' + (Q.tab === t[0] ? 'active' : '') + '" onclick="triggerAppHaptic(); ttPnlTab(\'' + t[0] + '\')">' + t[1] + '</button>'; }).join('') + '</div>';
+  }
+  function rowM(a) {
+    return '<div class="tt23-mini"><span>Sales <b>' + INR(a.sale) + '</b></span><span>Cost <b>' + INR(a.cost) + '</b></span><span class="' + pc(a.profit) + '">Profit <b>' + INR(a.profit) + '</b></span><span>Margin <b>' + PCT(a.margin) + '</b></span><span>Markup <b>' + PCT(a.markup) + '</b></span></div>';
+  }
+
+  function viewOv(C) {
+    var T = C.T, h = '';
+    h += '<div class="tt23-hero ' + (C.net >= 0 ? 'good' : 'bad') + '"><small>' + (C.net >= 0 ? 'NET PROFIT' : 'NET LOSS') + ' · ' + (Q.gst === 'ex' ? 'WITHOUT GST' : 'WITH GST') + '</small><b>' + INR(C.net) + '</b><span>Gross profit ' + INR(T.profit) + ' − Overheads ' + INR(C.OH) + '</span><em>' + (C.net >= 0 ? '📈' : '📉') + '</em></div>';
+    h += '<div class="tt23-grid">' +
+      tile('SALES (costed items)', INR(T.sale), '', C.invs.length + ' invoices') +
+      tile('COST OF GOODS', INR(T.cost)) +
+      tile('GROSS PROFIT', INR(T.profit), pc(T.profit)) +
+      tile('PROFIT MARGIN', PCT(T.margin), pc(T.profit), 'profit ÷ sales') +
+      tile('PROFIT MARKUP', PCT(T.markup), pc(T.profit), 'profit ÷ cost') +
+      tile('OVERHEADS', INR(C.OH), 'bad', 'salary, rent, bills…') +
+      tile('TOTAL SPEND', INR(C.spend), '', 'goods + overheads') +
+      tile('ALL SALES', INR(T.saleAll), '', 'incl. items without cost') + '</div>';
+    h += warn(T);
+    h += '<div class="tt23-sec">📅 Month-wise Profit / Loss</div>';
+    if (!C.monthRows.length) h += '<div class="tt23-empty">No sales or overheads in this period.</div>';
+    else h += '<div class="tt23-tw"><table class="tt23-tbl"><thead><tr><th>Month</th><th>Sales</th><th>Cost</th><th>Gross</th><th>Overheads</th><th>Net</th></tr></thead><tbody>' + C.monthRows.map(function (r) {
+      return '<tr><td>' + H(monthLabel(r.m)) + '</td><td>' + INR(r.a.sale) + '</td><td>' + INR(r.a.cost) + '</td><td class="' + pc(r.a.profit) + '">' + INR(r.a.profit) + '</td><td>' + INR(r.oh) + '</td><td class="' + pc(r.net) + '"><b>' + INR(r.net) + '</b></td></tr>'; }).join('') + '</tbody></table></div>';
+    var cats = Object.keys(C.ohCat).sort(function (a, b) { return C.ohCat[b] - C.ohCat[a]; });
+    if (cats.length) h += '<div class="tt23-sec">💸 Overheads by category</div>' + cats.map(function (k) { return '<div class="tt23-line"><span>' + H(k) + '</span><b>' + INR(C.ohCat[k]) + '</b></div>'; }).join('');
+    h += '<div class="tt23-note">Overheads of a partly selected month are pro-rated by days. Courier charges are not counted as sales. Cost uses the current Dealer Price in Stock.</div>';
+    return h;
+  }
+  function viewInv(C) {
+    if (!C.invs.length) return '<div class="tt23-empty">No delivered invoices in this period.</div>';
+    return C.invs.map(function (I) {
+      return '<div class="tt23-row" onclick="triggerAppHaptic(); ttPnlInv(\'' + H(I.id).replace(/&#39;/g, "\\'") + '\')"><div class="tt23-rh"><div><b>' + H(I.cust) + '</b><small>' + H(I.id) + ' · ' + H(I.date) + (I.a.unp ? ' · <span class="tt23-neg">⚠ ' + I.a.unp + ' line(s) no cost</span>' : '') + '</small></div><div class="tt23-rp ' + pc(I.a.profit) + '">' + INR(I.a.profit) + '<small>profit</small></div></div>' + rowM(I.a) + '</div>';
+    }).join('');
+  }
+  function viewAgg(map, kind) {
+    var list = Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) { return fin(b.a).profit - fin(a.a).profit; });
+    if (!list.length) return '<div class="tt23-empty">No data in this period.</div>';
+    return list.map(function (x) { fin(x.a);
+      return '<div class="tt23-row"><div class="tt23-rh"><div><b>' + H(x.name) + '</b><small>' + (kind === 'cust' ? x.inv + ' invoices · ' : '') + 'Qty ' + x.a.qty + (x.a.unp ? ' · <span class="tt23-neg">⚠ ' + x.a.unp + ' line(s) no cost</span>' : '') + '</small></div><div class="tt23-rp ' + pc(x.a.profit) + '">' + INR(x.a.profit) + '<small>profit</small></div></div>' + rowM(x.a) + '</div>'; }).join('');
+  }
+  function viewOh(C) {
+    var h = '<div class="tt23-ohbar"><button class="btn btn-primary btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttPnlOhForm()">➕ Add Expense</button><button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttPnlOhCopy()">📋 Copy last month</button></div>';
+    h += '<div class="tt23-grid">' + tile('TOTAL OVERHEADS', INR(C.OH), 'bad', 'in selected period') + tile('TOTAL SALARY', INR(C.ohCat['Salary'] || 0), '', '') + tile('RENT', INR(C.ohCat['Rent'] || 0), '', '') + tile('ELECTRICITY', INR(C.ohCat['Electricity Bill'] || 0), '', '') + '</div>';
+    var list = (overheadsData || []).filter(function (e) { return e && e.month && frac(e.month) > 0; }).sort(function (a, b) { return (b.month + (b.at || '')).localeCompare(a.month + (a.at || '')); });
+    if (!list.length) return h + '<div class="tt23-empty">No overhead entries for this period. Add salary, rent, electricity bill etc. month by month.</div>';
+    var last = '';
+    list.forEach(function (e) {
+      if (e.month !== last) { last = e.month; h += '<div class="tt23-sec">' + H(monthLabel(e.month)) + '</div>'; }
+      h += '<div class="tt23-line tt23-click" onclick="triggerAppHaptic(); ttPnlOhForm(\'' + H(e.id) + '\')"><span>' + H(e.cat || 'Other') + (e.note ? '<small>' + H(e.note) + '</small>' : '') + '</span><b>' + INR(e.amount) + '</b></div>';
+    });
+    return h;
+  }
+  function viewPend() {
+    var L = pending();
+    var h = '<div class="tt23-note" style="margin-top:0;">Enter the <b>Dealer (cost) price with GST</b> for each product. It is saved to the Stock section automatically, and every profit figure becomes 100% accurate.</div>';
+    if (!L.length) return h + '<div class="tt23-empty">✅ All sold products have a cost price. Nothing pending.</div>';
+    return h + L.map(function (x) {
+      return '<div class="tt23-row" onclick="triggerAppHaptic(); ttPnlPrice(\'' + H(x.key).replace(/&#39;/g, "\\'") + '\')"><div class="tt23-rh"><div><b>' + H(x.name) + '</b><small>Sold ' + x.times + '× · Qty ' + x.qty + ' · Last rate ' + INR(x.last) + (x.p ? '' : ' · <span class="tt23-neg">not in Stock list</span>') + '</small></div><div class="tt23-edit">✏️ Set price</div></div></div>'; }).join('');
+  }
+
+  window.ttPnlRender = function () {
+    var m = $('ttPnlModal'); if (!m) return;
+    var st = m.scrollTop, C = calc(), body;
+    if (Q.tab === 'ov') body = viewOv(C); else if (Q.tab === 'inv') body = viewInv(C); else if (Q.tab === 'prod') body = viewAgg(C.prod, 'prod');
+    else if (Q.tab === 'cust') body = viewAgg(C.cust, 'cust'); else if (Q.tab === 'oh') body = viewOh(C); else body = viewPend();
+    setModal(m, '<div class="card-header"><div><strong class="card-title">📈 Profit & Loss</strong><div style="font-size:11px;opacity:.7;">Delivered invoices · ' + (Q.from || Q.to ? H(Q.from || 'start') + ' → ' + H(Q.to || 'today') : 'All time') + '</div></div><button class="btn btn-outline btn-sm" onclick="ttPnlClose()">✕</button></div>' +
+      (Q.tab === 'pend' ? '' : filterBar()) + tabsBar() + (Q.tab === 'pend' ? '' : outBar()) + '<div id="ttPnlBody">' + body + '</div>');
+    m.scrollTop = st;
+    window.ttPnlBadge();
+  };
+  window.openProfitLossModal = function () {
+    if (!isAdm()) { alert('Only Admin can view Profit & Loss.'); return; }
+    var m = modal('ttPnlModal', 3400, 760); m.style.display = 'flex'; window.ttPnlRender();
+  };
+  window.ttPnlClose = function () { var m = $('ttPnlModal'); if (m) m.style.display = 'none'; };
+  window.ttPnlSet = function () { Q.from = ($('ttPnlFrom') || {}).value || ''; Q.to = ($('ttPnlTo') || {}).value || ''; window.ttPnlRender(); };
+  window.ttPnlPreset = function (k) { var r = preset(k); Q.from = r[0]; Q.to = r[1]; window.ttPnlRender(); };
+  window.ttPnlGst = function (g) { Q.gst = g; window.ttPnlRender(); if ($('ttPnlInvModal') && $('ttPnlInvModal').style.display === 'flex' && window.__ttPnlInvId) window.ttPnlInv(window.__ttPnlInvId); };
+  window.ttPnlTab = function (t) { Q.tab = t; var m = $('ttPnlModal'); if (m) m.scrollTop = 0; window.ttPnlRender(); };
+
+  /* ---------- invoice detail (per product profit) ---------- */
+  function invExport(I) {
+    var rows = I.lines.map(function (L) { return [L.name, L.qty, L.unitSale, L.priced ? L.unitCost : 'NO COST', L.priced ? L.profit : '', L.priced ? PCT(L.margin) : '', L.priced ? PCT(L.markup) : '']; });
+    return { title: 'Invoice Profit - ' + I.id + ' - ' + I.cust, cols: ['Product', 'Qty', 'Sell / unit', 'Cost / unit', 'Profit', 'Margin', 'Markup'], rows: rows,
+      sum: [['Invoice', I.id], ['Customer', I.cust], ['Date', I.date], ['Sales (costed)', INR(I.a.sale)], ['Cost', INR(I.a.cost)], ['Profit', INR(I.a.profit)], ['Margin', PCT(I.a.margin)], ['Markup', PCT(I.a.markup)]], money: [2, 3, 4] };
+  }
+  window.ttPnlInv = function (id) {
+    var C = calc(), I = C.invs.filter(function (x) { return String(x.id) === String(id); })[0];
+    if (!I) { var o = (ordersData || []).filter(function (x) { return String(x.id) === String(id); })[0]; if (!o) return;
+      var idx = invIndex(), f = Q.gst === 'ex' ? 1 / 1.18 : 1; I = { o: o, id: o.id, cust: o.customerName || '', date: ttDateOf(o), lines: buildLines(o, idx, f), a: acc() }; I.lines.forEach(function (L) { add(I.a, L); }); fin(I.a); }
+    window.__ttPnlInvId = String(id);
+    var m = modal('ttPnlInvModal', 3500, 680);
+    m.style.display = 'flex';
+    setModal(m, '<div class="card-header"><div><strong class="card-title">🧾 ' + H(I.cust) + '</strong><div style="font-size:11px;opacity:.7;">' + H(I.id) + ' · ' + H(I.date) + ' · ' + (Q.gst === 'ex' ? 'Without GST' : 'With GST') + '</div></div><button class="btn btn-outline btn-sm" onclick="document.getElementById(\'ttPnlInvModal\').style.display=\'none\'">✕</button></div>' +
+      '<div class="tt23-grid">' + tile('SALES', INR(I.a.sale)) + tile('COST', INR(I.a.cost)) + tile('PROFIT', INR(I.a.profit), pc(I.a.profit)) + tile('MARGIN / MARKUP', PCT(I.a.margin) + ' / ' + PCT(I.a.markup), pc(I.a.profit)) + '</div>' +
+      outBar(I.id) + '<div class="tt23-sec">Products in this bill</div>' +
+      I.lines.map(function (L) {
+        return '<div class="tt23-row' + (L.priced ? '' : ' tt23-unp') + '"><div class="tt23-rh"><div><b>' + H(L.name) + '</b><small>Qty ' + L.qty + ' · Sell ' + INR(L.unitSale) + ' · Cost ' + (L.priced ? INR(L.unitCost) : '<span class="tt23-neg">not set</span>') + '</small></div>' +
+          (L.priced ? '<div class="tt23-rp ' + pc(L.profit) + '">' + INR(L.profit) + '<small>profit</small></div>' : '<button class="btn btn-accent btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); ttPnlPrice(\'' + H(L.key).replace(/&#39;/g, "\\'") + '\')">Set cost</button>') + '</div>' +
+          (L.priced ? '<div class="tt23-mini"><span>Sales <b>' + INR(L.sale) + '</b></span><span>Cost <b>' + INR(L.cost) + '</b></span><span>Margin <b>' + PCT(L.margin) + '</b></span><span>Markup <b>' + PCT(L.markup) + '</b></span></div>' : '') + '</div>'; }).join('') +
+      '<div class="tt23-note">Total for this bill: Profit ' + INR(I.a.profit) + ' · Margin ' + PCT(I.a.margin) + ' · Markup ' + PCT(I.a.markup) + (I.a.unp ? ' (lines without cost price are excluded)' : '') + '</div>');
+  };
+
+  /* ---------- pending price editor -> updates Stock ---------- */
+  window.ttPnlPrice = function (key) {
+    var g = pending().filter(function (x) { return x.key === key; })[0];
+    var p = g ? g.p : null, name = g ? g.name : '';
+    if (!g) { // product may be listed in an invoice detail with cost missing but not in pending() (should not happen) - resolve from key
+      if (key.charAt(0) === 'i') { p = (sampleInventory || []).filter(function (x) { return 'i' + x.id === key; })[0]; name = p ? p.name : ''; }
+      else name = key.slice(1);
+      if (!name) return;
+    }
+    var m = modal('ttPnlPriceModal', 3700, 400); m.style.display = 'flex';
+    setModal(m, '<div class="card-header"><span class="card-title">✏️ Set Product Price</span><button class="btn btn-outline btn-sm" onclick="document.getElementById(\'ttPnlPriceModal\').style.display=\'none\'">✕</button></div>' +
+      '<div style="font-size:13px;font-weight:800;margin-bottom:4px;">' + H(name) + '</div>' +
+      '<div style="font-size:11px;opacity:.75;margin-bottom:10px;">' + (p ? 'This price will update the product in Stock.' : 'This product is not in Stock yet — it will be added to Stock with 0 quantity.') + '</div>' +
+      '<input type="hidden" id="ttPnlPKey" value="' + H(key) + '"><input type="hidden" id="ttPnlPName" value="' + H(name) + '">' +
+      '<div class="form-group"><label class="form-label">🏷️ Dealer / Cost Price (with GST) ₹ *</label><input type="number" id="ttPnlPDealer" min="0" step="any" inputmode="decimal" value="' + (p && N(p.dealerPrice) > 0 ? N(p.dealerPrice) : '') + '" placeholder="e.g. 850"></div>' +
+      '<div class="form-group"><label class="form-label">👤 Customer Price (with GST) ₹</label><input type="number" id="ttPnlPCust" min="0" step="any" inputmode="decimal" value="' + (p && N(p.rate) > 0 ? N(p.rate) : (g && g.last ? r2(g.last) : '')) + '" placeholder="optional"></div>' +
+      '<button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); ttPnlSavePrice()">💾 Save to Stock</button>');
+  };
+  window.ttPnlSavePrice = function () {
+    if (!isAdm()) { alert('Only Admin can do this.'); return; }
+    var key = $('ttPnlPKey').value, name = $('ttPnlPName').value, dp = parseFloat($('ttPnlPDealer').value) || 0, cp = parseFloat($('ttPnlPCust').value) || 0;
+    if (dp <= 0) { alert('Please enter a Dealer (cost) price greater than 0.'); return; }
+    var g = pending().filter(function (x) { return x.key === key; })[0], p = g ? g.p : null;
+    if (!p && key.charAt(0) === 'i') p = (sampleInventory || []).filter(function (x) { return 'i' + x.id === key; })[0] || null;
+    if (!p) {
+      p = { id: Date.now(), name: name, code: '', category: 'General', stock: 0, dealerPrice: 0, rate: 0, machine: '', hsn: (g && g.hsn) || '84139190', desc: '' };
+      sampleInventory.unshift(p);
+    }
+    p.dealerPrice = dp; if (cp > 0) p.rate = cp;
+    window.sampleInventory = sampleInventory;
+    setStored("INVENTORY", sampleInventory);
+    $('ttPnlPriceModal').style.display = 'none';
+    try { if (typeof renderStockList === 'function') renderStockList(); if (typeof renderCatalog === 'function') renderCatalog(); } catch (e) {}
+    window.ttPnlRender();
+    if ($('ttPnlInvModal') && $('ttPnlInvModal').style.display === 'flex' && window.__ttPnlInvId) window.ttPnlInv(window.__ttPnlInvId);
+    try { if (typeof showSuccessToast === 'function') showSuccessToast('Price saved & Stock updated'); } catch (e) {}
+  };
+
+  /* ---------- overheads entry ---------- */
+  function curMonth() { return iso(new Date()).slice(0, 7); }
+  window.ttPnlOhForm = function (id) {
+    if (!isAdm()) { alert('Only Admin can do this.'); return; }
+    var e = id ? (overheadsData || []).filter(function (x) { return String(x.id) === String(id); })[0] : null;
+    var month = e ? e.month : ((Q.to || Q.from || iso(new Date())).slice(0, 7));
+    var m = modal('ttPnlFormModal', 3700, 400); m.style.display = 'flex';
+    setModal(m, '<div class="card-header"><span class="card-title">' + (e ? '✏️ Edit Expense' : '➕ Add Expense') + '</span><button class="btn btn-outline btn-sm" onclick="ttPnlFormClose()">✕</button></div>' +
+      '<input type="hidden" id="ttPnlOId" value="' + H(e ? e.id : '') + '">' +
+      '<div class="form-group"><label class="form-label">Category</label><input type="text" id="ttPnlOCat" list="ttPnlCats" value="' + H(e ? e.cat : 'Salary') + '" autocomplete="off"><datalist id="ttPnlCats">' + CATS.map(function (c) { return '<option value="' + H(c) + '">'; }).join('') + '</datalist></div>' +
+      '<div class="tt21-chips" style="margin-bottom:8px;">' + CATS.slice(0, 6).map(function (c) { return '<button type="button" onclick="document.getElementById(\'ttPnlOCat\').value=\'' + c + '\'">' + H(c) + '</button>'; }).join('') + '</div>' +
+      '<div class="grid-2"><div class="form-group"><label class="form-label">Month</label><input type="month" id="ttPnlOMonth" value="' + H(month) + '"></div>' +
+      '<div class="form-group"><label class="form-label">Amount ₹</label><input type="number" id="ttPnlOAmt" min="0" step="any" inputmode="decimal" value="' + (e ? N(e.amount) : '') + '"></div></div>' +
+      '<div class="form-group"><label class="form-label">Note (optional)</label><input type="text" id="ttPnlONote" value="' + H(e ? e.note : '') + '" placeholder="e.g. 6 staff, Sept salary"></div>' +
+      '<div style="display:flex;gap:8px;"><button class="btn btn-primary" style="flex:1;" onclick="triggerAppHaptic(); ttPnlOhSave()">💾 Save</button>' + (e ? '<button class="btn btn-danger-sm" onclick="triggerAppHaptic(); ttPnlOhDel(\'' + H(e.id) + '\')">🗑️</button>' : '') + '</div>');
+  };
+  window.ttPnlFormClose = function () { var m = $('ttPnlFormModal'); if (m) m.style.display = 'none'; };
+  function ohPersist() { window.overheadsData = overheadsData; setStored("OVERHEADS", overheadsData); }
+  window.ttPnlOhSave = function () {
+    var id = $('ttPnlOId').value, cat = ($('ttPnlOCat').value || '').trim() || 'Other', month = $('ttPnlOMonth').value, amt = parseFloat($('ttPnlOAmt').value) || 0, note = ($('ttPnlONote').value || '').trim();
+    if (!month) { alert('Please choose the month.'); return; }
+    if (amt <= 0) { alert('Please enter an amount greater than 0.'); return; }
+    var by = ''; try { by = currentUser && currentUser.name || ''; } catch (e) {}
+    if (id) { var e = overheadsData.filter(function (x) { return String(x.id) === String(id); })[0]; if (e) { e.cat = cat; e.month = month; e.amount = amt; e.note = note; e.updatedAt = new Date().toISOString(); } }
+    else overheadsData.unshift({ id: 'OH' + Date.now() + Math.floor(Math.random() * 1000), cat: cat, month: month, amount: amt, note: note, by: by, at: new Date().toISOString() });
+    ohPersist(); window.ttPnlFormClose(); window.ttPnlRender();
+  };
+  window.ttPnlOhDel = function (id) {
+    if (!confirm('Delete this expense entry?')) return;
+    overheadsData = (overheadsData || []).filter(function (x) { return String(x.id) !== String(id); });
+    try { if (window.cloudSync && window.cloudSync.deleteItem) window.cloudSync.deleteItem('OVERHEADS', id); } catch (e) {}
+    ohPersist(); window.ttPnlFormClose(); window.ttPnlRender();
+  };
+  window.ttPnlOhCopy = function () {
+    if (!isAdm()) { alert('Only Admin can do this.'); return; }
+    var cur = curMonth(), p = new Date(); p.setDate(1); p.setMonth(p.getMonth() - 1); var prev = iso(p).slice(0, 7);
+    var src = (overheadsData || []).filter(function (x) { return x.month === prev; });
+    if (!src.length) { alert('No entries found for ' + monthLabel(prev) + '.'); return; }
+    var have = {}; (overheadsData || []).forEach(function (x) { if (x.month === cur) have[norm(x.cat)] = 1; });
+    var add = src.filter(function (x) { return !have[norm(x.cat)]; });
+    if (!add.length) { alert('All categories of ' + monthLabel(prev) + ' already exist in ' + monthLabel(cur) + '.'); return; }
+    if (!confirm('Copy ' + add.length + ' entries from ' + monthLabel(prev) + ' to ' + monthLabel(cur) + '? You can edit the amounts afterwards.')) return;
+    add.forEach(function (x, i) { overheadsData.unshift({ id: 'OH' + Date.now() + i + Math.floor(Math.random() * 1000), cat: x.cat, month: cur, amount: x.amount, note: x.note || '', by: x.by || '', at: new Date().toISOString() }); });
+    ohPersist(); window.ttPnlRender();
+  };
+
+  /* ---------- export: PDF / CSV / Share ---------- */
+  function exportMain() {
+    var C = calc(), basis = Q.gst === 'ex' ? 'Without GST' : 'With GST', per = (Q.from || Q.to) ? ((Q.from || 'start') + ' to ' + (Q.to || 'today')) : 'All time';
+    var common = [['Period', per], ['Prices', basis]];
+    var E;
+    if (Q.tab === 'inv') E = { title: 'Invoice-wise Profit', cols: ['Invoice', 'Date', 'Customer', 'Sales', 'Cost', 'Profit', 'Margin', 'Markup', 'Lines without cost'], money: [3, 4, 5],
+      rows: C.invs.map(function (I) { return [I.id, I.date, I.cust, I.a.sale, I.a.cost, I.a.profit, PCT(I.a.margin), PCT(I.a.markup), I.a.unp]; }), sum: [['Invoices', C.invs.length], ['Gross profit', INR(C.T.profit)]] };
+    else if (Q.tab === 'prod' || Q.tab === 'cust') {
+      var map = Q.tab === 'prod' ? C.prod : C.cust, list = Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) { return fin(b.a).profit - fin(a.a).profit; });
+      E = { title: Q.tab === 'prod' ? 'Product-wise Profit' : 'Customer-wise Profit', cols: [Q.tab === 'prod' ? 'Product' : 'Customer', Q.tab === 'prod' ? 'Qty' : 'Invoices', 'Sales', 'Cost', 'Profit', 'Margin', 'Markup'], money: [2, 3, 4],
+        rows: list.map(function (x) { return [x.name, Q.tab === 'prod' ? x.a.qty : x.inv, x.a.sale, x.a.cost, x.a.profit, PCT(x.a.margin), PCT(x.a.markup)]; }), sum: [['Gross profit', INR(C.T.profit)]] };
+    } else if (Q.tab === 'oh') E = { title: 'Overheads (Salary, Rent, Bills)', cols: ['Month', 'Category', 'Amount', 'Counted in period', 'Note'], money: [2, 3],
+      rows: C.oh.map(function (x) { return [monthLabel(x.e.month), x.e.cat, N(x.e.amount), x.amt, x.e.note || '']; }), sum: [['Total overheads', INR(C.OH)]] };
+    else E = { title: 'Profit & Loss Report', cols: ['Month', 'Sales', 'Cost', 'Gross Profit', 'Overheads', 'Net Profit / Loss'], money: [1, 2, 3, 4, 5],
+      rows: C.monthRows.map(function (r) { return [monthLabel(r.m), r.a.sale, r.a.cost, r.a.profit, r.oh, r.net]; }),
+      sum: [['Sales (costed items)', INR(C.T.sale)], ['Cost of goods', INR(C.T.cost)], ['Gross profit', INR(C.T.profit)], ['Profit margin', PCT(C.T.margin)], ['Profit markup', PCT(C.T.markup)], ['Overheads', INR(C.OH)], ['Total spend', INR(C.spend)], [C.net >= 0 ? 'NET PROFIT' : 'NET LOSS', INR(C.net)]] };
+    E.sum = common.concat(E.sum); return E;
+  }
+  function exportPend() { var L = pending(); return { title: 'Pending Cost Prices', cols: ['Product', 'Times sold', 'Qty', 'Last sale rate', 'In Stock list'], money: [3], rows: L.map(function (x) { return [x.name, x.times, x.qty, r2(x.last), x.p ? 'Yes' : 'No']; }), sum: [['Products pending', L.length]] }; }
+  function getExport(id) {
+    if (id) { var I = calc().invs.filter(function (x) { return String(x.id) === String(id); })[0]; if (!I) { var o = (ordersData || []).filter(function (x) { return String(x.id) === String(id); })[0]; if (!o) return null; var f = Q.gst === 'ex' ? 1 / 1.18 : 1; I = { id: o.id, cust: o.customerName || '', date: ttDateOf(o), lines: buildLines(o, invIndex(), f), a: acc() }; I.lines.forEach(function (L) { add(I.a, L); }); fin(I.a); }
+      var E = invExport(I); E.sum.push(['Prices', Q.gst === 'ex' ? 'Without GST' : 'With GST']); return E; }
+    return Q.tab === 'pend' ? exportPend() : exportMain();
+  }
+  function cell(v, money) { return money && typeof v === 'number' ? INR(v) : H(v); }
+  window.ttPnlOut = function (kind, id) {
+    var E = getExport(id); if (!E) return;
+    if (kind === 'pdf') {
+      var th = 'border:1px solid #999;padding:4px 6px;background:#eef2f7;font-size:11px;text-align:left;', td = 'border:1px solid #bbb;padding:4px 6px;font-size:11px;';
+      var html = '<div style="font-family:Arial,Helvetica,sans-serif;color:#111;"><div style="text-align:center;margin-bottom:8px;"><div style="font-size:15px;font-weight:800;">TWINTOWN EXPRESS SERVICES PVT LTD</div><div style="font-size:13px;font-weight:700;margin-top:2px;">' + H(E.title.toUpperCase()) + '</div></div>' +
+        '<table style="border-collapse:collapse;width:100%;margin-bottom:10px;">' + E.sum.map(function (s) { return '<tr><td style="' + td + 'font-weight:700;width:38%;">' + H(s[0]) + '</td><td style="' + td + '">' + H(s[1]) + '</td></tr>'; }).join('') + '</table>' +
+        '<table style="border-collapse:collapse;width:100%;"><thead><tr>' + E.cols.map(function (c) { return '<th style="' + th + '">' + H(c) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+        E.rows.map(function (r) { return '<tr>' + r.map(function (v, i) { var mo = E.money && E.money.indexOf(i) >= 0; return '<td style="' + td + (mo ? 'text-align:right;' : '') + '">' + cell(v, mo) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>' +
+        '<div style="margin-top:12px;font-size:9px;text-align:center;color:#555;">This is a computer generated report. Cost is based on the Dealer Price saved in Stock.</div></div>';
+      ttPrintHtml(E.title, html);
+    } else if (kind === 'csv') {
+      var q = function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+      var out = E.sum.map(function (s) { return q(s[0]) + ',' + q(s[1]); }).join('\n') + '\n\n' + E.cols.map(q).join(',') + '\n' + E.rows.map(function (r) { return r.map(function (v, i) { return q(typeof v === 'number' ? r2(v) : v); }).join(','); }).join('\n');
+      downloadFile('﻿' + out, E.title.replace(/[^\w]+/g, '_') + '.csv', 'text/csv;charset=utf-8');
+    } else {
+      var txt = '*' + E.title + '*\n' + E.sum.map(function (s) { return s[0] + ': ' + s[1]; }).join('\n') + '\n\n' + E.rows.slice(0, 25).map(function (r, i) { return (i + 1) + '. ' + r.map(function (v, k) { return typeof v === 'number' && E.money && E.money.indexOf(k) >= 0 ? INR(v) : v; }).join(' | '); }).join('\n') + (E.rows.length > 25 ? '\n… +' + (E.rows.length - 25) + ' more (see PDF / CSV)' : '') + '\n\n— TTESPL';
+      ttNativeShareOrFallback({ title: E.title, text: txt }, function () { window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank'); });
+    }
+  };
+
+  /* ---------- Ledger header button: admin only + pending badge ---------- */
+  function wrapLedger() {
+    if (typeof window.renderBilling !== 'function' || window.renderBilling.__tt23) return;
+    var orig = window.renderBilling;
+    window.renderBilling = function () {
+      var r = orig.apply(this, arguments);
+      try { var b = $('ttPnlLedBtn'); if (b) b.style.display = isAdm() ? '' : 'none'; window.ttPnlBadge(); } catch (e) {}
+      return r;
+    };
+    window.renderBilling.__tt23 = true;
+  }
+  wrapLedger(); setTimeout(wrapLedger, 1500);
+  setTimeout(function () { try { var b = $('ttPnlLedBtn'); if (b) b.style.display = isAdm() ? '' : 'none'; window.ttPnlBadge(); } catch (e) {} }, 2500);
 })();
 
 
