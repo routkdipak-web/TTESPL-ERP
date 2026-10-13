@@ -8797,34 +8797,64 @@ window.openCatalogDetail = openCatalogDetail;
 
 /* ===== AI Summary (Gemini + Google Search grounding) ===== */
 const TT_GEMINI_API_KEY = "AQ.Ab8RN6LSsIljxExrgMsibV7xWnRU_0zb-_BK4PM90wSr0CPVew";
+function ttGeminiKey() { try { return localStorage.getItem('TTESPL_ERP_GEMINI_KEY') || TT_GEMINI_API_KEY; } catch (e) { return TT_GEMINI_API_KEY; } }
+async function ttGeminiCall(model, prompt, withSearch) {
+  const payload = { contents: [{ parts: [{ text: prompt }] }] };
+  if (withSearch) payload.tools = [{ google_search: {} }];
+  const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': ttGeminiKey() }, body: JSON.stringify(payload)
+  });
+  let data = null; try { data = await res.json(); } catch (e) {}
+  if (!res.ok) {
+    const er = (data && data.error) || {};
+    return { err: { status: res.status, code: er.status || '', msg: er.message || ('HTTP ' + res.status) } };
+  }
+  const parts = (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
+  const text = parts.map(p => p.text || '').join('').trim();
+  return { text: text };
+}
 async function fetchCatalogAiSummary(productName) {
   const body = document.getElementById('catalogAiBoxBody');
   if (!body) return;
-  if (!TT_GEMINI_API_KEY) { body.textContent = 'AI summary is not set up yet.'; return; }
+  if (!ttGeminiKey()) { body.textContent = 'AI summary is not set up yet.'; return; }
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) { body.textContent = '⚠️ You are offline. The AI summary needs internet.'; return; }
+  const prompt = 'This is a car-detailing / machinery product: "' + productName + '" (catalog item of Twin Town Express Services). ' +
+    'Explain it in 3-4 short lines in simple English: what it is, what it is used for, the dilution ratio if it is a chemical/liquid, and the essential accessories / safety notes. Keep it very brief, in bullet style.';
+  // Try with Google Search first, then plain model answers, then a lighter model (different quota)
+  const plan = [['gemini-2.5-flash', true], ['gemini-2.5-flash', false], ['gemini-2.5-flash-lite', false], ['gemini-2.0-flash', false]];
+  let last = null;
   try {
-    const prompt = 'This is a car-detailing / machinery product: "' + productName + '" (brand: TTESPL / Twin Town Express Services ka catalog item). ' +
-      'Search Google and explain it in 3-4 short lines in simple English: what it is, what it is used for, the dilution ratio if it is a chemical/liquid, and the essential accessories / safety notes. Keep it very brief, in bullet style.';
-    const res = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': TT_GEMINI_API_KEY },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          tools: [{ google_search: {} }]
-        })
-      }
-    );
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    const parts = (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
-    const text = parts.map(p => p.text || '').join('').trim();
-    body.innerHTML = text ? esc(text).replace(/\n/g, '<br>') : 'Nothing was found about this product.';
-  } catch (e) {
-    console.error('Gemini summary failed', e);
-    body.textContent = '⚠️ Could not load the AI summary (check internet or quota). Try "Search on Web" below.';
+    for (const [model, search] of plan) {
+      let r;
+      try { r = await ttGeminiCall(model, prompt, search); } catch (netErr) { last = { status: 0, msg: 'Network error - check internet' }; break; }
+      if (r.text) { body.innerHTML = esc(r.text).replace(/\n/g, '<br>'); return; }
+      if (r.err) {
+        last = r.err;
+        // key problems will not be fixed by trying another model
+        if (r.err.status === 401 || r.err.status === 403 || (r.err.status === 400 && /api key|API_KEY|not valid|expired/i.test(r.err.msg + ' ' + r.err.code))) break;
+      } else { last = { status: 200, msg: 'Empty answer' }; }
+    }
+  } catch (e) { last = { status: 0, msg: String(e && e.message || e) }; }
+  console.error('Gemini summary failed', last);
+  let hint = 'Try "Search on Web" below.';
+  if (last) {
+    if (last.status === 429) hint = 'The free quota is used up for now - try again later, or use a billing-enabled key.';
+    else if (last.status === 400 || last.status === 401 || last.status === 403) hint = 'The Gemini API key is not accepted (invalid, expired, restricted to another website/app, or not a Generative Language API key).';
+    else if (last.status === 0) hint = 'No connection to Google. Check the internet.';
   }
+  const adminCan = (typeof isAdminUser === 'function' && isAdminUser());
+  body.innerHTML = '⚠️ AI summary unavailable.<br><span style="font-size:11px;opacity:.8;">' + esc(hint) + '</span>' +
+    (last ? '<br><span style="font-size:10.5px;opacity:.65;">Google: ' + esc((last.status || '') + ' ' + String(last.msg || '').slice(0, 160)) + '</span>' : '') +
+    '<div style="display:flex;gap:6px;margin-top:8px;"><button class="btn btn-outline btn-sm" onclick="fetchCatalogAiSummary(\'' + String(productName).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;') + '\')">↻ Retry</button>' +
+    (adminCan ? '<button class="btn btn-outline btn-sm" onclick="ttSetGeminiKey()">🔑 Set API key</button>' : '') + '</div>';
 }
+window.ttSetGeminiKey = function () {
+  if (typeof isAdminUser === 'function' && !isAdminUser()) { alert('Only Admin can do this.'); return; }
+  const k = prompt('Paste a valid Gemini API key (from Google AI Studio). It is saved on this device only. Leave empty to go back to the built-in key.', '');
+  if (k === null) return;
+  try { if (k.trim()) localStorage.setItem('TTESPL_ERP_GEMINI_KEY', k.trim()); else localStorage.removeItem('TTESPL_ERP_GEMINI_KEY'); } catch (e) {}
+  alert('Saved. Open the product again to retry.');
+};
 window.fetchCatalogAiSummary = fetchCatalogAiSummary;
 
 /* ===== TTESPL UPGRADE v5: Quotation History, Travel Expenses, Catalog dual pricing, Product share ===== */
