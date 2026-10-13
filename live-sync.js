@@ -42,11 +42,12 @@
     COMPANY_DETAILS: 'company_settings',
     CATALOG_CATS: 'catalog_categories',
     BRANDS: 'brands',
-    EXPENSES: 'expenses'
+    EXPENSES: 'expenses',
+    OVERHEADS: 'overheads'
   };
 
   // Naye optional collections: inke error/rules ki wajah se app 'Offline' nahi dikhayega
-  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true, CATALOG_CATS: true, BRANDS: true, EXPENSES: true };
+  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true, CATALOG_CATS: true, BRANDS: true, EXPENSES: true, OVERHEADS: true };
   // Inka purana local data pehli baar cloud par automatically upload hota hai (ek baar)
   var MIGRATE_KEYS = OPTIONAL_KEYS;
 
@@ -303,6 +304,8 @@
       if ((pendingRender.CATALOG_CATS || pendingRender.INVENTORY) && typeof window.ttRenderCatalogIfOpen === 'function') window.ttRenderCatalogIfOpen();
       if (pendingRender.CRM_RECORDS && typeof window.ttRenderCrmIfOpen === 'function') window.ttRenderCrmIfOpen();
       if (pendingRender.EXPENSES && typeof window.ttRenderExpensesIfOpen === 'function') window.ttRenderExpensesIfOpen();
+      if (pendingRender.OVERHEADS && typeof window.ttRenderPnlIfOpen === 'function') window.ttRenderPnlIfOpen();
+      if ((pendingRender.INVENTORY || pendingRender.ORDERS) && typeof window.ttRenderPnlIfOpen === 'function') window.ttRenderPnlIfOpen();
       if (pendingRender.BRANDS && typeof window.ttRenderBrandsIfOpen === 'function') window.ttRenderBrandsIfOpen();
       if (pendingRender.COMPANY_DETAILS && typeof window.ttRenderCompanyIfOpen === 'function') window.ttRenderCompanyIfOpen();
       if (typeof renderDashboard === 'function') renderDashboard();
@@ -391,6 +394,7 @@
           case 'CATALOG_CATS': catalogCatsData = list; break;
           case 'BRANDS': brandsData = list; window.brandsData = list; break;
           case 'EXPENSES': expensesData = list; window.expensesData = list; break;
+          case 'OVERHEADS': overheadsData = list; window.overheadsData = list; break;
           case 'CRM_RECORDS': crmRecordsData = list; window.crmRecordsData = list; break;
           case 'COMPANY_DETAILS':
             if (list.length) {
