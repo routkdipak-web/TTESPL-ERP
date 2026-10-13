@@ -1892,6 +1892,51 @@ input:focus, select:focus, textarea:focus { border-color: rgba(0,180,216,.7) !im
 /* Ambient background orbs: whisper-light so the canvas stays neutral */
 #ttAmbient { opacity: .28; }
 [data-theme="dark"] #ttAmbient { opacity: .35; }
+
+/* ===== v24.1: header tagline + premium live-cloud pill ===== */
+.brand-sub-horizontal { gap: 6px; margin-top: 3px; }
+.tt-live-pill {
+  display: inline-flex; align-items: center; gap: 4px; flex: none; padding: 1.5px 7px 1.5px 5px; border-radius: 999px;
+  background: linear-gradient(180deg, rgba(52,211,153,.20), rgba(16,185,129,.08)); border: 1px solid rgba(52,211,153,.45);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.04) inset, 0 2px 8px rgba(16,185,129,.18);
+  color: #6ee7b7; font-size: 7px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; line-height: 1.2;
+}
+.tt-live-pill #syncText { margin: 0 !important; font-weight: 800 !important; }
+.tt-live-pill .header-cloud-dot { position: relative; width: 5px; height: 5px; flex: none; animation: none; background: #34d399; box-shadow: 0 0 6px #34d399; }
+.tt-live-pill .header-cloud-dot::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; border: 1px solid #34d399;
+  animation: ttLivePing 2s ease-out infinite; will-change: transform, opacity;
+}
+@keyframes ttLivePing { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(3.2); opacity: 0; } }
+.tt-live-pill:has(.header-cloud-dot.offline) { background: rgba(148,163,184,.14); border-color: rgba(148,163,184,.4); color: #cbd5e1; box-shadow: none; }
+.tt-live-pill .header-cloud-dot.offline { background: #94a3b8; box-shadow: none; }
+.tt-live-pill .header-cloud-dot.offline::after { animation: none; display: none; }
+.tt-tagline {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 7.5px; font-weight: 700; letter-spacing: .55px;
+  background: linear-gradient(90deg, #e2e8f0, #fde68a 55%, #e2e8f0); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+body.tt-scrolling .tt-live-pill .header-cloud-dot::after,
+body:has(.auth-overlay[style*="display: flex"]) .tt-live-pill .header-cloud-dot::after { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .tt-live-pill .header-cloud-dot::after { animation: none; } }
+
+/* ===== v24.2: header fits every phone width (profile button always fully visible) ===== */
+header { gap: 6px; }
+.brand-area { flex: 1 1 auto; min-width: 0; max-width: none !important; gap: 6px; }
+.brand-text-row { min-width: 0; flex: 1 1 auto; }
+.brand-title-glow { font-size: 10px; letter-spacing: .2px; }
+.brand-title-pvt { font-size: 7px; letter-spacing: .3px; }
+.brand-logo-round.tt-logo-plate { width: 62px; min-width: 62px; height: 34px; }
+.tt-logo-mask { width: 52px; height: 21px; }
+.tt-hdr-right { flex: none; gap: 5px; }
+.tt-hdr-btn { padding: 2px; gap: 3px; }
+.tt-hdr-btn .tt-bic { width: 22px; height: 22px; font-size: 11px; }
+.tt-hdr-btn span.l { font-size: 10px; margin: 0 5px 0 1px; }
+.profile-avatar-btn { padding: 2px 5px 2px 2px; gap: 3px; flex: none; }
+.profile-avatar-img { width: 26px; height: 26px; }
+.tt-live-pill { padding: 1px 6px 1px 4px; font-size: 6.5px; letter-spacing: .5px; }
+.tt-tagline { font-size: 7px; letter-spacing: .35px; }
+@media (max-width: 400px) { .tt-hdr-btn span.l { display: none !important; } .tt-hdr-btn { padding: 2px; } .tt-tagline { letter-spacing: .15px; } }
+@media (max-width: 380px) { .brand-title-pvt { display: none; } }
 </style>
 </head>
 <body data-theme="light">
@@ -2164,9 +2209,8 @@ input:focus, select:focus, textarea:focus { border-color: rgba(0,180,216,.7) !im
           <span class="brand-title-pvt">PVT. LTD.</span>
         </div>
         <div class="brand-sub-horizontal">
-          <span class="header-cloud-dot" id="syncDot" title="Cloud Active"></span>
-          <span id="syncText" style="font-weight:700; margin-right:4px;"></span>
-          <span>Detailing &amp; Machinery Portal · Rasulgarh, BBSR</span>
+          <span class="tt-live-pill"><span class="header-cloud-dot" id="syncDot" title="Cloud Active"></span><span id="syncText" style="font-weight:700;"></span></span>
+          <span class="tt-tagline">Performance • Precision • Perfection</span>
           <span id="offlineQueueBadge" style="display:none; margin-left:6px; font-size:9.5px; font-weight:800; color:#fff; background:var(--danger,#e11d48); padding:1px 7px; border-radius:8px;"></span>
         </div>
       </div>
