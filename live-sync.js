@@ -70,7 +70,7 @@
     // active hota hai) - is liye fail hone par bhi app bilkul pehle jaisa hi chalta rahega.
     if (typeof F.enableIndexedDbPersistence === 'function') {
       F.enableIndexedDbPersistence(db).catch(function (e) {
-        console.warn('IndexedDB persistence off rahi (normal agar ek se zyada tab khula ho):', e && e.code);
+        console.warn('IndexedDB persistence is off (normal if more than one tab is open):', e && e.code);
       });
     }
 
@@ -109,7 +109,7 @@
         var v = it[k];
         c[k] = (typeof v === 'string' && v.length > 120000 && v.indexOf('data:') === 0) ? '' : v;
       });
-      console.warn('Doc 1MB limit ke paas tha, badi photo cloud copy se hata di', it.id);
+      console.warn('Document was near the 1 MB limit; the large photo was removed from the cloud copy', it.id);
       return c;
     }
 
