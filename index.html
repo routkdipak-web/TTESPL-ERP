@@ -1457,6 +1457,125 @@ body:has(.auth-overlay[style*="display:flex"]) #ttAmbient i { animation-play-sta
   button, .btn, .nav-item, .cat-chip, .profile-menu-item { touch-action: manipulation; }
   html { scroll-behavior: auto; }
 
+
+  /* ===== v21: ledger report + staff report ===== */
+  .tt21-bar { padding: 12px 14px; margin-bottom: 14px; }
+  .tt21-title { font-weight: 800; font-size: 13.5px; margin-bottom: 8px; }
+  .tt21-chips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; -webkit-overflow-scrolling: touch; }
+  .tt21-chips button { flex: none; border: 1px solid rgba(148,163,184,.4); background: rgba(148,163,184,.12); color: inherit; border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .tt21-chips button.on { background: linear-gradient(135deg,#0a2540,#00b4d8); color: #fff; border-color: transparent; }
+  .tt21-emp { padding: 12px 14px; margin-bottom: 14px; }
+  .tt21-tile { border-radius: 14px; padding: 9px 6px; text-align: center; background: rgba(0,180,216,.10); border: 1px solid rgba(0,180,216,.25); }
+  .tt21-tile.ok { background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.3); }
+  .tt21-tile.bad { background: rgba(239,68,68,.10); border-color: rgba(239,68,68,.3); }
+  .tt21-tile small { display: block; font-size: 9.5px; font-weight: 800; opacity: .75; letter-spacing: .3px; }
+  .tt21-tile b { display: block; font-size: 14px; margin-top: 2px; }
+  .tt21-sec { font-size: 12px; font-weight: 800; margin: 12px 0 6px; opacity: .85; }
+  .tt21-pay { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: 12px; }
+  .tt21-pay i { opacity: .65; font-style: normal; }
+  .tt21-staff { display: flex; align-items: center; gap: 10px; padding: 9px 10px; margin-bottom: 6px; border-radius: 12px; cursor: pointer; background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.2); font-size: 13px; }
+  .tt21-amts { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-top: 8px; font-size: 12px; }
+  .tt21-trail { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .tt21-trail span { font-size: 10.5px; padding: 3px 8px; border-radius: 999px; background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.28); }
+  .tt21-grand { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 10px; padding: 10px; border-radius: 14px; color: #fff; background: linear-gradient(135deg,#0a2540,#0e7490); text-align: center; }
+  .tt21-grand small { display: block; font-size: 9.5px; opacity: .8; font-weight: 800; } .tt21-grand b { font-size: 13.5px; }
+  .tt21-person { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; cursor: pointer; }
+  #performanceReportModal .auth-card { max-width: 640px; }
+  #performanceReportContainer { max-height: 52vh !important; }
+
+
+/* ===== v21: Colourful glossy 3D section design (compositor-friendly: no backdrop-filter, no animation) ===== */
+:root { --g-tint: 0,180,216; }
+#view-dashboard { --g-tint: 0,180,216; }
+#view-leads { --g-tint: 251,113,133; }
+#view-orders { --g-tint: 245,158,11; }
+#view-services { --g-tint: 139,92,246; }
+#view-inventory, #view-catalog { --g-tint: 16,185,129; }
+#view-billing { --g-tint: 236,72,153; }
+#view-chat { --g-tint: 6,182,212; }
+
+.view-panel .card:not(.stat-card) {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.80) 0%, rgba(255,255,255,0) 34%),
+    linear-gradient(135deg, rgba(var(--g-tint), .26) 0%, rgba(var(--g-tint), .08) 48%, rgba(var(--g-tint), .16) 100%),
+    linear-gradient(160deg, #ffffff 0%, #f4f8fc 100%);
+  border: 1px solid rgba(var(--g-tint), .38);
+  border-top: 1.5px solid rgba(255,255,255,.95);
+  border-left: 4px solid rgba(var(--g-tint), .95);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.95) inset,
+    0 -3px 8px rgba(var(--g-tint), .14) inset,
+    0 3px 6px rgba(10,37,64,.06),
+    0 12px 26px rgba(var(--g-tint), .22),
+    0 22px 40px rgba(10,37,64,.10);
+}
+[data-theme="dark"] .view-panel .card:not(.stat-card) {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,0) 34%),
+    linear-gradient(135deg, rgba(var(--g-tint), .30) 0%, rgba(var(--g-tint), .08) 50%, rgba(var(--g-tint), .18) 100%),
+    linear-gradient(160deg, #1b2740 0%, #0f1a30 100%);
+  border: 1px solid rgba(var(--g-tint), .45);
+  border-top: 1.5px solid rgba(255,255,255,.28);
+  border-left: 4px solid rgba(var(--g-tint), .95);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.18) inset,
+    0 -3px 8px rgba(0,0,0,.35) inset,
+    0 12px 28px rgba(var(--g-tint), .20),
+    0 22px 44px rgba(0,0,0,.50);
+}
+
+/* Stat cards: keep their own colours, add glossy depth */
+.view-panel .stat-card {
+  box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 -4px 10px rgba(0,0,0,.10) inset,
+    0 10px 22px rgba(var(--g-tint), .28), 0 18px 34px rgba(10,37,64,.12);
+  border-top: 1.5px solid rgba(255,255,255,.85);
+}
+
+/* Section tabs: glossy 3D coloured pills */
+.view-panel .sub-tab-btn {
+  background: linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(var(--g-tint), .20) 100%);
+  border: 1px solid rgba(var(--g-tint), .45);
+  color: #1e3a5f;
+  box-shadow: 0 1px 0 rgba(255,255,255,.95) inset, 0 -2px 4px rgba(var(--g-tint), .22) inset,
+    0 4px 10px rgba(var(--g-tint), .25), 0 1px 2px rgba(10,37,64,.15);
+  text-shadow: 0 1px 0 rgba(255,255,255,.6);
+}
+.view-panel .sub-tab-btn.active {
+  background: linear-gradient(180deg, rgba(255,255,255,.38) 0%, rgba(255,255,255,0) 46%),
+    linear-gradient(135deg, rgb(var(--g-tint)) 0%, rgba(10,37,64,.92) 130%);
+  color: #fff; border-color: rgba(255,255,255,.55); text-shadow: 0 1px 2px rgba(0,0,0,.35);
+  box-shadow: 0 1px 0 rgba(255,255,255,.55) inset, 0 -3px 6px rgba(0,0,0,.25) inset,
+    0 8px 18px rgba(var(--g-tint), .50), 0 3px 6px rgba(10,37,64,.25);
+  transform: translateY(-1px);
+}
+[data-theme="dark"] .view-panel .sub-tab-btn {
+  background: linear-gradient(180deg, rgba(255,255,255,.10) 0%, rgba(var(--g-tint), .22) 100%);
+  border-color: rgba(var(--g-tint), .5); color: #e2e8f0; text-shadow: none;
+  box-shadow: 0 1px 0 rgba(255,255,255,.15) inset, 0 -2px 4px rgba(0,0,0,.3) inset, 0 4px 10px rgba(var(--g-tint), .22);
+}
+[data-theme="dark"] .view-panel .sub-tab-btn.active { color: #fff; }
+
+/* Category chips + page banner */
+.view-panel .cat-chip {
+  background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(var(--g-tint), .22)) !important;
+  border: 1.5px solid rgba(var(--g-tint), .5);
+  box-shadow: 0 1px 0 rgba(255,255,255,.95) inset, 0 -3px 6px rgba(var(--g-tint), .2) inset, 0 8px 16px rgba(var(--g-tint), .26);
+}
+.view-panel .page-top-header-banner {
+  background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0) 50%),
+    linear-gradient(135deg, rgba(10,37,64,.92), rgb(var(--g-tint)));
+  border: 1px solid rgba(255,255,255,.45);
+  box-shadow: 0 1px 0 rgba(255,255,255,.4) inset, 0 -3px 8px rgba(0,0,0,.25) inset,
+    0 12px 26px rgba(var(--g-tint), .38), 0 22px 40px rgba(10,37,64,.18);
+}
+
+/* Primary buttons: glossy 3D */
+.view-panel .btn-primary, .auth-card .btn-primary {
+  background: linear-gradient(180deg, rgba(255,255,255,.28) 0%, rgba(255,255,255,0) 50%), linear-gradient(135deg, #0a2540, rgb(var(--g-tint)) 160%);
+  box-shadow: 0 1px 0 rgba(255,255,255,.4) inset, 0 -3px 6px rgba(0,0,0,.25) inset, 0 8px 16px rgba(var(--g-tint), .35);
+}
+.view-panel .btn-primary:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(var(--g-tint), .3); }
 </style>
 </head>
 <body data-theme="light">
@@ -2019,7 +2138,7 @@ body:has(.auth-overlay[style*="display:flex"]) #ttAmbient i { animation-play-sta
       <div class="page-top-header-banner">
         <div>
           <div class="page-top-title"><span>📖</span> <span>Product Catalog</span></div>
-          <div class="page-top-sub">Sirf jaankari ke liye - description, technical data & accessories. Isse koi bill/order nahi banta.</div>
+          <div class="page-top-sub">For information only - description, technical data & accessories. No bill or order is created from this.</div>
         </div>
         <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
           <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); ttCatProdEdit()">➕ Add Product</button>
@@ -2028,7 +2147,7 @@ body:has(.auth-overlay[style*="display:flex"]) #ttAmbient i { animation-play-sta
       </div>
 
       <div class="form-group autocomplete-wrapper" style="margin-bottom:12px;">
-        <input type="text" id="catalogSearchInput" placeholder="🔍 Product, machine, chemical, brand type karein..." oninput="ttDeb('cat',handleCatalogSearchInput,this.value)" autocomplete="off">
+        <input type="text" id="catalogSearchInput" placeholder="🔍 Type product, machine, chemical or brand..." oninput="ttDeb('cat',handleCatalogSearchInput,this.value)" autocomplete="off">
         <div class="solid-suggestion-box" id="catalogSuggestionBox" style="display:none;"></div>
       </div>
 
@@ -2820,9 +2939,9 @@ body:has(.auth-overlay[style*="display:flex"]) #ttAmbient i { animation-play-sta
     <input type="hidden" id="crmEditId">
     <div class="form-group autocomplete-wrapper">
       <label class="form-label">Shop / Business Name</label>
-      <input type="text" id="crmShopName" placeholder="Type to search existing customer, ya naya naam likho" oninput="handleCrmCustomerAutocomplete(this)" autocomplete="off">
+      <input type="text" id="crmShopName" placeholder="Type to search existing customer, or type a new name" oninput="handleCrmCustomerAutocomplete(this)" autocomplete="off">
       <div class="solid-suggestion-box" id="crmShopSuggestBox"></div>
-      <div style="font-size:10px; color:var(--text-muted); margin-top:3px;">🔍 Pehle se customer hoga to list se select karo - saari details khud bhar jayengi.</div>
+      <div style="font-size:10px; color:var(--text-muted); margin-top:3px;">🔍 If the customer already exists, select from the list - all details fill in automatically.</div>
     </div>
     <div class="grid-2">
       <div class="form-group">
@@ -3017,7 +3136,7 @@ function saveCrmRecord() {
   const address = document.getElementById('crmAddress').value.trim();
   const notes = document.getElementById('crmNotes').value.trim();
 
-  if (!shopName) { alert("Shop / Business name dalna zaroori hai!"); return; }
+  if (!shopName) { alert("Shop / Business name is required!"); return; }
 
   // CRM list ke saath-saath customer bhi sync rahe: agar ye shop pehle se
   // CUSTOMERS me match nahi hui (phone ya exact naam se), to ek naya customer
@@ -3083,7 +3202,7 @@ function renderCrmRecords() {
   if (empSel) {
     const names = Array.from(new Set(crmRecordsData.map(x => x.addedBy).filter(Boolean))).sort();
     const cur = empSel.value;
-    empSel.innerHTML = '<option value="">👥 Sabhi Employees</option>' + names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+    empSel.innerHTML = '<option value="">👥 All Employees</option>' + names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
     empSel.value = names.indexOf(cur) >= 0 ? cur : '';
   }
   let list = crmRecordsData.filter(ttCrmVisible);
@@ -3091,7 +3210,7 @@ function renderCrmRecords() {
   if (q) list = list.filter(x => (x.shopName && x.shopName.toLowerCase().includes(q)) || (x.ownerName && x.ownerName.toLowerCase().includes(q)) || (x.phone && x.phone.includes(q)));
 
   if (list.length === 0) {
-    box.innerHTML = `<div class="empty-state"><span class="empty-icon">🗂️</span><div class="empty-sub">Koi CRM visit record nahi mila.</div></div>`;
+    box.innerHTML = `<div class="empty-state"><span class="empty-icon">🗂️</span><div class="empty-sub">No CRM visit records found.</div></div>`;
     return;
   }
 
@@ -3519,7 +3638,7 @@ function ttFlushOfflineQueue() {
   function noteDone(ok) {
     settled++; if (!ok) failed++;
     if (settled >= pending) {
-      if (failed === 0) ttShowSuccessToast(pending + ' change' + (pending > 1 ? 's' : '') + ' cloud par sync ho gaye.');
+      if (failed === 0) ttShowSuccessToast(pending + ' change' + (pending > 1 ? 's' : '') + ' synced to the cloud.');
     }
   }
   keys.forEach(function (k) {
@@ -3580,7 +3699,7 @@ function ttCloudPush(key, val, attemptsLeft) {
         // SOFT ERROR TOAST: pehle ye sirf console me chhup jata tha, user ko pata
         // hi nahi chalta tha ki save fail hua. Ab chhota sa toast dikhta hai jisme
         // 1-tap "Retry" button hota hai.
-        ttShowErrorToast('Cloud save nahi ho paya. Data safe hai, dobara koshish karein.', function () {
+        ttShowErrorToast('Cloud save failed. Your data is safe - please try again.', function () {
           ttCloudPush(key, val);
         });
       }
@@ -3589,9 +3708,9 @@ function ttCloudPush(key, val, attemptsLeft) {
     // Cloud abhi connect ho raha hai (app abhi khula hai) - taiyar hote hi dobara try karega
     setTimeout(function () { ttCloudPush(key, val, attemptsLeft - 1); }, 1000);
   } else {
-    console.warn('Cloud sync ready nahi hua, offline queue me daal diya:', key);
+    console.warn('Cloud sync was not ready; added to the offline queue:', key);
     ttQueueOffline(key, val);
-    ttShowErrorToast('Cloud se connect nahi ho paya. Data safe hai, dobara koshish karein.', function () {
+    ttShowErrorToast('Could not connect to the cloud. Your data is safe - please try again.', function () {
       ttCloudPush(key, val);
     });
   }
@@ -3813,7 +3932,7 @@ function setStored(key, val) {
       try {
         const light = JSON.stringify(val, function (k, v) { return (typeof v === 'string' && v.length > 5000 && v.indexOf('data:') === 0) ? '' : v; });
         localStorage.setItem(DB_PREFIX + key, light);
-      } catch (qe2) { console.warn('Light copy bhi save nahi hui', key); }
+      } catch (qe2) { console.warn('The lightweight copy could not be saved either', key); }
     }
     // NOTE: yaha se koi bhi record automatically cloud se delete nahi kiya jata -
     // data hamesha cloud me surakshit rehta hai. Delete sirf kisi explicit delete button se hi hoga.
@@ -3978,7 +4097,7 @@ function openGlobalSearchModal() {
   document.getElementById('globalSearchModal').style.display = 'flex';
   const inp = document.getElementById('globalSearchInput');
   inp.value = "";
-  document.getElementById('globalSearchResults').innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Customer, order ref, machine, item code ya phone type karein...</div></div>`;
+  document.getElementById('globalSearchResults').innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Type a customer, order ref, machine, item code or phone...</div></div>`;
   setTimeout(() => inp.focus(), 150);
 }
 function closeGlobalSearchModal() { document.getElementById('globalSearchModal').style.display = 'none'; }
@@ -3989,7 +4108,7 @@ function performGlobalSearch(qRaw) {
   const q = (qRaw || "").trim().toLowerCase();
   const box = document.getElementById('globalSearchResults');
   if (q.length < 2) {
-    box.innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Kam se kam 2 letters type karein...</div></div>`;
+    box.innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Type at least 2 letters...</div></div>`;
     return;
   }
 
@@ -4047,7 +4166,7 @@ function performGlobalSearch(qRaw) {
   });
 
   if (results.length === 0) {
-    box.innerHTML = `<div class="empty-state"><span class="empty-icon">🚫</span><div class="empty-sub">Kuch nahi mila "${esc(qRaw)}" ke liye.</div></div>`;
+    box.innerHTML = `<div class="empty-state"><span class="empty-icon">🚫</span><div class="empty-sub">No results for "${esc(qRaw)}".</div></div>`;
     return;
   }
 
@@ -4401,7 +4520,7 @@ function deleteStaffPrompt(empId) {
 
 function openAdminEditLedgerModal(ordId) {
   if (!isAdminUser()) {
-    alert("Permission Denied: Sirf Admin hi ledger invoice modify kar sakte hain!");
+    alert("Permission denied: only an Admin can modify ledger invoices.");
     return;
   }
   const o = ordersData.find(x => x.id === ordId);
@@ -4502,7 +4621,7 @@ function saveAdminLedgerInvoice() {
 
 function deleteAdminLedgerInvoice(ordId) {
   if (!isAdminUser()) {
-    alert("Permission Denied: Sirf Admin hi bill ledger se delete kar sakte hain!");
+    alert("Permission denied: only an Admin can delete bills from the ledger.");
     return;
   }
   if (confirm(`Confirm permanent deletion of Invoice ${ordId} from ledger?`)) {
@@ -4557,7 +4676,7 @@ function renderDashboard() {
 
   document.getElementById('dashPriorityCount').textContent = `${priorityItems.length} Pending`;
   if (priorityItems.length === 0) {
-    priorityBox.innerHTML = `<div class="empty-state"><span class="empty-icon">✅</span><div class="empty-title">Sabhi targets aur deliveries updated hain!</div><div class="empty-sub">Koi pending alert nahi hai.</div></div>`;
+    priorityBox.innerHTML = `<div class="empty-state"><span class="empty-icon">✅</span><div class="empty-title">All targets and deliveries are up to date!</div><div class="empty-sub">No pending alerts.</div></div>`;
   } else {
     priorityItems.slice(0, 5).forEach(item => {
       const row = document.createElement('div');
@@ -4597,7 +4716,7 @@ function toggleFabMenu() {
 
 function openUpiModal(customerName, amount) {
   if (!amount || amount <= 0) {
-    alert("Amount invalid nahi ho sakta.");
+    alert("Please enter a valid amount.");
     return;
   }
   document.getElementById('upiCustName').textContent = customerName || "Customer";
@@ -4678,7 +4797,7 @@ function saveCustomerSignature() {
     }
   });
   closeSignModal();
-  alert("Customer signature verify ho gaya!");
+  alert("Customer signature verified!");
 }
 
 /* WIDE HORIZONTAL AUTOCOMPLETE HANDLER FOR CUSTOMERS */
@@ -4840,6 +4959,7 @@ function selectOrderItemSuggestion(el, encName, code, rate, stock) {
   input.value = code ? `${name} [${code}]` : name;
   row.querySelector('.item-mrp').value = rate || 0;
   row.querySelector('.item-disc').value = 0;
+  row.dataset.src = 'disc';
   row.querySelector('.item-rate').value = rate || 0;
   row.querySelector('.item-stock-warning').innerHTML = `<span style="color:${(stock > 0) ? 'var(--success)' : 'var(--danger)'}">Stock: ${stock}</span>`;
   const box = row.querySelector('.solid-suggestion-box');
@@ -4923,7 +5043,7 @@ async function loadMasterCatalogAction() {
   const invList = (payload && Array.isArray(payload.inventory)) ? payload.inventory : [];
   const custList = (payload && Array.isArray(payload.customers)) ? payload.customers : [];
   if (invList.length > 0 || custList.length > 0) {
-    if (confirm(`Master catalog se ${invList.length} items aur ${custList.length} customers load karein?`)) {
+    if (confirm(`Load ${invList.length} items and ${custList.length} customers from the master catalog?`)) {
       if (invList.length > 0) {
         sampleInventory = invList;
         setStored("INVENTORY", sampleInventory);
@@ -4969,7 +5089,7 @@ function renderLeads() {
 
   if (leadsData.length === 0) {
     if (ttMaybeSkeleton(c, 3)) return;
-    c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Abhi koi active inquiry nahi hai.</div>`;
+    c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">No active inquiries right now.</div>`;
     return;
   }
 
@@ -4980,7 +5100,7 @@ function renderLeads() {
   if (leadsFilterState.to) displayLeads = displayLeads.filter(l => l.inquiryDate <= leadsFilterState.to);
 
   if (displayLeads.length === 0 && leadsFiltersActive) {
-    c.innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Filter ke liye koi inquiry nahi mili.</div></div>`;
+    c.innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">No inquiries match this filter.</div></div>`;
     return;
   }
 
@@ -5130,8 +5250,8 @@ function renderOrders() {
   if (displayList.length === 0) {
     if (!filtersActive && ttMaybeSkeleton(c, 3)) return;
     c.innerHTML = filtersActive
-      ? `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Filter ke liye koi order nahi mila.</div></div>`
-      : `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi active pending order nahi hai.</div>`;
+      ? `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">No orders match this filter.</div></div>`
+      : `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">No active pending orders.</div>`;
     return;
   }
 
@@ -5180,7 +5300,7 @@ window.renderOrders = renderOrders;
 function cancelOrderAction(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if (!o) return;
-  const reason = prompt("Cancel karne ka kaaran:", "Customer cancelled");
+  const reason = prompt("Reason for cancellation:", "Customer cancelled");
   if (reason === null) return;
   o.status = "Cancelled";
   o.cancelReason = reason;
@@ -5207,7 +5327,7 @@ function openOrderModal(orderObj = null) {
     document.getElementById('ordTaxType').value = orderObj.taxType || 'INTRA';
     document.getElementById('ordCourierCharge').value = orderObj.courierCharge || 0;
     ttPayProofs = (orderObj.payProofs || []).slice();
-    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.mrp || it.rate, it.disc || 0));
+    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.mrp || it.rate, it.disc || 0, it.rate));
   } else {
     title.textContent = "New Multi-Item Product Order";
     editId.value = "";
@@ -5228,7 +5348,7 @@ function openOrderModal(orderObj = null) {
 }
 function closeOrderModal() { ttCloseSheetModal('orderModal'); }
 
-function addOrderItemRow(itemName = "", qty = 1, mrp = 0, disc = 0) {
+function addOrderItemRow(itemName = "", qty = 1, mrp = 0, disc = 0, rate = null) {
   const tbody = document.getElementById('orderItemsTbody');
   const tr = document.createElement('tr');
 
@@ -5239,14 +5359,19 @@ function addOrderItemRow(itemName = "", qty = 1, mrp = 0, disc = 0) {
       <div class="item-stock-warning" style="font-size:10px; color:var(--text-muted); margin-top:2px;"></div>
     </td>
     <td><input type="number" class="item-qty" value="${qty}" min="1" oninput="calcOrderTotals()" style="width:60px; font-size:13px; font-weight:700;"></td>
-    <td><input type="number" class="item-mrp" value="${mrp}" oninput="calcOrderTotals()" style="width:75px; font-size:13px; font-weight:700;"></td>
-    <td><input type="number" class="item-disc" value="${disc}" min="0" max="100" oninput="calcOrderTotals()" style="width:65px; font-size:13px; font-weight:700;"></td>
-    <td><input type="number" class="item-rate" readonly style="width:80px; font-size:13px; font-weight:700; background:var(--bg) !important;"></td>
+    <td><input type="number" class="item-mrp" value="${mrp}" step="any" oninput="calcOrderTotals()" style="width:75px; font-size:13px; font-weight:700;"></td>
+    <td><input type="number" class="item-disc" value="${disc}" min="0" max="100" step="any" oninput="this.closest('tr').dataset.src='disc'; calcOrderTotals()" style="width:65px; font-size:13px; font-weight:700;"></td>
+    <td><input type="number" class="item-rate" step="any" oninput="this.closest('tr').dataset.src='rate'; calcOrderTotals()" style="width:80px; font-size:13px; font-weight:700;"></td>
     <td class="item-row-total" style="font-weight:bold; font-size:12.5px;">₹0</td>
     <td><button class="btn btn-danger-sm" onclick="triggerAppHaptic(); this.closest('tr').remove(); calcOrderTotals();">✕</button></td>
   `;
 
   tbody.appendChild(tr);
+  // Saved rate (edit mode) is kept exactly; discount % is derived from MRP vs rate when it was not entered.
+  if (rate !== null && rate !== undefined && !isNaN(parseFloat(rate))) {
+    tr.dataset.src = 'rate';
+    tr.querySelector('.item-rate').value = ttR2(parseFloat(rate));
+  }
   calcOrderTotals();
 }
 
@@ -5255,12 +5380,20 @@ function calcOrderTotals() {
   document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
     const q = parseFloat(r.querySelector('.item-qty').value) || 0;
     const mrp = parseFloat(r.querySelector('.item-mrp').value) || 0;
-    const disc = parseFloat(r.querySelector('.item-disc').value) || 0;
-    
-    const discountedRate = mrp * (1 - (disc / 100));
-    r.querySelector('.item-rate').value = discountedRate.toFixed(2);
-    
-    const sub = q * discountedRate;
+    const discEl = r.querySelector('.item-disc'), rateEl = r.querySelector('.item-rate');
+    let rate;
+    if (r.dataset.src === 'rate') {
+      // Rate typed directly: discount % is calculated automatically from MRP
+      rate = ttR2(parseFloat(rateEl.value) || 0);
+      const d = (mrp > 0 && rate < mrp) ? ttR2((1 - rate / mrp) * 100) : 0;
+      if (document.activeElement !== discEl) discEl.value = d;
+    } else {
+      const disc = parseFloat(discEl.value) || 0;
+      rate = ttR2(mrp * (1 - (disc / 100)));
+      if (document.activeElement !== rateEl) rateEl.value = rate.toFixed(2);
+    }
+    // line total = qty x (2-decimal rate): the same number is shown, saved and printed
+    const sub = ttR2(q * rate);
     r.querySelector('.item-row-total').textContent = '₹' + sub.toLocaleString('en-IN', {maximumFractionDigits: 2});
     total += sub;
   });
@@ -5321,7 +5454,7 @@ function saveOrderAction() {
         id: part ? part.id : Date.now(),
         name: part ? part.name : pName,
         hsn: part ? (part.hsn || "84139190") : "84139190",
-        qty, mrp, disc, rate, total: qty * rate
+        qty, mrp, disc, rate, total: ttR2(qty * rate)
       });
     }
   });
@@ -5402,7 +5535,7 @@ function handleDeliveryPhotoCaptured(event) {
 function executeConfirmedDelivery() {
   const ordId = document.getElementById('pendingDeliverOrderId').value;
   if (!currentDeliveryPhotoBase64) {
-    alert("Kripya delivery ka proof photo attach karein!");
+    alert("Please attach the delivery proof photo!");
     return;
   }
   const o = ordersData.find(x => x.id === ordId);
@@ -5479,8 +5612,8 @@ function executeConfirmedPaymentCollection() {
   const amt = parseFloat(document.getElementById('payCollectInputAmt').value) || 0;
   const payModeChosen = document.getElementById('payCollectModeSelect').value;
 
-  if (amt <= 0) { alert("Valid amount daalein!"); return; }
-  if (!currentPaymentProofBase64) { alert("Payment receipt photo attach karein!"); return; }
+  if (amt <= 0) { alert("Please enter a valid amount!"); return; }
+  if (!currentPaymentProofBase64) { alert("Please attach the payment receipt photo!"); return; }
 
   const o = ordersData.find(x => x.id === ordId);
   if (!o) return;
@@ -5644,9 +5777,9 @@ function downloadBusinessSummaryReport() {
       <div style="flex:1; border:1px solid #ccc; border-radius:8px; padding:10px;"><div style="font-size:11px; color:#555;">DUE REMAINING</div><div style="font-size:18px; font-weight:800;">${rupee(totalDue)}</div></div>
     </div>
     <h3 style="margin:0 0 8px;">Staff-wise Sales & Due</h3>
-    <table style="margin-bottom:18px;"><tr><th ${th}>Staff</th><th ${th}>Bills</th><th ${th}>Billed</th><th ${th}>Received</th><th ${th}>Due</th></tr>${staffRows || `<tr><td ${td} colspan="5">Koi data nahi</td></tr>`}</table>
+    <table style="margin-bottom:18px;"><tr><th ${th}>Staff</th><th ${th}>Bills</th><th ${th}>Billed</th><th ${th}>Received</th><th ${th}>Due</th></tr>${staffRows || `<tr><td ${td} colspan="5">No data</td></tr>`}</table>
     <h3 style="margin:0 0 8px;">Top Due Customers</h3>
-    <table><tr><th ${th}>Customer</th><th ${th}>Invoice</th><th ${th}>Staff</th><th ${th}>Due</th></tr>${dueRows || `<tr><td ${td} colspan="4">Koi due nahi</td></tr>`}</table>
+    <table><tr><th ${th}>Customer</th><th ${th}>Invoice</th><th ${th}>Staff</th><th ${th}>Due</th></tr>${dueRows || `<tr><td ${td} colspan="4">No dues</td></tr>`}</table>
   `;
   ttPrintHtml('Business Summary Report', html);
 }
@@ -5699,7 +5832,7 @@ function renderServices() {
 
   if (serviceCallsData.length === 0) {
     if (ttMaybeSkeleton(c, 3)) return;
-    c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi repair call pending nahi hai.</div>`;
+    c.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">No repair calls pending.</div>`;
     return;
   }
 
@@ -5710,7 +5843,7 @@ function renderServices() {
   if (servicesFilterState.to) displayServices = displayServices.filter(s => s.recvDate <= servicesFilterState.to);
 
   if (displayServices.length === 0 && servicesFiltersActive) {
-    c.innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">Filter ke liye koi service call nahi mila.</div></div>`;
+    c.innerHTML = `<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-sub">No service calls match this filter.</div></div>`;
     return;
   }
 
@@ -6188,7 +6321,7 @@ function renderBilling(filterType, empFilter = "ALL") {
   if(empFilter !== "ALL") list = list.filter(o => o.bookedBy === empFilter);
 
   // Summary cards ab jo bhi filter (staff / due / received) lagaya hai, usi ka total dikhate hain -
-  // isse "kis staff ne kitna sale kiya aur kitna due hai" seedha upar hi dikh jata hai
+  // isse "how much each staff member sold and how much is due" seedha upar hi dikh jata hai
   let totalBilled = 0, totalRecv = 0, totalDue = 0;
   (filterType === 'due' ? list.filter(o => o.dueAmount > 0) : filterType === 'received' ? list.filter(o => o.dueAmount === 0) : list)
     .forEach(o => { totalBilled += o.totalAmount; totalRecv += o.recvAmount; totalDue += o.dueAmount; });
@@ -6207,7 +6340,7 @@ function renderBilling(filterType, empFilter = "ALL") {
   }
 
   if (list.length === 0) {
-    container.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi invoice nahi mili.</div>`;
+    container.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">No invoices found.</div>`;
     return;
   }
 
@@ -6256,7 +6389,7 @@ function downloadFile(content, fileName, mimeType) {
 }
 
 /* TAB 6: WHATSAPP / MESSENGER CHAT HUB */
-const TT_APP_VERSION = 'v20';
+const TT_APP_VERSION = 'v21';
 let pendingChat = [];
 window.pendingChat = pendingChat;
 
@@ -6286,7 +6419,7 @@ function renderChatMessages() {
     bubble.className = `messenger-bubble ${isMine ? 'outgoing' : 'incoming'}`;
     let status = '';
     if (msg._state === 'sending') status = ' ⏳';
-    if (msg._state === 'failed') { status = ' ⚠️ Send nahi hua - tap karke retry'; bubble.style.cursor = 'pointer'; bubble.onclick = () => retryChatMessage(msg.cid); }
+    if (msg._state === 'failed') { status = ' ⚠️ Not sent - tap to retry'; bubble.style.cursor = 'pointer'; bubble.onclick = () => retryChatMessage(msg.cid); }
     // BUG FIX: attached photo/file ab tap karne par khulta hai - image ho to
     // chhota thumbnail (tap se full-screen viewer), file ho to naam par tap
     // karke naye tab/download me khulta hai.
@@ -6495,7 +6628,7 @@ function renderMachinePartsModal() {
         <button class="btn btn-outline btn-sm" style="height:fit-content;" onclick="triggerAppHaptic(); deleteMachinePart('${p.id}')">🗑️</button>
       </div>
     </div>`;
-  }).join('') || `<div style="text-align:center; padding:15px; color:var(--text-muted); font-size:12.5px;">Koi part tracked nahi hai.</div>`;
+  }).join('') || `<div style="text-align:center; padding:15px; color:var(--text-muted); font-size:12.5px;">No parts tracked.</div>`;
 
   m.innerHTML = `<div class="auth-card" style="max-width:460px;">
     <div class="card-header"><span class="card-title">🔩 Machine Parts Replacement Reminders</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('machinePartsModal').style.display='none'">✕</button></div>
@@ -6529,7 +6662,7 @@ function saveMachinePart() {
   const partName = document.getElementById('mpPartName').value.trim();
   const installedDate = document.getElementById('mpInstalledDate').value;
   const intervalMonths = Number(document.getElementById('mpIntervalMonths').value) || 6;
-  if (!machineName || !partName || !installedDate) { alert('Machine name, part name aur installed date bharein!'); return; }
+  if (!machineName || !partName || !installedDate) { alert('Please enter the machine name, part name and installed date!'); return; }
   const entry = {
     id: 'MP' + Date.now(),
     machineName, partName, installedDate, intervalMonths,
@@ -6545,7 +6678,7 @@ function saveMachinePart() {
 window.saveMachinePart = saveMachinePart;
 
 function deleteMachinePart(id) {
-  if (!confirm('Ye reminder delete karein?')) return;
+  if (!confirm('Delete this reminder?')) return;
   machinePartsData = machinePartsData.filter(p => p.id !== id);
   window.machinePartsData = machinePartsData;
   setStored("MACHINE_PARTS", machinePartsData);
@@ -6711,12 +6844,12 @@ function ttSaveFcmTokenWhenReady(token, staffName, attemptsLeft) {
     window.cloudSync.saveFcmToken(token, staffName);
     return;
   }
-  if (attemptsLeft <= 0) { console.error('FCM: cloud kabhi ready nahi hua, token save nahi ho paya'); return; }
+  if (attemptsLeft <= 0) { console.error('FCM: cloud never became ready; token could not be saved'); return; }
   setTimeout(function () { ttSaveFcmTokenWhenReady(token, staffName, attemptsLeft - 1); }, 1000);
 }
 function enablePushNotificationsFCM() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  if (!TT_VAPID_KEY || TT_VAPID_KEY === "PASTE_YOUR_VAPID_KEY_HERE") { console.warn('FCM: VAPID key abhi set nahi hui'); return; }
+  if (!TT_VAPID_KEY || TT_VAPID_KEY === "PASTE_YOUR_VAPID_KEY_HERE") { console.warn('FCM: VAPID key is not set yet'); return; }
   navigator.serviceWorker.register('firebase-messaging-sw.js').then(function (reg) {
     ttInitMessaging(function () {
       ttMessagingMod.getToken(ttMessaging, { vapidKey: TT_VAPID_KEY, serviceWorkerRegistration: reg }).then(function (token) {
@@ -6792,10 +6925,10 @@ function openPayFollowupModal(ordId) {
       <div class="card-header"><span class="card-title">📅 Payment Follow-up</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('payFollowupModal').style.display='none'">✕</button></div>
       <div id="pfuInfo" style="font-size:12.5px; margin-bottom:10px; color:var(--text-muted);"></div>
       <input type="hidden" id="pfuOrdId">
-      <label class="form-label">Customer kis date ko payment karega?</label>
+      <label class="form-label">On which date will the customer pay?</label>
       <input type="date" id="pfuDate" style="width:100%; margin-bottom:10px;">
-      <label class="form-label">Note (kisne bola / kitna dega)</label>
-      <input type="text" id="pfuNote" placeholder="e.g. Owner ne bola Friday ko 20000 dega" style="width:100%; margin-bottom:14px;">
+      <label class="form-label">Note (who said it / how much they will pay)</label>
+      <input type="text" id="pfuNote" placeholder="e.g. Owner said he will pay 20000 on Friday" style="width:100%; margin-bottom:14px;">
       <div style="display:flex; gap:8px;">
         <button class="btn btn-primary" style="flex:2;" onclick="savePayFollowup()">💾 Save Follow-up</button>
         <button class="btn btn-outline" style="flex:1;" onclick="clearPayFollowup()">Clear</button>
@@ -6816,7 +6949,7 @@ function savePayFollowup() {
   const o = ordersData.find(x => x.id === id);
   if (!o) return;
   const date = document.getElementById('pfuDate').value;
-  if (!date) { alert('Follow-up date select karein!'); return; }
+  if (!date) { alert('Please select a follow-up date!'); return; }
   o.payFollowupDate = date;
   o.payFollowupNote = document.getElementById('pfuNote').value.trim();
   o.auditTrail = o.auditTrail || [];
@@ -6890,18 +7023,18 @@ function ttPick(nrow, key) {
 function ttLast10(p) { return String(p || '').replace(/\D/g, '').slice(-10); }
 
 async function importLedgerFromJson() {
-  if (!isAdminUser()) { alert('Permission Denied: Sirf Admin ledger import kar sakte hain!'); return; }
+  if (!isAdminUser()) { alert('Permission denied: only an Admin can import the ledger.'); return; }
   let data;
   try {
     const res = await fetch('ledger-import.json?v=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     data = await res.json();
   } catch (e) {
-    alert('ledger-import.json file nahi mili ya padh nahi paye. GitHub me index.html ke saath wahi file upload karein.\n(' + e.message + ')');
+    alert('ledger-import.json was not found or could not be read. Upload that file to GitHub next to index.html.\n(' + e.message + ')');
     return;
   }
   const rows = Array.isArray(data) ? data : (data && (data.rows || data.data || data.ledger)) || [];
-  if (!rows.length) { alert('File me koi row nahi mili.'); return; }
+  if (!rows.length) { alert('No rows found in the file.'); return; }
 
   // Invoice number ke hisab se group
   const groups = new Map();
@@ -6915,7 +7048,7 @@ async function importLedgerFromJson() {
     groups.get(inv).push(nrow);
   });
 
-  if (!confirm(`${rows.length} rows me se ${groups.size} bills mile. Ledger me import karein?\n(Jo invoice number pehle se app me hai use skip kiya jayega.)`)) return;
+  if (!confirm(`${rows.length} rows contain ${groups.size} bills. Import them into the ledger?\n(Invoices whose number already exists in the app will be skipped.)`)) return;
 
   const existingIds = new Set(ordersData.map(o => String(o.id)));
   const customers = Array.isArray(customerDatabase) ? customerDatabase.slice() : [];
@@ -6996,15 +7129,15 @@ async function importLedgerFromJson() {
       if (window.cloudSync && window.cloudSync.pushKey) {
         await window.cloudSync.pushKey('CUSTOMERS', customers);
         await window.cloudSync.pushKey('ORDERS', newOrders);
-        cloudNote = '\n☁️ Cloud me save ho gaya - ab sabhi devices par dikhega.';
-      } else { cloudNote = '\n⚠️ Cloud connect nahi hai - net check karke dobara Import dabayein.'; }
-    } catch (e) { console.error(e); cloudNote = '\n⚠️ Cloud save fail hua: ' + e.message + ' - dobara Import dabayein.'; }
+        cloudNote = '\n☁️ Saved to the cloud - it will now appear on all devices.';
+      } else { cloudNote = '\n⚠️ Not connected to the cloud - check the internet and tap Import again.'; }
+    } catch (e) { console.error(e); cloudNote = '\n⚠️ Cloud save failed: ' + e.message + ' - please tap Import again.'; }
   }
   renderBilling('all');
   renderDashboard();
   if (typeof renderOrders === 'function') renderOrders();
   updateGlobalReminders();
-  alert(`Import complete!\n✅ ${imported} bills ledger me add hue\n👤 ${matched} bills purane customer ke naam par\n🆕 ${added} naye customers auto add hue\n⏭️ ${skipped} bills pehle se the (skip)\n⚠️ ${bad} rows adhoori thi (skip)` + cloudNote);
+  alert(`Import complete!\n✅ ${imported} bills added to the ledger\n👤 ${matched} bills matched to existing customers\n🆕 ${added} new customers added automatically\n⏭️ ${skipped} bills already existed (skipped)\n⚠️ ${bad} incomplete rows (skipped)` + cloudNote);
 }
 window.importLedgerFromJson = importLedgerFromJson;
 
@@ -7489,7 +7622,7 @@ function buildQuotationHtmlLegacy(q) {
 
 function printQuotationLegacy() {
   const custName = document.getElementById('quotCustName').value.trim();
-  if (!custName) { alert('Customer ka naam daalo'); return; }
+  if (!custName) { alert('Please enter the customer name'); return; }
   const rows = document.querySelectorAll('#quotItemsBody .quot-item-row');
   const items = Array.from(rows).map(r => {
     const qty = Number(r.querySelector('.qit-qty').value) || 0;
@@ -7507,7 +7640,7 @@ function printQuotationLegacy() {
       desc: r.dataset.desc || '', specs: r.dataset.specs || ''
     };
   }).filter(i => i.name);
-  if (items.length === 0) { alert('Kam se kam ek item add karo'); return; }
+  if (items.length === 0) { alert('Please add at least one item'); return; }
   const t = quotRecalc();
   const q = {
     id: quotNextId(),
@@ -7694,7 +7827,7 @@ window.saveInstallationReport = saveInstallationReport;
 /* -------- INSTALLATION REPORT: VIEW (print yahan se, + free-service/maintenance tracking) -------- */
 function openInstallationReportView(leadId) {
   const lead = leadsData.find(x => x.id === leadId);
-  if (!lead || !lead.installReport) { alert('Pehle Installation Report banao.'); return; }
+  if (!lead || !lead.installReport) { alert('Please create the Installation Report first.'); return; }
   let m = document.getElementById('installReportViewModal');
   if (!m) {
     m = document.createElement('div');
@@ -7755,7 +7888,7 @@ function markMaintenancePartChanged(leadId, idx) {
   setStored("LEADS", leadsData);
   renderInstallationReportView(leadId);
   renderLeads();
-  alert(`${ms.part} change date save ho gaya. Agla due date: ${ms.dueDate}`);
+  alert(`${ms.part} change date saved. Next due date: ${ms.dueDate}`);
 }
 window.markMaintenancePartChanged = markMaintenancePartChanged;
 
@@ -7818,7 +7951,7 @@ function saveFreeServiceReport() {
   document.getElementById('freeServiceReportModal').style.display = 'none';
   renderInstallationReportView(leadId);
   renderLeads();
-  alert('Free service report save ho gaya!');
+  alert('Free service report saved!');
 }
 window.saveFreeServiceReport = saveFreeServiceReport;
 
@@ -7853,7 +7986,7 @@ function buildInstallationReportHtml(lead) {
 }
 function printInstallationReport(leadId) {
   const lead = leadsData.find(x => x.id === leadId);
-  if (!lead || !lead.installReport) { alert('Pehle Installation Report banao.'); return; }
+  if (!lead || !lead.installReport) { alert('Please create the Installation Report first.'); return; }
   ttPrintHtml('Installation Report - ' + lead.customerName, buildInstallationReportHtml(lead));
 }
 window.printInstallationReport = printInstallationReport;
@@ -7960,7 +8093,7 @@ function buildServiceReportHtml(s) {
 }
 function printServiceReport(srvId) {
   const s = serviceCallsData.find(x => x.id === srvId);
-  if (!s || !s.report) { alert('Pehle report save karo.'); return; }
+  if (!s || !s.report) { alert('Please save the report first.'); return; }
   ttPrintHtml('Service Report - ' + s.customerName, buildServiceReportHtml(s));
 }
 window.printServiceReport = printServiceReport;
@@ -7972,7 +8105,7 @@ window.printServiceReport = printServiceReport;
 // ko device me save kar deta hai - bina koi purana ttViewPhoto(src) call
 // tootay (signature wahi hai, sirf andar ka UI premium hua hai).
 function ttViewPhoto(src) {
-  if (!src) { alert('Photo available nahi hai.'); return; }
+  if (!src) { alert('Photo not available.'); return; }
   let m = document.getElementById('ttPhotoViewer');
   if (!m) {
     m = document.createElement('div'); m.id = 'ttPhotoViewer';
@@ -8022,11 +8155,11 @@ function ttFindChatMsgByCid(cid) {
 }
 function ttOpenChatPhoto(cid) {
   const m = ttFindChatMsgByCid(cid);
-  if (m && m.fileData) ttViewPhoto(m.fileData); else alert('Photo abhi load nahi ho payi.');
+  if (m && m.fileData) ttViewPhoto(m.fileData); else alert('The photo has not loaded yet.');
 }
 function ttOpenChatFile(cid) {
   const m = ttFindChatMsgByCid(cid);
-  if (!m || !m.fileData) { alert('File abhi load nahi ho payi.'); return; }
+  if (!m || !m.fileData) { alert('The file has not loaded yet.'); return; }
   try {
     const w = window.open('', '_blank');
     if (w && w.document) {
@@ -8053,7 +8186,7 @@ function openLedgerDetail(ordId) {
   const reg = src => { const k = 'p' + (pi++); window.__ttPhotoStore[k] = src; return k; };
   const row = (l, v) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--border);font-size:12.5px;"><span style="color:var(--text-muted);">${l}</span><strong style="text-align:right;">${v}</strong></div>`;
   const sec = (t, body) => `<div class="card" style="margin:10px 12px;padding:12px 14px;"><div style="font-weight:800;font-size:13.5px;margin-bottom:6px;color:var(--text-main);">${t}</div>${body}</div>`;
-  const photoBtn = (src, label) => src ? `<button class="btn btn-accent btn-sm" style="margin-top:8px;" onclick="ttViewPhoto(window.__ttPhotoStore['${reg(src)}'])">🖼️ ${label}</button>` : `<div style="font-size:11.5px;color:var(--text-muted);margin-top:6px;">Photo nahi hai</div>`;
+  const photoBtn = (src, label) => src ? `<button class="btn btn-accent btn-sm" style="margin-top:8px;" onclick="ttViewPhoto(window.__ttPhotoStore['${reg(src)}'])">🖼️ ${label}</button>` : `<div style="font-size:11.5px;color:var(--text-muted);margin-top:6px;">No photo</div>`;
 
   const cust = customerDatabase.find(c => (c.phone && c.phone === o.phone) || c.name === o.customerName) || {};
   const trail = (o.auditTrail || []).slice().reverse();
@@ -8065,7 +8198,7 @@ function openLedgerDetail(ordId) {
   } else if (o.recvAmount > 0) {
     payHtml = `<div style="font-size:12.5px;">Received: <strong>₹${ttInr(o.recvAmount)}</strong>${o.lastPaymentDate ? ' · Last: ' + esc(o.lastPaymentDate) : ''}${o.payMode ? ' · ' + esc(o.payMode) : ''}</div>${photoBtn(o.lastPaymentProof, 'Payment Photo Dekhein')}`;
   } else {
-    payHtml = `<div style="font-size:12.5px;color:var(--text-muted);">Abhi tak koi payment nahi mili.</div>`;
+    payHtml = `<div style="font-size:12.5px;color:var(--text-muted);">No payment received yet.</div>`;
   }
 
   pg.innerHTML = `
@@ -8075,9 +8208,9 @@ function openLedgerDetail(ordId) {
       <span class="badge ${o.dueAmount > 0 ? 'badge-danger' : 'badge-delivered'}">${o.dueAmount > 0 ? 'Due ₹' + ttInr(o.dueAmount) : 'Paid'}</span>
     </div>
     ${sec('💰 Bill Summary', row('Total Bill', '₹' + ttInr(o.totalAmount)) + row('Received', '₹' + ttInr(o.recvAmount)) + row('Due', '₹' + ttInr(o.dueAmount)) + row('Booked / Sales By', esc(o.bookedBy || '-')) + row('Phone', esc(o.phone || cust.phone || '-')))}
-    ${sec('📅 Order & Follow-up Timeline', row('Order kab aaya', esc(o.orderDate || '-')) + row('Delivery target', esc(o.deliveryDate || '-')) +
+    ${sec('📅 Order & Follow-up Timeline', row('Order received on', esc(o.orderDate || '-')) + row('Delivery target', esc(o.deliveryDate || '-')) +
         (o.payFollowupDate ? row('Payment follow-up', esc(o.payFollowupDate) + (o.payFollowupNote ? ' — ' + esc(o.payFollowupNote) : '')) : '') +
-        (trail.length ? trail.map(t => `<div style="font-size:12px;padding:5px 0;border-bottom:1px dashed var(--border);">🕒 <strong>${esc(t.time || '')}</strong> — ${esc(t.note || '')}<br><span style="color:var(--text-muted);">by ${esc(t.by || '')}</span></div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);padding-top:6px;">Koi follow-up history nahi.</div>'))}
+        (trail.length ? trail.map(t => `<div style="font-size:12px;padding:5px 0;border-bottom:1px dashed var(--border);">🕒 <strong>${esc(t.time || '')}</strong> — ${esc(t.note || '')}<br><span style="color:var(--text-muted);">by ${esc(t.by || '')}</span></div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);padding-top:6px;">No follow-up history.</div>'))}
     ${sec('🚚 Delivery Details', row('Status', esc(o.status || '-')) + row('Delivered date & time', esc(o.deliveredAt || o.deliveredDate || '-')) + row('Delivered by', esc(o.deliveredBy || '-')) + photoBtn(o.deliveryProofPhoto, 'Delivery Photo Dekhein'))}
     ${sec('💵 Payment Details', payHtml)}
     ${sec('🧾 Items (' + (o.items || []).length + ')' + (isAdminUser() ? ` <button class="btn btn-outline btn-sm" style="float:right;" onclick="openAdminEditLedgerModal('${o.id}')">✏️ Edit</button>` : ''), (o.items || []).map((it, i) => `<div style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12.5px;"><span>${i + 1}. ${esc(it.name)} × ${it.qty}</span><strong>₹${ttInr(it.total)}</strong></div>`).join(''))}
@@ -8097,12 +8230,12 @@ function openBackupModal() {
     m = document.createElement('div'); m.id = 'backupModal'; m.className = 'auth-overlay'; m.style.display = 'none'; m.style.zIndex = '3500';
     m.innerHTML = `<div class="auth-card">
       <div class="card-header"><span class="card-title">💾 Data Backup & Import</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('backupModal').style.display='none'">✕</button></div>
-      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:12px;">Backup me Ledger/Orders (photos ke saath), Customers, Stock, Leads, Services, Machinery ka poora data aata hai.</div>
+      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:12px;">The backup includes the full Ledger/Orders (with photos), Customers, Stock, Leads, Services and Machinery data.</div>
       <button class="btn btn-primary btn-block" onclick="downloadFullBackup()">⬇️ Backup Download (JSON)</button>
       <div style="height:10px;"></div>
       <button class="btn btn-accent btn-block" onclick="document.getElementById('backupFileInput').click()">⬆️ Backup File Import / Restore</button>
       <input type="file" id="backupFileInput" accept=".json,application/json" style="display:none;" onchange="restoreBackupFile(event)">
-      <div style="font-size:11.5px;color:var(--text-muted);margin-top:10px;">Import me sirf data jud/update hota hai, kuch delete nahi hota.</div>
+      <div style="font-size:11.5px;color:var(--text-muted);margin-top:10px;">Import only adds or updates data; nothing is deleted.</div>
     </div>`;
     document.body.appendChild(m);
   }
@@ -8120,13 +8253,13 @@ function downloadFullBackup() {
 async function restoreBackupFile(ev) {
   const f = ev.target.files[0]; ev.target.value = '';
   if (!f) return;
-  if (!isAdminUser()) { alert('Sirf Admin restore kar sakta hai.'); return; }
+  if (!isAdminUser()) { alert('Only an Admin can restore.'); return; }
   try {
     const j = JSON.parse(await f.text());
     const data = j && j.data;
-    if (!data) throw new Error('Ye TTESPL backup file nahi lagti.');
+    if (!data) throw new Error('This does not look like a TTESPL backup file.');
     const counts = Object.keys(data).map(k => `${k}: ${(data[k] || []).length}`).join('\n');
-    if (!confirm('Ye data restore karein? (sirf add/update hoga, delete nahi)\n\n' + counts)) return;
+    if (!confirm('Restore this data? (Items are only added or updated; nothing is deleted.)\n\n' + counts)) return;
     const targets = {
       ORDERS: () => ordersData, CUSTOMERS: () => customerDatabase, INVENTORY: () => sampleInventory,
       LEADS: () => leadsData, SERVICES: () => serviceCallsData, MACHINERY: () => machineryDatabase
@@ -8144,7 +8277,7 @@ async function restoreBackupFile(ev) {
     }
     document.getElementById('backupModal').style.display = 'none';
     renderBilling('all'); renderDashboard(); if (typeof renderOrders === 'function') renderOrders();
-    alert('✅ Backup restore ho gaya.' + notes);
+    alert('✅ Backup restored.' + notes);
   } catch (e) { alert('Restore fail: ' + e.message); }
 }
 window.openBackupModal = openBackupModal; window.downloadFullBackup = downloadFullBackup; window.restoreBackupFile = restoreBackupFile;
@@ -8192,7 +8325,7 @@ function filterCatalog(q) {
   const box = document.getElementById('catalogListContainer');
   if (!box) return;
   if (list.length === 0) {
-    box.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">Koi product nahi mila.</div>`;
+    box.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted); font-size:12.5px;">No products found.</div>`;
     return;
   }
   box.innerHTML = list.map(i => `
@@ -8205,7 +8338,7 @@ function filterCatalog(q) {
           ${i.desc ? `<div style="font-size:12px; color:var(--text-muted); margin-top:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(i.desc)}</div>` : ''}
         </div>
         <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-          <button class="btn btn-outline btn-sm" style="padding:4px 8px;" title="Web par search karein" onclick="event.stopPropagation(); triggerAppHaptic(); openCatalogWebSearch('${esc(i.name).replace(/'/g, "\\'")}')">🌐</button>
+          <button class="btn btn-outline btn-sm" style="padding:4px 8px;" title="Search on the web" onclick="event.stopPropagation(); triggerAppHaptic(); openCatalogWebSearch('${esc(i.name).replace(/'/g, "\\'")}')">🌐</button>
           <button class="btn btn-wa btn-sm" style="padding:4px 8px;" title="Share (Customer Price only)" onclick="event.stopPropagation(); triggerAppHaptic(); ttShareProduct('${i.id}')">📤</button>
           <span style="font-size:18px;">›</span>
         </div>
@@ -8228,12 +8361,12 @@ function openCatalogWebSearch(name) {
       <div class="card-header" style="padding:12px 14px; border-bottom:1px solid var(--border); flex-shrink:0;">
         <span class="card-title" id="inAppBrowserTitle" style="font-size:13.5px;">🌐 Searching...</span>
         <div style="display:flex; gap:6px;">
-          <button class="btn btn-outline btn-sm" id="inAppBrowserOpenExtBtn">↗ Browser me kholein</button>
+          <button class="btn btn-outline btn-sm" id="inAppBrowserOpenExtBtn">↗ Open in browser</button>
           <button class="btn btn-outline btn-sm" onclick="document.getElementById('inAppBrowserModal').style.display='none'; document.getElementById('inAppBrowserFrame').src='about:blank';">✕</button>
         </div>
       </div>
       <div style="font-size:11px; color:var(--text-muted); padding:6px 14px; border-bottom:1px solid var(--border); flex-shrink:0;">
-        Result seedha web se hai (ye app khud isse likh/summarize nahi karta). Agar page yahan khali dikhe, to upar wala "Browser me kholein" button dabayein.
+        Result seedha web se hai (ye app khud isse likh/summarize nahi karta). Agar page yahan khali dikhe, to upar wala "Open in browser" button dabayein.
       </div>
       <iframe id="inAppBrowserFrame" style="flex:1; width:100%; border:0; background:#fff;"></iframe>
     </div>`;
@@ -8296,10 +8429,10 @@ function openCatalogDetail(id) {
     <button class="btn btn-outline btn-sm btn-block" style="margin-bottom:10px;" onclick="triggerAppHaptic(); ttCatProdEdit('${i.id}')">✏️ Edit Product Details</button>
     <div id="catalogAiBox" style="margin:4px 0 10px; padding:10px 12px; border-radius:12px; background:var(--bg); border:1px dashed var(--border); font-size:12.5px; line-height:1.5; color:var(--text-main);">
       <div style="font-weight:800; font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:4px;">🤖 AI Summary (Google Search se)</div>
-      <div id="catalogAiBoxBody">⏳ Dhoond raha hai...</div>
+      <div id="catalogAiBoxBody">⏳ Searching...</div>
     </div>
     <button class="btn btn-outline btn-block" style="margin-top:6px;" onclick="triggerAppHaptic(); openCatalogWebSearch('${esc(i.name).replace(/'/g, "\'")}')">🌐 Search on Web / Photos</button>
-    <div style="margin-top:10px; padding-top:12px; border-top:1px solid var(--border); font-size:11px; color:var(--text-muted);">Ye sirf reference catalog hai - is item se koi bill ya order nahi banta.</div>
+    <div style="margin-top:10px; padding-top:12px; border-top:1px solid var(--border); font-size:11px; color:var(--text-muted);">This is a reference catalog only - no bill or order is created from this item.</div>
   </div>`;
   m.style.display = 'flex';
   fetchCatalogAiSummary(i.name);
@@ -8311,10 +8444,10 @@ const TT_GEMINI_API_KEY = "AQ.Ab8RN6LSsIljxExrgMsibV7xWnRU_0zb-_BK4PM90wSr0CPVew
 async function fetchCatalogAiSummary(productName) {
   const body = document.getElementById('catalogAiBoxBody');
   if (!body) return;
-  if (!TT_GEMINI_API_KEY) { body.textContent = 'AI summary abhi setup nahi hai.'; return; }
+  if (!TT_GEMINI_API_KEY) { body.textContent = 'AI summary is not set up yet.'; return; }
   try {
-    const prompt = 'Yeh ek car-detailing/machinery product hai: "' + productName + '" (brand: TTESPL / Twin Town Express Services ka catalog item). ' +
-      'Google search karke iske baare me 3-4 chhoti lines me Hindi-English mix (Hinglish) me batao: ye kya hai, kis kaam aata hai, agar chemical/liquid hai to dilution ratio kya hota hai, aur zaroori accessories/safety baat. Bahut sankshipt rakho, bullet jaisa.';
+    const prompt = 'This is a car-detailing / machinery product: "' + productName + '" (brand: TTESPL / Twin Town Express Services ka catalog item). ' +
+      'Search Google and explain it in 3-4 short lines in simple English: what it is, what it is used for, the dilution ratio if it is a chemical/liquid, and the essential accessories / safety notes. Keep it very brief, in bullet style.';
     const res = await fetch(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
       {
@@ -8330,10 +8463,10 @@ async function fetchCatalogAiSummary(productName) {
     const data = await res.json();
     const parts = (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
     const text = parts.map(p => p.text || '').join('').trim();
-    body.innerHTML = text ? esc(text).replace(/\n/g, '<br>') : 'Kuch bhi nahi mila is product ke baare me.';
+    body.innerHTML = text ? esc(text).replace(/\n/g, '<br>') : 'Nothing was found about this product.';
   } catch (e) {
     console.error('Gemini summary failed', e);
-    body.textContent = '⚠️ AI summary load nahi ho paya (internet ya quota check karein). Niche "Search on Web" try karein.';
+    body.textContent = '⚠️ Could not load the AI summary (check internet or quota). Try "Search on Web" below.';
   }
 }
 window.fetchCatalogAiSummary = fetchCatalogAiSummary;
@@ -8366,7 +8499,7 @@ function ttUpdateQuotSerialLabel() {
   var idEl = document.getElementById('quotEditId');
   var id = idEl ? idEl.value : '';
   var rec = id ? (quotationsData || []).find(function (q) { return q && q.id === id; }) : null;
-  if (rec) el.innerHTML = '✏️ Editing <b>' + ttH(rec.id) + '</b> (Serial #' + ttH(rec.serial) + ') — save karne par yahi quotation update hoga';
+  if (rec) el.innerHTML = '✏️ Editing <b>' + ttH(rec.id) + '</b> (Serial #' + ttH(rec.serial) + ') — saving will update this same quotation';
   else el.innerHTML = '🔢 Next Serial: <b>QTN-' + ttQuotPad(ttPeekNextQuotSerial()) + '</b> (auto)';
 }
 
@@ -8380,7 +8513,7 @@ window.openQuotationModal = openQuotationModal;
 
 function ttCollectQuotationForm() {
   var custName = document.getElementById('quotCustName').value.trim();
-  if (!custName) { alert('Customer ka naam daalo'); return null; }
+  if (!custName) { alert('Please enter the customer name'); return null; }
   var rows = document.querySelectorAll('#quotItemsBody .quot-item-row');
   var items = Array.from(rows).map(function (r) {
     var qty = Number(r.querySelector('.qit-qty').value) || 0;
@@ -8395,7 +8528,7 @@ function ttCollectQuotationForm() {
       desc: r.dataset.desc || '', specs: r.dataset.specs || ''
     };
   });
-  if (items.length === 0) { alert('Kam se kam ek item add karo'); return null; }
+  if (items.length === 0) { alert('Please add at least one item'); return null; }
   var t = quotRecalc();
   return {
     custName: custName,
@@ -8455,7 +8588,7 @@ function ttSaveAndPrintQuotation() {
   var form = ttCollectQuotationForm();
   if (!form) return;
   var q = ttPersistQuotation(form);
-  ttShowSuccessToast('Quotation ' + q.id + ' history me save ho gayi.');
+  ttShowSuccessToast('Quotation ' + q.id + ' saved to history.');
   ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q));
 }
 window.ttSaveAndPrintQuotation = ttSaveAndPrintQuotation;
@@ -8550,10 +8683,10 @@ function ttRenderQuotationHistory() {
     if (!term) return true;
     return (q.custName || '').toLowerCase().indexOf(term) >= 0 || String(q.custPhone || '').indexOf(term) >= 0 || (q.id || '').toLowerCase().indexOf(term) >= 0;
   });
-  document.getElementById('qhCount').textContent = list.length + ' quotation' + (list.length === 1 ? '' : 's') + ' (sabse naya upar, serial ke hisab se)';
+  document.getElementById('qhCount').textContent = list.length + ' quotation' + (list.length === 1 ? '' : 's') + ' (newest first, by serial)';
 
   if (!list.length) {
-    box.innerHTML = '<div class="empty-state"><span class="empty-icon">📝</span><div class="empty-sub">Koi quotation nahi mili.</div></div>';
+    box.innerHTML = '<div class="empty-state"><span class="empty-icon">📝</span><div class="empty-sub">No quotations found.</div></div>';
     return;
   }
   var isAdm = isAdminUser();
@@ -8591,7 +8724,7 @@ function ttPrintQuotationRecord(id) {
 }
 function ttDeleteQuotation(id) {
   if (!isAdminUser()) { alert('Admin only!'); return; }
-  if (!confirm('Quotation ' + id + ' delete karein?')) return;
+  if (!confirm('Delete Quotation ' + id + '?')) return;
   try { if (window.cloudSync && window.cloudSync.deleteItem) window.cloudSync.deleteItem('QUOTATIONS', id); } catch (e) {}
   quotationsData = (quotationsData || []).filter(function (q) { return q && q.id !== id; });
   setStored("QUOTATIONS", quotationsData);
@@ -8626,7 +8759,7 @@ window.ttSetStockCategory = ttSetStockCategory;
 /* ================= PRODUCT SHARE (sirf Customer Price) + CATALOG DUAL PRICING ================= */
 function ttShareProduct(id) {
   var i = (sampleInventory || []).find(function (x) { return String(x.id) === String(id); });
-  if (!i) { alert('Product nahi mila.'); return; }
+  if (!i) { alert('Product not found.'); return; }
   var cp = Number(i.rate) || 0;
   var lines = [i.name];
   var cat = [i.category, i.subCategory].filter(Boolean).join(' → ');
@@ -8661,7 +8794,7 @@ function ttCatalogPriceBlockHtml(i) {
     '<div style="display:flex;gap:8px;margin-bottom:6px;">' +
     '<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttOpenCatalogPriceEdit(\'' + i.id + '\')">✏️ Edit Prices</button>' +
     '<button class="btn btn-wa btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttShareProduct(\'' + i.id + '\')">📤 Share</button></div>' +
-    '<div style="font-size:10.5px;color:var(--text-muted);margin-bottom:12px;">Share karne par sirf Customer Price jaata hai — Dealer Price kabhi share nahi hota.</div>';
+    '<div style="font-size:10.5px;color:var(--text-muted);margin-bottom:12px;">Only the Customer Price is shared — the Dealer Price is never shared.</div>';
 }
 window.ttCatalogPriceBlockHtml = ttCatalogPriceBlockHtml;
 
@@ -8692,7 +8825,7 @@ function ttSaveCatalogPrices() {
   if (!i) return;
   var cp = parseFloat(document.getElementById('cpCustomer').value) || 0;
   var dp = parseFloat(document.getElementById('cpDealer').value) || 0;
-  if (cp < 0 || dp < 0) { alert('Price negative nahi ho sakta.'); return; }
+  if (cp < 0 || dp < 0) { alert('Price cannot be negative.'); return; }
   i.rate = cp;
   i.dealerPrice = dp;
   setStored("INVENTORY", sampleInventory);
@@ -8759,7 +8892,7 @@ function ttEnsureTravelModal() {
     '<div class="form-group"><label class="form-label">Distance (Km)</label><input type="number" id="trvKm" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 12.5"></div></div>' +
     '<div class="grid-2"><div class="form-group"><label class="form-label">From</label><input type="text" id="trvFrom" placeholder="e.g. Rasulgarh Office"></div>' +
     '<div class="form-group"><label class="form-label">To</label><input type="text" id="trvTo" placeholder="e.g. Cuttack Workshop"></div></div>' +
-    '<button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); ttTravelAdd()">➕ Add Visit (ek date par kai places add kar sakte hain)</button></div>' +
+    '<button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); ttTravelAdd()">➕ Add Visit (you can add several places on one date)</button></div>' +
     '<div style="font-size:13px;font-weight:800;margin:14px 0 8px;">📋 Monthly Log (editable)</div>' +
     '<div id="trvLog" style="max-height:44vh;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div></div>';
   document.body.appendChild(m);
@@ -8767,7 +8900,7 @@ function ttEnsureTravelModal() {
 }
 
 function openTravelExpenses() {
-  if (!currentUser) { alert('Pehle login karein.'); return; }
+  if (!currentUser) { alert('Please log in first.'); return; }
   var m = ttEnsureTravelModal();
   if (!ttTravelState.month) {
     var now = new Date();
@@ -8817,7 +8950,7 @@ function ttRenderTravel(full) {
 
   var log = document.getElementById('trvLog');
   if (!recs.length) {
-    log.innerHTML = '<div class="empty-state"><span class="empty-icon">🧳</span><div class="empty-sub">Is mahine koi travel entry nahi hai.</div></div>';
+    log.innerHTML = '<div class="empty-state"><span class="empty-icon">🧳</span><div class="empty-sub">No travel entries this month.</div></div>';
     return;
   }
   var html = '', lastDate = '';
@@ -8855,7 +8988,7 @@ function ttTravelAdd() {
   var from = document.getElementById('trvFrom').value.trim();
   var to = document.getElementById('trvTo').value.trim();
   var km = parseFloat(document.getElementById('trvKm').value);
-  if (!date || !from || !to || !(km > 0)) { alert('Date, From, To aur Km (0 se zyada) bharna zaroori hai.'); return; }
+  if (!date || !from || !to || !(km > 0)) { alert('Date, From, To and Km (greater than 0) are required.'); return; }
   var key = ttTravelViewKey();
   var rec = {
     id: 'TRV' + Date.now() + Math.random().toString(36).slice(2, 6),
@@ -8889,7 +9022,7 @@ window.ttTravelUpdate = ttTravelUpdate;
 function ttTravelDelete(id) {
   var r = (travelData || []).find(function (x) { return x && x.id === id; });
   if (!r || !ttTravelCanEdit(r)) return;
-  if (!confirm('Ye travel entry delete karein?')) return;
+  if (!confirm('Delete this travel entry?')) return;
   try { if (window.cloudSync && window.cloudSync.deleteItem) window.cloudSync.deleteItem('TRAVEL', id); } catch (e) {}
   travelData = (travelData || []).filter(function (x) { return x && x.id !== id; });
   setStored("TRAVEL", travelData);
@@ -8899,7 +9032,7 @@ window.ttTravelDelete = ttTravelDelete;
 
 function ttTravelPrint() {
   var recs = ttTravelMonthRecords();
-  if (!recs.length) { alert('Is mahine koi travel entry nahi hai.'); return; }
+  if (!recs.length) { alert('No travel entries this month.'); return; }
   var name = ttTravelEmpName(ttTravelViewKey());
   var monthLabel = ttTravelMonthLabel();
   var B = 'border:1px solid #000;padding:5px 7px;font-size:11.5px;';
@@ -8970,7 +9103,7 @@ function ttCatProdEdit(id) {
   if (id && !i) return;
   var d = document.getElementById('catalogDetailModal'); if (d) d.style.display = 'none';
   var m = ttCatModal('catalogProdModal', '3200');
-  var opts = '<option value="">— Koi category nahi —</option>' + (catalogCatsData || []).map(function (c) {
+  var opts = '<option value="">— No category —</option>' + (catalogCatsData || []).map(function (c) {
     return '<option value="' + ttH(c.id) + '"' + (i && String(i.catalogCat) === String(c.id) ? ' selected' : '') + '>' + ttH(c.name) + '</option>';
   }).join('');
   var v = function (x) { return ttH(x == null ? '' : x); };
@@ -8980,7 +9113,7 @@ function ttCatProdEdit(id) {
     '<div class="form-group"><label class="form-label">Product Name *</label><input type="text" id="cpeName" value="' + v(i && i.name) + '" placeholder="e.g. AR-680 (1Φ)"></div>' +
     '<div class="form-group"><label class="form-label">Category</label><select id="cpeCat">' + opts + '</select></div>' +
     '<div class="form-group"><label class="form-label">Model / Code</label><input type="text" id="cpeCode" value="' + v(i && i.code) + '" placeholder="e.g. CAT-1040"></div>' +
-    '<div class="form-group"><label class="form-label">HSN (Quotation ke liye)</label><input type="text" id="cpeHsn" value="' + v(i && i.hsn) + '" placeholder="e.g. 84243000"></div>' +
+    '<div class="form-group"><label class="form-label">HSN (for quotations)</label><input type="text" id="cpeHsn" value="' + v(i && i.hsn) + '" placeholder="e.g. 84243000"></div>' +
     '<div class="form-group"><label class="form-label">Description</label><textarea id="cpeDesc" rows="3" style="width:100%;">' + v(i && i.desc) + '</textarea></div>' +
     '<div class="form-group"><label class="form-label">Technical Data / Specs</label><textarea id="cpeSpecs" rows="4" style="width:100%;">' + v(i && i.specs) + '</textarea></div>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
@@ -8993,11 +9126,11 @@ function ttCatProdEdit(id) {
 }
 function ttCatProdSave() {
   var name = document.getElementById('cpeName').value.trim();
-  if (!name) { alert('Product ka naam daalo'); return; }
+  if (!name) { alert('Please enter the product name'); return; }
   var id = document.getElementById('cpeId').value;
   var cust = parseFloat(document.getElementById('cpeCust').value) || 0;
   var deal = parseFloat(document.getElementById('cpeDeal').value) || 0;
-  if (cust < 0 || deal < 0) { alert('Price negative nahi ho sakta.'); return; }
+  if (cust < 0 || deal < 0) { alert('Price cannot be negative.'); return; }
   var f = {
     name: name,
     code: document.getElementById('cpeCode').value.trim(),
@@ -9019,11 +9152,11 @@ function ttCatProdSave() {
   document.getElementById('catalogProdModal').style.display = 'none';
   renderCatalog();
   try { updateCategoryCounts(); } catch (e) {}
-  try { if (typeof ttShowSuccessToast === 'function') ttShowSuccessToast(item ? 'Product update ho gaya.' : 'Product catalog mein add ho gaya.'); } catch (e) {}
+  try { if (typeof ttShowSuccessToast === 'function') ttShowSuccessToast(item ? 'Product updated.' : 'Product added to the catalog.'); } catch (e) {}
 }
 function ttCatProdDelete(id) {
   if (!isAdminUser()) { alert('Admin only!'); return; }
-  if (!confirm('Is product ko delete kar dein?')) return;
+  if (!confirm('Delete this product?')) return;
   sampleInventory = sampleInventory.filter(function (x) { return String(x.id) !== String(id); });
   setStored("INVENTORY", sampleInventory);
   try { if (window.cloudSync) window.cloudSync.deleteItem('INVENTORY', id); } catch (e) {}
@@ -9043,11 +9176,11 @@ function ttCatManage(catId) {
   var m = ttCatModal('catalogCatModal', '3200');
   m.innerHTML = '<div class="auth-card" style="max-width:480px;max-height:92dvh;display:flex;flex-direction:column;">' +
     '<div class="card-header"><span class="card-title">' + (c ? '⚙️ Category Manage' : '➕ New Category') + '</span><button class="btn btn-outline btn-sm" onclick="document.getElementById(\'catalogCatModal\').style.display=\'none\'">✕</button></div>' +
-    '<div class="form-group"><label class="form-label">Category ka naam *</label><input type="text" id="ccName" value="' + ttH(c ? c.name : '') + '" placeholder="e.g. High Pressure Washers"></div>' +
-    '<div class="form-group" style="margin-bottom:6px;"><label class="form-label">Is category mein products select karein (<span id="ccCount">0</span>)</label><input type="text" id="ccSearch" placeholder="🔍 Product search..." oninput="ttDeb(\'cc\', ttCatRenderPick)"></div>' +
+    '<div class="form-group"><label class="form-label">Category name *</label><input type="text" id="ccName" value="' + ttH(c ? c.name : '') + '" placeholder="e.g. High Pressure Washers"></div>' +
+    '<div class="form-group" style="margin-bottom:6px;"><label class="form-label">Select products for this category (<span id="ccCount">0</span>)</label><input type="text" id="ccSearch" placeholder="🔍 Product search..." oninput="ttDeb(\'cc\', ttCatRenderPick)"></div>' +
     '<div id="ccList" style="flex:1;overflow-y:auto;min-height:120px;max-height:46dvh;border:1px solid var(--border);border-radius:12px;padding:6px;margin-bottom:10px;"></div>' +
     '<button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); ttCatSave()">💾 Save Category</button>' +
-    (c ? '<button class="btn btn-danger-sm btn-block" style="margin-top:8px;" onclick="ttCatDelete()">🗑️ Category Delete (products delete nahi honge)</button>' : '') +
+    (c ? '<button class="btn btn-danger-sm btn-block" style="margin-top:8px;" onclick="ttCatDelete()">🗑️ Delete Category (products will not be deleted)</button>' : '') +
     '</div>';
   m.style.display = 'flex';
   ttCatRenderPick();
@@ -9061,8 +9194,8 @@ function ttCatRenderPick() {
     var here = ttCatEditId && String(i.catalogCat) === String(ttCatEditId);
     return '<label style="display:flex;align-items:center;gap:10px;padding:8px 6px;border-bottom:1px solid var(--border);cursor:pointer;">' +
       '<input type="checkbox" style="width:18px;height:18px;flex:none;" ' + (ttCatSel[String(i.id)] ? 'checked' : '') + ' onchange="ttCatTick(\'' + ttH(i.id) + '\', this.checked)">' +
-      '<span style="flex:1;font-size:13px;color:var(--text-main);">' + ttH(i.name) + (other && !here ? '<span style="display:block;font-size:10.5px;color:var(--text-muted);">Abhi: ' + ttH(other) + ' (select karne par yahan aa jayega)</span>' : '') + '</span></label>';
-  }).join('') : '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:12.5px;">Koi product nahi mila.</div>';
+      '<span style="flex:1;font-size:13px;color:var(--text-main);">' + ttH(i.name) + (other && !here ? '<span style="display:block;font-size:10.5px;color:var(--text-muted);">Currently: ' + ttH(other) + ' (it will move here when selected)</span>' : '') + '</span></label>';
+  }).join('') : '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:12.5px;">No products found.</div>';
   var n = Object.keys(ttCatSel).length; var el = document.getElementById('ccCount'); if (el) el.textContent = n;
 }
 function ttCatTick(id, on) {
@@ -9071,9 +9204,9 @@ function ttCatTick(id, on) {
 }
 function ttCatSave() {
   var name = document.getElementById('ccName').value.trim();
-  if (!name) { alert('Category ka naam daalo'); return; }
+  if (!name) { alert('Please enter the category name'); return; }
   var dup = (catalogCatsData || []).some(function (c) { return c.name.toLowerCase() === name.toLowerCase() && String(c.id) !== String(ttCatEditId); });
-  if (dup) { alert('Is naam ki category pehle se hai.'); return; }
+  if (dup) { alert('A category with this name already exists.'); return; }
   var cat = ttCatEditId ? catalogCatsData.filter(function (c) { return String(c.id) === String(ttCatEditId); })[0] : null;
   if (cat) { cat.name = name; }
   else { cat = { id: 'CC' + Date.now(), name: name, createdBy: currentUser ? currentUser.name : '' }; catalogCatsData.push(cat); }
@@ -9091,7 +9224,7 @@ function ttCatSave() {
 }
 function ttCatDelete() {
   var c = catalogCatsData.filter(function (x) { return String(x.id) === String(ttCatEditId); })[0];
-  if (!c || !confirm('"' + c.name + '" category delete karein? Products catalog mein bane rahenge (sirf All mein dikhenge).')) return;
+  if (!c || !confirm('Delete category "' + c.name + '"? Its products will stay in the catalog (shown under All only).')) return;
   var changed = false;
   getCatalogItems().forEach(function (i) { if (String(i.catalogCat) === String(c.id)) { i.catalogCat = ''; changed = true; } });
   catalogCatsData = catalogCatsData.filter(function (x) { return String(x.id) !== String(c.id); });
@@ -9650,19 +9783,19 @@ window.ttRenderBrandsIfOpen = function () {
     window.__tt14Share = o;
     setModal(m,
       '<div class="card-header"><span class="card-title">📤 ' + H(o.title) + '</span><button class="btn btn-outline btn-sm" onclick="tt14Close(\'tt14ShareModal\')">✕</button></div>' +
-      '<div id="tt14ShStatus" class="tt14-status">⏳ PDF ban rahi hai…</div>' +
-      '<button class="btn btn-wa btn-block" onclick="triggerAppHaptic(); tt14ShareGo(\'wa\')">📎 WhatsApp par PDF bhejo</button>' +
-      '<button class="btn btn-primary btn-block" style="margin-top:8px;" onclick="triggerAppHaptic(); tt14ShareGo(\'save\')">💾 PDF Phone me Save karo</button>' +
-      '<button class="btn btn-outline btn-block" style="margin-top:8px;" onclick="triggerAppHaptic(); tt14ShareGo(\'text\')">💬 Sirf Text (WhatsApp message)</button>' +
+      '<div id="tt14ShStatus" class="tt14-status">⏳ Creating the PDF…</div>' +
+      '<button class="btn btn-wa btn-block" onclick="triggerAppHaptic(); tt14ShareGo(\'wa\')">📎 Send PDF on WhatsApp</button>' +
+      '<button class="btn btn-primary btn-block" style="margin-top:8px;" onclick="triggerAppHaptic(); tt14ShareGo(\'save\')">💾 Save PDF to Phone</button>' +
+      '<button class="btn btn-outline btn-block" style="margin-top:8px;" onclick="triggerAppHaptic(); tt14ShareGo(\'text\')">💬 Text Only (WhatsApp message)</button>' +
       '<button class="btn btn-outline btn-block" style="margin-top:8px;" onclick="triggerAppHaptic(); tt14ShareGo(\'print\')">🖨️ Print / Save as PDF</button>');
     m.style.display = 'flex';
     o._blob = null; o._err = null;
     var st = function (t) { var e = $('tt14ShStatus'); if (e) e.innerHTML = t; };
     o._p = sheetsToPdf(o.html()).then(function (b) {
-      o._blob = b; st('✅ PDF taiyaar (' + Math.max(1, Math.round(b.size / 1024)) + ' KB)'); return b;
+      o._blob = b; st('✅ PDF ready (' + Math.max(1, Math.round(b.size / 1024)) + ' KB)'); return b;
     }).catch(function (e) {
       o._err = e; console.warn('PDF build fail', e);
-      st('⚠️ PDF direct nahi ban payi - <b>Print / Save as PDF</b> ya <b>Text</b> use karein.'); return null;
+      st('⚠️ The PDF could not be created directly - use <b>Print / Save as PDF</b> or <b>Text</b>.'); return null;
     });
   };
   window.tt14ShareGo = async function (mode) {
@@ -9671,7 +9804,7 @@ window.ttRenderBrandsIfOpen = function () {
     if (mode === 'print') { closeM('tt14ShareModal'); try { o.printFn(); } catch (e) { console.error(e); } return; }
     var blob = await o._p;
     if (!blob) { closeM('tt14ShareModal'); try { o.printFn(); } catch (e) {} return; }
-    if (mode === 'save') { downloadBlob(blob, o.fileName); notice('PDF save', o.fileName + ' download ho gayi', '💾'); return; }
+    if (mode === 'save') { downloadBlob(blob, o.fileName); notice('PDF save', o.fileName + ' downloaded', '💾'); return; }
     var file = null;
     try { file = new File([blob], o.fileName, { type: 'application/pdf' }); } catch (e) {}
     if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -9680,7 +9813,7 @@ window.ttRenderBrandsIfOpen = function () {
     }
     downloadBlob(blob, o.fileName);
     closeM('tt14ShareModal');
-    notice('PDF ready', 'PDF download ho gayi - WhatsApp me 📎 attach karke bhejein', '📎');
+    notice('PDF ready', 'PDF downloaded - attach it with 📎 in WhatsApp and send', '📎');
     setTimeout(function () { window.open(waUrl(o.phone, o.msg), '_blank'); }, 700);
   };
 
@@ -9692,7 +9825,7 @@ window.ttRenderBrandsIfOpen = function () {
     if (!o || typeof buildTallyInvoiceHtml !== 'function') return _origOrderShare && _origOrderShare(ordId);
     ttShareDoc({
       title: 'Invoice ' + o.id, fileName: 'TTESPL_Invoice_' + o.id + '.pdf', phone: o.phone,
-      msg: 'Namaste ' + (o.customerName || '') + ' ji,\nTwin Town Express Services Pvt Ltd ki taraf se Invoice ' + o.id + ' (Total ' + INR(o.totalAmount) + ') ki PDF attached hai.\nDhanyavaad!',
+      msg: 'Hello ' + (o.customerName || '') + ',\nPlease find attached the PDF of Invoice ' + o.id + ' (Total ' + INR(o.totalAmount) + ') from Twin Town Express Services Pvt Ltd.\nThank you!',
       html: function () { return buildTallyInvoiceHtml(o); },
       textFn: function () { _origOrderShare(ordId); },
       printFn: function () { ttPrintHtml('Tax Invoice ' + o.id, buildTallyInvoiceHtml(o)); }
@@ -9705,7 +9838,7 @@ window.ttRenderBrandsIfOpen = function () {
   function quotShare(q) {
     ttShareDoc({
       title: 'Quotation ' + q.id, fileName: 'TTESPL_Quotation_' + q.id + '.pdf', phone: q.custPhone,
-      msg: 'Namaste ' + (q.custName || '') + ' ji,\nTwin Town Express Services Pvt Ltd ki taraf se Quotation ' + q.id + ' (Total ' + INR(q.final) + ') ki PDF attached hai.\nDhanyavaad!',
+      msg: 'Hello ' + (q.custName || '') + ',\nPlease find attached the PDF of Quotation ' + q.id + ' (Total ' + INR(q.final) + ') from Twin Town Express Services Pvt Ltd.\nThank you!',
       html: function () { return buildQuotationHtml(q); },
       textFn: function () { ttNativeShareOrFallback({ title: 'TTESPL Quotation ' + q.id, text: ttQuotPlain(q) }, function () { ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q)); }); },
       printFn: function () { ttPrintHtml('Quotation ' + q.id, buildQuotationHtml(q)); }
@@ -9761,25 +9894,25 @@ window.ttRenderBrandsIfOpen = function () {
       '<button class="btn btn-outline btn-sm" onclick="tt14Close(\'tt14CustModal\')">✕</button></div>');
     h.push('<div class="tt14-tiles"><div><small>ORDERS</small><b>' + orders.length + '</b></div><div><small>BILLED</small><b>' + INR(billed) + '</b></div>' +
       '<div><small>RECEIVED</small><b style="color:var(--success,#16a34a);">' + INR(recv) + '</b></div><div><small>DUE</small><b style="color:' + (due > 0 ? 'var(--danger,#e11d48)' : 'var(--success,#16a34a)') + ';">' + INR(due) + '</b></div></div>');
-    h.push('<div style="font-size:11.5px;color:var(--text-muted);margin:8px 0;">Pehla order: <b>' + H(dates[0] || '-') + '</b> • Aakhri order: <b>' + H(dates[dates.length - 1] || '-') + '</b> • Quotations: <b>' + qs.length + '</b></div>');
+    h.push('<div style="font-size:11.5px;color:var(--text-muted);margin:8px 0;">First order: <b>' + H(dates[0] || '-') + '</b> • Last order: <b>' + H(dates[dates.length - 1] || '-') + '</b> • Quotations: <b>' + qs.length + '</b></div>');
     h.push('<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">' +
       (c.phone ? '<a class="btn btn-outline btn-sm" style="flex:1;text-align:center;text-decoration:none;" href="tel:' + H(last10(c.phone)) + '">📞 Call</a>' : '') +
       (due > 0 ? '<button class="btn btn-wa btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttCustDueMsg(\'' + H(c.id) + '\')">💬 Due Reminder (' + INR(due) + ')</button>' : '') + '</div>');
     h.push('<div class="tt14-sec">📦 Orders (date-wise)</div>');
-    if (!sorted.length) h.push('<div class="tt14-empty">Is customer ka abhi koi order nahi.</div>');
+    if (!sorted.length) h.push('<div class="tt14-empty">This customer has no orders yet.</div>');
     sorted.slice(0, 60).forEach(function (o) {
       var names = (o.items || []).map(function (i) { return i.name; });
       h.push('<div class="tt14-row"><div style="display:flex;justify-content:space-between;gap:8px;"><div><b>' + H(o.orderDate || '-') + '</b> • ' + H(o.id) +
         ' <span class="badge ' + stBadge(o.status) + '" style="font-size:9.5px;">' + H(o.status || '') + '</span></div><b>' + INR(o.totalAmount) + '</b></div>' +
-        '<div class="tt14-sub">' + H(names.slice(0, 3).join(', ')) + (names.length > 3 ? ' +' + (names.length - 3) + ' aur' : '') + '</div>' +
+        '<div class="tt14-sub">' + H(names.slice(0, 3).join(', ')) + (names.length > 3 ? ' +' + (names.length - 3) + ' more' : '') + '</div>' +
         '<div class="tt14-sub">Paid <b>' + INR(o.recvAmount) + '</b> • Due <b style="color:' + ((o.dueAmount || 0) > 0 ? 'var(--danger,#e11d48)' : 'inherit') + ';">' + INR(o.dueAmount) + '</b></div></div>');
     });
-    if (sorted.length > 60) h.push('<div class="tt14-empty">…aur ' + (sorted.length - 60) + ' purane orders</div>');
+    if (sorted.length > 60) h.push('<div class="tt14-empty">…and ' + (sorted.length - 60) + ' older orders</div>');
     h.push('<div class="tt14-sec">💰 Payment Timeline</div>');
-    if (!pays.length) h.push('<div class="tt14-empty">Abhi koi payment record nahi.</div>');
+    if (!pays.length) h.push('<div class="tt14-empty">No payment records yet.</div>');
     pays.slice(0, 80).forEach(function (p) {
       h.push('<div class="tt14-row" style="display:flex;justify-content:space-between;gap:8px;"><div><b>' + H(p.date || '-') + '</b> • ' + H(p.ref) +
-        '<div class="tt14-sub">' + H(p.adv ? 'Order ke time' : 'Due collect') + (p.mode ? ' • ' + H(p.mode) : '') + (p.by ? ' • ' + H(p.by) : '') + '</div></div>' +
+        '<div class="tt14-sub">' + H(p.adv ? 'At the time of order' : 'Due collect') + (p.mode ? ' • ' + H(p.mode) : '') + (p.by ? ' • ' + H(p.by) : '') + '</div></div>' +
         '<b style="color:var(--success,#16a34a);">+ ' + INR(p.amt) + '</b></div>');
     });
     if (qs.length) {
@@ -9796,8 +9929,8 @@ window.ttRenderBrandsIfOpen = function () {
     var c = (customerDatabase || []).find(function (x) { return String(x.id) === String(id); }); if (!c) return;
     var due = custOrders(c).filter(function (o) { return o.status !== 'Cancelled' && (o.dueAmount || 0) > 0; });
     var tot = due.reduce(function (s, o) { return s + (Number(o.dueAmount) || 0); }, 0);
-    var msg = 'Namaste ' + c.name + ' ji,\nTwin Town Express Services Pvt Ltd (Rasulgarh, BBSR) ki taraf se yaad dila rahe hain ki aapka ' + INR(tot) +
-      ' baaki hai (Invoice: ' + due.map(function (o) { return o.id; }).join(', ') + ').\nKripya jaldi payment kar dein. UPI / Bank details chahiye to bata dijiye.\nDhanyavaad!';
+    var msg = 'Hello ' + c.name + ',\nThis is a reminder from Twin Town Express Services Pvt Ltd (Rasulgarh, BBSR) that an amount of ' + INR(tot) +
+      ' is outstanding (Invoice: ' + due.map(function (o) { return o.id; }).join(', ') + ').\nKindly pay at the earliest. Let us know if you need our UPI / bank details.\nThank you!';
     window.open(waUrl(c.phone, msg), '_blank');
   };
 
@@ -9818,7 +9951,7 @@ window.ttRenderBrandsIfOpen = function () {
     var sold = rows.filter(function (r) { return r.st === 'Delivered'; });
     var q = sold.reduce(function (s, r) { return s + r.qty; }, 0), rev = sold.reduce(function (s, r) { return s + r.total; }, 0);
     var pend = rows.filter(function (r) { return r.st !== 'Delivered'; }).reduce(function (s, r) { return s + r.qty; }, 0);
-    if (!rows.length) { box.innerHTML = '<div class="tt14-empty">Is item ki abhi koi sale nahi hui.</div>'; return; }
+    if (!rows.length) { box.innerHTML = '<div class="tt14-empty">No sales for this item yet.</div>'; return; }
     var h = ['<div class="tt14-tiles" style="grid-template-columns:repeat(4,1fr);margin:4px;"><div><small>SOLD</small><b>' + q + '</b></div><div><small>REVENUE</small><b>' + INR(rev) +
       '</b></div><div><small>AVG RATE</small><b>' + INR(q ? Math.round(rev / q) : 0) + '</b></div><div><small>BOOKED</small><b>' + pend + '</b></div></div>'];
     rows.slice(0, 60).forEach(function (r) {
@@ -9826,7 +9959,7 @@ window.ttRenderBrandsIfOpen = function () {
         '</div><b>' + r.qty + ' × ' + INR(Math.round(r.rate)) + '</b></div><div class="tt14-sub">' + H(r.id) + ' • ' +
         '<span class="badge ' + stBadge(r.st) + '" style="font-size:9px;">' + H(r.st || '') + '</span> • Total ' + INR(r.total) + '</div></div>');
     });
-    if (rows.length > 60) h.push('<div class="tt14-empty">…aur ' + (rows.length - 60) + ' purani entries</div>');
+    if (rows.length > 60) h.push('<div class="tt14-empty">…and ' + (rows.length - 60) + ' older entries</div>');
     box.innerHTML = h.join('');
   };
   var _origStockDetail = window.openStockDetailModal;
@@ -9854,7 +9987,7 @@ window.ttRenderBrandsIfOpen = function () {
         var first = m.querySelector('.auth-card'); if (first) first.insertBefore(line, first.children[1] || null);
       }
       var t = parseInt(lsGet(BK) || '0', 10);
-      if (line) line.textContent = t ? '🕒 Last backup: ' + new Date(t).toLocaleDateString('en-GB') + ' (' + Math.floor((Date.now() - t) / 86400000) + ' din pehle)' : '🕒 Abhi tak koi backup nahi liya gaya';
+      if (line) line.textContent = t ? '🕒 Last backup: ' + new Date(t).toLocaleDateString('en-GB') + ' (' + Math.floor((Date.now() - t) / 86400000) + ' din pehle)' : '🕒 No backup taken yet';
     } catch (e) {}
     return r;
   };
@@ -9866,10 +9999,10 @@ window.ttRenderBrandsIfOpen = function () {
     var days = t ? Math.floor((now - t) / 86400000) : null;
     var b = document.createElement('div'); b.id = 'tt14BackupBar'; b.className = 'tt14-backup';
     b.innerHTML = '<div style="flex:1;min-width:0;"><b>💾 Backup Reminder</b><div style="font-size:11.5px;opacity:.85;">' +
-      (days == null ? 'Abhi tak koi backup nahi liya.' : H(days) + ' din se backup nahi liya.') + ' Data safe rakhne ke liye abhi download kar lo.</div></div>' +
-      '<button class="btn btn-primary btn-sm" id="tt14BkGo">⬇️ Backup Lo</button><button class="btn btn-outline btn-sm" id="tt14BkLater">Baad me</button>';
+      (days == null ? 'No backup taken yet.' : H(days) + ' days since the last backup.') + ' Download one now to keep your data safe.</div></div>' +
+      '<button class="btn btn-primary btn-sm" id="tt14BkGo">⬇️ Take Backup</button><button class="btn btn-outline btn-sm" id="tt14BkLater">Later</button>';
     document.body.appendChild(b);
-    $('tt14BkGo').onclick = function () { try { triggerAppHaptic(); } catch (e) {} downloadFullBackup(); notice('Backup', 'Backup file download ho gayi', '💾'); };
+    $('tt14BkGo').onclick = function () { try { triggerAppHaptic(); } catch (e) {} downloadFullBackup(); notice('Backup', 'Backup file downloaded', '💾'); };
     $('tt14BkLater').onclick = function () { lsSet(BKS, String(Date.now() + 86400000)); b.remove(); };
   }
 
@@ -9892,18 +10025,18 @@ window.ttRenderBrandsIfOpen = function () {
   };
   function fuMsg(q, step) {
     var valid = new Date((q.createdAt || Date.now()) + 30 * DAY).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    var head = 'Namaste ' + (q.custName || '') + ' ji,\nTwin Town Express Services Pvt Ltd (TTESPL) se.\n';
-    var ref = 'Humne aapko Quotation ' + q.id + ' (' + INR(q.final) + ') bheja tha.';
-    if (step === 1) return head + ref + ' Kya aapne dekh liya? Koi sawal ho to bataiye.\nDhanyavaad!';
-    if (step === 2) return head + ref + ' Agar kisi item, quantity ya price me badlav chahiye to bata dijiye - hum aapko best offer denge.\nDhanyavaad!';
-    return head + ref + ' Ye quotation ' + valid + ' tak valid hai. Confirm karte hi hum order process kar denge.\nKya hum aage badhein?\nDhanyavaad!';
+    var head = 'Hello ' + (q.custName || '') + ',\nThis is Twin Town Express Services Pvt Ltd (TTESPL).\n';
+    var ref = 'We sent you Quotation ' + q.id + ' (' + INR(q.final) + ').';
+    if (step === 1) return head + ref + ' Have you had a chance to review it? Please let us know if you have any questions.\nThank you!';
+    if (step === 2) return head + ref + ' If you need any change in items, quantity or price, let us know - we will give you our best offer.\nThank you!';
+    return head + ref + ' This quotation is valid until ' + valid + '. We will process your order as soon as you confirm.\nShall we go ahead?\nThank you!';
   }
   function fuSave() { setStored("QUOTATIONS", quotationsData); try { ttRenderQuotationHistory(); } catch (e) {} fuBadge(); }
   window.ttFuStrip = function (q) {
     var f = fuInfo(q); if (!f) return '';
     var mine = fuMine(q), id = H(q.id);
     if (f.closed) {
-      return '<div class="tt14-fu"><span class="tt14-pill ' + (f.closed === 'won' ? 'ok' : 'bad') + '">' + (f.closed === 'won' ? '✅ Order mila (Won)' : '❌ Lost') + '</span>' +
+      return '<div class="tt14-fu"><span class="tt14-pill ' + (f.closed === 'won' ? 'ok' : 'bad') + '">' + (f.closed === 'won' ? '✅ Order won' : '❌ Lost') + '</span>' +
         (mine ? '<button class="tt14-lnk" onclick="triggerAppHaptic(); ttFuSet(\'' + id + '\',\'\')">↩ Reopen</button>' : '') + '</div>';
     }
     var pills = f.steps.map(function (s) {
@@ -9911,13 +10044,13 @@ window.ttRenderBrandsIfOpen = function () {
     }).join('');
     var h = '<div class="tt14-fu"><div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;">📞 ' + pills + '</div>';
     if (f.next) {
-      var when = f.isDue ? (f.late > 0 ? '<b style="color:var(--danger,#e11d48);">' + f.late + ' din late</b>' : '<b style="color:var(--warning,#d97706);">Aaj due</b>')
+      var when = f.isDue ? (f.late > 0 ? '<b style="color:var(--danger,#e11d48);">' + f.late + ' days late</b>' : '<b style="color:var(--warning,#d97706);">Due today</b>')
         : new Date(f.next.due).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ' ko';
       h += '<div class="tt14-sub" style="margin-top:4px;">Follow-up #' + f.next.n + ' (Day ' + f.next.d + '): ' + when + '</div>';
-    } else h += '<div class="tt14-sub" style="margin-top:4px;">Teeno follow-up ho chuke hain.</div>';
+    } else h += '<div class="tt14-sub" style="margin-top:4px;">All three follow-ups are done.</div>';
     if (mine) {
       h += '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">' +
-        (f.next ? '<button class="btn btn-wa btn-sm" style="flex:2;" onclick="triggerAppHaptic(); ttFuSend(\'' + id + '\')">📲 Follow-up bhejo</button>' : '') +
+        (f.next ? '<button class="btn btn-wa btn-sm" style="flex:2;" onclick="triggerAppHaptic(); ttFuSend(\'' + id + '\')">📲 Send Follow-up</button>' : '') +
         '<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttFuSet(\'' + id + '\',\'won\')">✅ Won</button>' +
         '<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttFuSet(\'' + id + '\',\'lost\')">❌ Lost</button></div>';
     }
@@ -9929,7 +10062,7 @@ window.ttRenderBrandsIfOpen = function () {
     var n = f.next.n;
     window.open(waUrl(q.custPhone, fuMsg(q, n)), '_blank');
     q.fuDone = Object.assign({}, q.fuDone || {}); q.fuDone[n] = Date.now(); q.fuBy = meName();
-    fuSave(); notice('Follow-up #' + n, q.custName + ' - done mark ho gaya', '📲');
+    fuSave(); notice('Follow-up #' + n, q.custName + ' - marked as done', '📲');
   };
   window.ttFuSet = function (id, st) {
     var q = (quotationsData || []).find(function (x) { return x && x.id === id; }); if (!q) return;
@@ -9956,7 +10089,7 @@ window.ttRenderBrandsIfOpen = function () {
     var n = fuCount(); if (!n) return;
     var key = 'TTESPL_ERP_FU_TOAST_DAY', today = new Date().toISOString().slice(0, 10);
     if (lsGet(key) === today) return; lsSet(key, today);
-    notice('📞 Quotation Follow-up', n + ' quotation ka follow-up due hai - tap karke dekho', '📞', function () { ttFuOpen(); });
+    notice('📞 Quotation Follow-up', n + ' quotation follow-up due - tap to view', '📞', function () { ttFuOpen(); });
   }
 
   /* ================= 6. BRANDS (header) + LOCAL PDF CATALOG ================= */
@@ -10003,19 +10136,19 @@ window.ttRenderBrandsIfOpen = function () {
       (isAdm() ? '<button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); ttBrandForm(\'\')">+ Add Brand</button>' : '') +
       '<button class="btn btn-outline btn-sm" onclick="tt14Close(\'tt14BrandModal\')">✕</button></div></div>'];
     if (!list.length) {
-      h.push('<div class="tt14-empty" style="padding:18px 8px;">Abhi koi brand add nahi hua.' + (isAdm() ? '<br>Neeche se quick add karo ya <b>+ Add Brand</b> dabao:' : '') + '</div>');
+      h.push('<div class="tt14-empty" style="padding:18px 8px;">No brands added yet.' + (isAdm() ? '<br>Use quick add below or tap <b>+ Add Brand</b>:' : '') + '</div>');
       if (isAdm()) h.push('<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">' + ['Annovi Reverberi', 'Ma-Fra', 'Maniac Line', 'Maxshine', 'Vista', 'Fireball'].map(function (n) {
         return '<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ttBrandForm(\'\',\'' + H(n) + '\')">+ ' + H(n) + '</button>'; }).join('') + '</div>');
     }
     list.forEach(function (b) {
       h.push('<div class="tt14-brand" onclick="triggerAppHaptic(); ttBrandOpen(\'' + H(b.id) + '\')">' + logoHtml(b, 48) +
         '<div style="min-width:0;flex:1;"><b style="font-size:14px;display:block;">' + H(b.name) + '</b><div class="tt14-sub" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
-        H(b.tagline || b.about || 'Tap karke details / catalog dekho') + '</div></div><span style="opacity:.5;">›</span></div>');
+        H(b.tagline || b.about || 'Tap to view details / catalog') + '</div></div><span style="opacity:.5;">›</span></div>');
     });
     if (isAdm()) {
       var have = {}; list.forEach(function (b) { have[String(b.name || '').trim().toLowerCase()] = 1; });
       var sug = ['Annovi Reverberi', 'Ma-Fra', 'Maniac Line', 'Maxshine', 'Vista', 'Fireball'].filter(function (n) { return !have[n.toLowerCase()]; });
-      h.push('<button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="triggerAppHaptic(); ttBrandForm(\'\')">➕ Naya Brand Add Karo</button>');
+      h.push('<button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="triggerAppHaptic(); ttBrandForm(\'\')">➕ Add New Brand</button>');
       if (sug.length && list.length) h.push('<div class="tt14-sub" style="margin:10px 2px 4px;">Quick add:</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + sug.map(function (n) {
         return '<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ttBrandForm(\'\',\'' + H(n) + '\')">+ ' + H(n) + '</button>'; }).join('') + '</div>');
     }
@@ -10046,29 +10179,29 @@ window.ttRenderBrandsIfOpen = function () {
     var box = $('tt14CatList'); if (!box) return;
     try {
       var list = await pdfList(bid); box = $('tt14CatList'); if (!box || curBrand !== bid) return;
-      if (!list.length) { box.innerHTML = '<div class="tt14-empty">Koi catalog nahi. <b>+ PDF Upload</b> se apni PDF (250 MB tak) save karo - ek baar save hone ke baad internet ke bina bhi khulegi.</div>'; return; }
+      if (!list.length) { box.innerHTML = '<div class="tt14-empty">No catalogs yet. <b>+ PDF Upload</b>  to save your PDF (up to 250 MB) - once saved it opens without internet.</div>'; return; }
       box.innerHTML = list.map(function (r) {
         return '<div class="tt14-row" style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><div style="min-width:0;"><b style="word-break:break-word;">' + H(r.name) +
           '</b><div class="tt14-sub">' + (r.size / 1048576).toFixed(1) + ' MB • ' + H(new Date(r.uploadedAt).toLocaleDateString('en-GB')) + '</div></div>' +
           '<div style="display:flex;gap:6px;flex-shrink:0;"><button class="btn btn-wa btn-sm" onclick="triggerAppHaptic(); ttPdfOpen(' + r.id + ')">👁 Open</button>' +
           '<button class="btn btn-danger-sm btn-sm" onclick="triggerAppHaptic(); ttCatDelete(' + r.id + ',\'' + H(bid) + '\')">🗑️</button></div></div>';
       }).join('');
-    } catch (e) { box.innerHTML = '<div class="tt14-empty">⚠️ Catalog storage khul nahi paya (' + H(e && e.message) + ').</div>'; }
+    } catch (e) { box.innerHTML = '<div class="tt14-empty">⚠️ Could not open catalog storage (' + H(e && e.message) + ').</div>'; }
   }
   window.ttCatUpload = async function (bid, input) {
     var files = Array.prototype.slice.call(input.files || []); input.value = '';
     try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
     for (var i = 0; i < files.length; i++) {
       var f = files[i];
-      if (!/pdf/i.test(f.type) && !/\.pdf$/i.test(f.name)) { notice('PDF nahi hai', f.name, '⚠️'); continue; }
-      if (f.size > MAXPDF) { notice('Bahut badi file', f.name + ' 250 MB se badi hai', '⚠️'); continue; }
+      if (!/pdf/i.test(f.type) && !/\.pdf$/i.test(f.name)) { notice('Not a PDF', f.name, '⚠️'); continue; }
+      if (f.size > MAXPDF) { notice('File too large', f.name + ' Larger than 250 MB', '⚠️'); continue; }
       try { await pdfAdd({ brand: bid, name: f.name, size: f.size, blob: f, uploadedAt: new Date().toISOString(), by: meName() }); notice('Catalog saved', f.name, '📚'); }
-      catch (e) { notice('Save nahi hua', (e && e.name === 'QuotaExceededError') ? 'Phone me jagah kam hai' : (e && e.message) || f.name, '⚠️'); }
+      catch (e) { notice('Not saved', (e && e.name === 'QuotaExceededError') ? 'Not enough storage on the phone' : (e && e.message) || f.name, '⚠️'); }
     }
     if (curBrand === bid) loadCats(bid);
   };
   window.ttCatDelete = async function (id, bid) {
-    if (!confirm('Ye catalog PDF is phone se hata dein?')) return;
+    if (!confirm('Remove this catalog PDF from this phone?')) return;
     try { await pdfDel(id); } catch (e) {}
     loadCats(bid);
   };
@@ -10076,15 +10209,15 @@ window.ttRenderBrandsIfOpen = function () {
   /* ---- Brand add/edit form ---- */
   var formLogo = '';
   window.ttBrandForm = function (id, prefill) {
-    if (!isAdm()) { alert('Sirf Admin brand add/edit kar sakta hai.'); return; }
+    if (!isAdm()) { alert('Only an Admin can add or edit brands.'); return; }
     var b = id ? brandById(id) : null; formLogo = b ? (b.logo || '') : '';
     var m = ensureModal('tt14BrandModal', 3300, 640), v = function (k) { return b ? H(b[k] || '') : ''; };
     setModal(m,
-      '<div id="tt14BrandForm"></div><div class="card-header"><span class="card-title">' + (b ? '✏️ Brand Edit' : '➕ Naya Brand') + '</span>' +
+      '<div id="tt14BrandForm"></div><div class="card-header"><span class="card-title">' + (b ? '✏️ Brand Edit' : '➕ New Brand') + '</span>' +
       '<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ' + (b ? 'ttBrandOpen(\'' + H(b.id) + '\')' : 'ttBrandBack()') + '">✕</button></div>' +
       '<input type="hidden" id="tt14BId" value="' + H(id || '') + '">' +
       '<div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;"><div id="tt14BLogoPrev">' + logoHtml({ logo: formLogo, name: b ? b.name : (prefill || '?') }, 64) + '</div>' +
-      '<label class="btn btn-outline btn-sm" style="margin:0;cursor:pointer;">🖼️ Logo chuno<input type="file" accept="image/*" style="display:none;" onchange="ttBrandLogoPick(this)"></label>' +
+      '<label class="btn btn-outline btn-sm" style="margin:0;cursor:pointer;">🖼️ Choose Logo<input type="file" accept="image/*" style="display:none;" onchange="ttBrandLogoPick(this)"></label>' +
       '<button class="btn btn-outline btn-sm" onclick="ttBrandLogoClear()">Hatao</button></div>' +
       '<div class="form-group"><label>Brand Name *</label><input type="text" id="tt14BName" value="' + (b ? v('name') : H(prefill || '')) + '" placeholder="e.g. Annovi Reverberi"></div>' +
       '<div class="form-group"><label>Tagline</label><input type="text" id="tt14BTag" value="' + v('tagline') + '" placeholder="e.g. High pressure plunger pumps"></div>' +
@@ -10115,7 +10248,7 @@ window.ttRenderBrandsIfOpen = function () {
           if (out.length > 90000) { cx.globalCompositeOperation = 'destination-over'; cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); out = cv.toDataURL('image/jpeg', 0.82); }
           if (out.length <= 90000) break; max = Math.round(max * 0.65);
         }
-        formLogo = out.length <= 90000 ? out : ''; if (!formLogo) notice('Logo bada hai', 'Chhota logo chuno', '⚠️'); logoPrev();
+        formLogo = out.length <= 90000 ? out : ''; if (!formLogo) notice('Logo bada hai', 'Choose a small logo', '⚠️'); logoPrev();
       };
       im.src = fr.result;
     };
@@ -10123,10 +10256,10 @@ window.ttRenderBrandsIfOpen = function () {
   };
   window.ttBrandSave = function () {
     var g = function (id) { return ($(id).value || '').trim(); }, name = g('tt14BName');
-    if (!name) { alert('Brand ka naam daalo'); return; }
+    if (!name) { alert('Enter the brand name'); return; }
     var id = $('tt14BId').value, b = id ? brandById(id) : null;
     var dup = (brandsData || []).some(function (x) { return x && String(x.name).toLowerCase() === name.toLowerCase() && String(x.id) !== String(id); });
-    if (dup) { alert('Is naam ka brand pehle se hai.'); return; }
+    if (dup) { alert('A brand with this name already exists.'); return; }
     var data = { name: name, tagline: g('tt14BTag'), about: g('tt14BAbout'), contact: g('tt14BContact'), phone: g('tt14BPhone'), email: g('tt14BEmail'), website: g('tt14BWeb'), address: g('tt14BAddr'), gst: g('tt14BGst'), logo: formLogo, updatedAt: Date.now(), updatedBy: meName() };
     if (b) Object.assign(b, data); else { b = Object.assign({ id: 'BR' + Date.now(), createdAt: Date.now(), createdBy: meName() }, data); if (!Array.isArray(brandsData)) brandsData = []; brandsData.push(b); }
     window.brandsData = brandsData; setStored("BRANDS", brandsData);
@@ -10134,7 +10267,7 @@ window.ttRenderBrandsIfOpen = function () {
   };
   window.ttBrandDelete = async function (id) {
     if (!isAdm()) return; var b = brandById(id); if (!b) return;
-    if (!confirm('Brand "' + b.name + '" delete karein? (Is phone ki uski catalog PDFs bhi hat jayengi)')) return;
+    if (!confirm('Delete brand "' + b.name + '"? (Its catalog PDFs on this phone will also be removed.)')) return;
     try { if (window.cloudSync && window.cloudSync.deleteItem) window.cloudSync.deleteItem('BRANDS', id); } catch (e) {}
     brandsData = (brandsData || []).filter(function (x) { return x && String(x.id) !== String(id); });
     window.brandsData = brandsData; setStored("BRANDS", brandsData);
@@ -10188,7 +10321,7 @@ window.ttRenderBrandsIfOpen = function () {
       try { await navigator.share({ files: [file], title: V.name }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
     }
     downloadBlob(V.blob, V.name || 'catalog.pdf');
-    notice('PDF save ho gayi', 'Phone ke Downloads se apne PDF reader (Adobe / Drive / Files) me kholo', '📂');
+    notice('PDF saved', 'Open it from the Downloads folder in your PDF reader app (Adobe / Drive / Files)', '📂');
   };
   function pgW() { var b = $('tt14VBody'); return Math.max(200, ((b && b.clientWidth) || 360) - 16) * V.zoom; }
   function layoutPages() {
@@ -10276,7 +10409,7 @@ window.ttRenderBrandsIfOpen = function () {
   window.ttPdfFit = function () { var b = $('tt14VBody'); if (!b || !V.pdf) return; commitZoom(1, b.clientWidth / 2, b.clientHeight / 2); b.scrollLeft = 0; };
   window.ttPdfGoto = function () {
     if (!V.pdf) return;
-    var r = prompt('Kaunse page par jaana hai? (1 - ' + V.n + ')', String(V.cur + 1)); if (r == null) return;
+    var r = prompt('Go to which page? (1 - ' + V.n + ')', String(V.cur + 1)); if (r == null) return;
     var n = Math.max(1, Math.min(V.n, parseInt(r, 10) || 1)), body = $('tt14VBody'), inner = $('tt14VInner');
     body.scrollTop = inner.children[n - 1].offsetTop - 4;
   };
@@ -10324,13 +10457,13 @@ window.ttRenderBrandsIfOpen = function () {
   }
   window.ttPdfOpen = async function (id) {
     var rec; try { rec = await pdfGet(id); } catch (e) {}
-    if (!rec || !rec.blob) { notice('Catalog nahi mila', '', '⚠️'); return; }
+    if (!rec || !rec.blob) { notice('Catalog not found', '', '⚠️'); return; }
     var v = ensureViewer(); pdfCleanup();
     V.blob = rec.blob; V.name = rec.name; V.zoom = 1; V.cur = 0;
     $('tt14VTitle').textContent = rec.name; $('tt14VPg').textContent = '–'; $('tt14VZ').textContent = '100%';
-    var inner = $('tt14VInner'); inner.style.width = ''; inner.innerHTML = '<div class="tt14-vmsg">⏳ PDF khul rahi hai…</div>'; v.style.display = 'flex';
+    var inner = $('tt14VInner'); inner.style.width = ''; inner.innerHTML = '<div class="tt14-vmsg">⏳ Opening the PDF…</div>'; v.style.display = 'flex';
     var fallback = function (why) {
-      inner.innerHTML = '<div class="tt14-vmsg">⚠️ In-app viewer nahi chal paya (' + H(why) + ').<br>Pehli baar viewer load karne ke liye internet chahiye.<br><br>' +
+      inner.innerHTML = '<div class="tt14-vmsg">⚠️ The in-app viewer failed (' + H(why) + ').<br>Internet is needed the first time to load the viewer.<br><br>' +
         '<button class="btn btn-accent btn-sm" onclick="ttPdfOpenWith()">↗ Open with</button> <button class="btn btn-outline btn-sm" onclick="ttPdfSave()">⬇️ Download</button></div>';
     };
     try {
@@ -10445,11 +10578,11 @@ window.ttRenderExpensesIfOpen = function () {
       '<button class="btn btn-outline btn-sm" onclick="tt14Close(\'tt15ExpModal\')">✕</button></div></div>');
     h.push('<div class="tt15-filters">' +
       '<input type="month" value="' + H(S.month) + '" ' + (S.all ? 'disabled' : '') + ' onchange="tt15Set(\'month\', this.value)">' +
-      '<label class="tt15-chk"><input type="checkbox" ' + (S.all ? 'checked' : '') + ' onchange="tt15Set(\'all\', this.checked)"> Sab dino ka</label>' +
-      (adm ? '<select onchange="tt15Set(\'emp\', this.value)"><option value="ALL">👥 Sab employees</option>' + employees().map(function (n) { return '<option ' + (S.emp === n ? 'selected' : '') + ' value="' + H(n) + '">' + H(n) + '</option>'; }).join('') + '</select>' : '') + '</div>');
-    h.push('<div class="tt15-hero"><div><small>' + (S.all ? 'SAB DINO KA' : H(monthLabel(S.month)).toUpperCase()) + ' · KUL KHARCHA</small><b>' + INR(total) + '</b>' +
+      '<label class="tt15-chk"><input type="checkbox" ' + (S.all ? 'checked' : '') + ' onchange="tt15Set(\'all\', this.checked)"> All dates</label>' +
+      (adm ? '<select onchange="tt15Set(\'emp\', this.value)"><option value="ALL">👥 All employees</option>' + employees().map(function (n) { return '<option ' + (S.emp === n ? 'selected' : '') + ' value="' + H(n) + '">' + H(n) + '</option>'; }).join('') + '</select>' : '') + '</div>');
+    h.push('<div class="tt15-hero"><div><small>' + (S.all ? 'ALL DATES' : H(monthLabel(S.month)).toUpperCase()) + ' · TOTAL EXPENSES</small><b>' + INR(total) + '</b>' +
       '<span>' + list.filter(function (r) { return r.status !== 'Rejected'; }).length + ' entries' + (adm && S.emp === 'ALL' ? ' · ' + Object.keys(list.reduce(function (o, r) { o[r.emp] = 1; return o; }, {})).length + ' employees' : '') + '</span></div><div class="tt15-heroic">💼</div></div>');
-    h.push('<div class="tt15-tiles">' + [['Submitted', '⏳ Approval baaki'], ['Approved', '✅ Approved'], ['Reimbursed', '💰 Mil gaya'], ['Draft', '📝 Draft']].map(function (p) {
+    h.push('<div class="tt15-tiles">' + [['Submitted', '⏳ Awaiting approval'], ['Approved', '✅ Approved'], ['Reimbursed', '💰 Received'], ['Draft', '📝 Draft']].map(function (p) {
       return '<div style="border-color:' + STC[p[0]] + '55;"><small>' + p[1] + '</small><b style="color:' + STC[p[0]] + ';">' + INR(sum(list, p[0])) + '</b></div>'; }).join('') + '</div>');
     // category breakdown
     var cats = {}; list.filter(function (r) { return r.status !== 'Rejected'; }).forEach(function (r) { cats[r.cat] = (cats[r.cat] || 0) + (Number(r.amount) || 0); });
@@ -10464,7 +10597,7 @@ window.ttRenderExpensesIfOpen = function () {
       var em = {}; list.forEach(function (r) { var o = em[r.emp] = em[r.emp] || { t: 0, p: 0, a: 0, r: 0 }; if (r.status !== 'Rejected') o.t += +r.amount || 0; if (r.status === 'Submitted') o.p += +r.amount || 0; if (r.status === 'Approved') o.a += +r.amount || 0; if (r.status === 'Reimbursed') o.r += +r.amount || 0; });
       var ek = Object.keys(em).sort(function (a, b) { return em[b].t - em[a].t; });
       if (ek.length) h.push('<div class="tt15-sec">👥 Employee-wise</div>' + ek.map(function (n) { var o = em[n];
-        return '<div class="tt15-row" onclick="triggerAppHaptic(); tt15Set(\'emp\', \'' + H(n).replace(/&#39;/g, "\\'") + '\')"><div class="ic">👤</div><div style="flex:1;min-width:0;"><b>' + H(n) + '</b><div class="sub">Pending ' + INR(o.p) + ' · Approved ' + INR(o.a) + ' · Mila ' + INR(o.r) + '</div></div><b>' + INR(o.t) + '</b></div>'; }).join(''));
+        return '<div class="tt15-row" onclick="triggerAppHaptic(); tt15Set(\'emp\', \'' + H(n).replace(/&#39;/g, "\\'") + '\')"><div class="ic">👤</div><div style="flex:1;min-width:0;"><b>' + H(n) + '</b><div class="sub">Pending ' + INR(o.p) + ' · Approved ' + INR(o.a) + ' · Received ' + INR(o.r) + '</div></div><b>' + INR(o.t) + '</b></div>'; }).join(''));
     }
     // status chips
     h.push('<div class="tt15-chips">' + ['ALL'].concat(ST).map(function (s) {
@@ -10473,12 +10606,12 @@ window.ttRenderExpensesIfOpen = function () {
     var drafts = list.filter(function (r) { return r.status === 'Draft' && mine(r); }), subm = list.filter(function (r) { return r.status === 'Submitted'; }), appr = list.filter(function (r) { return r.status === 'Approved'; });
     var acts = [];
     if (drafts.length) acts.push('<button class="btn btn-primary btn-sm" style="flex:1;" onclick="triggerAppHaptic(); tt15SubmitDrafts()">📤 Submit ' + drafts.length + ' draft (' + INR(sum(drafts)) + ')</button>');
-    if (adm && subm.length) acts.push('<button class="btn btn-accent btn-sm" style="flex:1;" onclick="triggerAppHaptic(); tt15Bulk(\'Approved\')">✅ Sab Approve (' + subm.length + ')</button>');
-    if (adm && appr.length) acts.push('<button class="btn btn-wa btn-sm" style="flex:1;" onclick="triggerAppHaptic(); tt15Bulk(\'Reimbursed\')">💰 Sab Paid (' + appr.length + ')</button>');
+    if (adm && subm.length) acts.push('<button class="btn btn-accent btn-sm" style="flex:1;" onclick="triggerAppHaptic(); tt15Bulk(\'Approved\')">✅ Approve All (' + subm.length + ')</button>');
+    if (adm && appr.length) acts.push('<button class="btn btn-wa btn-sm" style="flex:1;" onclick="triggerAppHaptic(); tt15Bulk(\'Reimbursed\')">💰 Mark All Paid (' + appr.length + ')</button>');
     acts.push('<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); tt15Pdf()">📄 PDF</button><button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); tt15Csv()">⬇️ CSV</button>');
     h.push('<div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;">' + acts.join('') + '</div>');
     // list grouped by date
-    if (!shown.length) h.push('<div class="tt14-empty" style="padding:22px 8px;">Koi expense nahi.<br><button class="btn btn-accent btn-sm" style="margin-top:10px;" onclick="tt15Form(\'\')">+ Pehla expense add karo</button></div>');
+    if (!shown.length) h.push('<div class="tt14-empty" style="padding:22px 8px;">No expenses.<br><button class="btn btn-accent btn-sm" style="margin-top:10px;" onclick="tt15Form(\'\')">+ Add your first expense</button></div>');
     var last = '';
     shown.slice(0, 150).forEach(function (r) {
       if (r.date !== last) { last = r.date; h.push('<div class="tt15-day">' + H(fmtD(r.date)) + '</div>'); }
@@ -10486,7 +10619,7 @@ window.ttRenderExpensesIfOpen = function () {
         '<div class="sub">' + H([r.merchant, r.trip, adm && S.emp === 'ALL' ? r.emp : ''].filter(Boolean).join(' · ') || '—') + (r.receipt ? ' · 📎' : '') + '</div></div>' +
         '<div style="text-align:right;"><b>' + INR(r.amount) + '</b><div><span class="tt15-pill" style="background:' + STC[r.status] + '22;color:' + STC[r.status] + ';">' + H(r.status) + '</span></div></div></div>');
     });
-    if (shown.length > 150) h.push('<div class="tt14-empty">…aur ' + (shown.length - 150) + ' entries (filter use karo)</div>');
+    if (shown.length > 150) h.push('<div class="tt14-empty">…and ' + (shown.length - 150) + ' more entries (use a filter)</div>');
     setModal(m, h.join(''));
   };
   window.tt15Set = function (k, v) {
@@ -10496,17 +10629,17 @@ window.ttRenderExpensesIfOpen = function () {
   /* --- add / edit form --- */
   window.tt15Form = function (id) {
     var r = id ? byId(id) : null;
-    if (r && !canEdit(r)) { notice('Edit nahi ho sakta', 'Submitted / approved entry edit nahi hoti', '🔒'); return; }
+    if (r && !canEdit(r)) { notice('Cannot edit', 'Submitted or approved entries cannot be edited', '🔒'); return; }
     F = { id: id || '', cat: r ? r.cat : 'Food', sub: r ? (r.sub || '') : 'Chai', receipt: r ? (r.receipt || '') : '' };
     var trips = {}; (expensesData || []).filter(visible).forEach(function (x) { if (x.trip) trips[x.trip] = 1; });
     var m = ensureModal('tt15FormModal', 3400, 520);
     setModal(m,
-      '<div id="tt15FormOpen"></div><div class="card-header"><span class="card-title">' + (r ? '✏️ Expense Edit' : '➕ Naya Expense') + '</span><button class="btn btn-outline btn-sm" onclick="tt14Close(\'tt15FormModal\'); tt15Render()">✕</button></div>' +
+      '<div id="tt15FormOpen"></div><div class="card-header"><span class="card-title">' + (r ? '✏️ Expense Edit' : '➕ New Expense') + '</span><button class="btn btn-outline btn-sm" onclick="tt14Close(\'tt15FormModal\'); tt15Render()">✕</button></div>' +
       '<div class="tt15-amt"><span>₹</span><input type="number" inputmode="decimal" id="tt15Amt" placeholder="0.00" value="' + (r ? H(r.amount) : '') + '"></div>' +
       '<div class="tt15-lbl">Category</div><div class="tt15-cats" id="tt15Cats"></div><div id="tt15Subs" class="tt15-subs"></div>' +
       '<div class="grid-2"><div class="form-group"><label>Date</label><input type="date" id="tt15Date" value="' + H(r ? r.date : today()) + '"></div>' +
       '<div class="form-group"><label>Payment</label><select id="tt15Mode">' + MODES.map(function (x) { return '<option ' + (r && r.payMode === x ? 'selected' : '') + '>' + x + '</option>'; }).join('') + '</select></div></div>' +
-      '<div class="form-group"><label>Merchant / Jagah</label><input type="text" id="tt15Merch" placeholder="Hotel / dhaba / petrol pump…" value="' + H(r ? r.merchant : '') + '"></div>' +
+      '<div class="form-group"><label>Merchant / Jagah</label><input type="text" id="tt15Merch" placeholder="Hotel / restaurant / petrol pump…" value="' + H(r ? r.merchant : '') + '"></div>' +
       '<div class="form-group"><label>Trip / Purpose</label><input type="text" id="tt15Trip" list="tt15Trips" placeholder="e.g. Rourkela dealer visit" value="' + H(r ? r.trip : '') + '"><datalist id="tt15Trips">' + Object.keys(trips).map(function (t) { return '<option value="' + H(t) + '">'; }).join('') + '</datalist></div>' +
       '<div class="form-group"><label>Notes</label><textarea id="tt15Notes" rows="2" placeholder="Optional">' + H(r ? r.notes : '') + '</textarea></div>' +
       '<div class="tt15-lbl">Receipt / Bill photo</div><div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">' +
@@ -10523,7 +10656,7 @@ window.ttRenderExpensesIfOpen = function () {
   }
   window.tt15Cat = function (k) { F.cat = k; var c = CATS.filter(function (x) { return x.k === k; })[0]; F.sub = (c && c.subs) ? (F.sub && c.subs.indexOf(F.sub) >= 0 ? F.sub : c.subs[0]) : ''; drawCats(); };
   window.tt15Sub = function (n) { F.sub = n; drawCats(); };
-  function drawRec() { var p = $('tt15RecPrev'); if (!p) return; p.innerHTML = F.receipt ? '<img class="tt15-thumb" src="' + H(F.receipt) + '" onclick="tt15Img(this.src)"> <button class="tt14-lnk" onclick="tt15RecClear()">Hatao</button>' : '<span class="tt14-sub">Koi photo nahi</span>'; }
+  function drawRec() { var p = $('tt15RecPrev'); if (!p) return; p.innerHTML = F.receipt ? '<img class="tt15-thumb" src="' + H(F.receipt) + '" onclick="tt15Img(this.src)"> <button class="tt14-lnk" onclick="tt15RecClear()">Hatao</button>' : '<span class="tt14-sub">No photo</span>'; }
   window.tt15RecClear = function () { F.receipt = ''; drawRec(); };
   window.tt15Pick = function (input) {
     var f = input.files && input.files[0]; input.value = ''; if (!f) return;
@@ -10538,7 +10671,7 @@ window.ttRenderExpensesIfOpen = function () {
           var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(im, 0, 0, cv.width, cv.height);
           out = cv.toDataURL('image/jpeg', q); if (out.length <= 105000) break; max = Math.round(max * 0.8); q = Math.max(0.4, q - 0.06);
         }
-        if (out.length > 115000) { notice('Photo badi hai', 'Dobara chhoti photo lo', '⚠️'); return; }
+        if (out.length > 115000) { notice('Photo is too large', 'Dobara chhoti photo lo', '⚠️'); return; }
         F.receipt = out; drawRec();
       };
       im.src = fr.result;
@@ -10548,33 +10681,33 @@ window.ttRenderExpensesIfOpen = function () {
   function canEdit(r) { if (r.status === 'Reimbursed') return false; if (isAdm()) return true; return mine(r) && (r.status === 'Draft' || r.status === 'Rejected'); }
   window.tt15Save = function (submit) {
     var amt = parseFloat(($('tt15Amt').value || '').replace(/,/g, '')), date = $('tt15Date').value;
-    if (!(amt > 0)) { alert('Amount daalo'); return; } if (!date) { alert('Date chuno'); return; }
+    if (!(amt > 0)) { alert('Enter the amount'); return; } if (!date) { alert('Choose a date'); return; }
     var d = { date: date, cat: F.cat, sub: F.sub || '', amount: Math.round(amt * 100) / 100, merchant: $('tt15Merch').value.trim(), trip: $('tt15Trip').value.trim(), notes: $('tt15Notes').value.trim(), payMode: $('tt15Mode').value, receipt: F.receipt || '' };
     var r = F.id ? byId(F.id) : null;
     if (!r) {
       var dup = (expensesData || []).some(function (x) { return x && mine(x) && x.date === d.date && x.cat === d.cat && x.sub === d.sub && Number(x.amount) === d.amount; });
-      if (dup && !confirm('Isi date, category aur amount ka expense pehle se hai. Phir bhi add karein?')) return;
+      if (dup && !confirm('An expense with the same date, category and amount already exists. Add it anyway?')) return;
       r = Object.assign({ id: 'EXP' + Date.now() + Math.floor(Math.random() * 900 + 100), emp: meName(), empId: meId(), status: 'Draft', createdAt: Date.now() }, d);
       if (!Array.isArray(expensesData)) expensesData = []; expensesData.unshift(r);
     } else { Object.assign(r, d, { updatedAt: Date.now() }); if (r.status === 'Rejected') { r.status = 'Draft'; } }
     if (submit) { r.status = 'Submitted'; r.submittedAt = Date.now(); r.reviewNote = ''; }
     persist(); tt14Close('tt15FormModal'); S.month = r.date.slice(0, 7); tt15Render();
-    notice(submit ? 'Submit ho gaya' : 'Draft save', INR(r.amount) + ' · ' + catName(r), submit ? '📤' : '💾');
+    notice(submit ? 'Submitted' : 'Draft save', INR(r.amount) + ' · ' + catName(r), submit ? '📤' : '💾');
   };
 
   /* --- detail --- */
   window.tt15View = function (id) {
     var r = byId(id); if (!r) return;
-    var adm = isAdm(), tl = [['📝 Banaya', r.createdAt, r.emp]];
-    if (r.submittedAt) tl.push(['📤 Submit kiya', r.submittedAt, r.emp]);
-    if (r.reviewedAt) tl.push([(r.status === 'Rejected' ? '❌ Reject' : '✅ Approve') + ' kiya', r.reviewedAt, r.reviewedBy + (r.reviewNote ? ' — ' + r.reviewNote : '')]);
-    if (r.paidAt) tl.push(['💰 Reimburse kiya', r.paidAt, (r.paidBy || '') + (r.paidRef ? ' — ' + r.paidRef : '')]);
+    var adm = isAdm(), tl = [['📝 Created', r.createdAt, r.emp]];
+    if (r.submittedAt) tl.push(['📤 Submitted', r.submittedAt, r.emp]);
+    if (r.reviewedAt) tl.push([(r.status === 'Rejected' ? '❌ Rejected' : '✅ Approved'), r.reviewedAt, r.reviewedBy + (r.reviewNote ? ' — ' + r.reviewNote : '')]);
+    if (r.paidAt) tl.push(['💰 Reimbursed', r.paidAt, (r.paidBy || '') + (r.paidRef ? ' — ' + r.paidRef : '')]);
     var btn = [];
     if (canEdit(r)) btn.push('<button class="btn btn-outline btn-sm" style="flex:1;" onclick="tt14Close(\'tt15ViewModal\'); tt15Form(\'' + H(r.id) + '\')">✏️ Edit</button>');
     if (mine(r) && (r.status === 'Draft' || r.status === 'Rejected')) btn.push('<button class="btn btn-primary btn-sm" style="flex:1;" onclick="tt15SubmitOne(\'' + H(r.id) + '\')">📤 Submit</button>');
     if (adm && r.status === 'Submitted') btn.push('<button class="btn btn-accent btn-sm" style="flex:1;" onclick="tt15Review(\'' + H(r.id) + '\', true)">✅ Approve</button><button class="btn btn-danger-sm btn-sm" style="flex:1;" onclick="tt15Review(\'' + H(r.id) + '\', false)">❌ Reject</button>');
     if (adm && r.status === 'Approved') btn.push('<button class="btn btn-wa btn-sm" style="flex:1;" onclick="tt15Pay(\'' + H(r.id) + '\')">💰 Mark Reimbursed</button>');
-    if (adm && r.status === 'Submitted') btn.push('<button class="btn btn-outline btn-sm" style="flex:1;" onclick="tt15Reopen(\'' + H(r.id) + '\')">↩ Draft me wapas</button>');
+    if (adm && r.status === 'Submitted') btn.push('<button class="btn btn-outline btn-sm" style="flex:1;" onclick="tt15Reopen(\'' + H(r.id) + '\')">↩ Back to Draft</button>');
     if (adm || (mine(r) && r.status === 'Draft')) btn.push('<button class="btn btn-danger-sm btn-sm" onclick="tt15Del(\'' + H(r.id) + '\')">🗑️</button>');
     var m = ensureModal('tt15ViewModal', 3400, 520);
     setModal(m, '<div class="card-header"><span class="card-title">' + catIc(r) + ' ' + H(catName(r)) + '</span><button class="btn btn-outline btn-sm" onclick="tt14Close(\'tt15ViewModal\')">✕</button></div>' +
@@ -10592,16 +10725,16 @@ window.ttRenderExpensesIfOpen = function () {
 
   /* --- workflow --- */
   function touch(r, st) { r.status = st; r.updatedAt = Date.now(); }
-  window.tt15SubmitOne = function (id) { var r = byId(id); if (!r) return; touch(r, 'Submitted'); r.submittedAt = Date.now(); r.reviewNote = ''; persist(); tt14Close('tt15ViewModal'); tt15Render(); notice('Submit ho gaya', INR(r.amount), '📤'); };
+  window.tt15SubmitOne = function (id) { var r = byId(id); if (!r) return; touch(r, 'Submitted'); r.submittedAt = Date.now(); r.reviewNote = ''; persist(); tt14Close('tt15ViewModal'); tt15Render(); notice('Submitted', INR(r.amount), '📤'); };
   window.tt15SubmitDrafts = function () {
     var d = scoped().filter(function (r) { return r.status === 'Draft' && mine(r); }); if (!d.length) return;
-    if (!confirm(d.length + ' draft expenses (' + INR(sum(d)) + ') approval ke liye submit karein?')) return;
+    if (!confirm('Submit ' + d.length + ' draft expenses (' + INR(sum(d)) + ') for approval?')) return;
     var now = Date.now(); d.forEach(function (r) { touch(r, 'Submitted'); r.submittedAt = now; r.reviewNote = ''; });
-    persist(); tt15Render(); notice('Submit ho gaya', d.length + ' expenses · ' + INR(sum(d)), '📤');
+    persist(); tt15Render(); notice('Submitted', d.length + ' expenses · ' + INR(sum(d)), '📤');
   };
   window.tt15Review = function (id, ok) {
     if (!isAdm()) return; var r = byId(id); if (!r) return; var note = '';
-    if (!ok) { note = prompt('Reject ka kaaran likho:', ''); if (note === null) return; }
+    if (!ok) { note = prompt('Enter the reason for rejection:', ''); if (note === null) return; }
     touch(r, ok ? 'Approved' : 'Rejected'); r.reviewedAt = Date.now(); r.reviewedBy = meName(); r.reviewNote = note || '';
     persist(); tt14Close('tt15ViewModal'); tt15Render();
   };
@@ -10612,13 +10745,13 @@ window.ttRenderExpensesIfOpen = function () {
   };
   window.tt15Bulk = function (to) {
     if (!isAdm()) return; var from = to === 'Approved' ? 'Submitted' : 'Approved', l = scoped().filter(function (r) { return r.status === from; }); if (!l.length) return;
-    if (!confirm(l.length + ' expenses (' + INR(sum(l)) + ') ko ' + (to === 'Approved' ? 'Approve' : 'Reimbursed mark') + ' karein?')) return;
+    if (!confirm((to === 'Approved' ? 'Approve ' : 'Mark as reimbursed: ') + l.length + ' expenses (' + INR(sum(l)) + ')?')) return;
     var now = Date.now(); l.forEach(function (r) { touch(r, to); if (to === 'Approved') { r.reviewedAt = now; r.reviewedBy = meName(); } else { r.paidAt = now; r.paidBy = meName(); } });
     persist(); tt15Render();
   };
   window.tt15Del = function (id) {
     var r = byId(id); if (!r) return; if (!(isAdm() || (mine(r) && r.status === 'Draft'))) return;
-    if (!confirm('Ye expense delete karein? (' + INR(r.amount) + ')')) return;
+    if (!confirm('Delete this expense? (' + INR(r.amount) + ')')) return;
     try { if (window.cloudSync && window.cloudSync.deleteItem) window.cloudSync.deleteItem('EXPENSES', id); } catch (e) {}
     expensesData = (expensesData || []).filter(function (x) { return x && x.id !== id; }); persist(); tt14Close('tt15ViewModal'); tt15Render();
   };
@@ -10626,22 +10759,22 @@ window.ttRenderExpensesIfOpen = function () {
   /* --- export --- */
   function exportList() { return scoped().filter(function (r) { return S.st === 'ALL' || r.status === S.st; }).sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); }); }
   window.tt15Csv = function () {
-    var l = exportList(); if (!l.length) { notice('Kuch nahi hai', 'Export ke liye expense nahi', '⚠️'); return; }
+    var l = exportList(); if (!l.length) { notice('Nothing here', 'No expenses to export', '⚠️'); return; }
     var q = function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; };
     var rows = [['Date', 'Employee', 'Category', 'Sub', 'Merchant', 'Trip', 'Payment', 'Amount', 'Status', 'Notes', 'Reviewed By', 'Review Note', 'Paid Ref'].map(q).join(',')];
     l.forEach(function (r) { rows.push([r.date, r.emp, r.cat, r.sub, r.merchant, r.trip, r.payMode, r.amount, r.status, r.notes, r.reviewedBy, r.reviewNote, r.paidRef].map(q).join(',')); });
     downloadFile('﻿' + rows.join('\n'), 'TTESPL_Expenses_' + (S.all ? 'All' : S.month) + '.csv', 'text/csv');
   };
   window.tt15Pdf = function () {
-    var l = exportList(); if (!l.length) { notice('Kuch nahi hai', 'Report ke liye expense nahi', '⚠️'); return; }
+    var l = exportList(); if (!l.length) { notice('Nothing here', 'No expenses for the report', '⚠️'); return; }
     var valid = l.filter(function (r) { return r.status !== 'Rejected'; }), tot = sum(valid), cats = {};
     valid.forEach(function (r) { cats[r.cat] = (cats[r.cat] || 0) + (+r.amount || 0); });
-    var emp = isAdm() ? (S.emp === 'ALL' ? 'Sab Employees' : S.emp) : meName(), td = 'style="border:1px solid #000;padding:4px 6px;"';
+    var emp = isAdm() ? (S.emp === 'ALL' ? 'All Employees' : S.emp) : meName(), td = 'style="border:1px solid #000;padding:4px 6px;"';
     var html = '<div style="font-family:Arial,Helvetica,sans-serif;color:#000;font-size:11px;"><div style="text-align:center;"><div style="font-size:15px;font-weight:800;">TWINTOWN EXPRESS SERVICES PVT LTD</div><div style="font-size:10px;">Satya Vihar, Rasulgarh, Bhubaneswar-751010</div><div style="font-size:14px;font-weight:800;margin:8px 0;border-top:1px solid #000;border-bottom:1px solid #000;padding:4px;">EXPENSE REPORT</div></div>' +
-      '<table style="width:100%;border-collapse:collapse;margin-bottom:8px;"><tr><td ' + td + '><b>Employee:</b> ' + H(emp) + '</td><td ' + td + '><b>Period:</b> ' + H(S.all ? 'Sab dino ka' : monthLabel(S.month)) + '</td><td ' + td + '><b>Status:</b> ' + H(S.st === 'ALL' ? 'All' : S.st) + '</td><td ' + td + '><b>Generated:</b> ' + H(new Date().toLocaleDateString('en-GB')) + '</td></tr></table>' +
+      '<table style="width:100%;border-collapse:collapse;margin-bottom:8px;"><tr><td ' + td + '><b>Employee:</b> ' + H(emp) + '</td><td ' + td + '><b>Period:</b> ' + H(S.all ? 'All dates' : monthLabel(S.month)) + '</td><td ' + td + '><b>Status:</b> ' + H(S.st === 'ALL' ? 'All' : S.st) + '</td><td ' + td + '><b>Generated:</b> ' + H(new Date().toLocaleDateString('en-GB')) + '</td></tr></table>' +
       '<table style="width:100%;border-collapse:collapse;"><thead><tr style="background:#eee;">' + ['#', 'Date', 'Employee', 'Category', 'Merchant / Trip', 'Pay', 'Status', 'Amount (₹)'].map(function (x) { return '<th ' + td + '>' + x + '</th>'; }).join('') + '</tr></thead><tbody>' +
       l.map(function (r, i) { return '<tr><td ' + td + '>' + (i + 1) + '</td><td ' + td + '>' + H(fmtD(r.date)) + '</td><td ' + td + '>' + H(r.emp) + '</td><td ' + td + '>' + H(catName(r)) + '</td><td ' + td + '>' + H([r.merchant, r.trip].filter(Boolean).join(' / ')) + '</td><td ' + td + '>' + H(r.payMode) + '</td><td ' + td + '>' + H(r.status) + '</td><td ' + td + ' align="right">' + (+r.amount).toFixed(2) + '</td></tr>'; }).join('') +
-      '<tr><td ' + td + ' colspan="7" align="right"><b>Total (Rejected chhodkar)</b></td><td ' + td + ' align="right"><b>' + tot.toFixed(2) + '</b></td></tr></tbody></table>' +
+      '<tr><td ' + td + ' colspan="7" align="right"><b>Total (excluding Rejected)</b></td><td ' + td + ' align="right"><b>' + tot.toFixed(2) + '</b></td></tr></tbody></table>' +
       '<div style="display:flex;gap:16px;margin-top:10px;"><table style="border-collapse:collapse;flex:1;"><tr><th ' + td + ' colspan="2" style="background:#eee;">Category-wise</th></tr>' + Object.keys(cats).map(function (k) { return '<tr><td ' + td + '>' + H(k) + '</td><td ' + td + ' align="right">' + cats[k].toFixed(2) + '</td></tr>'; }).join('') + '</table>' +
       '<table style="border-collapse:collapse;flex:1;"><tr><th ' + td + ' colspan="2" style="background:#eee;">Status-wise</th></tr>' + ST.map(function (s) { return '<tr><td ' + td + '>' + s + '</td><td ' + td + ' align="right">' + sum(l, s).toFixed(2) + '</td></tr>'; }).join('') + '</table></div>' +
       '<div style="display:flex;justify-content:space-between;margin-top:46px;font-size:11px;"><div style="border-top:1px solid #000;padding-top:3px;width:30%;text-align:center;">Employee Signature</div><div style="border-top:1px solid #000;padding-top:3px;width:30%;text-align:center;">Approved By</div><div style="border-top:1px solid #000;padding-top:3px;width:30%;text-align:center;">Accounts</div></div>';
@@ -10656,7 +10789,7 @@ window.ttRenderExpensesIfOpen = function () {
       var it = Array.prototype.find.call(document.querySelectorAll('.profile-menu-item'), function (e) { return (e.getAttribute('onclick') || '').indexOf('ttExpOpen') >= 0; });
       if (!it) return; var s = it.lastElementChild; if (!s) return;
       var l = (expensesData || []).filter(visible), txt = 'Claim & Track', col = '#34d399';
-      if (isAdm()) { var n = l.filter(function (r) { return r.status === 'Submitted'; }).length; if (n) { txt = n + ' approval baaki'; col = '#f59e0b'; } }
+      if (isAdm()) { var n = l.filter(function (r) { return r.status === 'Submitted'; }).length; if (n) { txt = n + ' awaiting approval'; col = '#f59e0b'; } }
       else { var rj = l.filter(function (r) { return r.status === 'Rejected'; }).length, dr = l.filter(function (r) { return r.status === 'Draft'; }).length; if (rj) { txt = rj + ' reject'; col = '#f87171'; } else if (dr) { txt = dr + ' draft'; col = '#fbbf24'; } }
       s.textContent = txt; s.style.color = col; s.style.fontWeight = '800';
     } catch (e) {}
@@ -10664,12 +10797,12 @@ window.ttRenderExpensesIfOpen = function () {
   var badge = window.tt15Badge;
   setTimeout(function () { badge(); try {
     if (isAdm()) { var n = (expensesData || []).filter(function (r) { return r.status === 'Submitted'; }).length, key = 'TTESPL_ERP_EXP_TOAST_DAY', d = today();
-      if (n && lsGet(key) !== d) { lsSet(key, d); notice('💼 Expense Approval', n + ' expense claim approval ke liye baaki hai', '💼', function () { ttExpOpen(); }); } }
+      if (n && lsGet(key) !== d) { lsSet(key, d); notice('💼 Expense Approval', n + ' expense claim(s) awaiting approval', '💼', function () { ttExpOpen(); }); } }
   } catch (e) {} }, 9500);
 
   /* ================= PURANE BILLS: MRP / DISCOUNT / HSN BACKFILL ================= */
   window.ttBillsFixOpen = function () {
-    if (!isAdm()) { alert('Sirf Admin ye kar sakta hai.'); return; }
+    if (!isAdm()) { alert('Only an Admin can do this.'); return; }
     var inv = Array.isArray(sampleInventory) ? sampleInventory : [], DEF = '84139190', plan = { bills: 0, items: 0, hsn: 0, disc: 0 }, changes = [];
     var find = function (it) { var nm = String(it.name || '').trim().toLowerCase(); return inv.filter(function (x) { return it.id != null && String(x.id) === String(it.id); })[0] || inv.filter(function (x) { return nm && String(x.name || '').trim().toLowerCase() === nm; })[0]; };
     (ordersData || []).forEach(function (o) {
@@ -10684,14 +10817,14 @@ window.ttRenderExpensesIfOpen = function () {
       });
       if (hit) plan.bills++;
     });
-    if (!changes.length) { alert('Sabhi purane bills me MRP / Discount / HSN pehle se theek hain (ya Stock me unka item nahi mila). Kuch badalne ko nahi hai.'); return; }
-    if (!confirm('Purane bills me khali MRP / Discount / HSN bharein?\n\n' + plan.bills + ' bills, ' + plan.items + ' items\n• HSN theek: ' + plan.hsn + '\n• MRP + Discount bhara jayega: ' + plan.disc +
-      '\n\nNote: MRP Stock ke abhi ke customer rate se liya jata hai, discount = MRP aur bill ke rate ka fark. Bill ka total / amount / GST bilkul nahi badlega.\nPehle ek backup file apne aap download hogi. Aage badhein?')) return;
+    if (!changes.length) { alert('MRP / Discount / HSN in all old bills are already correct (or their items were not found in Stock). Nothing to change.'); return; }
+    if (!confirm('Fill the blank MRP / Discount / HSN in old bills?\n\n' + plan.bills + ' bills, ' + plan.items + ' items\n• HSN corrected: ' + plan.hsn + '\n• MRP + Discount will be filled: ' + plan.disc +
+      '\n\nNote: MRP is taken from the current customer rate in Stock; discount = the difference between MRP and the bill rate. The bill total / amount / GST will not change at all.\nA backup file will be downloaded automatically first. Continue?')) return;
     try { downloadFullBackup(); } catch (e) {}
     changes.forEach(function (x) { Object.assign(x[0], x[1]); });
     setStored("ORDERS", ordersData);
     try { if (typeof renderBilling === 'function') renderBilling('all'); } catch (e) {}
-    notice('Bills theek ho gaye', plan.bills + ' bills · ' + plan.items + ' items update', '🧮');
+    notice('Bills corrected', plan.bills + ' bills · ' + plan.items + ' items updated', '🧮');
   };
   var _ob = window.openBackupModal;
   window.openBackupModal = function () {
@@ -10699,7 +10832,7 @@ window.ttRenderExpensesIfOpen = function () {
     try {
       var m = $('backupModal'); if (m && isAdm() && !$('ttBillsFixBtn')) {
         var card = m.querySelector('.auth-card'), b = document.createElement('button');
-        b.id = 'ttBillsFixBtn'; b.className = 'btn btn-outline btn-block'; b.style.marginTop = '8px'; b.textContent = '🧮 Purane bills ka MRP / Discount / HSN theek karo';
+        b.id = 'ttBillsFixBtn'; b.className = 'btn btn-outline btn-block'; b.style.marginTop = '8px'; b.textContent = '🧮 Fix MRP / Discount / HSN of old bills';
         b.onclick = function () { triggerAppHaptic(); ttBillsFixOpen(); }; card.appendChild(b);
       }
     } catch (e) {}
@@ -10747,7 +10880,7 @@ var ttPayProofs = [];
     box.innerHTML = ttPayProofs.length ? ttPayProofs.map(function (s, i) {
       return '<span style="position:relative;display:inline-block;"><img src="' + E(s) + '" onclick="ttPayView(ttPayProofs[' + i + '])" style="width:64px;height:64px;object-fit:cover;border-radius:12px;border:1px solid var(--border);cursor:pointer;">' +
         '<button type="button" onclick="ttPayRemove(' + i + ')" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:0;background:#ef4444;color:#fff;font-size:11px;line-height:20px;padding:0;">✕</button></span>';
-    }).join('') : '<span style="font-size:11.5px;color:var(--text-muted);">Abhi koi photo nahi</span>';
+    }).join('') : '<span style="font-size:11.5px;color:var(--text-muted);">No photo yet</span>';
     var add = $('ordPayAddBtn'); if (add) add.style.display = ttPayProofs.length >= MAXP ? 'none' : '';
   };
   window.ttPayToggle = function () {
@@ -10809,6 +10942,315 @@ var ttPayProofs = [];
   });
   // header runner ko footer wale logo ka image de do (duplicate base64 nahi)
   try { var a = document.querySelector('.tt-runner-img'), b = document.querySelector('.tt-hdr-runimg'); if (a && b) b.src = a.src; } catch (e) {}
+})();
+
+
+/* =====================================================================
+   v21: exact billing math | Ledger date-range report + PDF | employee-wise
+   ledger summary with partial payments | staff report drill-down
+   (old data / formulas untouched - only display + new helpers)
+   ===================================================================== */
+var ttR2 = function (n) { return Math.round((Number(n) || 0) * 100) / 100; };
+function ttDueOf(o) { return Math.max(0, ttR2((Number(o.totalAmount) || 0) - (Number(o.recvAmount) || 0))); }
+function ttDateOf(o) { return String(o.deliveredDate || o.orderDate || '').slice(0, 10); }
+function ttStatusOf(o) {
+  var due = ttDueOf(o), rcv = Number(o.recvAmount) || 0;
+  return due <= 0.005 ? 'Paid' : (rcv > 0.005 ? 'Partial' : 'Unpaid');
+}
+window.ttR2 = ttR2; window.ttDueOf = ttDueOf; window.ttStatusOf = ttStatusOf;
+
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var E = function (s) { return (typeof esc === 'function') ? esc(String(s == null ? '' : s)) : String(s == null ? '' : s); };
+  var FM = function (n) { return '₹' + (Number(n) || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 }); };
+  var p2 = function (n) { return (n < 10 ? '0' : '') + n; };
+  var ymd = function (d) { return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); };
+  function preset(k) {
+    var t = new Date(), a = new Date(t), b = new Date(t);
+    if (k === 'today') { /* same */ }
+    else if (k === '7d') { a.setDate(a.getDate() - 6); }
+    else if (k === 'month') { a = new Date(t.getFullYear(), t.getMonth(), 1); }
+    else if (k === 'lastmonth') { a = new Date(t.getFullYear(), t.getMonth() - 1, 1); b = new Date(t.getFullYear(), t.getMonth(), 0); }
+    else if (k === 'fy') { a = new Date(t.getMonth() >= 3 ? t.getFullYear() : t.getFullYear() - 1, 3, 1); }
+    else return ['', ''];
+    return [ymd(a), ymd(b)];
+  }
+  var PRESETS = [['today', 'Today'], ['7d', 'Last 7 Days'], ['month', 'This Month'], ['lastmonth', 'Last Month'], ['fy', 'This FY'], ['all', 'All Time']];
+
+  /* ---- payment trail: advance + later part payments ---- */
+  function payLines(o) {
+    var arr = Array.isArray(o.payments) ? o.payments : [], sum = 0, out = [];
+    arr.forEach(function (p) {
+      var a = Number(p.amount) || 0; sum += a;
+      out.push({ date: String(p.at || '').slice(0, 10) || ttDateOf(o), amt: a, mode: p.mode || '', by: p.by || '', kind: 'Part payment', o: o });
+    });
+    var adv = ttR2((Number(o.recvAmount) || 0) - sum);
+    if (adv > 0.005) out.unshift({ date: String(o.orderDate || ttDateOf(o)).slice(0, 10), amt: adv, mode: o.payMode || '', by: o.bookedBy || '', kind: arr.length ? 'Advance' : 'Payment at billing', o: o });
+    return out;
+  }
+  window.ttPayLines = payLines;
+
+  /* ---- query ---- */
+  function query(f) {
+    var list = (ordersData || []).filter(function (o) { return o && o.status === 'Delivered'; });
+    if (f.emp && f.emp !== 'ALL') list = list.filter(function (o) { return (o.bookedBy || 'Unassigned') === f.emp; });
+    if (f.from) list = list.filter(function (o) { return ttDateOf(o) >= f.from; });
+    if (f.to) list = list.filter(function (o) { return ttDateOf(o) <= f.to; });
+    list = list.slice().sort(function (a, b) {
+      var da = ttDateOf(a), db = ttDateOf(b);
+      if (da !== db) return da < db ? 1 : -1;
+      return String(b.id).localeCompare(String(a.id), undefined, { numeric: true });
+    });
+    return list;
+  }
+  function totals(list) {
+    var T = { n: 0, billed: 0, recv: 0, due: 0, paid: 0, partial: 0, unpaid: 0 };
+    list.forEach(function (o) {
+      T.n++; T.billed += Number(o.totalAmount) || 0; T.recv += Number(o.recvAmount) || 0; T.due += ttDueOf(o);
+      var s = ttStatusOf(o); if (s === 'Paid') T.paid++; else if (s === 'Partial') T.partial++; else T.unpaid++;
+    });
+    T.billed = ttR2(T.billed); T.recv = ttR2(T.recv); T.due = ttR2(T.due);
+    return T;
+  }
+  function byType(list, type) {
+    if (type === 'due') return list.filter(function (o) { return ttDueOf(o) > 0.005; });
+    if (type === 'received') return list.filter(function (o) { return ttDueOf(o) <= 0.005; });
+    if (type === 'partial') return list.filter(function (o) { return ttStatusOf(o) === 'Partial'; });
+    return list;
+  }
+  function byStaff(list) {
+    var m = {};
+    list.forEach(function (o) {
+      var k = o.bookedBy || 'Unassigned', x = m[k] = m[k] || { name: k, list: [] };
+      x.list.push(o);
+    });
+    return Object.keys(m).map(function (k) { var x = m[k]; x.T = totals(x.list); return x; }).sort(function (a, b) { return b.T.billed - a.T.billed; });
+  }
+  function periodLabel(f) {
+    if (!f.from && !f.to) return 'All dates';
+    return (f.from || 'Start') + '  to  ' + (f.to || 'Today');
+  }
+
+  /* ---- report html (used for PDF) ---- */
+  function reportHtml(title, f, list, withStaff) {
+    var T = totals(list), B = 'border:1px solid #444;padding:3px 5px;', th = B + 'background:#e8eef5;font-weight:700;text-align:left;', num = B + 'text-align:right;';
+    var h = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:10.5px;color:#000;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0a2540;padding-bottom:6px;margin-bottom:8px;">' +
+      '<div><div style="font-size:16px;font-weight:800;">TWINTOWN EXPRESS SERVICES PVT LTD</div><div style="font-size:9.5px;">Plot 1270/8566, Satya Vihar, Rasulgarh, Bhubaneswar - 751010</div></div>' +
+      '<div style="text-align:right;"><div style="font-size:14px;font-weight:800;">' + E(title) + '</div><div style="font-size:9.5px;">Generated: ' + E(new Date().toLocaleString('en-IN')) + '</div></div></div>' +
+      '<div style="margin-bottom:8px;"><b>Period:</b> ' + E(periodLabel(f)) + ' &nbsp;|&nbsp; <b>Staff:</b> ' + E(f.emp && f.emp !== 'ALL' ? f.emp : 'All staff') +
+      (f.type && f.type !== 'all' ? ' &nbsp;|&nbsp; <b>Filter:</b> ' + E({ due: 'Due only', received: 'Fully paid', partial: 'Partially paid' }[f.type] || f.type) : '') + '</div>' +
+      '<table style="width:100%;border-collapse:collapse;margin-bottom:10px;"><tr>' +
+      [['Invoices', T.n], ['Total Sales', FM(T.billed)], ['Collected', FM(T.recv)], ['Due', FM(T.due)], ['Paid / Partial / Unpaid', T.paid + ' / ' + T.partial + ' / ' + T.unpaid]].map(function (x) {
+        return '<td style="' + B + 'text-align:center;"><div style="font-size:9px;">' + x[0] + '</div><div style="font-size:13px;font-weight:800;">' + x[1] + '</div></td>'; }).join('') + '</tr></table>';
+    if (withStaff) {
+      var st = byStaff(list);
+      if (st.length > 1) {
+        h += '<div style="font-weight:800;margin:6px 0 3px;">Staff-wise Summary</div><table style="width:100%;border-collapse:collapse;margin-bottom:10px;"><tr><th style="' + th + '">Staff</th><th style="' + th + '">Invoices</th><th style="' + th + '">Total Sales</th><th style="' + th + '">Collected</th><th style="' + th + '">Due</th></tr>' +
+          st.map(function (x) { return '<tr><td style="' + B + '">' + E(x.name) + '</td><td style="' + num + '">' + x.T.n + '</td><td style="' + num + '">' + FM(x.T.billed) + '</td><td style="' + num + '">' + FM(x.T.recv) + '</td><td style="' + num + '">' + FM(x.T.due) + '</td></tr>'; }).join('') + '</table>';
+      }
+    }
+    h += '<div style="font-weight:800;margin:6px 0 3px;">Sales Details</div><table style="width:100%;border-collapse:collapse;"><tr><th style="' + th + '">#</th><th style="' + th + '">Date</th><th style="' + th + '">Invoice</th><th style="' + th + '">Customer</th><th style="' + th + '">Staff</th><th style="' + th + '">Total</th><th style="' + th + '">Received</th><th style="' + th + '">Due</th><th style="' + th + '">Status</th></tr>' +
+      (list.length ? list.map(function (o, i) {
+        return '<tr><td style="' + B + '">' + (i + 1) + '</td><td style="' + B + '">' + E(ttDateOf(o)) + '</td><td style="' + B + '">' + E(o.id) + '</td><td style="' + B + '">' + E(o.customerName) + '</td><td style="' + B + '">' + E(o.bookedBy || '-') + '</td><td style="' + num + '">' + FM(o.totalAmount) + '</td><td style="' + num + '">' + FM(o.recvAmount) + '</td><td style="' + num + '">' + FM(ttDueOf(o)) + '</td><td style="' + B + '">' + ttStatusOf(o) + '</td></tr>'; }).join('')
+        : '<tr><td colspan="9" style="' + B + 'text-align:center;">No sales found for this filter.</td></tr>') +
+      '<tr style="font-weight:800;background:#f3f6fa;"><td colspan="5" style="' + num + '">TOTAL</td><td style="' + num + '">' + FM(T.billed) + '</td><td style="' + num + '">' + FM(T.recv) + '</td><td style="' + num + '">' + FM(T.due) + '</td><td style="' + B + '"></td></tr></table>';
+    var pays = []; list.forEach(function (o) { payLines(o).forEach(function (p) { pays.push(p); }); });
+    if (pays.length) {
+      pays.sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); });
+      h += '<div style="font-weight:800;margin:12px 0 3px;">Payment Details (advance &amp; part payments)</div><table style="width:100%;border-collapse:collapse;"><tr><th style="' + th + '">Date</th><th style="' + th + '">Invoice</th><th style="' + th + '">Customer</th><th style="' + th + '">Type</th><th style="' + th + '">Mode</th><th style="' + th + '">Received by</th><th style="' + th + '">Amount</th></tr>' +
+        pays.map(function (p) { return '<tr><td style="' + B + '">' + E(p.date) + '</td><td style="' + B + '">' + E(p.o.id) + '</td><td style="' + B + '">' + E(p.o.customerName) + '</td><td style="' + B + '">' + p.kind + '</td><td style="' + B + '">' + E(p.mode) + '</td><td style="' + B + '">' + E(p.by) + '</td><td style="' + num + '">' + FM(p.amt) + '</td></tr>'; }).join('') + '</table>';
+    }
+    return h + '<div style="margin-top:14px;font-size:9px;text-align:center;">This is a computer generated report.</div></div>';
+  }
+  function csvOf(list) {
+    var q = function (s) { return '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"'; };
+    var rows = [['Date', 'Invoice', 'Customer', 'Staff', 'Total', 'Received', 'Due', 'Status', 'Payments (date: amount mode)'].map(q).join(',')];
+    list.forEach(function (o) {
+      rows.push([ttDateOf(o), o.id, o.customerName, o.bookedBy || '', ttR2(o.totalAmount), ttR2(o.recvAmount), ttDueOf(o), ttStatusOf(o),
+        payLines(o).map(function (p) { return p.date + ': ' + p.amt + ' ' + p.mode; }).join(' | ')].map(q).join(','));
+    });
+    return '﻿' + rows.join('\r\n');
+  }
+
+  /* =================== LEDGER =================== */
+  var L = { from: '', to: '', emp: 'ALL', type: 'all' };
+  window.__ttLedState = L;
+  function chips(cur, onclickFn) {
+    return '<div class="tt21-chips">' + PRESETS.map(function (p) {
+      var r = preset(p[0]), on = (r[0] === (cur.from || '') && r[1] === (cur.to || ''));
+      return '<button type="button" class="' + (on ? 'on' : '') + '" onclick="triggerAppHaptic(); ' + onclickFn + '(\'' + p[0] + '\')">' + p[1] + '</button>'; }).join('') + '</div>';
+  }
+  function ledgerBar() {
+    var bar = $('ttLedBar'); if (!bar) return;
+    var statuses = [['all', 'All'], ['due', 'Due'], ['partial', 'Partial'], ['received', 'Paid']];
+    bar.innerHTML = '<div class="tt21-title">📅 Sales Report Filter</div>' +
+      '<div class="grid-2"><div class="form-group" style="margin-bottom:6px;"><label class="form-label">From date</label><input type="date" id="ttLedFrom" value="' + E(L.from) + '" onchange="ttLedSet()"></div>' +
+      '<div class="form-group" style="margin-bottom:6px;"><label class="form-label">To date</label><input type="date" id="ttLedTo" value="' + E(L.to) + '" onchange="ttLedSet()"></div></div>' +
+      chips(L, 'ttLedPreset') +
+      '<div class="form-group" style="margin:8px 0 6px;"><label class="form-label">👤 Staff (booked by)</label><select id="billingEmployeeFilter" onchange="filterBillingByEmployee(this.value)"></select></div>' +
+      '<div class="tt21-chips">' + statuses.map(function (s) { return '<button type="button" class="' + (L.type === s[0] ? 'on' : '') + '" onclick="triggerAppHaptic(); filterBilling(\'' + s[0] + '\')">' + s[1] + '</button>'; }).join('') + '</div>' +
+      '<div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-primary btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttLedPdf()">📄 Download PDF Report</button><button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttLedCsv()">⬇️ CSV</button></div>';
+    var sel = $('billingEmployeeFilter');
+    sel.innerHTML = '<option value="ALL">All Staff Combined</option>' + (registeredEmployees || []).map(function (e) { return '<option value="' + E(e.name) + '">' + E(e.name) + ' — [' + E(e.role) + ']</option>'; }).join('');
+    sel.value = L.emp;
+    if (sel.value !== L.emp) { var op = document.createElement('option'); op.value = L.emp; op.textContent = L.emp; sel.appendChild(op); sel.value = L.emp; }
+  }
+  window.ttLedSet = function () { L.from = ($('ttLedFrom') || {}).value || ''; L.to = ($('ttLedTo') || {}).value || ''; renderBilling(); };
+  window.ttLedPreset = function (k) { var r = preset(k); L.from = r[0]; L.to = r[1]; renderBilling(); };
+  window.filterBilling = function (type) { L.type = type || 'all'; renderBilling(); };
+  window.filterBillingByEmployee = function (name) { L.emp = name || 'ALL'; L.type = 'all'; renderBilling(); };
+  window.ttLedPdf = function () {
+    var list = byType(query(L), L.type);
+    ttPrintHtml('Sales Report', reportHtml('SALES REPORT', L, list, L.emp === 'ALL'));
+  };
+  window.ttLedCsv = function () {
+    var list = byType(query(L), L.type);
+    downloadFile(csvOf(list), 'sales-report-' + (L.from || 'all') + '_to_' + (L.to || 'today') + '.csv', 'text/csv;charset=utf-8');
+  };
+
+  function empSummary(all) {
+    var box = $('ttLedEmpSummary'); if (!box) return;
+    var h = '';
+    if (L.emp !== 'ALL') {
+      var T = totals(all), pays = [];
+      all.forEach(function (o) { payLines(o).forEach(function (p) { pays.push(p); }); });
+      pays.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+      var part = pays.filter(function (p) { return p.kind === 'Part payment'; });
+      h = '<div class="card tt21-emp"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><strong style="font-size:14px;">👤 ' + E(L.emp) + '</strong>' +
+        '<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ttStaffReport(\'' + E(L.emp).replace(/&#39;/g, "\\'") + '\')">Full Report ›</button></div>' +
+        '<div class="grid-3" style="margin:10px 0 8px;"><div class="tt21-tile"><small>TOTAL SALES</small><b>' + FM(T.billed) + '</b></div><div class="tt21-tile ok"><small>COLLECTED</small><b>' + FM(T.recv) + '</b></div><div class="tt21-tile bad"><small>DUE</small><b>' + FM(T.due) + '</b></div></div>' +
+        '<div style="font-size:12px;display:flex;gap:12px;flex-wrap:wrap;"><span>🧾 ' + T.n + ' invoices</span><span style="color:var(--success);">✅ Paid ' + T.paid + '</span><span style="color:#d97706;">🟡 Partial ' + T.partial + '</span><span style="color:var(--danger);">🔴 Unpaid ' + T.unpaid + '</span></div>' +
+        (part.length ? '<div class="tt21-sec">💵 Partial payments received (' + part.length + ')</div>' + part.slice(0, 12).map(function (p) {
+          return '<div class="tt21-pay"><span>' + E(p.date) + ' · ' + E(p.o.customerName) + ' <i>(' + E(p.o.id) + ')</i></span><b>' + FM(p.amt) + '</b></div>'; }).join('') + (part.length > 12 ? '<div style="font-size:11px;opacity:.7;">+' + (part.length - 12) + ' more in the PDF report</div>' : '') : '<div class="tt21-sec" style="opacity:.7;">No partial payments in this period.</div>') + '</div>';
+    } else {
+      var st = byStaff(all);
+      if (st.length) h = '<div class="card tt21-emp"><div class="tt21-sec" style="margin-top:0;">👥 Staff-wise Sales (tap a name)</div>' + st.map(function (x) {
+        return '<div class="tt21-staff" onclick="triggerAppHaptic(); filterBillingByEmployee(\'' + E(x.name).replace(/&#39;/g, "\\'") + '\')"><div style="min-width:0;flex:1;"><b>' + E(x.name) + '</b><div style="font-size:11px;opacity:.75;">' + x.T.n + ' invoices · Collected ' + FM(x.T.recv) + '</div></div><div style="text-align:right;"><b>' + FM(x.T.billed) + '</b><div style="font-size:11px;color:' + (x.T.due > 0 ? 'var(--danger)' : 'var(--success)') + ';">Due ' + FM(x.T.due) + '</div></div></div>'; }).join('') + '</div>';
+    }
+    box.innerHTML = h;
+  }
+
+  window.renderBilling = function (filterType, empFilter) {
+    if (filterType) L.type = filterType;
+    if (empFilter) L.emp = empFilter;
+    var container = $('billingListContainer'); if (!container) return;
+    if (!$('ttLedBar')) {
+      var old = $('billingEmployeeFilter'), oldCard = old ? old.closest('.card') : null;
+      var bar = document.createElement('div'); bar.id = 'ttLedBar'; bar.className = 'card tt21-bar';
+      var sum = document.createElement('div'); sum.id = 'ttLedEmpSummary';
+      if (oldCard && oldCard.parentNode) { oldCard.parentNode.insertBefore(bar, oldCard); oldCard.parentNode.insertBefore(sum, oldCard); oldCard.remove(); }
+      else container.parentNode.insertBefore(bar, container);
+    }
+    ledgerBar();
+    var all = query(L), T = totals(byType(all, L.type)), list = byType(all, L.type);
+    $('metricTotalBilled').textContent = FM(T.billed);
+    $('metricTotalRecv').textContent = FM(T.recv);
+    $('metricTotalDue').textContent = FM(T.due);
+    empSummary(all);
+    var label = { all: 'Delivered Tax Invoices', due: '🔴 Due Customers Only', partial: '🟡 Partially Paid', received: '🟢 Fully Paid' }[L.type] || 'Invoices';
+    $('billingFilterTitle').textContent = label + ' (' + list.length + ')' + ((L.from || L.to) ? ' · ' + periodLabel(L) : '');
+    container.innerHTML = '';
+    if (!list.length) { container.innerHTML = '<div style="text-align:center;padding:25px;color:var(--text-muted);font-size:12.5px;">No invoices found for this filter.</div>'; return; }
+    var today = ymd(new Date());
+    list.slice(0, 120).forEach(function (o) {
+      var due = ttDueOf(o), st = ttStatusOf(o), lines = payLines(o);
+      var card = document.createElement('div'); card.className = 'card';
+      var badge = st === 'Paid' ? '<span class="badge badge-delivered">Paid</span>' : (st === 'Partial' ? '<span class="badge badge-pending">Partial · Due ' + FM(due) + '</span>' : '<span class="badge badge-danger">Due: ' + FM(due) + '</span>');
+      card.innerHTML =
+        '<div class="card-header" style="cursor:pointer;" onclick="if(!event.target.closest(\'button\')){ triggerAppHaptic(); openLedgerDetail(\'' + E(o.id) + '\'); }">' +
+        '<div><strong style="font-size:15px;color:var(--text-main);">' + E(o.customerName) + '</strong>' +
+        '<div style="font-size:11.5px;color:var(--text-muted);">Invoice: ' + E(o.id) + ' | Delivered: ' + E(o.deliveredDate || o.orderDate) + ' | Staff: ' + E(o.bookedBy || '-') + '</div></div>' +
+        '<div style="display:flex;align-items:center;gap:6px;">' + badge + '<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openAdminEditLedgerModal(\'' + E(o.id) + '\')">✏️</button></div></div>' +
+        '<div class="tt21-amts"><span>Total <b>' + FM(o.totalAmount) + '</b></span><span style="color:var(--success);">Received <b>' + FM(o.recvAmount) + '</b></span><span style="color:' + (due > 0 ? 'var(--danger)' : 'var(--success)') + ';">Due <b>' + FM(due) + '</b></span></div>' +
+        (lines.length > 1 || (lines.length === 1 && st !== 'Paid') ? '<div class="tt21-trail">' + lines.map(function (p) { return '<span>' + E(p.date) + ' · ' + FM(p.amt) + (p.mode ? ' · ' + E(p.mode) : '') + '</span>'; }).join('') + '</div>' : '') +
+        ((due > 0 && o.payFollowupDate) ? '<div style="margin-top:8px;font-size:12px;font-weight:800;color:' + (o.payFollowupDate <= today ? 'var(--danger)' : 'var(--warning,#d97706)') + ';">📅 Payment follow-up: ' + E(o.payFollowupDate) + (o.payFollowupNote ? ' — ' + E(o.payFollowupNote) : '') + '</div>' : '') +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">' +
+        '<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openLedgerDetail(\'' + E(o.id) + '\')">📄 Details</button>' +
+        '<button class="btn btn-print btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openInvoicePrintModal(\'' + E(o.id) + '\')">🖨️ Tax Invoice</button>' +
+        '<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openUpiModal(\'' + E(o.customerName).replace(/&#39;/g, "\\'") + '\', ' + (due > 0 ? due : (Number(o.totalAmount) || 0)) + ')">📱 UPI QR</button>' +
+        (due > 0 ? '<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); collectDuePayment(\'' + E(o.id) + '\')">💵 Collect Due</button><button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openPayFollowupModal(\'' + E(o.id) + '\')">📅 Payment Follow-up</button>' : '') + '</div>';
+      container.appendChild(card);
+    });
+    if (list.length > 120) { var more = document.createElement('div'); more.style.cssText = 'text-align:center;padding:12px;font-size:12px;color:var(--text-muted);'; more.textContent = (list.length - 120) + ' more invoices - narrow the date range or download the PDF report.'; container.appendChild(more); }
+  };
+
+  /* =================== STAFF REPORT =================== */
+  var S = { name: '', from: '', to: '', type: 'all' };
+  function modal(id, z) {
+    var m = $(id);
+    if (!m) { m = document.createElement('div'); m.id = id; m.className = 'auth-overlay'; m.style.cssText = 'display:none;z-index:' + z + ';'; document.body.appendChild(m); }
+    return m;
+  }
+  window.ttStaffReport = function (name, from, to) {
+    S.name = name; if (from !== undefined) S.from = from; if (to !== undefined) S.to = to; S.type = 'all';
+    modal('ttStaffRepModal', 3300).style.display = 'flex';
+    renderStaff();
+  };
+  window.ttStaffSet = function () { S.from = ($('ttStFrom') || {}).value || ''; S.to = ($('ttStTo') || {}).value || ''; renderStaff(); };
+  window.ttStaffPreset = function (k) { var r = preset(k); S.from = r[0]; S.to = r[1]; renderStaff(); };
+  window.ttStaffType = function (t) { S.type = t; renderStaff(); };
+  function sf() { return { from: S.from, to: S.to, emp: S.name, type: S.type }; }
+  window.ttStaffPdf = function () { ttPrintHtml('Sales Report - ' + S.name, reportHtml('STAFF SALES REPORT - ' + S.name.toUpperCase(), sf(), byType(query(sf()), S.type), false)); };
+  window.ttStaffCsv = function () { downloadFile(csvOf(byType(query(sf()), S.type)), 'sales-' + S.name.replace(/\s+/g, '_') + '.csv', 'text/csv;charset=utf-8'); };
+  function renderStaff() {
+    var m = modal('ttStaffRepModal', 3300), all = query(sf()), T = totals(all), list = byType(all, S.type);
+    var emp = (registeredEmployees || []).find(function (e) { return e.name === S.name; });
+    var pays = []; all.forEach(function (o) { payLines(o).forEach(function (p) { pays.push(p); }); });
+    pays.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+    var types = [['all', 'All'], ['due', 'Due'], ['partial', 'Partial'], ['received', 'Paid']];
+    m.innerHTML = '<div class="auth-card" style="max-width:640px;">' +
+      '<div class="card-header"><div><strong class="card-title">👤 ' + E(S.name) + '</strong><div style="font-size:11px;opacity:.7;">' + E(emp ? emp.role : 'Staff') + ' · Sales Report</div></div><button class="btn btn-outline btn-sm" onclick="document.getElementById(\'ttStaffRepModal\').style.display=\'none\'">✕</button></div>' +
+      '<div class="grid-2"><div class="form-group" style="margin-bottom:6px;"><label class="form-label">From date</label><input type="date" id="ttStFrom" value="' + E(S.from) + '" onchange="ttStaffSet()"></div>' +
+      '<div class="form-group" style="margin-bottom:6px;"><label class="form-label">To date</label><input type="date" id="ttStTo" value="' + E(S.to) + '" onchange="ttStaffSet()"></div></div>' +
+      chips(S, 'ttStaffPreset') +
+      '<div class="grid-3" style="margin:10px 0 8px;"><div class="tt21-tile"><small>TOTAL SALES</small><b>' + FM(T.billed) + '</b></div><div class="tt21-tile ok"><small>COLLECTED</small><b>' + FM(T.recv) + '</b></div><div class="tt21-tile bad"><small>DUE</small><b>' + FM(T.due) + '</b></div></div>' +
+      '<div style="font-size:12px;display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;"><span>🧾 ' + T.n + ' invoices</span><span style="color:var(--success);">✅ Paid ' + T.paid + '</span><span style="color:#d97706;">🟡 Partial ' + T.partial + '</span><span style="color:var(--danger);">🔴 Unpaid ' + T.unpaid + '</span></div>' +
+      '<div style="display:flex;gap:8px;margin-bottom:8px;"><button class="btn btn-primary btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttStaffPdf()">📄 Download PDF Report</button><button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttStaffCsv()">⬇️ CSV</button></div>' +
+      '<div class="tt21-chips">' + types.map(function (t) { return '<button type="button" class="' + (S.type === t[0] ? 'on' : '') + '" onclick="triggerAppHaptic(); ttStaffType(\'' + t[0] + '\')">' + t[1] + '</button>'; }).join('') + '</div>' +
+      '<div class="tt21-sec">🧾 Sales (' + list.length + ')</div>' +
+      (list.length ? list.slice(0, 80).map(function (o) {
+        var st = ttStatusOf(o), col = st === 'Paid' ? 'var(--success)' : st === 'Partial' ? '#d97706' : 'var(--danger)';
+        return '<div class="tt21-staff" onclick="triggerAppHaptic(); openLedgerDetail(\'' + E(o.id) + '\')"><div style="min-width:0;flex:1;"><b>' + E(o.customerName) + '</b><div style="font-size:11px;opacity:.75;">' + E(ttDateOf(o)) + ' · ' + E(o.id) + '</div></div><div style="text-align:right;"><b>' + FM(o.totalAmount) + '</b><div style="font-size:11px;color:' + col + ';">' + st + (st !== 'Paid' ? ' · Due ' + FM(ttDueOf(o)) : '') + '</div></div></div>'; }).join('') + (list.length > 80 ? '<div style="font-size:11px;opacity:.7;text-align:center;padding:6px;">+' + (list.length - 80) + ' more in the PDF</div>' : '')
+        : '<div style="text-align:center;padding:16px;font-size:12.5px;opacity:.7;">No sales found for this period.</div>') +
+      '<div class="tt21-sec">💵 Payments received (advance &amp; part payments) (' + pays.length + ')</div>' +
+      (pays.length ? pays.slice(0, 40).map(function (p) { return '<div class="tt21-pay"><span>' + E(p.date) + ' · ' + E(p.o.customerName) + ' <i>(' + p.kind + (p.mode ? ', ' + E(p.mode) : '') + ')</i></span><b>' + FM(p.amt) + '</b></div>'; }).join('') : '<div style="font-size:12px;opacity:.7;">No payments recorded.</div>') +
+      '</div>';
+  }
+
+  /* =================== STAFF PERFORMANCE (Quick Toggle > Sales Report / Staff Report) =================== */
+  var P = { from: '', to: '' };
+  function perfBar() {
+    var c = $('performanceReportContainer'); if (!c) return null;
+    var bar = $('ttPerfBar');
+    if (!bar) { bar = document.createElement('div'); bar.id = 'ttPerfBar'; c.parentNode.insertBefore(bar, c); }
+    bar.innerHTML = '<div class="grid-2"><div class="form-group" style="margin-bottom:6px;"><label class="form-label">From date</label><input type="date" id="ttPfFrom" value="' + E(P.from) + '" onchange="ttPerfSet()"></div>' +
+      '<div class="form-group" style="margin-bottom:6px;"><label class="form-label">To date</label><input type="date" id="ttPfTo" value="' + E(P.to) + '" onchange="ttPerfSet()"></div></div>' + chips(P, 'ttPerfPreset') +
+      '<div style="display:flex;gap:8px;margin:8px 0;"><button class="btn btn-primary btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttPerfPdf()">📄 PDF Report (all staff)</button><button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); ttPerfCsv()">⬇️ CSV</button></div>';
+    return c;
+  }
+  window.ttPerfSet = function () { P.from = ($('ttPfFrom') || {}).value || ''; P.to = ($('ttPfTo') || {}).value || ''; renderPerf(); };
+  window.ttPerfPreset = function (k) { var r = preset(k); P.from = r[0]; P.to = r[1]; renderPerf(); };
+  window.ttPerfPdf = function () { var f = { from: P.from, to: P.to, emp: 'ALL', type: 'all' }; ttPrintHtml('Sales Report', reportHtml('SALES REPORT - ALL STAFF', f, query(f), true)); };
+  window.ttPerfCsv = function () { var f = { from: P.from, to: P.to, emp: 'ALL', type: 'all' }; downloadFile(csvOf(query(f)), 'sales-all-staff.csv', 'text/csv;charset=utf-8'); };
+  function renderPerf() {
+    var c = perfBar(); if (!c) return;
+    var all = query({ from: P.from, to: P.to, emp: 'ALL' }), map = {};
+    (registeredEmployees || []).forEach(function (e) { map[e.name] = { role: e.role, list: [] }; });
+    all.forEach(function (o) { var k = o.bookedBy || 'Unassigned'; (map[k] = map[k] || { role: 'Staff', list: [] }).list.push(o); });
+    var names = Object.keys(map).sort(function (a, b) { return totals(map[b].list).billed - totals(map[a].list).billed; });
+    var GT = totals(all);
+    c.innerHTML = '<div class="tt21-grand"><div><small>TOTAL SALES</small><b>' + FM(GT.billed) + '</b></div><div><small>COLLECTED</small><b>' + FM(GT.recv) + '</b></div><div><small>DUE</small><b>' + FM(GT.due) + '</b></div></div>' +
+      names.map(function (n) {
+        var x = map[n], T = totals(x.list);
+        return '<div class="tt21-person" onclick="triggerAppHaptic(); ttStaffReport(\'' + E(n).replace(/&#39;/g, "\\'") + '\', \'' + P.from + '\', \'' + P.to + '\')">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><strong>👤 ' + E(n) + '</strong><span class="badge badge-info">' + E(x.role) + '</span></div>' +
+          '<div class="grid-3" style="font-size:11.5px;"><div>Invoices: <b>' + T.n + '</b></div><div>Sales: <b>' + FM(T.billed) + '</b></div><div>Collected: <b style="color:var(--success);">' + FM(T.recv) + '</b></div></div>' +
+          '<div style="font-size:11.5px;margin-top:4px;display:flex;justify-content:space-between;"><span style="color:var(--danger);">Due: <b>' + FM(T.due) + '</b></span><span style="opacity:.75;">Paid ' + T.paid + ' · Partial ' + T.partial + ' · Unpaid ' + T.unpaid + ' &nbsp;›</span></div></div>'; }).join('');
+  }
+  window.openPerformanceReportModal = function () { renderPerf(); $('performanceReportModal').style.display = 'flex'; };
+  window.closePerformanceReportModal = function () { $('performanceReportModal').style.display = 'none'; };
 })();
 
 
