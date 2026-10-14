@@ -1937,6 +1937,49 @@ header { gap: 6px; }
 .tt-tagline { font-size: 7px; letter-spacing: .35px; }
 @media (max-width: 400px) { .tt-hdr-btn span.l { display: none !important; } .tt-hdr-btn { padding: 2px; } .tt-tagline { letter-spacing: .15px; } }
 @media (max-width: 380px) { .brand-title-pvt { display: none; } }
+/* ===== v25 feature pack ===== */
+.tt25-card{max-height:88vh;overflow:auto;-webkit-overflow-scrolling:touch;background:var(--card,#fff)}
+.tt25-sub{font-size:12px;color:var(--text-muted);margin:2px 0 10px;line-height:1.45}
+.tt25-grp{margin:0 0 14px;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--card,#fff)}
+.tt25-gt{padding:9px 14px;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--text-muted);background:var(--bg)}
+.tt25-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;border-top:1px solid var(--border)}
+.tt25-gt + .tt25-row{border-top:0}
+.tt25-rt{min-width:0;flex:1}.tt25-rt b{display:block;font-size:13.5px;color:var(--text-main);font-weight:700}
+.tt25-rt small{display:block;font-size:11px;color:var(--text-muted);margin-top:1px;line-height:1.35}
+.tt25-sw{position:relative;width:46px;height:28px;flex:none;display:inline-block}
+.tt25-sw input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:2}
+.tt25-sw i{position:absolute;inset:0;border-radius:99px;background:#cbd5e1;transition:background .2s}
+.tt25-sw i::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:transform .2s}
+.tt25-sw input:checked + i{background:#34c759}.tt25-sw input:checked + i::after{transform:translateX(18px)}
+.tt25-num{width:84px;padding:7px 8px;border:1px solid var(--border);border-radius:10px;font-weight:700;text-align:right;background:var(--bg);color:var(--text-main)}
+.tt25-acc{display:flex;gap:10px;margin-top:8px}.tt25-acc button{width:30px;height:30px;border-radius:50%;border:3px solid transparent;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.tt25-acc button.on{border-color:var(--card,#fff);box-shadow:0 0 0 2.5px var(--text-main)}
+.tt25-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tt25-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.tt25-kpis div{background:var(--bg);border-radius:12px;padding:9px 11px}.tt25-kpis small{display:block;font-size:10.5px;color:var(--text-muted)}.tt25-kpis b{font-size:15px;font-variant-numeric:tabular-nums}
+.tt25-scroll{overflow:auto;border:1px solid var(--border);border-radius:12px}
+.tt25-tbl{border-collapse:collapse;width:100%;font-size:11.5px;font-variant-numeric:tabular-nums}.tt25-tbl th,.tt25-tbl td{padding:6px 8px;border-bottom:1px solid var(--border);white-space:nowrap;text-align:right}.tt25-tbl th:nth-child(-n+3),.tt25-tbl td:nth-child(-n+3){text-align:left}.tt25-tbl th{background:var(--bg);font-size:10.5px}.tt25-tbl tr.tot td{font-weight:800;background:var(--bg)}
+.tt25-tools{display:flex;gap:8px;margin:0 0 10px;flex-wrap:wrap}
+.tt25-spark{padding:12px 14px}.tt25-sp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.tt25-sp-top small{display:block;font-size:10.5px;color:var(--text-muted)}.tt25-sp-top strong{font-size:17px;font-variant-numeric:tabular-nums}
+.tt25-sp-svg{width:100%;height:48px;display:block;margin-top:6px}.tt25-sp-days{display:flex;justify-content:space-between;font-size:9.5px;color:var(--text-muted)}
+.tt25-tl{display:flex;margin:0 0 8px;gap:0}.tt25-st{flex:1;text-align:center;position:relative;font-size:10px;color:var(--text-muted)}
+.tt25-st i{display:block;width:12px;height:12px;border-radius:50%;background:#cbd5e1;margin:0 auto 4px;position:relative;z-index:1}
+.tt25-st::before{content:"";position:absolute;top:5px;left:-50%;width:100%;height:2px;background:#cbd5e1}.tt25-st:first-child::before{display:none}
+.tt25-st.done i,.tt25-st.done::before{background:#10b981}.tt25-st.warn i{background:#ef4444}.tt25-st b{display:block;font-size:10.5px;color:var(--text-main)}.tt25-st small{display:block;font-size:9.5px}
+.tt25-snz{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:11.5px;color:var(--text-muted)}.tt25-snz span{flex:1}
+.tt25-snz button{border:1px solid var(--border);background:var(--bg);color:var(--text-main);font-weight:800;border-radius:99px;padding:5px 11px;font-size:11.5px}
+.tt25-svc{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.tt25-wty{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:99px}.tt25-wty.ok{background:#dcfce7;color:#15803d}.tt25-wty.warn{background:#fef3c7;color:#b45309}.tt25-wty.bad{background:#fee2e2;color:#b91c1c}
+.tt25-ph img{width:100%;border-radius:10px;display:block;margin-top:4px}.tt25-ph-e{height:90px;border:1.5px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-muted);margin-top:4px}
+#tt25Lock{position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#061324,#0a2540);display:flex;align-items:center;justify-content:center}
+.tt25-lk{width:min(320px,86vw);text-align:center;color:#fff;display:flex;flex-direction:column;gap:12px}.tt25-lk input{padding:13px;border-radius:14px;border:0;text-align:center;font-size:20px;letter-spacing:8px}#tt25LockErr{color:#fca5a5;font-size:12px;min-height:16px}
+/* look & feel switches */
+body.tt-pillnav .nav-bar{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));width:auto;height:62px;border-radius:24px;border:1.5px solid rgba(0,180,216,.45);padding-bottom:0}
+body.tt-pillnav .view-panel{padding-bottom:22px}
+body.tt-compact .card{padding:9px 11px !important;margin-bottom:8px !important}
+body.tt-compact .card-header{margin-bottom:6px !important}
+body.tt-compact .stat-value{font-size:18px !important}
+
 </style>
 </head>
 <body data-theme="light">
@@ -3368,7 +3411,7 @@ header { gap: 6px; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="master-data.js?v=4"></script>
-<script src="live-sync.js?v=18"></script>
+<script src="live-sync.js?v=19"></script>
 
 <script>
     
@@ -11741,7 +11784,7 @@ window.ttRenderPnlIfOpen = function () {
     fin(T);
     invs.sort(function (a, b) { return (b.date + b.id).localeCompare(a.date + a.id); });
     var oh = [], ohCat = {}, ohMon = {}, OH = 0;
-    (overheadsData || []).forEach(function (e) {
+    (overheadsData || []).concat(typeof window.ttPnlExpenseOh === 'function' ? window.ttPnlExpenseOh() : []).forEach(function (e) {
       if (!e || !e.month) return; var amt = N(e.amount) * frac(e.month); if (amt <= 0) return;
       oh.push({ e: e, amt: amt }); OH += amt; ohCat[e.cat || 'Other'] = (ohCat[e.cat || 'Other'] || 0) + amt; ohMon[e.month] = (ohMon[e.month] || 0) + amt;
     });
@@ -12050,6 +12093,630 @@ window.ttRenderPnlIfOpen = function () {
   setTimeout(function () { try { var b = $('ttPnlLedBtn'); if (b) b.style.display = isAdm() ? '' : 'none'; window.ttPnlBadge(); } catch (e) {} }, 2500);
 })();
 
+
+/* ===== v25 FEATURE PACK (Settings + premium features; every feature has an on/off switch) ===== */
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var H = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var N = function (v) { v = parseFloat(v); return isFinite(v) ? v : 0; };
+  var R2 = function (v) { return Math.round((N(v) + Number.EPSILON) * 100) / 100; };
+  var INR = function (n) { return '₹' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 }); };
+  var todayStr = function () { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  var isAdm = function () { try { return typeof isAdminUser === 'function' && isAdminUser(); } catch (e) { return false; } };
+  var meName = function () { try { return (currentUser && currentUser.name) || 'Staff'; } catch (e) { return 'Staff'; } };
+  var lsGet = function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  var lsSet = function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} };
+  function toast(msg, kind) { try { if (kind === 'err' && window.ttShowErrorToast) return ttShowErrorToast(msg); if (window.ttShowSuccessToast) return ttShowSuccessToast(msg); } catch (e) {} try { alert(msg); } catch (e) {} }
+  function ensureModal(id, z, maxW) {
+    var m = $(id);
+    if (!m) { m = document.createElement('div'); m.id = id; m.className = 'auth-overlay'; m.style.display = 'none'; m.style.zIndex = String(z || 3300); m.innerHTML = '<div class="auth-card tt25-card" style="max-width:' + (maxW || 560) + 'px;"></div>'; document.body.appendChild(m); }
+    return m;
+  }
+  function show(m, html) { m.firstChild.innerHTML = html; m.style.display = 'flex'; }
+  function hide(id) { var m = $(id); if (m) m.style.display = 'none'; }
+  function head(title, closeId) { return '<div class="card-header"><span class="card-title">' + title + '</span><button class="btn btn-outline btn-sm" onclick="document.getElementById(\'' + closeId + '\').style.display=\'none\'">✕</button></div>'; }
+  function waPhone(p) { var d = String(p || '').replace(/\D/g, ''); if (d.length === 10) d = '91' + d; return d; }
+  function waOpen(phone, text) { var p = waPhone(phone); window.open('https://wa.me/' + (p || '') + '?text=' + encodeURIComponent(text), '_blank'); }
+  function custPhoneOf(o) {
+    if (o && o.phone) return o.phone;
+    try { var c = (customerDatabase || []).find(function (x) { return x.name === o.customerName; }); return c ? c.phone : ''; } catch (e) { return ''; }
+  }
+
+  /* ---------------- SETTINGS STORE (this device only) ---------------- */
+  var SK = 'TTESPL_ERP_UI_SETTINGS';
+  var DEF = {
+    pillnav: 0, compact: 0, autodark: 0, accent: '', countup: 1, sparkline: 1, swipe: 1, swipeclose: 1, emptystates: 1,
+    haptic: 1, sound: 1,
+    waRemind: 1, upiInvoice: 1, expInPnl: 1, gstReport: 1, creditLimit: 0,
+    lowStock: 1, lowThreshold: 5, barcode: 1, timeline: 1, dupOrder: 1, quoteToOrder: 1,
+    leadSnooze: 1, svcPhotos: 1,
+    activityLog: 1, syncSheet: 1, appLock: 0
+  };
+  var cfg = {};
+  try { cfg = JSON.parse(lsGet(SK) || '{}') || {}; } catch (e) { cfg = {}; }
+  function get(k) { return (k in cfg) ? cfg[k] : DEF[k]; }
+  function set(k, v) { cfg[k] = v; lsSet(SK, JSON.stringify(cfg)); applyLook(); }
+  window.ttFeat = { get: get, set: set };
+
+  var ACCENTS = { '': ['Default', '#00b4d8'], blue: ['Blue', '#3b82f6'], green: ['Green', '#10b981'], violet: ['Violet', '#8b5cf6'], orange: ['Orange', '#f97316'], pink: ['Pink', '#ec4899'] };
+  var dmq = null;
+  function applyLook() {
+    var b = document.body; if (!b) return;
+    b.classList.toggle('tt-pillnav', !!get('pillnav'));
+    b.classList.toggle('tt-compact', !!get('compact'));
+    var ac = get('accent'), st = $('tt25AccentStyle');
+    if (!st) { st = document.createElement('style'); st.id = 'tt25AccentStyle'; document.head.appendChild(st); }
+    st.textContent = (ac && ACCENTS[ac]) ? ':root{--cyan:' + ACCENTS[ac][1] + ' !important;--accent:' + ACCENTS[ac][1] + ' !important;}' : '';
+    if (get('autodark')) {
+      try {
+        if (!dmq) { dmq = window.matchMedia('(prefers-color-scheme: dark)'); dmq.addEventListener && dmq.addEventListener('change', function () { if (get('autodark')) applyAutoDark(); }); }
+        applyAutoDark();
+      } catch (e) {}
+    }
+    var sp = $('tt25Spark'); if (sp) sp.style.display = get('sparkline') ? '' : 'none';
+    applyPerms();
+  }
+  function applyAutoDark() {
+    var want = (dmq && dmq.matches) ? 'dark' : 'light';
+    if (document.body.getAttribute('data-theme') !== want) { document.body.setAttribute('data-theme', want); try { if (typeof updateThemeMenuLabel === 'function') updateThemeMenuLabel(want); } catch (e) {} }
+  }
+
+  /* ---------------- HAPTIC / SOUND GATES ---------------- */
+  (function () {
+    var oh = window.triggerAppHaptic;
+    if (typeof oh === 'function') window.triggerAppHaptic = function () { if (!get('haptic')) return; return oh.apply(this, arguments); };
+    ['playOrderPlacedSound', 'playDeliverySound', 'playAtmCashSound', 'playCoinSound'].forEach(function (n) {
+      var f = window[n]; if (typeof f === 'function') window[n] = function () { if (!get('sound')) return; return f.apply(this, arguments); };
+    });
+  })();
+
+  /* ---------------- ROLE PERMISSIONS (cloud key PERMS: one doc id 'staff') ---------------- */
+  var permsData = [];
+  try { permsData = getStored('PERMS', []); } catch (e) { permsData = []; }
+  window.permsData = permsData;
+  var PERM_LIST = [['billing', 'Ledger / Billing tab'], ['inventory', 'Stock tab'], ['services', 'Services tab'], ['leads', 'Leads tab'], ['chat', 'Chat tab']];
+  function permDoc() { var d = (window.permsData || []).find(function (x) { return x && x.id === 'staff'; }); return d || { id: 'staff', deny: {} }; }
+  function applyPerms() {
+    var items = document.querySelectorAll('.nav-item'); if (!items.length) return;
+    var deny = (permDoc().deny) || {}, admin = isAdm();
+    items.forEach(function (n) {
+      var m = /switchTab\('(\w+)'/.exec(n.getAttribute('onclick') || ''); if (!m) return;
+      n.style.display = (!admin && deny[m[1]]) ? 'none' : '';
+    });
+  }
+  window.ttRenderPermsIfOpen = function () { applyPerms(); };
+  function openPerms() {
+    if (!isAdm()) return toast('Only Admin can change permissions', 'err');
+    var d = permDoc(), m = ensureModal('tt25PermModal', 3400, 460);
+    show(m, head('🛡️ Staff Permissions', 'tt25PermModal') + '<div class="tt25-sub">Switch OFF a tab to hide it for all non-admin staff. Admin always sees everything.</div>' +
+      PERM_LIST.map(function (p) { return '<div class="tt25-row"><div class="tt25-rt"><b>' + p[1] + '</b></div><label class="tt25-sw"><input type="checkbox" ' + (d.deny[p[0]] ? '' : 'checked') + ' onchange="ttPermSet(\'' + p[0] + '\',this.checked)"><i></i></label></div>'; }).join(''));
+  }
+  window.ttPermSet = function (k, on) {
+    var list = (window.permsData || []).slice(), d = list.find(function (x) { return x && x.id === 'staff'; });
+    if (!d) { d = { id: 'staff', deny: {} }; list.push(d); }
+    d.deny = d.deny || {}; if (on) delete d.deny[k]; else d.deny[k] = true;
+    window.permsData = list; permsData = list; setStored('PERMS', list); applyPerms();
+  };
+
+  /* ---------------- SETTINGS MODAL ---------------- */
+  function sw(k, title, sub) {
+    return '<div class="tt25-row"><div class="tt25-rt"><b>' + title + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</div><label class="tt25-sw"><input type="checkbox" ' + (get(k) ? 'checked' : '') + ' onchange="ttSetOpt(\'' + k + '\',this.checked?1:0)"><i></i></label></div>';
+  }
+  function num(k, title, sub, ph) {
+    return '<div class="tt25-row"><div class="tt25-rt"><b>' + title + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</div><input class="tt25-num" type="number" min="0" inputmode="numeric" placeholder="' + (ph || '0') + '" value="' + (get(k) || '') + '" onchange="ttSetOpt(\'' + k + '\',Number(this.value)||0)"></div>';
+  }
+  function act(title, sub, fn, label) {
+    return '<div class="tt25-row"><div class="tt25-rt"><b>' + title + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</div><button class="btn btn-outline btn-sm" onclick="' + fn + '">' + label + '</button></div>';
+  }
+  function group(t, rows) { return '<div class="tt25-grp"><div class="tt25-gt">' + t + '</div>' + rows.join('') + '</div>'; }
+  function openSettings() {
+    var m = ensureModal('tt25SetModal', 3400, 520), ac = get('accent');
+    var accHtml = '<div class="tt25-row" style="display:block;"><div class="tt25-rt"><b>Accent colour</b><small>Main highlight colour of the app</small></div><div class="tt25-acc">' +
+      Object.keys(ACCENTS).map(function (k) { return '<button class="' + (ac === k ? 'on' : '') + '" style="background:' + ACCENTS[k][1] + '" title="' + ACCENTS[k][0] + '" onclick="ttSetOpt(\'accent\',\'' + k + '\')"></button>'; }).join('') + '</div></div>';
+    var admin = isAdm();
+    var html = head('⚙️ Settings', 'tt25SetModal') + '<div class="tt25-sub">Turn features on or off to suit you. These switches work on this device only.</div>' +
+      group('🎨 Look & Feel', [sw('pillnav', 'Floating pill navigation', 'Bottom bar floats with rounded corners'), sw('compact', 'Compact density', 'Tighter cards, more on screen'), sw('autodark', 'Auto dark mode', 'Follow the phone day/night setting'), accHtml, sw('countup', 'Animated numbers', 'Home numbers count up'), sw('sparkline', 'Sales sparkline on Home', 'Last 7 days trend'), sw('swipe', 'Swipe actions on cards', 'Swipe a card left for Call / WhatsApp'), sw('swipeclose', 'Swipe down to close sheets', 'Drag a popup down to dismiss'), sw('emptystates', 'Friendly empty screens', 'Icon + hint when a list is empty')]) +
+      group('🔔 Feedback', [sw('haptic', 'Vibration on tap', ''), sw('sound', 'Sounds', 'Order / delivery / cash sounds')]) +
+      group('💰 Money', [sw('waRemind', 'WhatsApp due reminder', 'Button on every ledger card with due'), sw('upiInvoice', 'UPI QR on invoice', 'Pay-now QR on bills with due amount'), sw('expInPnl', 'Staff expenses in Profit & Loss', 'Approved / reimbursed expenses count as spend'), sw('gstReport', 'GST report', 'Menu item with PDF / CSV / share'), num('creditLimit', 'Customer credit limit (₹)', 'Warn when a customer\'s total due crosses this. 0 = off')]) +
+      group('📦 Stock & Orders', [sw('lowStock', 'Low-stock list', 'Button on Stock tab'), num('lowThreshold', 'Low-stock level', 'Items at or below this quantity', '5'), sw('barcode', 'Barcode scan', 'Scan a product code on Stock tab'), sw('timeline', 'Order timeline', 'Booked → Payment → Delivery steps'), sw('dupOrder', 'Duplicate order', 'Copy an order into a new one'), sw('quoteToOrder', 'Quotation → Order', 'Convert a quotation in one tap')]) +
+      group('👥 Customers & Service', [sw('leadSnooze', 'Lead follow-up snooze', '+1 / +3 / +7 days buttons'), sw('svcPhotos', 'Service photos & warranty', 'Before/After photos and warranty countdown')]) +
+      group('🔒 System', [sw('activityLog', 'Activity log', 'Who changed what (records new changes)'), sw('syncSheet', 'Sync status sheet', 'Tap the Live Cloud pill in the header'), '<div class="tt25-row"><div class="tt25-rt"><b>App lock (PIN)</b><small>' + (lsGet('TTESPL_ERP_LOCK_PIN') ? 'PIN is set' : 'No PIN set') + '</small></div><div style="display:flex;gap:6px;"><button class="btn btn-outline btn-sm" onclick="ttLockSetPin()">' + (lsGet('TTESPL_ERP_LOCK_PIN') ? 'Change' : 'Set') + '</button>' + (lsGet('TTESPL_ERP_LOCK_PIN') ? '<button class="btn btn-danger-sm btn-sm" onclick="ttLockClear()">Remove</button>' : '') + '</div></div>', act('Share backup', 'Send the data backup via WhatsApp / Drive / Mail', 'ttShareBackup()', '📤 Share')].concat(admin ? [act('Staff permissions', 'Hide tabs for non-admin staff', 'ttOpenPerms()', 'Open'), act('Activity log', 'See recent changes', 'ttOpenActivity()', 'View')] : [])) +
+      group('📑 Reports', [act('GST report', 'Taxable / CGST / SGST by date range', 'ttOpenGst()', 'Open'), act('Low-stock list', 'Items that need re-ordering', 'ttOpenLowStock()', 'Open')]);
+    show(m, html);
+  }
+  window.ttOpenSettings = openSettings; window.ttOpenPerms = openPerms;
+  window.ttSetOpt = function (k, v) { set(k, v); if (k === 'accent') openSettings(); if (k === 'activityLog' || k === 'swipe') {} refreshInjections(); };
+
+  /* ---------------- PROFILE MENU ITEMS ---------------- */
+  function menuItem(icon, label, tag, fn) {
+    var d = document.createElement('div'); d.className = 'profile-menu-item tt25-mi';
+    d.setAttribute('onclick', 'triggerAppHaptic(); ' + fn + '; closeProfileDrawer();');
+    d.innerHTML = '<div class="profile-menu-item-left"><span>' + icon + '</span><span>' + label + '</span></div>' + (tag ? '<span style="font-size:10px;color:#38bdf8;">' + tag + '</span>' : '');
+    return d;
+  }
+  function injectMenu() {
+    var list = document.querySelector('#profileDropdownCard .profile-menu-list'); if (!list || list.querySelector('.tt25-mi')) return;
+    var first = list.firstElementChild;
+    list.insertBefore(menuItem('⚙️', 'Settings', 'On / Off', 'ttOpenSettings()'), first);
+    var bk = Array.prototype.find.call(list.children, function (e) { return (e.getAttribute('onclick') || '').indexOf('openBackupModal') >= 0; });
+    var g = menuItem('📑', 'GST Report', 'PDF · CSV', 'ttOpenGst()'); g.id = 'tt25MenuGst';
+    var l = menuItem('📉', 'Low Stock List', 'Re-order', 'ttOpenLowStock()'); l.id = 'tt25MenuLow';
+    var a = menuItem('🧾', 'Activity Log', 'Admin', 'ttOpenActivity()'); a.id = 'tt25MenuAct';
+    list.insertBefore(g, bk || null); list.insertBefore(l, bk || null); list.insertBefore(a, bk || null);
+    refreshInjections();
+  }
+  function refreshInjections() {
+    var g = $('tt25MenuGst'), l = $('tt25MenuLow'), a = $('tt25MenuAct');
+    if (g) g.style.display = get('gstReport') ? '' : 'none';
+    if (l) l.style.display = get('lowStock') ? '' : 'none';
+    if (a) a.style.display = (get('activityLog') && isAdm()) ? '' : 'none';
+    var lb = $('tt25LowBtnRow'); if (lb) lb.style.display = (get('lowStock') || get('barcode')) ? '' : 'none';
+    var lbtn = $('tt25LowBtn'); if (lbtn) lbtn.style.display = get('lowStock') ? '' : 'none';
+    var bbtn = $('tt25ScanBtn'); if (bbtn) bbtn.style.display = get('barcode') ? '' : 'none';
+    applyPerms();
+  }
+  window.ttRefreshProfileMenu = refreshInjections;
+  var _openProf = window.toggleProfileDrawer || window.openProfileDrawer;
+  document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.profile-avatar-btn')) setTimeout(refreshInjections, 30); }, true);
+
+  /* ---------------- COUNT-UP NUMBERS + SPARKLINE ---------------- */
+  function countUp(el) {
+    if (!el || !get('countup')) return;
+    var txt = el.textContent, m = /^(\D*)([\d,]+(?:\.\d+)?)(.*)$/.exec(txt); if (!m) return;
+    var to = parseFloat(m[2].replace(/,/g, '')), from = parseFloat(el.dataset.v || '0'); el.dataset.v = String(to);
+    if (!isFinite(to) || from === to) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var t0 = performance.now(), dur = 650, dec = (m[2].split('.')[1] || '').length;
+    (function step(t) {
+      var p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3), v = from + (to - from) * e;
+      el.textContent = m[1] + v.toLocaleString('en-IN', { minimumFractionDigits: dec, maximumFractionDigits: dec }) + m[3];
+      if (p < 1) requestAnimationFrame(step); else el.textContent = txt;
+    })(t0);
+  }
+  function sparkHtml() {
+    var days = [], map = {}, i, d;
+    for (i = 6; i >= 0; i--) { d = new Date(); d.setDate(d.getDate() - i); var k = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); days.push(k); map[k] = 0; }
+    (ordersData || []).forEach(function (o) { if (o && o.status === 'Delivered') { var k = String(o.deliveredDate || o.orderDate || '').slice(0, 10); if (k in map) map[k] += N(o.totalAmount); } });
+    var vals = days.map(function (k) { return map[k]; }), max = Math.max.apply(null, vals.concat([1])), tot = vals.reduce(function (a, b) { return a + b; }, 0);
+    var W = 300, Hh = 46, pts = vals.map(function (v, j) { return [Math.round(j * W / 6), Math.round(Hh - 4 - (v / max) * (Hh - 10))]; });
+    var path = pts.map(function (p, j) { return (j ? 'L' : 'M') + p[0] + ' ' + p[1]; }).join(' ');
+    return '<div class="tt25-sp-top"><div><b>Sales — last 7 days</b><small>Delivered orders</small></div><strong>' + INR(tot) + '</strong></div>' +
+      '<svg viewBox="0 0 ' + W + ' ' + Hh + '" preserveAspectRatio="none" class="tt25-sp-svg"><defs><linearGradient id="tt25g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--cyan)" stop-opacity=".35"/><stop offset="1" stop-color="var(--cyan)" stop-opacity="0"/></linearGradient></defs><path d="' + path + ' L' + W + ' ' + Hh + ' L0 ' + Hh + ' Z" fill="url(#tt25g)"/><path d="' + path + '" fill="none" stroke="var(--cyan)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      '<div class="tt25-sp-days">' + days.map(function (k) { return '<span>' + k.slice(8) + '</span>'; }).join('') + '</div>';
+  }
+  function afterDashboard() {
+    ['dashTodayRecv', 'dashTotalDue', 'dashActiveServices', 'dashTotalItems', 'dashTotalClients'].forEach(function (id) { countUp($(id)); });
+    var host = $('view-dashboard'); if (!host) return;
+    var sp = $('tt25Spark');
+    if (!sp) { sp = document.createElement('div'); sp.id = 'tt25Spark'; sp.className = 'card tt25-spark'; var grid = host.querySelector('.grid-4'); if (grid && grid.parentNode) grid.parentNode.insertBefore(sp, grid.nextSibling); else host.appendChild(sp); }
+    sp.style.display = get('sparkline') ? '' : 'none';
+    if (get('sparkline')) sp.innerHTML = sparkHtml();
+  }
+  wrap('renderDashboard', afterDashboard);
+
+  /* ---------------- generic after-wrapper ---------------- */
+  function wrap(name, after) {
+    var f = window[name]; if (typeof f !== 'function') return;
+    var w = function () { var r = f.apply(this, arguments); try { after.apply(this, arguments); } catch (e) { console.warn('v25 ' + name, e); } return r; };
+    window[name] = w;
+    try { (0, eval)(name + ' = window.' + name + ';'); } catch (e) {}
+  }
+
+  /* ---------------- EMPTY STATES ---------------- */
+  var EMPTY = [['No active pending orders', '📦', 'No pending orders', 'New orders will show up here.'], ['No active inquiries', '🎯', 'No inquiries yet', 'Add a lead to start tracking follow-ups.'], ['No repair calls pending', '🛠️', 'All clear', 'No service calls pending right now.']];
+  function emptyFix(id) {
+    if (!get('emptystates')) return; var c = $(id); if (!c || c.children.length !== 1) return;
+    var t = c.textContent || '';
+    EMPTY.forEach(function (e) { if (t.indexOf(e[0]) >= 0 && !c.querySelector('.empty-state')) c.innerHTML = '<div class="empty-state"><span class="empty-icon">' + e[1] + '</span><div class="empty-title">' + e[2] + '</div><div class="empty-sub">' + e[3] + '</div></div>'; });
+  }
+
+  /* ---------------- ORDERS: timeline, duplicate, swipe actions ---------------- */
+  function timelineHtml(o) {
+    var t = todayStr(), paid = N(o.recvAmount) > 0, full = N(o.dueAmount) <= 0, late = o.deliveryDate && o.deliveryDate < t;
+    function st(done, label, sub, warn) { return '<div class="tt25-st ' + (done ? 'done' : '') + (warn ? ' warn' : '') + '"><i></i><b>' + label + '</b><small>' + H(sub || '') + '</small></div>'; }
+    return '<div class="tt25-tl">' + st(true, 'Booked', o.orderDate) + st(paid, full ? 'Paid' : (paid ? 'Part paid' : 'Payment'), paid ? INR(o.recvAmount) : 'Awaiting') + st(false, late ? 'Delayed' : 'Delivery', o.deliveryDate, late) + st(o.status === 'Delivered', 'Delivered', o.deliveredDate || '') + '</div>';
+  }
+  function afterOrders() {
+    var c = $('ordersListContainer'); if (!c) return; emptyFix('ordersListContainer');
+    c.querySelectorAll('.card').forEach(function (card) {
+      var m = /Ref:\s*(ORD-\d+)/.exec(card.textContent || ''); if (!m) return;
+      var o = (ordersData || []).find(function (x) { return x.id === m[1]; }); if (!o) return;
+      card.dataset.rec = 'order:' + o.id;
+      if (get('timeline') && !card.querySelector('.tt25-tl')) { var box = card.querySelector('div[style*="background:var(--bg)"]'); if (box) box.insertAdjacentHTML('beforebegin', timelineHtml(o)); }
+      if (get('dupOrder') && o.status === 'Pending' && !card.querySelector('.tt25-dup')) {
+        var row = card.querySelector('div[style*="flex-wrap:wrap"]');
+        if (row) row.insertAdjacentHTML('beforeend', '<button class="btn btn-outline btn-sm tt25-dup" style="flex:1;" onclick="triggerAppHaptic(); ttDupOrder(\'' + o.id + '\')">📑 Duplicate</button>');
+      }
+    });
+  }
+  wrap('renderOrders', afterOrders);
+  window.ttDupOrder = function (id) {
+    var o = (ordersData || []).find(function (x) { return x.id === id; }); if (!o) return;
+    openOrderModal();
+    $('ordCustSearchInput').value = o.customerName + ' (' + (custPhoneOf(o) || '') + ')';
+    try { $('ordStaffSelect').value = meName(); } catch (e) {}
+    $('ordDate').value = todayStr();
+    var d = new Date(); d.setDate(d.getDate() + 2); $('ordDelDate').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    if ($('ordTaxType') && o.taxType) $('ordTaxType').value = o.taxType;
+    $('orderItemsTbody').innerHTML = '';
+    (o.items || []).forEach(function (it) { addOrderItemRow(it.name, it.qty, it.mrp || it.rate, it.disc || 0, it.rate); });
+    if ($('ordRecvAmt')) $('ordRecvAmt').value = 0;
+    calcOrderTotals(); toast('Order copied — review and save');
+  };
+
+  /* ---------------- BILLING: WhatsApp due reminder ---------------- */
+  window.ttWaRemind = function (id) {
+    var o = (ordersData || []).find(function (x) { return x.id === id; }); if (!o) return;
+    var due = N(o.dueAmount), upi = (typeof companyDetailsData !== 'undefined' && companyDetailsData.upi) || 'eazypay.574099310@icici';
+    var msg = 'Namaste ' + o.customerName + ',\nThis is a gentle reminder from Twin Town Express Services Pvt Ltd.\nInvoice ' + o.id + ' (' + ttDateOf(o) + ') — pending amount: ' + INR(due) + '.\nYou can pay by UPI: ' + upi + ' or bank transfer. Please share the payment screenshot after paying.\nThank you!';
+    waOpen(custPhoneOf(o), msg);
+  };
+  function afterBilling() {
+    var c = $('billingListContainer') || document.querySelector('#view-billing .card-container, #view-billing');
+    document.querySelectorAll('#view-billing .card').forEach(function (card) {
+      var b = card.querySelector('button[onclick*="collectDuePayment"]'); if (!b) return;
+      var m = /collectDuePayment\('([^']+)'/.exec(b.getAttribute('onclick')); if (!m) return;
+      card.dataset.rec = 'order:' + m[1];
+      var ex = card.querySelector('.tt25-wa');
+      if (get('waRemind') && !ex) b.insertAdjacentHTML('afterend', '<button class="btn btn-wa btn-sm tt25-wa" style="flex:1;" onclick="triggerAppHaptic(); ttWaRemind(\'' + m[1] + '\')">💬 Remind</button>');
+      if (!get('waRemind') && ex) ex.remove();
+    });
+  }
+  wrap('renderBilling', afterBilling);
+
+  /* ---------------- UPI QR ON INVOICE ---------------- */
+  (function () {
+    var f = window.ttBuildInvoicePaged; if (typeof f !== 'function') return;
+    window.ttBuildInvoicePaged = function (o, opt) {
+      var html = f.apply(this, arguments);
+      try {
+        var due = N(o && o.dueAmount);
+        if (get('upiInvoice') && due > 0 && typeof html === 'string') {
+          var upi = (typeof companyDetailsData !== 'undefined' && companyDetailsData.upi) || 'eazypay.574099310@icici';
+          var payload = 'upi://pay?pa=' + upi + '&pn=' + encodeURIComponent('TWINTOWN EXPRESS SERVICES') + '&am=' + due.toFixed(2) + '&cu=INR&tn=' + encodeURIComponent('Invoice ' + o.id);
+          var svg;
+          if (typeof qrcode === 'function') { var q = qrcode(0, 'M'); q.addData(payload); q.make(); svg = q.createSvgTag({ cellSize: 3, margin: 1, scalable: true }).replace('<svg', '<svg style="width:100%;height:100%"'); }
+          else svg = '<img alt="UPI QR" style="width:100%;height:100%" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=4&ecc=M&data=' + encodeURIComponent(payload) + '">';
+          var blk = '<div style="padding:6px 8px;border-top:1px solid #000;display:flex;align-items:center;gap:10px;page-break-inside:avoid;"><div style="width:74px;height:74px;flex:none;">' + svg + '</div><div style="font-size:10px;line-height:1.4;"><b>Scan &amp; Pay ' + INR(due) + '</b><br>UPI: ' + H(upi) + '<br>Invoice: ' + H(o.id) + '</div></div>';
+          if (typeof TT_TERMS_INVOICE === 'string' && html.indexOf(TT_TERMS_INVOICE) >= 0) html = html.replace(TT_TERMS_INVOICE, function () { return blk + TT_TERMS_INVOICE; });
+          else html += blk;
+        }
+      } catch (e) { console.warn('UPI QR on invoice failed', e); }
+      return html;
+    };
+    try { (0, eval)('ttBuildInvoicePaged = window.ttBuildInvoicePaged;'); } catch (e) {}
+  })();
+
+  /* ---------------- CREDIT LIMIT WARNING ---------------- */
+  (function () {
+    var f = window.saveOrderAction; if (typeof f !== 'function') return;
+    window.saveOrderAction = function () {
+      try {
+        var lim = N(get('creditLimit'));
+        if (lim > 0) {
+          var txt = $('ordCustSearchInput').value.trim(), cust = resolveCustomerFromSearch(txt), name = cust ? cust.name : txt.split('(')[0].trim(), edit = $('editOrderId').value;
+          var other = (ordersData || []).filter(function (o) { return o.customerName === name && o.status !== 'Cancelled' && o.id !== edit; }).reduce(function (a, o) { return a + N(o.dueAmount); }, 0);
+          var tot = other + N($('ordDueAmt').value);
+          if (tot > lim && !confirm('Credit limit warning!\n\n' + name + ' will have a total due of ' + INR(tot) + '\n(limit ' + INR(lim) + ').\n\nSave this order anyway?')) return;
+        }
+      } catch (e) { console.warn('credit limit check', e); }
+      return f.apply(this, arguments);
+    };
+    try { (0, eval)('saveOrderAction = window.saveOrderAction;'); } catch (e) {}
+  })();
+
+  /* ---------------- LEADS: follow-up snooze ---------------- */
+  window.ttSnoozeLead = function (id, days) {
+    var l = (leadsData || []).find(function (x) { return x.id === id; }); if (!l) return;
+    var base = (l.followupDate && l.followupDate > todayStr()) ? l.followupDate : todayStr(), d = new Date(base + 'T00:00:00'); d.setDate(d.getDate() + days);
+    l.followupDate = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    setStored('LEADS', leadsData); renderLeads(); toast('Follow-up moved to ' + l.followupDate);
+  };
+  function afterLeads() {
+    emptyFix('leadsListContainer'); var c = $('leadsListContainer'); if (!c) return;
+    c.querySelectorAll('.card').forEach(function (card) {
+      var b = card.querySelector('button[onclick*="editLeadPrompt"]'); if (!b) return;
+      var m = /editLeadPrompt\('([^']+)'/.exec(b.getAttribute('onclick')); if (!m) return;
+      card.dataset.rec = 'lead:' + m[1];
+      if (get('leadSnooze') && !card.querySelector('.tt25-snz') && !/Installed/.test((card.querySelector('.badge') || {}).textContent || '')) {
+        card.insertAdjacentHTML('beforeend', '<div class="tt25-snz"><span>⏰ Snooze follow-up</span>' + [1, 3, 7].map(function (n) { return '<button onclick="triggerAppHaptic(); ttSnoozeLead(\'' + m[1] + '\',' + n + ')">+' + n + 'd</button>'; }).join('') + '</div>');
+      }
+    });
+  }
+  wrap('renderLeads', afterLeads);
+
+  /* ---------------- SERVICES: photos + warranty ---------------- */
+  function warrantyBadge(s) {
+    if (!s.warrantyUntil) return '';
+    var d = Math.ceil((new Date(s.warrantyUntil + 'T23:59:59') - new Date()) / 86400000);
+    var cls = d < 0 ? 'bad' : (d <= 30 ? 'warn' : 'ok');
+    return '<span class="tt25-wty ' + cls + '">🛡️ ' + (d < 0 ? 'Warranty expired' : d + ' days warranty left') + '</span>';
+  }
+  function afterServices() {
+    emptyFix('serviceListContainer'); var c = $('serviceListContainer'); if (!c) return;
+    c.querySelectorAll('.card').forEach(function (card) {
+      var b = card.querySelector('button[onclick*="editServicePrompt"]'); if (!b) return;
+      var m = /editServicePrompt\('([^']+)'/.exec(b.getAttribute('onclick')); if (!m) return;
+      var s = (serviceCallsData || []).find(function (x) { return String(x.id) === m[1]; }); if (!s) return;
+      card.dataset.rec = 'service:' + s.id;
+      var old = card.querySelector('.tt25-svc'); if (old) old.remove();
+      if (get('svcPhotos')) card.insertAdjacentHTML('beforeend', '<div class="tt25-svc">' + warrantyBadge(s) + (s.photoBefore || s.photoAfter ? '<span class="tt25-wty ok">📷 ' + (s.photoBefore ? 'Before ' : '') + (s.photoAfter ? 'After' : '') + '</span>' : '') + '<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ttSvcMedia(\'' + s.id + '\')">📷 Photos &amp; Warranty</button></div>');
+    });
+  }
+  wrap('renderServices', afterServices);
+  window.ttSvcMedia = function (id) {
+    var s = (serviceCallsData || []).find(function (x) { return String(x.id) === String(id); }); if (!s) return;
+    var m = ensureModal('tt25SvcModal', 3400, 480);
+    function slot(k, label) { return '<div class="tt25-ph"><b>' + label + '</b>' + (s[k] ? '<img src="' + s[k] + '" alt="">' : '<div class="tt25-ph-e">No photo</div>') + '<label class="btn btn-outline btn-sm" style="margin-top:6px;">📷 ' + (s[k] ? 'Replace' : 'Add') + '<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="ttSvcPhoto(\'' + s.id + '\',\'' + k + '\',event)"></label></div>'; }
+    show(m, head('📷 ' + H(s.customerName), 'tt25SvcModal') + '<div class="tt25-two">' + slot('photoBefore', 'Before') + slot('photoAfter', 'After') + '</div>' +
+      '<div class="form-group" style="margin-top:12px;"><label class="form-label">Warranty valid till</label><input type="date" id="tt25Wty" value="' + H(s.warrantyUntil || '') + '"></div><div style="margin:4px 0 10px;">' + warrantyBadge(s) + '</div>' +
+      '<button class="btn btn-primary btn-block" onclick="ttSvcSaveWty(\'' + s.id + '\')">💾 Save warranty date</button>');
+  };
+  window.ttSvcPhoto = function (id, key, ev) {
+    var f = ev.target.files[0]; if (!f) return; var r = new FileReader();
+    r.onload = function (e) {
+      ttCompressImageSafe(e.target.result, 640, 0.5, 90000).then(function (cd) {
+        var s = serviceCallsData.find(function (x) { return String(x.id) === String(id); }); if (!s) return;
+        s[key] = cd; setStored('SERVICES', serviceCallsData); ttSvcMedia(id); renderServices();
+      });
+    }; r.readAsDataURL(f);
+  };
+  window.ttSvcSaveWty = function (id) {
+    var s = serviceCallsData.find(function (x) { return String(x.id) === String(id); }); if (!s) return;
+    s.warrantyUntil = $('tt25Wty').value || ''; setStored('SERVICES', serviceCallsData); ttSvcMedia(id); renderServices(); toast('Warranty saved');
+  };
+
+  /* ---------------- QUOTATION → ORDER ---------------- */
+  window.ttQuoteToOrder = function (id) {
+    var q = (quotationsData || []).find(function (x) { return x && x.id === id; }); if (!q) return;
+    document.querySelectorAll('.auth-overlay').forEach(function (m) { if (m.querySelector('#qhSearch')) m.style.display = 'none'; });
+    openOrderModal();
+    $('ordCustSearchInput').value = q.custName + ' (' + (q.custPhone || '') + ')';
+    try { $('ordStaffSelect').value = meName(); } catch (e) {}
+    $('orderItemsTbody').innerHTML = '';
+    (q.items || []).forEach(function (it) {
+      var qty = N(it.qty) || 1, incl = R2((N(it.amount) / qty) * 1.18);
+      addOrderItemRow(it.name, qty, incl, 0, incl);
+    });
+    calcOrderTotals(); toast('Quotation copied to a new order — check rates and save');
+  };
+  wrap('ttRenderQuotationHistory', function () {
+    if (!get('quoteToOrder')) return; var box = $('qhList') || document;
+    document.querySelectorAll('button[onclick*="ttEditQuotation"]').forEach(function (b) {
+      var m = /ttEditQuotation\('([^']+)'/.exec(b.getAttribute('onclick')); if (!m) return;
+      if (b.parentNode.querySelector('.tt25-q2o')) return;
+      b.insertAdjacentHTML('afterend', '<button class="btn btn-primary btn-sm tt25-q2o" style="flex:1;" onclick="triggerAppHaptic(); ttQuoteToOrder(\'' + m[1] + '\')">🛒 → Order</button>');
+    });
+  });
+
+  /* ---------------- STOCK: low-stock list, barcode scan ---------------- */
+  function catalogIds() { var s = {}; try { (catalogCatsData || []).forEach(function (c) { if (c) { s[String(c.id)] = 1; s[String(c.name)] = 1; } }); } catch (e) {} return s; }
+  function lowItems() {
+    var th = N(get('lowThreshold')) || 5, cat = catalogIds();
+    return (sampleInventory || []).filter(function (i) { return i && typeof i.stock === 'number' && i.stock <= th && !cat[String(i.category)]; }).sort(function (a, b) { return a.stock - b.stock; });
+  }
+  window.ttOpenLowStock = function () {
+    var list = lowItems(), m = ensureModal('tt25LowModal', 3400, 560), th = N(get('lowThreshold')) || 5;
+    show(m, head('📉 Low Stock (≤ ' + th + ')', 'tt25LowModal') + '<div class="tt25-sub">' + list.length + ' item(s) need re-ordering.</div>' +
+      '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;"><button class="btn btn-wa btn-sm" style="flex:1;" onclick="ttLowShare()">💬 WhatsApp to dealer</button><button class="btn btn-print btn-sm" style="flex:1;" onclick="ttLowPdf()">🖨️ PDF</button><button class="btn btn-outline btn-sm" style="flex:1;" onclick="ttLowCsv()">⬇️ CSV</button></div>' +
+      (list.length ? list.slice(0, 300).map(function (i) { return '<div class="tt25-row"><div class="tt25-rt"><b>' + H(i.name) + '</b><small>' + H(i.code || '') + ' · ' + H(i.category || '') + '</small></div><span class="badge ' + (i.stock <= 0 ? 'badge-danger' : 'badge-pending') + '">' + i.stock + ' left</span></div>'; }).join('') : '<div class="empty-state"><span class="empty-icon">✅</span><div class="empty-sub">Everything is well stocked.</div></div>'));
+  };
+  window.ttLowShare = function () { var l = lowItems(); if (!l.length) return; waOpen('', 'Re-order request — Twin Town Express Services Pvt Ltd\n\n' + l.slice(0, 80).map(function (i, n) { return (n + 1) + '. ' + i.name + ' (stock ' + i.stock + ')'; }).join('\n') + '\n\nPlease share rates & availability.'); };
+  window.ttLowCsv = function () { var l = lowItems(); downloadFile('Code,Name,Category,Stock\n' + l.map(function (i) { return [i.code || '', i.name, i.category || '', i.stock].map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n'), 'Low_Stock_' + todayStr() + '.csv', 'text/csv'); };
+  window.ttLowPdf = function () { var l = lowItems(); ttPrintHtml('Low Stock List', '<h2>Low Stock List — ' + todayStr() + '</h2><table border="1" cellspacing="0" cellpadding="5" style="border-collapse:collapse;width:100%;font-size:12px;"><tr><th>#</th><th>Code</th><th>Product</th><th>Category</th><th>Stock</th></tr>' + l.map(function (i, n) { return '<tr><td>' + (n + 1) + '</td><td>' + H(i.code || '') + '</td><td>' + H(i.name) + '</td><td>' + H(i.category || '') + '</td><td style="text-align:right;">' + i.stock + '</td></tr>'; }).join('') + '</table>'); };
+
+  var camStream = null;
+  window.ttOpenScan = function () {
+    var m = ensureModal('tt25ScanModal', 3500, 480);
+    var ok = ('BarcodeDetector' in window) && navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
+    show(m, head('🔎 Scan Product Code', 'tt25ScanModal').replace("style.display='none'", "style.display='none';ttStopScan()") +
+      (ok ? '<video id="tt25Vid" playsinline muted style="width:100%;border-radius:12px;background:#000;max-height:320px;"></video><div class="tt25-sub" id="tt25ScanMsg">Point the camera at the barcode…</div>' : '<div class="tt25-sub">Camera scanning is not supported in this browser. Type the code instead.</div>') +
+      '<div style="display:flex;gap:6px;"><input type="text" id="tt25Code" placeholder="Type product code" style="flex:1;"><button class="btn btn-primary btn-sm" onclick="ttScanFind(document.getElementById(\'tt25Code\').value)">Find</button></div>');
+    if (!ok) return;
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(function (st) {
+      camStream = st; var v = $('tt25Vid'); v.srcObject = st; v.play();
+      var det = new BarcodeDetector(), busy = false;
+      (function loop() {
+        if (!camStream) return;
+        if (!busy && v.readyState >= 2) { busy = true; det.detect(v).then(function (r) { busy = false; if (r && r.length) { ttScanFind(r[0].rawValue); } else setTimeout(loop, 250); }).catch(function () { busy = false; setTimeout(loop, 400); }); }
+        else setTimeout(loop, 250);
+      })();
+    }).catch(function () { var s = $('tt25ScanMsg'); if (s) s.textContent = 'Camera permission denied. Type the code below.'; });
+  };
+  window.ttStopScan = function () { if (camStream) { camStream.getTracks().forEach(function (t) { t.stop(); }); camStream = null; } };
+  window.ttScanFind = function (code) {
+    code = String(code || '').trim().toLowerCase(); if (!code) return;
+    var it = (sampleInventory || []).find(function (i) { return String(i.code || '').toLowerCase() === code || String(i.barcode || '').toLowerCase() === code; });
+    if (!it) { var s = $('tt25ScanMsg'); if (s) s.textContent = 'No product with code "' + code + '".'; else toast('No product with that code', 'err'); return; }
+    ttStopScan(); hide('tt25ScanModal'); openStockDetailModal(it.id);
+  };
+  wrap('renderStockList', function () {
+    var c = $('stockListContainer'); if (!c || $('tt25LowBtnRow')) { refreshInjections(); return; }
+    c.insertAdjacentHTML('beforebegin', '<div id="tt25LowBtnRow" class="tt25-tools"><button id="tt25LowBtn" class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ttOpenLowStock()">📉 Low-stock list</button><button id="tt25ScanBtn" class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); ttOpenScan()">🔎 Scan code</button></div>');
+    refreshInjections();
+  });
+
+  /* ---------------- GST REPORT ---------------- */
+  function gstRows(from, to) {
+    var rows = [];
+    (ordersData || []).forEach(function (o) {
+      if (!o || o.status !== 'Delivered') return; var d = ttDateOf(o); if (from && d < from) return; if (to && d > to) return;
+      var taxable = 0, gross = 0;
+      (o.items || []).forEach(function (it) { var incl = N(it.total); gross += incl; taxable += R2(incl / 1.18); });
+      taxable = R2(taxable); var tax = R2(gross - taxable), intra = (o.taxType || 'INTRA') !== 'INTER';
+      var cust = (customerDatabase || []).find(function (c) { return (c.phone && c.phone === o.phone) || c.name === o.customerName; }) || {};
+      rows.push({ id: o.id, date: d, cust: o.customerName, gst: cust.gst || '', taxable: taxable, cgst: intra ? R2(tax / 2) : 0, sgst: intra ? R2(tax - R2(tax / 2)) : 0, igst: intra ? 0 : tax, courier: N(o.courierCharge), total: R2(gross + N(o.courierCharge)) });
+    });
+    return rows.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+  }
+  var gstState = { from: '', to: '' };
+  function monthStart() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-01'; }
+  window.ttOpenGst = function () {
+    if (!isAdm()) return toast('GST report is for Admin only', 'err');
+    if (!gstState.from) { gstState.from = monthStart(); gstState.to = todayStr(); }
+    var rows = gstRows(gstState.from, gstState.to), T = rows.reduce(function (a, r) { ['taxable', 'cgst', 'sgst', 'igst', 'courier', 'total'].forEach(function (k) { a[k] += r[k]; }); return a; }, { taxable: 0, cgst: 0, sgst: 0, igst: 0, courier: 0, total: 0 });
+    var m = ensureModal('tt25GstModal', 3400, 640);
+    show(m, head('📑 GST Report', 'tt25GstModal') + '<div class="tt25-two"><div class="form-group"><label class="form-label">From</label><input type="date" value="' + gstState.from + '" onchange="ttGstSet(\'from\',this.value)"></div><div class="form-group"><label class="form-label">To</label><input type="date" value="' + gstState.to + '" onchange="ttGstSet(\'to\',this.value)"></div></div>' +
+      '<div class="tt25-kpis"><div><small>Invoices</small><b>' + rows.length + '</b></div><div><small>Taxable</small><b>' + INR(T.taxable) + '</b></div><div><small>CGST+SGST</small><b>' + INR(T.cgst + T.sgst) + '</b></div><div><small>IGST</small><b>' + INR(T.igst) + '</b></div></div>' +
+      '<div style="display:flex;gap:6px;margin:10px 0;"><button class="btn btn-print btn-sm" style="flex:1;" onclick="ttGstOut(\'pdf\')">🖨️ PDF</button><button class="btn btn-outline btn-sm" style="flex:1;" onclick="ttGstOut(\'csv\')">⬇️ CSV</button><button class="btn btn-wa btn-sm" style="flex:1;" onclick="ttGstOut(\'share\')">📤 Share</button></div>' +
+      '<div class="tt25-scroll"><table class="tt25-tbl"><tr><th>Date</th><th>Invoice</th><th>Customer</th><th>Taxable</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Total</th></tr>' +
+      rows.map(function (r) { return '<tr><td>' + r.date + '</td><td>' + H(r.id) + '</td><td>' + H(r.cust) + '</td><td>' + r.taxable.toFixed(2) + '</td><td>' + r.cgst.toFixed(2) + '</td><td>' + r.sgst.toFixed(2) + '</td><td>' + r.igst.toFixed(2) + '</td><td>' + r.total.toFixed(2) + '</td></tr>'; }).join('') +
+      '<tr class="tot"><td colspan="3">Total</td><td>' + T.taxable.toFixed(2) + '</td><td>' + T.cgst.toFixed(2) + '</td><td>' + T.sgst.toFixed(2) + '</td><td>' + T.igst.toFixed(2) + '</td><td>' + T.total.toFixed(2) + '</td></tr></table></div><div class="tt25-sub" style="margin-top:8px;">Taxable value = bill amount ÷ 1.18 per item (same as the invoice). Courier is added to the total, not taxed here.</div>');
+  };
+  window.ttGstSet = function (k, v) { gstState[k] = v; ttOpenGst(); };
+  window.ttGstOut = function (kind) {
+    var rows = gstRows(gstState.from, gstState.to); if (!rows.length) return toast('No invoices in this range', 'err');
+    var ttl = 'GST Report ' + gstState.from + ' to ' + gstState.to;
+    var T = rows.reduce(function (a, r) { ['taxable', 'cgst', 'sgst', 'igst', 'total'].forEach(function (k) { a[k] += r[k]; }); return a; }, { taxable: 0, cgst: 0, sgst: 0, igst: 0, total: 0 });
+    if (kind === 'csv') {
+      downloadFile('Date,Invoice,Customer,GSTIN,Taxable,CGST,SGST,IGST,Courier,Total\n' + rows.map(function (r) { return [r.date, r.id, r.cust, r.gst, r.taxable, r.cgst, r.sgst, r.igst, r.courier, r.total].map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n'), 'GST_Report_' + gstState.from + '_' + gstState.to + '.csv', 'text/csv');
+    } else if (kind === 'pdf') {
+      ttPrintHtml(ttl, '<h2>Twin Town Express Services Pvt Ltd</h2><h3>' + ttl + '</h3><table border="1" cellspacing="0" cellpadding="4" style="border-collapse:collapse;width:100%;font-size:11px;"><tr><th>Date</th><th>Invoice</th><th>Customer</th><th>GSTIN</th><th>Taxable</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Total</th></tr>' + rows.map(function (r) { return '<tr><td>' + r.date + '</td><td>' + H(r.id) + '</td><td>' + H(r.cust) + '</td><td>' + H(r.gst) + '</td><td align="right">' + r.taxable.toFixed(2) + '</td><td align="right">' + r.cgst.toFixed(2) + '</td><td align="right">' + r.sgst.toFixed(2) + '</td><td align="right">' + r.igst.toFixed(2) + '</td><td align="right">' + r.total.toFixed(2) + '</td></tr>'; }).join('') + '<tr><th colspan="4">Total</th><th align="right">' + T.taxable.toFixed(2) + '</th><th align="right">' + T.cgst.toFixed(2) + '</th><th align="right">' + T.sgst.toFixed(2) + '</th><th align="right">' + T.igst.toFixed(2) + '</th><th align="right">' + T.total.toFixed(2) + '</th></tr></table>');
+    } else {
+      ttNativeShareOrFallback({ title: ttl, text: ttl + '\nInvoices: ' + rows.length + '\nTaxable: ' + INR(T.taxable) + '\nCGST: ' + INR(T.cgst) + '\nSGST: ' + INR(T.sgst) + '\nIGST: ' + INR(T.igst) + '\nTotal: ' + INR(T.total) }, function () { ttGstOut('pdf'); });
+    }
+  };
+
+  /* ---------------- EXPENSES → P&L (virtual overhead entries) ---------------- */
+  window.ttPnlExpenseOh = function () {
+    if (!get('expInPnl')) return [];
+    return (window.expensesData || []).filter(function (r) { return r && (r.status === 'Approved' || r.status === 'Reimbursed') && r.date && N(r.amount) > 0; })
+      .map(function (r) { return { id: 'EXP-' + r.id, cat: 'Staff Expenses', month: String(r.date).slice(0, 7), amount: N(r.amount), note: (r.emp || '') + ' · ' + (r.cat || ''), virtual: true }; });
+  };
+
+  /* ---------------- ACTIVITY LOG (cloud key ACTIVITY) ---------------- */
+  var actData = []; try { actData = getStored('ACTIVITY', []); } catch (e) { actData = []; }
+  window.activityData = actData;
+  window.ttRenderActivityIfOpen = function () { var m = $('tt25ActModal'); if (m && m.style.display === 'flex') ttOpenActivity(); };
+  var WATCH = { ORDERS: 'Order', LEADS: 'Lead', SERVICES: 'Service', INVENTORY: 'Stock', CUSTOMERS: 'Customer', EXPENSES: 'Expense', QUOTATIONS: 'Quotation' };
+  var snap = {};
+  function sig(x) { try { return JSON.stringify(x, function (k, v) { return (typeof v === 'string' && v.length > 300) ? v.length : v; }); } catch (e) { return ''; } }
+  function labelOf(k, x) { return x.customerName || x.custName || x.name || x.title || x.id; }
+  function baseline(k) { var raw = lsGet('TTESPL_ERP_' + k), o = {}; try { (JSON.parse(raw || '[]') || []).forEach(function (x) { if (x && x.id != null) o[x.id] = sig(x); }); } catch (e) {} return o; }
+  var oSet = window.setStored;
+  window.setStored = function (key, val) {
+    var pre = null;
+    try { if (get('activityLog') && WATCH[key] && Array.isArray(val)) pre = baseline(key); } catch (e) {}
+    var r = oSet.apply(this, arguments);
+    try {
+      if (pre) {
+        var now = {}, adds = [], by = meName(), at = new Date().toISOString();
+        val.forEach(function (x) { if (!x || x.id == null) return; var s = sig(x); now[x.id] = s; if (!(x.id in pre)) adds.push({ a: 'added', x: x }); else if (pre[x.id] !== s) adds.push({ a: 'changed', x: x }); });
+        Object.keys(pre).forEach(function (id) { if (!(id in now)) adds.push({ a: 'removed', x: { id: id } }); });
+        if (adds.length && adds.length <= 15) {
+          var list = (window.activityData || []).slice();
+          adds.forEach(function (e, i) { list.unshift({ id: 'A' + Date.now() + i + Math.floor(Math.random() * 99), at: at, by: by, kind: WATCH[key], act: e.a, ref: String(e.x.id), label: e.a === 'removed' ? '' : String(labelOf(key, e.x) || '') }); });
+          window.activityData = list.slice(0, 400); actData = window.activityData; oSet('ACTIVITY', window.activityData);
+        }
+      }
+    } catch (e) { console.warn('activity log', e); }
+    return r;
+  };
+  try { (0, eval)('setStored = window.setStored;'); } catch (e) {}
+  window.ttOpenActivity = function () {
+    if (!isAdm()) return toast('Activity log is for Admin only', 'err');
+    var list = (window.activityData || []).slice(0, 150), m = ensureModal('tt25ActModal', 3400, 560);
+    show(m, head('🧾 Activity Log', 'tt25ActModal') + '<div class="tt25-sub">Recent changes made on devices running this version (newest first).</div>' +
+      (list.length ? list.map(function (e) { return '<div class="tt25-row"><div class="tt25-rt"><b>' + H(e.kind) + ' ' + H(e.act) + '</b><small>' + H(e.label) + ' · ' + H(e.ref) + '</small></div><div style="text-align:right;font-size:10.5px;color:var(--text-muted);">' + H(e.by) + '<br>' + new Date(e.at).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) + '</div></div>'; }).join('') : '<div class="empty-state"><span class="empty-icon">🧾</span><div class="empty-sub">No activity recorded yet.</div></div>'));
+  };
+
+  /* ---------------- SHARE BACKUP ---------------- */
+  window.ttShareBackup = function () {
+    try {
+      var sets = ttBackupSets(), out = { app: 'TTESPL-ERP', version: 1, exportedAt: new Date().toISOString(), data: {} };
+      Object.keys(sets).forEach(function (k) { out.data[k] = Array.isArray(sets[k]) ? sets[k] : []; });
+      var name = 'TTESPL_Backup_' + todayStr() + '.json', blob = new Blob([JSON.stringify(out)], { type: 'application/json' });
+      var file = new File([blob], name, { type: 'application/json' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) navigator.share({ files: [file], title: 'TTESPL Backup' }).catch(function () {});
+      else { downloadFile(JSON.stringify(out), name, 'application/json'); toast('Sharing is not supported here — backup downloaded instead'); }
+    } catch (e) { toast('Backup failed: ' + e.message, 'err'); }
+  };
+
+  /* ---------------- SYNC STATUS SHEET ---------------- */
+  function syncHtml() {
+    var on = navigator.onLine, rows = [['Orders', ordersData], ['Leads', leadsData], ['Services', serviceCallsData], ['Stock items', sampleInventory], ['Customers', customerDatabase], ['Quotations', quotationsData]];
+    return head('☁️ Sync Status', 'tt25SyncModal') + '<div class="tt25-kpis"><div><small>Internet</small><b style="color:' + (on ? '#10b981' : '#ef4444') + '">' + (on ? 'Online' : 'Offline') + '</b></div><div><small>First load</small><b>' + (window.ttCloudInitialLoadDone === false ? 'Loading…' : 'Done') + '</b></div></div>' +
+      '<div class="tt25-sub" style="margin-top:8px;">' + (on ? 'Changes are pushed to the cloud immediately.' : 'You are offline. Changes are saved on this phone and are sent to the cloud automatically when the internet returns.') + '</div>' +
+      rows.map(function (r) { return '<div class="tt25-row"><div class="tt25-rt"><b>' + r[0] + '</b></div><span class="badge badge-info">' + ((r[1] || []).length) + ' records</span></div>'; }).join('');
+  }
+  document.addEventListener('click', function (e) {
+    var p = e.target.closest && e.target.closest('.tt-live-pill'); if (!p || !get('syncSheet')) return;
+    var m = ensureModal('tt25SyncModal', 3400, 460); show(m, syncHtml());
+  }, true);
+  window.addEventListener('online', function () { var m = $('tt25SyncModal'); if (m && m.style.display === 'flex') m.firstChild.innerHTML = syncHtml(); });
+  window.addEventListener('offline', function () { var m = $('tt25SyncModal'); if (m && m.style.display === 'flex') m.firstChild.innerHTML = syncHtml(); });
+
+  /* ---------------- APP LOCK ---------------- */
+  var PK = 'TTESPL_ERP_LOCK_PIN', LK = 'TTESPL_ERP_LOCK_HIDDEN_AT';
+  function hash(p) { var h = 5381; for (var i = 0; i < p.length; i++) h = ((h << 5) + h + p.charCodeAt(i)) | 0; return 'h' + h + ':' + p.length; }
+  window.ttLockSetPin = function () {
+    var p = prompt('Enter a new 4–6 digit PIN'); if (p === null) return;
+    if (!/^\d{4,6}$/.test(p)) return toast('PIN must be 4 to 6 digits', 'err');
+    if (prompt('Re-enter the PIN') !== p) return toast('PINs do not match', 'err');
+    lsSet(PK, hash(p)); set('appLock', 1); toast('App lock is ON'); openSettings();
+  };
+  window.ttLockClear = function () { if (!confirm('Remove the app lock PIN?')) return; try { localStorage.removeItem(PK); } catch (e) {} set('appLock', 0); openSettings(); };
+  function lockScreen() {
+    if (!lsGet(PK) || $('tt25Lock')) return;
+    var d = document.createElement('div'); d.id = 'tt25Lock';
+    d.innerHTML = '<div class="tt25-lk"><div style="font-size:42px;">🔒</div><b>TTESPL ERP is locked</b><input id="tt25LockIn" type="password" inputmode="numeric" maxlength="6" placeholder="Enter PIN" autocomplete="off"><div id="tt25LockErr"></div><button class="btn btn-primary btn-block" onclick="ttLockTry()">Unlock</button></div>';
+    document.body.appendChild(d); setTimeout(function () { var i = $('tt25LockIn'); if (i) i.focus(); }, 100);
+    $('tt25LockIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') ttLockTry(); });
+  }
+  window.ttLockTry = function () {
+    var v = ($('tt25LockIn') || {}).value || '';
+    if (hash(v) === lsGet(PK)) { var d = $('tt25Lock'); if (d) d.remove(); } else { $('tt25LockErr').textContent = 'Wrong PIN'; $('tt25LockIn').value = ''; }
+  };
+  if (lsGet(PK)) { if (document.body) lockScreen(); else document.addEventListener('DOMContentLoaded', lockScreen); }
+  document.addEventListener('visibilitychange', function () {
+    if (!lsGet(PK)) return;
+    if (document.hidden) lsSet(LK, String(Date.now()));
+    else { var t = Number(lsGet(LK) || 0); if (t && Date.now() - t > 60000) lockScreen(); }
+  });
+
+  /* ---------------- SWIPE ACTIONS + SWIPE-DOWN-TO-CLOSE ---------------- */
+  (function () {
+    var sx = 0, sy = 0, card = null, sheet = null, sheetDy = 0, sheetStartScroll = 0;
+    document.addEventListener('touchstart', function (e) {
+      var t = e.touches[0]; sx = t.clientX; sy = t.clientY; card = null; sheet = null; sheetDy = 0;
+      var tg = e.target; if (!tg.closest) return;
+      if (get('swipeclose')) { var sc = tg.closest('.tt-sheet-card'); if (sc && !tg.closest('input,textarea,select,table')) { var r = sc.getBoundingClientRect(); if (t.clientY - r.top < 70) { sheet = sc; sheetStartScroll = sc.scrollTop; } } }
+      if (get('swipe')) card = tg.closest('.card[data-rec]');
+    }, { passive: true });
+    document.addEventListener('touchmove', function (e) {
+      if (!sheet) return; var dy = e.touches[0].clientY - sy;
+      if (dy > 0 && sheetStartScroll <= 0) { sheetDy = dy; sheet.style.animation = 'none'; sheet.style.transform = 'translateY(' + dy + 'px)'; }
+    }, { passive: true });
+    document.addEventListener('touchend', function (e) {
+      var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+      if (sheet) {
+        var s = sheet; sheet = null;
+        if (sheetDy > 110) { var m = s.closest('.auth-overlay'); s.style.transform = ''; s.style.animation = ''; if (m && m.id) ttCloseSheetModal(m.id); else if (m) m.style.display = 'none'; }
+        else { s.style.transition = 'transform .2s'; s.style.transform = ''; setTimeout(function () { s.style.transition = ''; s.style.animation = ''; }, 220); }
+        return;
+      }
+      if (card && dx < -90 && Math.abs(dy) < 40) { openQuick(card.dataset.rec); }
+      card = null;
+    }, { passive: true });
+  })();
+  function openQuick(rec) {
+    var p = rec.split(':'), kind = p[0], id = p.slice(1).join(':'), name = '', phone = '', extra = '';
+    if (kind === 'order') { var o = (ordersData || []).find(function (x) { return x.id === id; }); if (!o) return; name = o.customerName; phone = custPhoneOf(o); if (N(o.dueAmount) > 0) extra = '<button class="btn btn-wa btn-block" onclick="ttWaRemind(\'' + o.id + '\');hide25()">💬 Due reminder (' + INR(o.dueAmount) + ')</button>'; }
+    else if (kind === 'lead') { var l = (leadsData || []).find(function (x) { return x.id === id; }); if (!l) return; name = l.customerName; phone = l.phone; }
+    else { var s = (serviceCallsData || []).find(function (x) { return String(x.id) === id; }); if (!s) return; name = s.customerName; phone = s.phone; }
+    if (!phone) { try { var c = (customerDatabase || []).find(function (x) { return x.name === name; }); phone = c ? c.phone : ''; } catch (e) {} }
+    var m = ensureModal('tt25QuickModal', 3400, 380); window.hide25 = function () { hide('tt25QuickModal'); };
+    show(m, head(H(name), 'tt25QuickModal') + '<div class="tt25-sub">' + (phone ? H(phone) : 'No phone number saved') + '</div>' +
+      (phone ? '<a class="btn btn-primary btn-block" style="text-decoration:none;text-align:center;margin-bottom:8px;" href="tel:' + H(phone) + '">📞 Call</a><button class="btn btn-wa btn-block" style="margin-bottom:8px;" onclick="ttWaOpenPlain(\'' + H(phone) + '\',\'' + H(name).replace(/'/g, '') + '\')">💬 WhatsApp</button>' : '') + extra);
+  }
+  window.ttWaOpenPlain = function (phone, name) { waOpen(phone, 'Namaste ' + name + ','); hide('tt25QuickModal'); };
+
+  /* ---------------- boot ---------------- */
+  function boot() { injectMenu(); applyLook(); try { if ($('view-dashboard')) afterDashboard(); } catch (e) {} }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  setTimeout(boot, 1200);
+})();
 
 /* ===== BACK BUTTON FIX ===== */
 /* Android/browser ka back button ab poora app band karne ki jagah - pehle khula
