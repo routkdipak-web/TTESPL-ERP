@@ -1980,6 +1980,9 @@ body.tt-compact .card{padding:9px 11px !important;margin-bottom:8px !important}
 body.tt-compact .card-header{margin-bottom:6px !important}
 body.tt-compact .stat-value{font-size:18px !important}
 
+.tt26-card{margin-top:6px;padding:8px 10px;border-radius:12px;background:var(--bg);border:1px solid var(--border);font-size:11.5px;display:none}
+.tt26-r{display:flex;gap:8px;padding:2px 0}.tt26-r span{flex:none;width:58px;color:var(--text-muted)}.tt26-r b{font-weight:700;color:var(--text-main);word-break:break-word}.tt26-r em{font-weight:600;color:var(--text-muted)}
+.tt26-gs{font-size:11.5px;margin-top:5px;line-height:1.4}.tt26-gs.ok{color:#15803d}.tt26-gs.bad{color:#b91c1c;font-weight:700}.tt26-gs.warn{color:#b45309}.tt26-gs.wait{color:var(--text-muted)}
 </style>
 </head>
 <body data-theme="light">
@@ -12130,7 +12133,7 @@ window.ttRenderPnlIfOpen = function () {
     haptic: 1, sound: 1,
     waRemind: 1, upiInvoice: 1, expInPnl: 1, gstReport: 1, creditLimit: 0,
     lowStock: 1, lowThreshold: 5, barcode: 1, timeline: 1, dupOrder: 1, quoteToOrder: 1,
-    leadSnooze: 1, svcPhotos: 1,
+    leadSnooze: 1, svcPhotos: 1, custCard: 1,
     activityLog: 1, syncSheet: 1, appLock: 0
   };
   var cfg = {};
@@ -12220,7 +12223,7 @@ window.ttRenderPnlIfOpen = function () {
       group('🔔 Feedback', [sw('haptic', 'Vibration on tap', ''), sw('sound', 'Sounds', 'Order / delivery / cash sounds')]) +
       group('💰 Money', [sw('waRemind', 'WhatsApp due reminder', 'Button on every ledger card with due'), sw('upiInvoice', 'UPI QR on invoice', 'Pay-now QR on bills with due amount'), sw('expInPnl', 'Staff expenses in Profit & Loss', 'Approved / reimbursed expenses count as spend'), sw('gstReport', 'GST report', 'Menu item with PDF / CSV / share'), num('creditLimit', 'Customer credit limit (₹)', 'Warn when a customer\'s total due crosses this. 0 = off')]) +
       group('📦 Stock & Orders', [sw('lowStock', 'Low-stock list', 'Button on Stock tab'), num('lowThreshold', 'Low-stock level', 'Items at or below this quantity', '5'), sw('barcode', 'Barcode scan', 'Scan a product code on Stock tab'), sw('timeline', 'Order timeline', 'Booked → Payment → Delivery steps'), sw('dupOrder', 'Duplicate order', 'Copy an order into a new one'), sw('quoteToOrder', 'Quotation → Order', 'Convert a quotation in one tap')]) +
-      group('👥 Customers & Service', [sw('leadSnooze', 'Lead follow-up snooze', '+1 / +3 / +7 days buttons'), sw('svcPhotos', 'Service photos & warranty', 'Before/After photos and warranty countdown')]) +
+      group('👥 Customers & Service', [sw('custCard', 'Customer card in order form', 'Shows GSTIN & address after selecting a customer'), act('GST lookup key', 'Needed to auto-fetch name & address from a GSTIN', 'ttSetGstKey()', '🔑 Set'), sw('leadSnooze', 'Lead follow-up snooze', '+1 / +3 / +7 days buttons'), sw('svcPhotos', 'Service photos & warranty', 'Before/After photos and warranty countdown')]) +
       group('🔒 System', [sw('activityLog', 'Activity log', 'Who changed what (records new changes)'), sw('syncSheet', 'Sync status sheet', 'Tap the Live Cloud pill in the header'), '<div class="tt25-row"><div class="tt25-rt"><b>App lock (PIN)</b><small>' + (lsGet('TTESPL_ERP_LOCK_PIN') ? 'PIN is set' : 'No PIN set') + '</small></div><div style="display:flex;gap:6px;"><button class="btn btn-outline btn-sm" onclick="ttLockSetPin()">' + (lsGet('TTESPL_ERP_LOCK_PIN') ? 'Change' : 'Set') + '</button>' + (lsGet('TTESPL_ERP_LOCK_PIN') ? '<button class="btn btn-danger-sm btn-sm" onclick="ttLockClear()">Remove</button>' : '') + '</div></div>', act('Share backup', 'Send the data backup via WhatsApp / Drive / Mail', 'ttShareBackup()', '📤 Share')].concat(admin ? [act('Staff permissions', 'Hide tabs for non-admin staff', 'ttOpenPerms()', 'Open'), act('Activity log', 'See recent changes', 'ttOpenActivity()', 'View')] : [])) +
       group('📑 Reports', [act('GST report', 'Taxable / CGST / SGST by date range', 'ttOpenGst()', 'Open'), act('Low-stock list', 'Items that need re-ordering', 'ttOpenLowStock()', 'Open')]);
     show(m, html);
@@ -12378,11 +12381,12 @@ window.ttRenderPnlIfOpen = function () {
           var svg;
           if (typeof qrcode === 'function') { var q = qrcode(0, 'M'); q.addData(payload); q.make(); svg = q.createSvgTag({ cellSize: 3, margin: 1, scalable: true }).replace('<svg', '<svg style="width:100%;height:100%"'); }
           else svg = '<img alt="UPI QR" style="width:100%;height:100%" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=4&ecc=M&data=' + encodeURIComponent(payload) + '">';
-          var blk = '<div style="padding:6px 8px;border-top:1px solid #000;display:flex;align-items:center;gap:10px;page-break-inside:avoid;"><div style="width:74px;height:74px;flex:none;">' + svg + '</div><div style="font-size:10px;line-height:1.4;"><b>Scan &amp; Pay ' + INR(due) + '</b><br>UPI: ' + H(upi) + '<br>Invoice: ' + H(o.id) + '</div></div>';
-          if (typeof TT_TERMS_INVOICE === 'string' && html.indexOf(TT_TERMS_INVOICE) >= 0) html = html.replace(TT_TERMS_INVOICE, function () { return blk + TT_TERMS_INVOICE; });
-          else html += blk;
+          var OPEN = '<div style="padding:5px 6px;border-left:1px solid #000;text-align:right;font-size:10.5px;">for <strong>TWINTOWN EXPRESS SERVICES PVT LTD</strong><br><br><br>Authorised Signatory</div>';
+          var cell = '<div style="padding:5px 6px;border-left:1px solid #000;font-size:10.5px;display:flex;justify-content:space-between;align-items:flex-end;gap:6px;"><div style="font-size:8px;line-height:1.25;text-align:left;"><div style="width:58px;height:58px;">' + svg + '</div><b>Scan &amp; Pay ' + INR(due) + '</b></div><div style="text-align:right;">for <strong>TWINTOWN EXPRESS SERVICES PVT LTD</strong><br><br><br>Authorised Signatory</div></div>';
+          var pos = html.indexOf(OPEN);
+          if (pos >= 0) html = html.slice(0, pos) + cell + html.slice(pos + OPEN.length);
         }
-      } catch (e) { console.warn('UPI QR on invoice failed', e); }
+        } catch (e) { console.warn('UPI QR on invoice failed', e); }
       return html;
     };
     try { (0, eval)('ttBuildInvoicePaged = window.ttBuildInvoicePaged;'); } catch (e) {}
@@ -12716,6 +12720,132 @@ window.ttRenderPnlIfOpen = function () {
   function boot() { injectMenu(); applyLook(); try { if ($('view-dashboard')) afterDashboard(); } catch (e) {} }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
   setTimeout(boot, 1200);
+})();
+
+/* ===== v25.2: customer card in order form + GSTIN check / auto-fetch in customer form ===== */
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var H = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var feat = function (k) { try { return window.ttFeat ? window.ttFeat.get(k) : 1; } catch (e) { return 1; } };
+
+  /* ---- 1) small customer card in the order form ---- */
+  function findCust(txt) {
+    try { var c = resolveCustomerFromSearch(txt); if (c) return c; } catch (e) {}
+    return null;
+  }
+  function updateCard() {
+    var inp = $('ordCustSearchInput'); if (!inp) return;
+    var card = $('tt26CustCard');
+    if (!card) { card = document.createElement('div'); card.id = 'tt26CustCard'; card.className = 'tt26-card'; inp.parentElement.appendChild(card); }
+    var txt = (inp.value || '').trim(), c = (feat('custCard') && txt) ? findCust(txt) : null;
+    if (!c) { card.style.display = 'none'; return; }
+    var gst = c.gst && c.gst !== 'Unregistered' ? c.gst : '';
+    card.style.display = 'block';
+    card.innerHTML = '<div class="tt26-r"><span>GSTIN</span><b>' + (gst ? H(gst) : '<em>Unregistered</em>') + '</b></div>' +
+      '<div class="tt26-r"><span>Address</span><b>' + H(c.address || '—') + '</b></div>' + (c.phone ? '<div class="tt26-r"><span>Phone</span><b>' + H(c.phone) + '</b></div>' : '');
+  }
+  document.addEventListener('input', function (e) { if (e.target && e.target.id === 'ordCustSearchInput') setTimeout(updateCard, 0); });
+  ['selectCustomerSuggestion', 'openOrderModal'].forEach(function (n) {
+    var f = window[n]; if (typeof f !== 'function') return;
+    window[n] = function () { var r = f.apply(this, arguments); setTimeout(updateCard, 30); return r; };
+    try { (0, eval)(n + ' = window.' + n + ';'); } catch (e) {}
+  });
+
+  /* ---- 2) GSTIN validation (offline) + optional online fetch ---- */
+  var STATES = { '01': 'Jammu & Kashmir', '02': 'Himachal Pradesh', '03': 'Punjab', '04': 'Chandigarh', '05': 'Uttarakhand', '06': 'Haryana', '07': 'Delhi', '08': 'Rajasthan', '09': 'Uttar Pradesh', '10': 'Bihar', '11': 'Sikkim', '12': 'Arunachal Pradesh', '13': 'Nagaland', '14': 'Manipur', '15': 'Mizoram', '16': 'Tripura', '17': 'Meghalaya', '18': 'Assam', '19': 'West Bengal', '20': 'Jharkhand', '21': 'Odisha', '22': 'Chhattisgarh', '23': 'Madhya Pradesh', '24': 'Gujarat', '26': 'Dadra & Nagar Haveli and Daman & Diu', '27': 'Maharashtra', '29': 'Karnataka', '30': 'Goa', '31': 'Lakshadweep', '32': 'Kerala', '33': 'Tamil Nadu', '34': 'Puducherry', '35': 'Andaman & Nicobar', '36': 'Telangana', '37': 'Andhra Pradesh', '38': 'Ladakh', '97': 'Other Territory' };
+  function gstCheck(g) {
+    g = String(g || '').trim().toUpperCase();
+    if (!/^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(g)) return { ok: false, why: 'format' };
+    var cs = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', sum = 0;
+    for (var i = 0; i < 14; i++) { var v = cs.indexOf(g[i]) * (i % 2 === 0 ? 1 : 2); sum += Math.floor(v / 36) + (v % 36); }
+    var chk = cs[(36 - (sum % 36)) % 36];
+    return { ok: chk === g[14], why: chk === g[14] ? '' : 'checksum', g: g, state: STATES[g.slice(0, 2)] || '', pan: g.slice(2, 12) };
+  }
+  window.ttGstCheck = gstCheck;
+  function setStatus(html, cls) { var s = $('tt26GstStatus'); if (s) { s.className = 'tt26-gs ' + (cls || ''); s.innerHTML = html; } }
+  function addrOf(info) {
+    var p = info.pradr || info.principalAddress || {}, a = p.addr || p.adr || p;
+    if (typeof a === 'string') return a;
+    var parts = [a.bno, a.flno, a.bnm, a.st, a.loc, a.locality, a.dst, a.city, a.stcd, a.pncd].filter(Boolean);
+    return parts.join(', ') || info.adr || info.address || '';
+  }
+  function fetchGst(g) {
+    var key = '';
+    try { key = localStorage.getItem('TTESPL_ERP_GST_API_KEY') || ''; } catch (e) {}
+    if (!key) return Promise.reject(new Error('nokey'));
+    setStatus('⏳ Fetching details from GST portal…', 'wait');
+    return fetch('https://appyflow.in/api/verifyGST?gstNo=' + encodeURIComponent(g) + '&key_secret=' + encodeURIComponent(key))
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (j && j.error) throw new Error(j.message || 'GST lookup failed');
+        var info = (j && (j.taxpayerInfo || j.data)) || j || {};
+        var legal = info.lgnm || info.legalName || '', trade = info.tradeNam || info.tradeName || '';
+        var addr = addrOf(info);
+        if (!legal && !trade && !addr) throw new Error('No details returned for this GSTIN');
+        return { name: trade || legal, person: legal, address: addr, status: info.sts || info.status || '' };
+      });
+  }
+  function onGstInput() {
+    var el = $('cGst'); if (!el) return; var v = el.value.trim().toUpperCase(); if (el.value !== v && v) el.value = v;
+    if (!v) return setStatus('', '');
+    if (v.length < 15) return setStatus('GSTIN has ' + v.length + '/15 characters', 'wait');
+    var r = gstCheck(v);
+    if (!r.ok) return setStatus(r.why === 'checksum' ? '❌ Check digit does not match — one character is wrong. Please re-check.' : '❌ This is not a valid GSTIN format.', 'bad');
+    setStatus('✅ Valid GSTIN · State: <b>' + H(r.state) + '</b> · PAN: <b>' + H(r.pan) + '</b>', 'ok');
+    fillBasic(r);
+    var hasKey = ''; try { hasKey = localStorage.getItem('TTESPL_ERP_GST_API_KEY'); } catch (e) {}
+    if (hasKey) setStatus($('tt26GstStatus').innerHTML + '<br><small>Tap "Fetch details" to fill name &amp; address (uses 1 lookup credit).</small>', 'ok');
+    else setStatus($('tt26GstStatus').innerHTML + '<br><small>Name &amp; address auto-fetch needs a GST lookup key (Settings → Customers). Until then type them in.</small>', 'ok');
+  }
+  function fillBasic(r) {
+    var ad = $('cAddress'); if (ad && !ad.value.trim() && r.state) ad.dataset.stateHint = r.state;
+  }
+  var fetched = {};
+  function doFetch(v) {
+    (fetched[v] ? Promise.resolve(fetched[v]) : fetchGst(v)).then(function (d) {
+      fetched[v] = d;
+      var n = $('cName'), p = $('cPerson'), a = $('cAddress');
+      if (n && (!n.value.trim() || n.dataset.tt26 === '1')) { n.value = d.name; n.dataset.tt26 = '1'; }
+      if (p && !p.value.trim()) p.value = d.person;
+      if (a && (!a.value.trim() || a.dataset.tt26 === '1')) { a.value = d.address; a.dataset.tt26 = '1'; }
+      setStatus('✅ Details fetched' + (d.status ? ' · Status: <b>' + H(d.status) + '</b>' : '') + '. Please review before saving.', 'ok');
+    }).catch(function (e) {
+      if (e.message === 'nokey') return;
+      setStatus('⚠️ Could not fetch details (' + H(e.message || 'network') + '). GSTIN itself is valid — type name/address manually.', 'warn');
+    });
+  }
+  function ensureUi() {
+    var g = $('cGst'); if (!g || $('tt26GstStatus')) return;
+    g.setAttribute('maxlength', '15'); g.setAttribute('autocapitalize', 'characters'); g.setAttribute('autocomplete', 'off');
+    g.insertAdjacentHTML('afterend', '<div id="tt26GstStatus" class="tt26-gs"></div><button type="button" class="btn btn-outline btn-sm" id="tt26GstBtn" style="margin-top:6px;" onclick="ttGstFetchNow()">🔍 Fetch details from GSTIN</button>');
+    g.addEventListener('input', onGstInput);
+  }
+  window.ttGstFetchNow = function () {
+    var v = ($('cGst').value || '').trim().toUpperCase(), r = gstCheck(v);
+    if (!r.ok) return setStatus('❌ Enter a valid 15-character GSTIN first.', 'bad');
+    var k = ''; try { k = localStorage.getItem('TTESPL_ERP_GST_API_KEY'); } catch (e) {}
+    if (!k) return setStatus('ℹ️ Add your GST lookup key in Settings → Customers & Service to fetch name/address.', 'warn');
+    doFetch(v);
+  };
+  window.ttSetGstKey = function () {
+    var cur = ''; try { cur = localStorage.getItem('TTESPL_ERP_GST_API_KEY') || ''; } catch (e) {}
+    var v = prompt('Paste your GST lookup API key (AppyFlow key_secret). Leave empty to remove.', cur); if (v === null) return;
+    try { if (v.trim()) localStorage.setItem('TTESPL_ERP_GST_API_KEY', v.trim()); else localStorage.removeItem('TTESPL_ERP_GST_API_KEY'); } catch (e) {}
+    if (window.ttShowSuccessToast) ttShowSuccessToast(v.trim() ? 'GST lookup key saved on this device' : 'GST lookup key removed');
+  };
+  var oo = window.openAddCustomerModal;
+  if (typeof oo === 'function') {
+    window.openAddCustomerModal = function () {
+      var r = oo.apply(this, arguments); ensureUi();
+      var s = $('tt26GstStatus'); if (s) { s.innerHTML = ''; s.className = 'tt26-gs'; }
+      ['cName', 'cAddress'].forEach(function (i) { var e = $(i); if (e) delete e.dataset.tt26; });
+      // new customer opened from the order form: carry the typed name over
+      try { var oi = $('ordCustSearchInput'); if (arguments[0] == null && oi && $('cName') && !$('cName').value) { var t = oi.value.split('(')[0].trim(); if (t && !/^\d+$/.test(t)) $('cName').value = t; } } catch (e) {}
+      return r;
+    };
+    try { (0, eval)('openAddCustomerModal = window.openAddCustomerModal;'); } catch (e) {}
+  }
 })();
 
 /* ===== BACK BUTTON FIX ===== */
