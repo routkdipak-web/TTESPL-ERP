@@ -43,11 +43,13 @@
     CATALOG_CATS: 'catalog_categories',
     BRANDS: 'brands',
     EXPENSES: 'expenses',
-    OVERHEADS: 'overheads'
+    OVERHEADS: 'overheads',
+    PERMS: 'perms',
+    ACTIVITY: 'activity'
   };
 
   // Naye optional collections: inke error/rules ki wajah se app 'Offline' nahi dikhayega
-  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true, CATALOG_CATS: true, BRANDS: true, EXPENSES: true, OVERHEADS: true };
+  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true, CATALOG_CATS: true, BRANDS: true, EXPENSES: true, OVERHEADS: true, PERMS: true, ACTIVITY: true };
   // Inka purana local data pehli baar cloud par automatically upload hota hai (ek baar)
   var MIGRATE_KEYS = OPTIONAL_KEYS;
 
@@ -305,6 +307,8 @@
       if (pendingRender.CRM_RECORDS && typeof window.ttRenderCrmIfOpen === 'function') window.ttRenderCrmIfOpen();
       if (pendingRender.EXPENSES && typeof window.ttRenderExpensesIfOpen === 'function') window.ttRenderExpensesIfOpen();
       if (pendingRender.OVERHEADS && typeof window.ttRenderPnlIfOpen === 'function') window.ttRenderPnlIfOpen();
+      if (pendingRender.PERMS && typeof window.ttRenderPermsIfOpen === 'function') window.ttRenderPermsIfOpen();
+      if (pendingRender.ACTIVITY && typeof window.ttRenderActivityIfOpen === 'function') window.ttRenderActivityIfOpen();
       if ((pendingRender.INVENTORY || pendingRender.ORDERS) && typeof window.ttRenderPnlIfOpen === 'function') window.ttRenderPnlIfOpen();
       if (pendingRender.BRANDS && typeof window.ttRenderBrandsIfOpen === 'function') window.ttRenderBrandsIfOpen();
       if (pendingRender.COMPANY_DETAILS && typeof window.ttRenderCompanyIfOpen === 'function') window.ttRenderCompanyIfOpen();
@@ -395,6 +399,8 @@
           case 'BRANDS': brandsData = list; window.brandsData = list; break;
           case 'EXPENSES': expensesData = list; window.expensesData = list; break;
           case 'OVERHEADS': overheadsData = list; window.overheadsData = list; break;
+          case 'PERMS': window.permsData = list; break;
+          case 'ACTIVITY': window.activityData = list.sort(function (a, b) { return String(b.at || '').localeCompare(String(a.at || '')); }); break;
           case 'CRM_RECORDS': crmRecordsData = list; window.crmRecordsData = list; break;
           case 'COMPANY_DETAILS':
             if (list.length) {
