@@ -5128,7 +5128,7 @@ function openUpiModal(customerName, amount) {
   const formattedAmt = parseFloat(amount).toFixed(2);
   // UPI standard: pa me '@' encode nahi hota (PhonePe %40 ko invalid maanta hai), spaces %20 hote hain
   const txnRef = 'TT' + Date.now();
-  const upiPayload = `upi://pay?pa=${merchantUpi}&pn=${encodeURIComponent("TWINTOWN EXPRESS SERVICES")}&am=${formattedAmt}&cu=INR&tn=${encodeURIComponent("TTESPL Invoice")}&tr=${txnRef}`;
+  const upiPayload = `upi://pay?pa=${merchantUpi}&pn=${encodeURIComponent("TWINTOWN EXPRESS SERVICES")}&am=${formattedAmt}&cu=INR`;
   renderUpiQr(upiPayload);
   document.getElementById('upiModal').style.display = 'flex';
 }
@@ -12377,7 +12377,7 @@ window.ttRenderPnlIfOpen = function () {
         var due = N(o && o.dueAmount);
         if (get('upiInvoice') && due > 0 && typeof html === 'string') {
           var upi = (typeof companyDetailsData !== 'undefined' && companyDetailsData.upi) || 'eazypay.574099310@icici';
-          var payload = 'upi://pay?pa=' + upi + '&pn=' + encodeURIComponent('TWINTOWN EXPRESS SERVICES') + '&am=' + due.toFixed(2) + '&cu=INR&tn=' + encodeURIComponent('Invoice ' + o.id);
+          var payload = 'upi://pay?pa=' + upi + '&pn=' + encodeURIComponent('TWINTOWN EXPRESS SERVICES') + '&am=' + due.toFixed(2) + '&cu=INR';
           var svg;
           if (typeof qrcode === 'function') { var q = qrcode(0, 'M'); q.addData(payload); q.make(); svg = q.createSvgTag({ cellSize: 3, margin: 1, scalable: true }).replace('<svg', '<svg style="width:100%;height:100%"'); }
           else svg = '<img alt="UPI QR" style="width:100%;height:100%" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=4&ecc=M&data=' + encodeURIComponent(payload) + '">';
