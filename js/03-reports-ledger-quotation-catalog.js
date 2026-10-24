@@ -1,7 +1,7 @@
 /* TTESPL ERP module: 03-reports-ledger-quotation-catalog.js */
 /* ===== DIGITAL REPORT CARDS: Installation Report (Leads) + Service Call Report (Service) ===== */
-function ttAddDays(dateStr, n) { const d = new Date(dateStr); d.setDate(d.getDate() + n); return d.toISOString().split('T')[0]; }
-function ttAddMonths(dateStr, n) { const d = new Date(dateStr); d.setMonth(d.getMonth() + n); return d.toISOString().split('T')[0]; }
+function ttAddDays(dateStr, n) { const d = new Date(dateStr); d.setDate(d.getDate() + n); return ttYmd(d); }
+function ttAddMonths(dateStr, n) { const d = new Date(dateStr); d.setMonth(d.getMonth() + n); return ttYmd(d); }
 
 // MAINTENANCE SCHDULE OF PUMP HRC (dinon me, installation date se)
 const TT_MAINT_SCHEDULE = [
@@ -24,9 +24,9 @@ function ttNextDueBadge(lead) {
   if (items.length === 0) return '';
   items.sort((a, b) => a.date.localeCompare(b.date));
   const n = items[0];
-  const today = new Date().toISOString().split('T')[0];
+  const today = ttYmd(new Date());
   const overdue = n.date <= today;
-  return `<span class="badge ${overdue ? 'badge-pending' : 'badge-info'}" style="font-size:10.5px;">⏰ Next: ${n.label} (${n.date})</span>`;
+  return `<span class="badge ${overdue ? 'badge-pending' : 'badge-info'}" style="font-size:10.5px;">⏰ Next: ${ttEscHtml(n.label)} (${n.date})</span>`;
 }
 
 // ---- Shared photo uploader (Installation + Service Report dono isi ko use karte hain) ----
@@ -119,7 +119,7 @@ function saveInstallationReport() {
   const leadId = document.getElementById('instLeadId').value;
   const lead = leadsData.find(x => x.id === leadId);
   if (!lead) return;
-  const installDate = new Date().toISOString().split('T')[0];
+  const installDate = ttYmd(new Date());
   const d2 = ttAddMonths(installDate, 3);
   const d3 = ttAddMonths(d2, 3);
   const d4 = ttAddMonths(d3, 3);
@@ -186,11 +186,11 @@ function renderInstallationReportView(leadId) {
     <div style="border:1px solid var(--border); border-radius:8px; padding:8px 10px; margin-bottom:6px;">
       <div style="display:flex; justify-content:space-between;">
         <strong style="font-size:12.5px;">${esc(ms.part)}</strong>
-        <span style="font-size:11.5px; color:${ms.dueDate <= new Date().toISOString().split('T')[0] ? 'var(--danger)' : 'var(--text-muted)'};">Due: ${ms.dueDate}</span>
+        <span style="font-size:11.5px; color:${ms.dueDate <= ttYmd(new Date()) ? 'var(--danger)' : 'var(--text-muted)'};">Due: ${ms.dueDate}</span>
       </div>
       <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Kit Code: ${esc(ms.code)}${ms.lastChangedDate ? ` | Last Changed: ${ms.lastChangedDate}` : ''}</div>
       <div style="display:flex; gap:6px; align-items:center;">
-        <input type="date" id="msDate_${leadId}_${i}" style="flex:1; font-size:12px; padding:6px;" value="${new Date().toISOString().split('T')[0]}">
+        <input type="date" id="msDate_${leadId}_${i}" style="flex:1; font-size:12px; padding:6px;" value="${ttYmd(new Date())}">
         <button class="btn btn-primary btn-sm" onclick="markMaintenancePartChanged('${leadId}', ${i})">✔️ Mark Changed</button>
       </div>
     </div>`).join('');
@@ -210,7 +210,7 @@ function markMaintenancePartChanged(leadId, idx) {
   const lead = leadsData.find(x => x.id === leadId);
   if (!lead || !lead.maintenanceSchedule || !lead.maintenanceSchedule[idx]) return;
   const dateInput = document.getElementById('msDate_' + leadId + '_' + idx);
-  const changedDate = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+  const changedDate = dateInput ? dateInput.value : ttYmd(new Date());
   const ms = lead.maintenanceSchedule[idx];
   ms.lastChangedDate = changedDate;
   ms.dueDate = ttAddDays(changedDate, ms.days); // agla due date khud ban jata hai
@@ -253,7 +253,7 @@ function openFreeServiceReportModal(leadId, idx) {
   document.getElementById('fsLeadId').value = leadId;
   document.getElementById('fsIdx').value = idx;
   const r = f.report || {};
-  document.getElementById('fsServiceDate').value = r.date || new Date().toISOString().split('T')[0];
+  document.getElementById('fsServiceDate').value = r.date || ttYmd(new Date());
   document.getElementById('fsTechName').value = r.technician || '';
   document.getElementById('fsNotes').value = r.notes || '';
   window._ttLastSignatureData = r.signature || null;
@@ -379,7 +379,7 @@ function saveServiceReport() {
   const s = serviceCallsData.find(x => x.id === srvId);
   if (!s) return;
   s.report = {
-    date: new Date().toISOString().split('T')[0],
+    date: ttYmd(new Date()),
     cause: document.getElementById('srvRepCause').value.trim(),
     actionTaken: document.getElementById('srvRepAction').value.trim(),
     parts: document.getElementById('srvRepParts').value.trim(),
@@ -576,7 +576,7 @@ function ttBackupSets() {
 function downloadFullBackup() {
   const sets = ttBackupSets(); const out = { app: 'TTESPL-ERP', version: 1, exportedAt: new Date().toISOString(), data: {} };
   Object.keys(sets).forEach(k => out.data[k] = Array.isArray(sets[k]) ? sets[k] : []);
-  const d = new Date().toISOString().split('T')[0];
+  const d = ttYmd(new Date());
   downloadFile(JSON.stringify(out), `TTESPL_Backup_${d}.json`, 'application/json');
 }
 async function restoreBackupFile(ev) {

@@ -33,6 +33,17 @@
   function numRow(k, title, sub, ph) { return row(title, sub, '<input class="tt25-num" type="number" min="0" inputmode="numeric" placeholder="' + (ph || '0') + '" value="' + (F(k) || '') + '" onchange="ttSetOpt(\'' + k + '\',Number(this.value)||0)">'); }
   function txtRow(k, title, sub, ph) { return row(title, sub, '<input class="tt25-num" style="width:150px;text-align:left;" type="text" placeholder="' + H(ph || '') + '" value="' + H(F(k) || '') + '" onchange="ttSetOpt(\'' + k + '\',this.value.trim())">'); }
   function actRow(title, sub, fn, label) { return row(title, sub, '<button class="btn btn-outline btn-sm" onclick="' + fn + '">' + label + '</button>'); }
+  /* colourful iOS-style icons + subtitles for the new Settings categories (read by renderer in js/07) */
+  window.ttGroupStyles = Object.assign(window.ttGroupStyles || {}, {
+    'Safety & Login': ['🛡️', '#ff453a', '#d62d20'], 'Payments & Receipts': ['💳', '#34c759', '#1f9d45'], 'Stock Control': ['📦', '#ff9f0a', '#e07c00'],
+    'Invoice & GST': ['🧾', '#0a84ff', '#0063d1'], 'Data Safety & Export': ['🗂️', '#5e5ce6', '#4340c4'], 'Speed & Offline': ['⚡', '#ffb800', '#e08a00'],
+    'Look & Speed': ['🎨', '#bf5af2', '#8e44d6'], 'Insights': ['📊', '#30b0c7', '#1b8da3']
+  });
+  window.ttGroupSubs = Object.assign(window.ttGroupSubs || {}, {
+    'Safety & Login': 'Auto-logout, sign-up, secure mode', 'Payments & Receipts': 'Over-payment, receipts, refunds', 'Stock Control': 'Stock warnings, stock in / adjust',
+    'Invoice & GST': 'Invoice number, GST rate, bank details', 'Data Safety & Export': 'Recycle bin, Excel export, backup', 'Speed & Offline': 'Offline app, photos, long lists',
+    'Look & Speed': 'Compact cards, smooth mode, auto row', 'Insights': 'Month compare, top customers, profit'
+  });
   var prevSet = window.ttModSettings;
   window.ttModSettings = function (sw, group) {
     var r; try { r = prevSet ? prevSet(sw, group) : ''; } catch (e) { console.warn(e); }

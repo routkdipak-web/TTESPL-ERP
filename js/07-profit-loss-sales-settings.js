@@ -614,7 +614,10 @@ window.ttRenderPnlIfOpen = function () {
     add('system', 'Security & Backup', 'PIN lock, backup, permissions', 3, [['Security', [pinRow].concat(admin ? [act('Staff permissions', 'Hide tabs for non-admin staff', 'ttOpenPerms()', 'Open')] : [])], ['Backup and sync', [sw('syncSheet', 'Sync status sheet', 'Tap the Live Cloud pill in the header'), act('Share backup', 'Send the data backup via WhatsApp / Drive / Mail', 'ttShareBackup()', '📤 Share')]], ['Activity', [sw('activityLog', 'Activity log', 'Who changed what (records new changes)')].concat(admin ? [act('Activity log', 'See recent changes', 'ttOpenActivity()', 'View')] : [])]]);
     /* groups added by other modules (Office modules, AI) become their own pages */
     var extra = []; try { if (window.ttModSettings) window.ttModSettings(sw, function (t, rows) { extra.push([t, rows]); return ''; }); } catch (e) { console.warn('settings modules', e); }
-    extra.forEach(function (g, i) { var m = /^(\S+)\s+(.*?)\s*(\(on \/ off\))?$/.exec(g[0]) || [0, '⚙️', g[0]], isAi = /AI/.test(g[0]); add(isAi ? 'ai' : (i === 0 ? 'mods' : 'mods' + i), m[2], isAi ? 'Models, limits, usage' : 'Turn tools on or off', 3, [['Switches', g[1]]]); });
+    extra.forEach(function (g, i) { var m = /^(\S+)\s+(.*?)\s*(\(on \/ off\))?$/.exec(g[0]) || [0, '⚙️', g[0]], isAi = /AI/.test(g[0]); var pid = isAi ? 'ai' : (i === 0 ? 'mods' : 'mods' + i);
+      /* v41: each new category gets its own colourful icon + short subtitle (looked up by title, so it does not depend on the order) */
+      if (!isAi && window.ttGroupStyles && window.ttGroupStyles[m[2]]) PAGE_STYLE[pid] = window.ttGroupStyles[m[2]];
+      add(pid, m[2], isAi ? 'Models, limits, usage' : ((window.ttGroupSubs && window.ttGroupSubs[m[2]]) || 'Turn tools on or off'), 3, [['Switches', g[1]]]); });
     if (admin && (window.ttOpenDuplicates || window.ttOpenDataMergeLog)) add('data', 'Data cleanup', 'Duplicates and merge', 3, [['Master catalog', [act('Sync master catalog to cloud', 'Adds missing master items & customers to the live cloud. Existing stock, prices and edits are never overwritten', 'ttSyncMasterToCloud && ttSyncMasterToCloud()', 'Sync')]], ['Duplicates', [act('Duplicate review', 'Find duplicate customers, stock and leads — then merge them into one', 'ttOpenDuplicates()', 'Open'), act('Merge log (stock & customers)', 'See past merges and undo one', 'ttOpenDataMergeLog && ttOpenDataMergeLog()', 'View'), act('Merge log (leads)', 'See past lead merges and undo one', 'ttOpenMergeLog && ttOpenMergeLog()', 'View')]]]);
     return P;
   }
@@ -925,7 +928,7 @@ window.ttRenderPnlIfOpen = function () {
   function catalogIds() { var s = {}; try { (catalogCatsData || []).forEach(function (c) { if (c) { s[String(c.id)] = 1; s[String(c.name)] = 1; } }); } catch (e) {} return s; }
   function lowItems() {
     var th = N(get('lowThreshold')) || 5, cat = catalogIds();
-    return (sampleInventory || []).filter(function (i) { return i && typeof i.stock === 'number' && i.stock <= th && !cat[String(i.category)]; }).sort(function (a, b) { return a.stock - b.stock; });
+    return (sampleInventory || []).filter(function (i) { return i && typeof i.stock === 'number' && i.stock <= ((Number(i.minStock) > 0) ? Number(i.minStock) : th) && !cat[String(i.category)]; }).sort(function (a, b) { return a.stock - b.stock; });
   }
   window.ttOpenLowStock = function () {
     var list = lowItems(), m = ensureModal('tt25LowModal', 3400, 560), th = N(get('lowThreshold')) || 5;
@@ -973,11 +976,12 @@ window.ttRenderPnlIfOpen = function () {
     var rows = [];
     (ordersData || []).forEach(function (o) {
       if (!o || o.status !== 'Delivered') return; var d = ttDateOf(o); if (from && d < from) return; if (to && d > to) return;
-      var taxable = 0, gross = 0;
-      (o.items || []).forEach(function (it) { var incl = N(it.total); gross += incl; taxable += R2(incl / 1.18); });
+      var taxable = 0, gross = 0, cT = (window.ttCourierTaxable && ttCourierTaxable() && N(o.courierCharge) > 0) ? R2(N(o.courierCharge) / 1.18) : 0;
+      (o.items || []).forEach(function (it) { var incl = N(it.total), rt = window.ttItemGstRate ? ttItemGstRate(it) : 18; gross += incl; taxable += R2(incl / (1 + rt / 100)); });
+      if (cT) { gross += N(o.courierCharge); taxable += cT; }
       taxable = R2(taxable); var tax = R2(gross - taxable), intra = (o.taxType || 'INTRA') !== 'INTER';
       var cust = (customerDatabase || []).find(function (c) { return (c.phone && c.phone === o.phone) || c.name === o.customerName; }) || {};
-      rows.push({ id: o.id, date: d, cust: o.customerName, gst: cust.gst || '', taxable: taxable, cgst: intra ? R2(tax / 2) : 0, sgst: intra ? R2(tax - R2(tax / 2)) : 0, igst: intra ? 0 : tax, courier: N(o.courierCharge), total: R2(gross + N(o.courierCharge)) });
+      rows.push({ id: o.id, date: d, cust: o.customerName, gst: cust.gst || '', taxable: taxable, cgst: intra ? R2(tax / 2) : 0, sgst: intra ? R2(tax - R2(tax / 2)) : 0, igst: intra ? 0 : tax, courier: cT ? 0 : N(o.courierCharge), total: cT ? R2(gross) : R2(gross + N(o.courierCharge)) });
     });
     return rows.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
   }

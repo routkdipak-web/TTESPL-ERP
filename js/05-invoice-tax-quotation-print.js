@@ -31,29 +31,34 @@ function ttBuildInvoicePaged(o, opt) {
   const dt = o.deliveredDate || o.orderDate || '';
   const items = (o.items || []).map(it => {
     const incl = Number(it.total) || 0;
-    const taxable = Math.round(incl / 1.18 * 100) / 100;
+    const gstRate = window.ttItemGstRate ? ttItemGstRate(it) : 18;   // v41: 18 unless "Per-item GST rate" is ON
+    const taxable = Math.round(incl / (1 + gstRate / 100) * 100) / 100;
     const qty = Number(it.qty) || 1;
     const inclRate = qty ? incl / qty : incl;
     let mrp = Number(it.mrp) || 0, disc = Number(it.disc) || 0;
     if (!(mrp > 0)) mrp = (disc > 0 && disc < 100) ? inclRate / (1 - disc / 100) : inclRate;
     if (!(disc > 0) && mrp > inclRate + 0.005) disc = Math.round((1 - inclRate / mrp) * 10000) / 100;
-    return { name: it.name, desc: it.desc, specs: it.specs, hsn: ttItemHsn(it), qty, inclRate, rate: qty ? taxable / qty : taxable, mrp, disc, taxable, incl };
+    return { name: it.name, desc: it.desc, specs: it.specs, hsn: ttItemHsn(it), gstRate, qty, inclRate, rate: qty ? taxable / qty : taxable, mrp, disc, taxable, incl };
   });
   const sumTaxable = Math.round(items.reduce((s, i) => s + i.taxable, 0) * 100) / 100;
   const total = Number(o.totalAmount) || 0;
   const courierCharge = Number(o.courierCharge) || 0;
-  const totalForTax = Math.round((total - courierCharge) * 100) / 100;
-  const tax = Math.round((totalForTax - sumTaxable) * 100) / 100;
+  const courTax = !!(window.ttCourierTaxable && ttCourierTaxable() && courierCharge > 0);   // v41 option: courier is part of taxable value (18%)
+  const courTaxable = courTax ? Math.round(courierCharge / 1.18 * 100) / 100 : 0;
+  const totalForTax = courTax ? total : Math.round((total - courierCharge) * 100) / 100;
+  const tax = Math.round((totalForTax - sumTaxable - courTaxable) * 100) / 100;
   const half = Math.round(tax / 2 * 100) / 100;
-  const roundOff = Math.round((totalForTax - (sumTaxable + (intra ? half * 2 : tax))) * 100) / 100;
+  const roundOff = Math.round((totalForTax - (sumTaxable + courTaxable + (intra ? half * 2 : tax))) * 100) / 100;
   const hs = {};
-  items.forEach(i => { hs[i.hsn] = hs[i.hsn] || 0; hs[i.hsn] += i.taxable; });
+  items.forEach(i => { const k = i.hsn + '|' + i.gstRate; hs[k] = hs[k] || 0; hs[k] += i.taxable; });
+  if (courTaxable > 0) { hs['996511|18'] = (hs['996511|18'] || 0) + courTaxable; }
   let hsRows = '', hsTot = 0, hsTax = 0;
   Object.keys(hs).forEach(k => {
-    const tv = Math.round(hs[k] * 100) / 100, tx = Math.round(tv * 0.18 * 100) / 100;
+    const hsn = k.split('|')[0], rt = Number(k.split('|')[1]) || 18, hr = (rt / 2);
+    const tv = Math.round(hs[k] * 100) / 100, tx = Math.round(tv * rt / 100 * 100) / 100;
     hsTot += tv; hsTax += tx;
-    hsRows += `<tr><td style="text-align:left;">${esc(k)}</td><td>${ttInr(tv)}</td>` +
-      (intra ? `<td>9%</td><td>${ttInr(tx / 2)}</td><td>9%</td><td>${ttInr(tx / 2)}</td>` : `<td colspan="2">IGST 18%</td><td colspan="2">${ttInr(tx)}</td>`) +
+    hsRows += `<tr><td style="text-align:left;">${ttEscHtml(hsn)}</td><td>${ttInr(tv)}</td>` +
+      (intra ? `<td>${hr}%</td><td>${ttInr(tx / 2)}</td><td>${hr}%</td><td>${ttInr(tx / 2)}</td>` : `<td colspan="2">IGST ${rt}%</td><td colspan="2">${ttInr(tx)}</td>`) +
       `<td>${ttInr(tx)}</td></tr>`;
   });
   const B = 'border:1px solid #000;';
@@ -71,25 +76,25 @@ function ttBuildInvoicePaged(o, opt) {
         </div>
         <div style="padding:5px 6px;border-bottom:1px solid #000;">
           <span style="font-size:9.5px;">Consignee (Ship to)</span><br>
-          <strong>${esc(o.customerName)}</strong><br>${esc(cust.address || '')}<br>${o.phone ? 'Mobile: ' + esc(o.phone) + '<br>' : ''}
-          GSTIN/UIN : ${esc(gstNo || 'Unregistered')}<br>State Name : Odisha, Code : 21
+          <strong>${ttEscHtml(o.customerName)}</strong><br>${ttEscHtml(cust.address || '')}<br>${o.phone ? 'Mobile: ' + ttEscHtml(o.phone) + '<br>' : ''}
+          GSTIN/UIN : ${ttEscHtml(gstNo || 'Unregistered')}<br>State Name : Odisha, Code : 21
         </div>
         <div style="padding:5px 6px;">
           <span style="font-size:9.5px;">Buyer (Bill to)</span><br>
-          <strong>${esc(o.customerName)}</strong><br>${esc(cust.address || '')}<br>
-          GSTIN/UIN : ${esc(gstNo || 'Unregistered')}<br>State Name : Odisha, Code : 21
+          <strong>${ttEscHtml(o.customerName)}</strong><br>${ttEscHtml(cust.address || '')}<br>
+          GSTIN/UIN : ${ttEscHtml(gstNo || 'Unregistered')}<br>State Name : Odisha, Code : 21
         </div>
       </div>
       <div style="border-left:1px solid #000;">
         <div style="display:grid;grid-template-columns:1fr 1fr;">
-          ${meta(opt.noLabel || 'Invoice No.', esc(o.id))}${meta('Dated', esc(dt))}
-          ${meta('Delivery Note', '')}${meta('Mode/Terms of Payment', esc(o.payMode && o.payMode !== 'Imported' ? o.payMode : ''))}
+          ${meta(opt.noLabel || 'Invoice No.', ttEscHtml((window.ttInvNo ? ttInvNo(o, opt) : o.id)))}${meta('Dated', ttEscHtml(dt))}
+          ${meta('Delivery Note', '')}${meta('Mode/Terms of Payment', ttEscHtml(o.payMode && o.payMode !== 'Imported' ? o.payMode : ''))}
           ${meta('Reference No. &amp; Date.', '')}${meta('Other References', '')}
-          ${meta("Buyer's Order No.", '')}${meta('Dated', esc(opt.noOrderDate ? '' : (o.orderDate || '')))}
+          ${meta("Buyer's Order No.", '')}${meta('Dated', ttEscHtml(opt.noOrderDate ? '' : (o.orderDate || '')))}
           ${meta('Dispatch Doc No.', '')}${meta('Delivery Note Date', '')}
           ${meta('Dispatched through', '')}${meta('Destination', '')}
         </div>
-        <div style="padding:3px 5px;min-height:40px;font-size:9.5px;">Terms of Delivery${opt.delivery ? ': <strong>' + esc(opt.delivery) + '</strong>' : ''}<br>${opt.byLabel || 'Billed By'}: <strong>${esc(o.bookedBy || '')}</strong></div>
+        <div style="padding:3px 5px;min-height:40px;font-size:9.5px;">Terms of Delivery${opt.delivery ? ': <strong>' + ttEscHtml(opt.delivery) + '</strong>' : ''}<br>${opt.byLabel || 'Billed By'}: <strong>${ttEscHtml(o.bookedBy || '')}</strong></div>
       </div>
     </div>`;
 
@@ -99,8 +104,8 @@ function ttBuildInvoicePaged(o, opt) {
         <th style="${B}${cell}">GST Rate</th><th style="${B}${cell}">Quantity</th><th style="${B}${cell}">MRP</th><th style="${B}${cell}">Disc. %</th>
         <th style="${B}${cell}">Rate (Incl. of Tax)</th><th style="${B}${cell}">Rate</th><th style="${B}${cell}">per</th><th style="${B}${cell}">Amount</th></tr></thead>`;
   const rows = items.map((i, n) => `<tr>
-          <td style="${cell}${L}text-align:center;">${n + 1}</td><td style="${cell}${L}word-wrap:break-word;"><strong>${esc(i.name)}</strong>${(i.desc || i.specs) ? `<div style="font-size:7.5px;line-height:1.25;color:#333;margin-top:2px;white-space:pre-wrap;">${i.desc ? ttH(i.desc) : ''}${(i.desc && i.specs) ? '\n' : ''}${i.specs ? '<b>Technical:</b> ' + ttH(i.specs) : ''}</div>` : ''}</td>
-          <td style="${cell}${L}">${esc(i.hsn)}</td><td style="${cell}${L}text-align:center;">18 %</td>
+          <td style="${cell}${L}text-align:center;">${n + 1}</td><td style="${cell}${L}word-wrap:break-word;"><strong>${ttEscHtml(i.name)}</strong>${(i.desc || i.specs) ? `<div style="font-size:7.5px;line-height:1.25;color:#333;margin-top:2px;white-space:pre-wrap;">${i.desc ? ttH(i.desc) : ''}${(i.desc && i.specs) ? '\n' : ''}${i.specs ? '<b>Technical:</b> ' + ttH(i.specs) : ''}</div>` : ''}</td>
+          <td style="${cell}${L}">${ttEscHtml(i.hsn)}</td><td style="${cell}${L}text-align:center;">${i.gstRate} %</td>
           <td style="${cell}${L}text-align:right;"><strong>${i.qty} PCS</strong></td><td style="${cell}${L}text-align:right;">${ttInr(i.mrp)}</td>
           <td style="${cell}${L}text-align:center;">${ttFmtDisc(i.disc)}</td><td style="${cell}${L}text-align:right;">${ttInr(i.inclRate)}</td>
           <td style="${cell}${L}text-align:right;">${ttInr(i.rate)}</td><td style="${cell}${L}text-align:center;">PCS</td>
@@ -112,7 +117,7 @@ function ttBuildInvoicePaged(o, opt) {
   const finalTrs =
     (intra ? sumRow('CGST', ttInr(half)) + sumRow('SGST', ttInr(half)) : sumRow('IGST', ttInr(tax))) +
     (Math.abs(roundOff) >= 0.005 ? sumRow('ROUND OFF', ttInr(roundOff)) : '') +
-    (courierCharge > 0 ? sumRow(opt.courierLabel || 'Courier / Transport Charges', ttInr(courierCharge)) : '') +
+    (courierCharge > 0 ? sumRow(opt.courierLabel || 'Courier / Transport Charges', ttInr(courTax ? courTaxable : courierCharge)) : '') +
     `<tr style="height:10px;"><td colspan="11" style="${L}border-right:1px solid #000;"></td></tr>
      <tr><td colspan="4" style="${B}text-align:right;font-weight:800;padding:3px 5px;">Total</td><td style="${B}text-align:right;font-weight:800;padding:3px 5px;">${items.reduce((s, i) => s + i.qty, 0)} PCS</td><td colspan="5" style="${B}"></td><td style="${B}text-align:right;font-weight:800;font-size:13px;padding:3px 5px;">₹ ${ttInr(total)}</td></tr>`;
   const finalBlocks = `
@@ -126,7 +131,7 @@ function ttBuildInvoicePaged(o, opt) {
     <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #000;">
       <div style="padding:5px 6px;font-size:10px;"><u>Declaration</u><br>We declare that this ${opt.doc || 'invoice'} shows the actual price of the goods described and that all particulars are true and correct.
         ${opt.noRecv ? '' : `<div style="margin-top:6px;">Received: <strong>₹${ttInr(o.recvAmount)}</strong> &nbsp; Balance Due: <strong style="color:#b91c1c;">₹${ttInr(o.dueAmount)}</strong></div>`}${(!opt.noRecv && o.prevDueOn && Number(o.prevDueAmt) > 0) ? `<div style="margin-top:3px;">Previous Due: <strong>₹${ttInr(o.prevDueAmt)}</strong> &nbsp; Total Outstanding: <strong style="color:#b91c1c;">₹${ttInr((Number(o.dueAmount) || 0) + (Number(o.prevDueAmt) || 0))}</strong></div>` : ''}</div>
-      <div style="padding:5px 6px;border-left:1px solid #000;font-size:10.5px;"><strong>Company's Bank Details</strong><br>Bank Name : ICICI BANK AC-150005501249<br>A/c No. : 150005501249<br>Branch &amp; IFS Code : CUTTACK ROAD &amp; ICIC0001500</div>
+      <div style="padding:5px 6px;border-left:1px solid #000;font-size:10.5px;"><strong>Company's Bank Details</strong><br>${window.ttBankLines ? ttBankLines() : 'Bank Name : ICICI BANK AC-150005501249<br>A/c No. : 150005501249<br>Branch &amp; IFS Code : CUTTACK ROAD &amp; ICIC0001500'}</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #000;min-height:60px;">
       <div style="padding:5px 6px;font-size:10px;">Customer's Seal and Signature</div>
@@ -163,8 +168,8 @@ function ttBuildQuotationPagedOld(q) {
   const meta = (l, v) => `<div style="${B}border-width:0 0 1px 1px;padding:2px 5px;min-height:28px;"><div style="font-size:9.5px;">${l}</div><div style="font-weight:700;font-size:11px;">${v || ''}</div></div>`;
   const rows = q.items.map((i, n) => `<tr>
     <td style="${cell}${L}text-align:center;">${n + 1}</td>
-    <td style="${cell}${L}word-wrap:break-word;">${esc(i.name)}${(i.desc || i.specs) ? `<div style="font-size:7.5px;line-height:1.25;color:#333;margin-top:2px;white-space:pre-wrap;">${i.desc ? ttH(i.desc) : ''}${(i.desc && i.specs) ? '\n' : ''}${i.specs ? '<b>Technical:</b> ' + ttH(i.specs) : ''}</div>` : ''}</td>
-    <td style="${cell}${L}text-align:center;">${esc(i.hsn)}</td>
+    <td style="${cell}${L}word-wrap:break-word;">${ttEscHtml(i.name)}${(i.desc || i.specs) ? `<div style="font-size:7.5px;line-height:1.25;color:#333;margin-top:2px;white-space:pre-wrap;">${i.desc ? ttH(i.desc) : ''}${(i.desc && i.specs) ? '\n' : ''}${i.specs ? '<b>Technical:</b> ' + ttH(i.specs) : ''}</div>` : ''}</td>
+    <td style="${cell}${L}text-align:center;">${ttEscHtml(i.hsn)}</td>
     <td style="${cell}${L}text-align:center;">18</td>
     <td style="${cell}${L}text-align:center;">${i.qty}</td>
     <td style="${cell}${L}text-align:right;">${ttInr(i.rate)}</td>
@@ -181,14 +186,14 @@ function ttBuildQuotationPagedOld(q) {
         Ph-8917465040 / 6743175599<br>GSTIN/UIN: 21AAICT6014E1ZT<br>State Name : Odisha, Code : 21<br>E-Mail : info@ttespl.com
       </div>
       <div style="border-left:1px solid #000;display:grid;grid-template-columns:1fr 1fr;">
-        ${meta('Quotation No.', esc(q.id))}${meta('Dated', esc(q.date))}
-        ${meta('Mode/Terms of Payment', esc(q.payMode))}${meta('Terms of Delivery', '100% Advance')}
+        ${meta('Quotation No.', ttEscHtml(q.id))}${meta('Dated', ttEscHtml(q.date))}
+        ${meta('Mode/Terms of Payment', ttEscHtml(q.payMode))}${meta('Terms of Delivery', '100% Advance')}
       </div>
     </div>
     <div style="padding:5px 6px;border-top:1px solid #000;border-bottom:1px solid #000;">
       <span style="font-size:9.5px;">Consignee / Buyer (Bill to)</span><br>
-      <strong>${esc(q.custName)}</strong><br>${esc(q.custAddr || '')}<br>${q.custPhone ? 'Contact: ' + esc(q.custPhone) + '<br>' : ''}
-      GSTIN/UIN : ${esc(q.custGst || 'Unregistered')}
+      <strong>${ttEscHtml(q.custName)}</strong><br>${ttEscHtml(q.custAddr || '')}<br>${q.custPhone ? 'Contact: ' + ttEscHtml(q.custPhone) + '<br>' : ''}
+      GSTIN/UIN : ${ttEscHtml(q.custGst || 'Unregistered')}
     </div>`;
   const colgroup = '<colgroup><col style="width:4%"><col style="width:27%"><col style="width:9%"><col style="width:5%"><col style="width:6%"><col style="width:11%"><col style="width:6%"><col style="width:11%"><col style="width:6%"><col style="width:15%"></colgroup>';
   const thead = `<thead><tr style="text-align:center;">
@@ -664,7 +669,7 @@ window.ttRenderBrandsIfOpen = function () {
   window.ttRenderQuotHistoryIfOpen = function () { var r = _origRQHIO && _origRQHIO.apply(this, arguments); fuBadge(); return r; };
   function fuDailyToast() {
     var n = fuCount(); if (!n) return;
-    var key = 'TTESPL_ERP_FU_TOAST_DAY', today = new Date().toISOString().slice(0, 10);
+    var key = 'TTESPL_ERP_FU_TOAST_DAY', today = ttYmd(new Date());
     if (lsGet(key) === today) return; lsSet(key, today);
     notice('📞 Quotation Follow-up', n + ' quotation follow-up due - tap to view', '📞', function () { ttFuOpen(); });
   }

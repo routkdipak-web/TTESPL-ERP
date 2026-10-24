@@ -486,7 +486,7 @@ window.ttAccToggle = function (id) {
       if (!o) return; existing[norm(o.id)] = o;
       if (o.status !== 'Cancelled') cand[[norm(o.customerName), o.orderDate || '', Number(o.totalAmount) || 0].join('|')] = o;
     });
-    var today = new Date().toISOString().slice(0, 10);
+    var today = ttYmd(new Date());
     S.rows.forEach(function (r) {
       var v = r.v, E = [], W = [], res = { E: E, W: W, dup: null, rec: null, due: 0, status: '', cust: null }, d = parseDate(v.date), t = parseMoney(v.total), rc = parseMoney(v.received);
       var blank = !clean(v.inv + v.date + v.party + v.desc + v.total + v.received);

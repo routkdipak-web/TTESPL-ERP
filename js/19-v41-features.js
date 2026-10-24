@@ -188,16 +188,19 @@
   function pgApply(c) {
     if (applying || !c) return; applying = true;
     try {
-      var N0 = Math.max(10, N(F('pageSize')) || 50), old = c.querySelector(':scope > .tt41-more'); if (old) old.remove();
-      var kids = [].filter.call(c.children, function (k) { return !k.classList.contains('tt41-more'); });
-      if (!F('pageLists') || kids.length <= N0) { kids.forEach(function (k) { k.classList.remove('tt41-hide'); }); }
+      var N0 = Math.max(10, N(F('pageSize')) || 50);
+      /* the "Show more" button lives OUTSIDE the list (next to it) so other scripts watching the list never see it - this avoids watcher loops */
+      var btn = c.__more; if (btn && btn.parentNode) btn.parentNode.removeChild(btn);
+      var kids = [].slice.call(c.children);
+      if (!F('pageLists') || kids.length <= N0) { kids.forEach(function (k) { if (k.classList.contains('tt41-hide')) k.classList.remove('tt41-hide'); }); }
       else {
         if (c.__first !== kids[0]) { c.__first = kids[0]; c.__shown = N0; }
         var shown = c.__shown || N0;
-        kids.forEach(function (k, i) { k.classList.toggle('tt41-hide', i >= shown); });
-        if (shown < kids.length) {
-          var b = document.createElement('button'); b.className = 'btn btn-outline tt41-more'; b.style.cssText = 'width:100%;margin:8px 0;'; b.textContent = 'Show more (' + (kids.length - shown) + ' left)';
-          b.onclick = function () { c.__shown = shown + N0; pgApply(c); }; c.appendChild(b);
+        kids.forEach(function (k, i) { var h = i >= shown; if (k.classList.contains('tt41-hide') !== h) k.classList.toggle('tt41-hide', h); });
+        if (shown < kids.length && c.parentNode) {
+          btn = c.__more = document.createElement('button'); btn.className = 'btn btn-outline tt41-more'; btn.style.cssText = 'width:100%;margin:8px 0 14px;'; btn.textContent = 'Show more (' + (kids.length - shown) + ' left)';
+          btn.onclick = function () { c.__shown = shown + N0; pgApply(c); };
+          c.parentNode.insertBefore(btn, c.nextSibling);
         }
       }
     } finally { applying = false; if (obs) obs.takeRecords(); }
