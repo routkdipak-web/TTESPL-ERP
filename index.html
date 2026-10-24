@@ -7,22 +7,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Twin Town Express Services ERP","short_name":"TTESPL ERP","description":"Official Detailing and Machinery Portal for TTESPL","start_url":".","display":"standalone","background_color":"#0a192f","theme_color":"#0a192f","orientation":"portrait","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"192x192","type":"image/png"},{"src":"https://cdn-icons-png.flaticon.com/512/9422/9422891.png","sizes":"512x512","type":"image/png"}]}'>
 
-<link rel="stylesheet" href="css/01-base-and-layout.css?v=41">
-<link rel="stylesheet" href="css/03-theme-and-glass.css?v=41">
-<link rel="stylesheet" href="css/04-modules-v23-v25.css?v=41">
-<link rel="stylesheet" href="css/05-modules-v29.css?v=41">
-<link rel="stylesheet" href="css/06-patches-lists.css?v=41">
-<link rel="stylesheet" href="css/07-patches-final.css?v=41">
-<link rel="stylesheet" href="css/99-performance.css?v=41">
-<link rel="stylesheet" href="css/08-liquid-glass.css?v=41">
-<link rel="stylesheet" href="css/09-settings-ios.css?v=41">
-<link rel="stylesheet" href="css/10-liquid-motion.css?v=41">
-<link rel="stylesheet" href="css/11-v35-fixes.css?v=41">
-<link rel="stylesheet" href="css/12-v36-dropdown.css?v=41">
-<link rel="stylesheet" href="css/13-v41-upgrade.css?v=41">
+<link rel="stylesheet" href="css/01-base-and-layout.css?v=40">
+<link rel="stylesheet" href="css/03-theme-and-glass.css?v=40">
+<link rel="stylesheet" href="css/04-modules-v23-v25.css?v=40">
+<link rel="stylesheet" href="css/05-modules-v29.css?v=40">
+<link rel="stylesheet" href="css/06-patches-lists.css?v=40">
+<link rel="stylesheet" href="css/07-patches-final.css?v=40">
+<link rel="stylesheet" href="css/99-performance.css?v=40">
+<link rel="stylesheet" href="css/08-liquid-glass.css?v=40">
+<link rel="stylesheet" href="css/09-settings-ios.css?v=40">
+<link rel="stylesheet" href="css/10-liquid-motion.css?v=40">
+<link rel="stylesheet" href="css/11-v35-fixes.css?v=40">
+<link rel="stylesheet" href="css/12-v36-dropdown.css?v=40">
 </head>
 <body data-theme="light">
 <div id="ttSplash"><div class="sp-logo"><i></i><i></i><div class="tt-logo"></div></div><div class="sp-name">TWIN TOWN EXPRESS SERVICES</div><div class="sp-bar"><b></b></div></div>
@@ -119,6 +117,7 @@
 
 <input type="file" id="chatAttachmentInput" style="display:none;" accept="image/*,.pdf,.doc,.docx" onchange="handleChatFileUpload(event)">
 <input type="file" id="chatCameraInput" style="display:none;" accept="image/*" capture="environment" onchange="handleChatFileUpload(event)">
+<input type="file" id="backupRestoreInput" style="display:none;" accept=".json" onchange="processRestoreJSON(event)">
 <input type="file" id="deliveryPhotoFileInput" accept="image/*" style="display:none;" onchange="handleDeliveryPhotoCaptured(event)">
 <input type="file" id="paymentProofFileInput" accept="image/*" style="display:none;" onchange="handlePaymentProofCaptured(event)">
 
@@ -174,11 +173,11 @@
       </div>
       <div class="form-group">
         <label class="form-label">Create Password</label>
-        <input type="password" id="regPass" placeholder="Min 6 characters">
+        <input type="password" id="regPass" placeholder="Min 4 characters">
       </div>
       <div class="form-group">
         <label class="form-label">Security PIN (For Password Reset)</label>
-        <input type="password" id="regPin" placeholder="4 or 6-digit PIN" maxlength="6" inputmode="numeric">
+        <input type="password" id="regPin" placeholder="4-digit PIN (e.g. 1234)" maxlength="4">
       </div>
       <button class="btn btn-accent btn-block" onclick="processRegister()" style="padding:12px;">✓ Register Account</button>
       <div style="text-align:center; margin-top:16px; font-size:12.5px;">
@@ -194,7 +193,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">Security PIN</label>
-        <input type="password" id="recPin" placeholder="4 or 6-digit PIN" maxlength="6" inputmode="numeric">
+        <input type="password" id="recPin" placeholder="4-digit PIN" maxlength="4">
       </div>
       <div class="form-group">
         <label class="form-label">New Password</label>
@@ -1486,30 +1485,28 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://unpkg.com/lucide@0.525.0/dist/umd/lucide.min.js" crossorigin="anonymous" onerror="window.__lucideFailed=1"></script>
-<script src="master-data.js?v=41"></script>
-<script src="live-sync.js?v=41"></script>
+<script src="master-data.js?v=40"></script>
+<script src="live-sync.js?v=40"></script>
 
-<script src="js/00-ai-models.js?v=41"></script>
-<script src="js/00-hoisted-core.js?v=41"></script>
-<script src="js/01-core-auth-dashboard-orders-stock.js?v=41"></script>
-<script src="js/02-customers-billing-chat-machine-parts.js?v=41"></script>
-<script src="js/03-reports-ledger-quotation-catalog.js?v=41"></script>
-<script src="js/04-travel-lists-ambient-ui.js?v=41"></script>
-<script src="js/05-invoice-tax-quotation-print.js?v=41"></script>
-<script src="js/06-expenses-and-old-bills.js?v=41"></script>
-<script src="js/07-profit-loss-sales-settings.js?v=41"></script>
-<script src="js/08-customer-card-back-manager-import.js?v=41"></script>
-<script src="js/09-office-followups-tasks-attendance.js?v=41"></script>
-<script src="js/10-cash-bank-backup-restore.js?v=41"></script>
-<script src="js/11-saved-filters-ai-core-images.js?v=41"></script>
-<script src="js/12-ai-copilot-insights.js?v=41"></script>
-<script src="js/13-liquid-glass.js?v=41"></script>
-<script src="js/14-fab-logo-ledger-search.js?v=41"></script>
-<script src="js/15-v35-fixes.js?v=41"></script>
-<script src="js/16-v36-dropdown.js?v=41"></script>
-<script src="js/17-v40-prevdue.js?v=41"></script>
-<script src="js/18-v41-core.js?v=41"></script>
-<script src="js/19-v41-features.js?v=41"></script>
+<script src="js/00-ai-models.js?v=40"></script>
+<script src="js/00-hoisted-core.js?v=40"></script>
+<script src="js/01-core-auth-dashboard-orders-stock.js?v=40"></script>
+<script src="js/02-customers-billing-chat-machine-parts.js?v=40"></script>
+<script src="js/03-reports-ledger-quotation-catalog.js?v=40"></script>
+<script src="js/04-travel-lists-ambient-ui.js?v=40"></script>
+<script src="js/05-invoice-tax-quotation-print.js?v=40"></script>
+<script src="js/06-expenses-and-old-bills.js?v=40"></script>
+<script src="js/07-profit-loss-sales-settings.js?v=40"></script>
+<script src="js/08-customer-card-back-manager-import.js?v=40"></script>
+<script src="js/09-office-followups-tasks-attendance.js?v=40"></script>
+<script src="js/10-cash-bank-backup-restore.js?v=40"></script>
+<script src="js/11-saved-filters-ai-core-images.js?v=40"></script>
+<script src="js/12-ai-copilot-insights.js?v=40"></script>
+<script src="js/13-liquid-glass.js?v=40"></script>
+<script src="js/14-fab-logo-ledger-search.js?v=40"></script>
+<script src="js/15-v35-fixes.js?v=40"></script>
+<script src="js/16-v36-dropdown.js?v=40"></script>
+<script src="js/17-v40-prevdue.js?v=40"></script>
 
 
 

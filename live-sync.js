@@ -56,12 +56,11 @@
     CLOSINGS: 'cash_closings',
     OFFICE_CFG: 'office_config',
     PRODUCT_IMAGES: 'product_images',
-    AI_JOBS: 'ai_jobs',
-    RECYCLE: 'recycle_bin'      // v41: deleted records (Admin can restore)
+    AI_JOBS: 'ai_jobs'
   };
 
   // Naye optional collections: inke error/rules ki wajah se app 'Offline' nahi dikhayega
-  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true, CATALOG_CATS: true, BRANDS: true, EXPENSES: true, OVERHEADS: true, PERMS: true, ACTIVITY: true, TASKS: true, SUPPLIERS: true, PURCHASES: true, ATTENDANCE: true, LEAVES: true, EVENTS: true, NOTICES: true, CLOSINGS: true, OFFICE_CFG: true, PRODUCT_IMAGES: true, AI_JOBS: true, RECYCLE: true };
+  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true, CATALOG_CATS: true, BRANDS: true, EXPENSES: true, OVERHEADS: true, PERMS: true, ACTIVITY: true, TASKS: true, SUPPLIERS: true, PURCHASES: true, ATTENDANCE: true, LEAVES: true, EVENTS: true, NOTICES: true, CLOSINGS: true, OFFICE_CFG: true, PRODUCT_IMAGES: true, AI_JOBS: true };
   // Inka purana local data pehli baar cloud par automatically upload hota hai (ek baar)
   var MIGRATE_KEYS = OPTIONAL_KEYS;
 
@@ -117,37 +116,15 @@
       if (!Object.keys(m).length) delete o[key]; else o[key] = m;
       obWrite(o);
     }
-    /* v41: also finds photos NESTED inside a document (payments[].photo etc.), biggest first, until the document fits under ~1 MB */
     function shrinkItem(it) {
       var n; try { n = JSON.stringify(it).length; } catch (e) { return it; }
       if (n < 900000) return it;
-      var c = JSON.parse(JSON.stringify(it)), refs = [];
-      (function walk(o) { if (!o || typeof o !== 'object') return; Object.keys(o).forEach(function (k) { var v = o[k]; if (typeof v === 'string' && v.length > 20000 && v.indexOf('data:') === 0) refs.push({ o: o, k: k, n: v.length }); else if (v && typeof v === 'object') walk(v); }); })(c);
-      refs.sort(function (a, b) { return b.n - a.n; });
-      var size = n; for (var q = 0; q < refs.length && size >= 880000; q++) { size -= refs[q].n; refs[q].o[refs[q].k] = ''; }
-      console.warn('Document was near the 1 MB limit; large photo(s) were removed from the cloud copy', it.id);
+      var c = {}; Object.keys(it).forEach(function (k) {
+        var v = it[k];
+        c[k] = (typeof v === 'string' && v.length > 120000 && v.indexOf('data:') === 0) ? '' : v;
+      });
+      console.warn('Document was near the 1 MB limit; the large photo was removed from the cloud copy', it.id);
       return c;
-    }
-    /* v41 option: keep photos in Firebase Storage (the document keeps only a small link) */
-    function flag(k) { try { var c = JSON.parse(localStorage.getItem('TTESPL_ERP_UI_SETTINGS') || '{}') || {}; return !!c[k]; } catch (e) { return false; } }
-    var stMod = null, stCache = {};
-    function hashStr(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + '_' + s.length.toString(36); }
-    function ensureStorage() { if (stMod) return Promise.resolve(stMod); return import(V + 'firebase-storage.js').then(function (m) { stMod = { m: m, st: m.getStorage(app) }; return stMod; }); }
-    function uploadDataUrl(dataUrl, folder) {
-      var key = hashStr(dataUrl); if (stCache[key]) return Promise.resolve(stCache[key]);
-      var mt = (/^data:([^;,]+)/.exec(dataUrl) || [])[1] || 'image/jpeg', ext = (mt.split('/')[1] || 'jpg').replace(/[^a-z0-9]/gi, '').slice(0, 5) || 'jpg';
-      return ensureStorage().then(function (S) {
-        var r = S.m.ref(S.st, 'erp/' + folder + '/' + key + '.' + ext);
-        return S.m.uploadString(r, dataUrl, 'data_url').then(function () { return S.m.getDownloadURL(r); });
-      }).then(function (u) { stCache[key] = u; return u; });
-    }
-    function externalize(colKey, it) {
-      if (!flag('photoStorage') || !it) return Promise.resolve(it);
-      var refs = []; (function walk(o) { if (!o || typeof o !== 'object') return; Object.keys(o).forEach(function (k) { var v = o[k]; if (typeof v === 'string' && v.length > 30000 && v.indexOf('data:image') === 0) refs.push({ o: o, k: k, v: v }); else if (v && typeof v === 'object') walk(v); }); })(it);
-      if (!refs.length) return Promise.resolve(it);
-      var c; try { c = JSON.parse(JSON.stringify(it)); } catch (e) { return Promise.resolve(it); }
-      var live = []; (function walk(o) { if (!o || typeof o !== 'object') return; Object.keys(o).forEach(function (k) { var v = o[k]; if (typeof v === 'string' && v.length > 30000 && v.indexOf('data:image') === 0) live.push({ o: o, k: k, v: v }); else if (v && typeof v === 'object') walk(v); }); })(c);
-      return Promise.all(live.map(function (r) { return uploadDataUrl(r.v, MAP[colKey] || 'misc').then(function (u) { r.o[r.k] = u; }).catch(function (e) { console.warn('Photo upload failed, keeping it inside the document', e && e.code); }); })).then(function () { return c; });
     }
 
     function fromCacheEarly(snap) { return !!(snap.metadata && snap.metadata.fromCache); }
@@ -184,24 +161,6 @@
           .catch(function (e) { console.error('Cloud Save Error:', e); setSync('Offline', false); });
       },
 
-      /* v41 helpers */
-      fetchDoc: function (key, id) {   // latest copy from the server (null if offline / missing)
-        var col = MAP[key]; if (!col || id == null) return Promise.resolve(null);
-        var g = F.getDocFromServer || F.getDoc;
-        return g(F.doc(db, col, did(id))).then(function (sn) { return sn.exists() ? sn.data() : null; }).catch(function () { return null; });
-      },
-      nextNumber: function (name) {    // gap-free counter shared by all phones (needs internet)
-        var ref = F.doc(db, 'counters', did(name));
-        return F.runTransaction(db, function (tx) {
-          return tx.get(ref).then(function (sn) { var n = ((sn.exists() && sn.data().n) || 0) + 1; tx.set(ref, { n: n, updatedAt: Date.now() }, { merge: true }); return n; });
-        });
-      },
-      peekNumber: function (name) {
-        return F.getDoc(F.doc(db, 'counters', did(name))).then(function (sn) { return (sn.exists() && sn.data().n) || 0; }).catch(function () { return null; });
-      },
-      secureSignIn: function (token) { return secureReady.then(function (A2) { return A2.signInWithCustomToken(A2.auth, token); }).then(function () { startListeners(); return true; }); },
-      secureSignOut: function () { return secureReady.then(function (A2) { return A2.signOut(A2.auth); }).catch(function () {}); },
-      secureIdToken: function () { return secureReady.then(function (A2) { return A2.auth.currentUser ? A2.auth.currentUser.getIdToken() : ''; }).catch(function () { return ''; }); },
       deleteItem: function (key, id) {
         var col = MAP[key];
         if (!col || id == null) return Promise.resolve();
@@ -234,18 +193,16 @@
 
         var sentIds = toSend.map(function (it) { return it.id; });
         var sentSeq = obAdd(key, sentIds);
-        var prep = flag('photoStorage') ? Promise.all(toSend.map(function (it) { return externalize(key, it); })) : Promise.resolve(toSend);
-        var jobs = [prep.then(function (arr) {
-          arr = arr.map(shrinkItem); var bj = [];
-          for (var i = 0; i < arr.length; i += 400) {
-            var b = F.writeBatch(db);
-            arr.slice(i, i + 400).forEach(function (it) {
-              if (it && it.id != null) b.set(F.doc(db, col, did(it.id)), it, { merge: true });
-            });
-            bj.push(b.commit());
-          }
-          return Promise.all(bj);
-        })];
+        toSend = toSend.map(shrinkItem);
+
+        var jobs = [];
+        for (var i = 0; i < toSend.length; i += 400) {
+          var b = F.writeBatch(db);
+          toSend.slice(i, i + 400).forEach(function (it) {
+            if (it && it.id != null) b.set(F.doc(db, col, did(it.id)), it, { merge: true });
+          });
+          jobs.push(b.commit());
+        }
         // BUG FIX: pehle yahan koi .catch() nahi tha, isliye jab bhi ye save cloud
         // tak fail hokar nahi pahunchta tha, na to sync status "Offline" dikhata tha
         // na hi app ko pata chalta tha - upar wala UI hamesha theek dikhata rehta
@@ -437,20 +394,6 @@
       if (!initialLoadDone) { initialLoadDone = true; window.ttCloudInitialLoadDone = true; flushRender(); }
     }, 4000);
 
-    /* v41 SECURE MODE (optional, Settings > Security): listeners start only after the staff member is signed in
-       to Firebase with the token issued by the server login (see functions/index.js + firestore.rules.secure). */
-    var secureOn = false, secureReady, started = false;
-    try {   // needs the switch AND a server URL; open the app with ?nosecure=1 to switch it off if you are ever locked out
-      var cfgS = JSON.parse(localStorage.getItem('TTESPL_ERP_UI_SETTINGS') || '{}') || {};
-      if (/[?&]nosecure=1/.test(location.search)) { cfgS.secureMode = 0; localStorage.setItem('TTESPL_ERP_UI_SETTINGS', JSON.stringify(cfgS)); }
-      secureOn = !!cfgS.secureMode && /^https:\/\//.test(String(cfgS.secureUrl || ''));
-    } catch (e) { secureOn = false; }
-    if (secureOn) {
-      secureReady = import(V + 'firebase-auth.js').then(function (AM) { return { auth: AM.getAuth(app), signInWithCustomToken: AM.signInWithCustomToken, signOut: AM.signOut, onAuthStateChanged: AM.onAuthStateChanged }; });
-    } else { secureReady = Promise.resolve({ auth: { currentUser: null }, signInWithCustomToken: function () { return Promise.reject(new Error('Secure mode is off')); }, signOut: function () { return Promise.resolve(); } }); }
-    window.ttSecureWait = secureOn;
-    function startListeners() {
-    if (started) return; started = true;
     // Live Snapshot Listeners across all devices
     Object.keys(MAP).forEach(function (key) {
       F.onSnapshot(F.collection(db, MAP[key]), function (snap) {
@@ -528,7 +471,7 @@
               }
             }
             break;
-          case 'TASKS': case 'SUPPLIERS': case 'PURCHASES': case 'ATTENDANCE': case 'LEAVES': case 'EVENTS': case 'NOTICES': case 'CLOSINGS': case 'OFFICE_CFG': case 'PRODUCT_IMAGES': case 'AI_JOBS': case 'RECYCLE':
+          case 'TASKS': case 'SUPPLIERS': case 'PURCHASES': case 'ATTENDANCE': case 'LEAVES': case 'EVENTS': case 'NOTICES': case 'CLOSINGS': case 'OFFICE_CFG': case 'PRODUCT_IMAGES': case 'AI_JOBS':
             window.TTX = window.TTX || {}; window.TTX[key] = list; break;
           case 'MACHINE_PARTS':
             machinePartsData = list;
@@ -578,13 +521,6 @@
         }
       });
     });
-
-    }   // end startListeners
-    if (secureOn) {
-      secureReady.then(function (A2) {
-        A2.onAuthStateChanged(A2.auth, function (u) { if (u) startListeners(); else { setSync('Sign in required', false); } });
-      }).catch(function (e) { console.error('Secure mode: auth module failed', e); setSync('Offline', false); });
-    } else { startListeners(); }
 
   }).catch(function (e) {
     console.error('Firebase initialization failed', e);
