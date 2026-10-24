@@ -1,0 +1,56 @@
+rules_version = '2';
+// TTESPL - SECURE firestore rules (use ONLY with Settings > Security > "Secure mode" ON and the functions/ gateway deployed).
+// Every request must come from a signed-in staff member (token issued by the server login). Roles come from the token, not from the phone.
+// Publish in Firebase console > Firestore > Rules (or: firebase deploy --only firestore:rules) AFTER you turned Secure mode on for every phone.
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin()  { return signedIn() && request.auth.token.role == 'Admin'; }
+
+    // password / PIN hashes and login counters: only the server (Cloud Function) can touch these
+    match /staff_secrets/{id} { allow read, write: if false; }
+    match /login_guard/{id}   { allow read, write: if false; }
+
+    match /staff/{id}            { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /perms/{id}            { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /office_config/{id}    { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /company_settings/{id} { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /recycle_bin/{id}      { allow read, write: if isAdmin(); }
+
+    // only Admin can delete bills / leads / services
+    match /orders/{id} { allow read, create, update: if signedIn(); allow delete: if isAdmin(); }
+    match /leads/{id} { allow read, create, update: if signedIn(); allow delete: if isAdmin(); }
+    match /services/{id} { allow read, create, update: if signedIn(); allow delete: if isAdmin(); }
+
+    // everything else: any signed-in staff
+    match /customers/{id} { allow read, write: if signedIn(); }
+    match /inventory/{id} { allow read, write: if signedIn(); }
+    match /machinery/{id} { allow read, write: if signedIn(); }
+    match /machine_parts/{id} { allow read, write: if signedIn(); }
+    match /quotations/{id} { allow read, write: if signedIn(); }
+    match /travel_expenses/{id} { allow read, write: if signedIn(); }
+    match /crm_records/{id} { allow read, write: if signedIn(); }
+    match /catalog_categories/{id} { allow read, write: if signedIn(); }
+    match /brands/{id} { allow read, write: if signedIn(); }
+    match /expenses/{id} { allow read, write: if signedIn(); }
+    match /overheads/{id} { allow read, write: if signedIn(); }
+    match /activity/{id} { allow read, write: if signedIn(); }
+    match /tasks/{id} { allow read, write: if signedIn(); }
+    match /suppliers/{id} { allow read, write: if signedIn(); }
+    match /purchases/{id} { allow read, write: if signedIn(); }
+    match /attendance/{id} { allow read, write: if signedIn(); }
+    match /leaves/{id} { allow read, write: if signedIn(); }
+    match /events/{id} { allow read, write: if signedIn(); }
+    match /notices/{id} { allow read, write: if signedIn(); }
+    match /cash_closings/{id} { allow read, write: if signedIn(); }
+    match /product_images/{id} { allow read, write: if signedIn(); }
+    match /ai_jobs/{id} { allow read, write: if signedIn(); }
+    match /team_messages/{id} { allow read, write: if signedIn(); }
+    match /chat_status/{id} { allow read, write: if signedIn(); }
+    match /app_notifications/{id} { allow read, write: if signedIn(); }
+    match /fcm_tokens/{id} { allow read, write: if signedIn(); }
+    match /counters/{id} { allow read, write: if signedIn(); }
+
+    match /{other=**} { allow read, write: if false; }
+  }
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TTESPL ERP · Liquid Water Glass</title>
+<link rel="stylesheet" href="css/08-liquid-glass.css">
+<style>
+  body{margin:0;min-height:100dvh;font-family:"Plus Jakarta Sans",system-ui,sans-serif;color:var(--lg-text);
+    background:radial-gradient(900px 600px at 15% 10%,#7fe3f5 0,transparent 60%),radial-gradient(800px 600px at 90% 30%,#6aa8ff 0,transparent 55%),radial-gradient(700px 500px at 40% 100%,#9bf0d0 0,transparent 60%),#cfeaf5;padding:20px 16px 90px}
+  body[data-theme="dark"]{background:radial-gradient(900px 600px at 15% 10%,#0a5a78 0,transparent 60%),radial-gradient(800px 600px at 90% 30%,#17306b 0,transparent 55%),radial-gradient(700px 500px at 40% 100%,#0b4a46 0,transparent 60%),#06121f}
+  .wrap{max-width:720px;margin:0 auto;display:grid;gap:18px}
+  h1{font-size:20px;margin:0}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  .lg-glass.card{padding:18px}.btn{appearance:none;border:0;cursor:pointer;font:inherit;font-weight:600;font-size:13.5px;color:#fff;padding:10px 16px;border-radius:14px;background:linear-gradient(180deg,#25c6e8,#0095b8);box-shadow:inset 0 1px 1px rgba(255,255,255,.6),0 8px 18px -6px rgba(0,150,200,.6);transition:transform .4s var(--lg-spring)}
+  .btn:active{transform:scale(.94)}.btn.ghost{color:inherit;background:var(--lg-tint);box-shadow:inset 0 1px 1px rgba(255,255,255,.6)}
+  .menu-host{position:relative}
+</style>
+</head>
+<body data-theme="light">
+<div class="wrap">
+  <div class="row"><h1>TTESPL ERP · Liquid Water Glass</h1>
+    <button class="btn ghost" id="themeBtn" type="button">Toggle dark</button></div>
+
+  <div class="lg-glass lg-tabs" data-lg-tabs role="tablist" aria-label="Sections">
+    <button class="lg-tab" role="tab" data-lg-target="#p-orders" aria-selected="true">Orders</button>
+    <button class="lg-tab" role="tab" data-lg-target="#p-stock">Stock</button>
+    <button class="lg-tab" role="tab" data-lg-target="#p-ledger">Ledger</button>
+    <button class="lg-tab" role="tab" data-lg-target="#p-reports">Reports</button>
+  </div>
+
+  <div class="lg-glass card">
+    <div class="lg-panel" id="p-orders"><b>Orders</b><p>12 open · 3 awaiting dispatch.</p></div>
+    <div class="lg-panel" id="p-stock" hidden><b>Stock</b><p>1,490 items · 4 below minimum level.</p></div>
+    <div class="lg-panel" id="p-ledger" hidden><b>Ledger</b><p>Outstanding ₹4,82,300 across 18 customers.</p></div>
+    <div class="lg-panel" id="p-reports" hidden><b>Reports</b><p>Month-to-date sales and collections.</p></div>
+  </div>
+
+  <div class="row">
+    <div class="menu-host">
+      <button class="btn" type="button" data-lg-menu="#actions" aria-haspopup="menu" aria-expanded="false">Actions</button>
+      <div class="lg-glass lg-menu" id="actions" role="menu">
+        <button role="menuitem" type="button">New invoice</button>
+        <button role="menuitem" type="button">Add customer</button>
+        <button role="menuitem" type="button">Export ledger</button>
+      </div>
+    </div>
+    <button class="btn" type="button" data-lg-modal="#dlg">Open pop-up</button>
+  </div>
+</div>
+
+<div class="lg-overlay" id="dlg">
+  <div class="lg-glass lg-modal-card" role="dialog" aria-modal="true" aria-labelledby="dlgT">
+    <h2 id="dlgT" style="margin:0 0 8px;font-size:18px">Confirm dispatch</h2>
+    <p style="margin:0 0 16px;font-size:14px;opacity:.85">Mark order TTE/26/0042 as dispatched and notify the customer?</p>
+    <div class="row" style="justify-content:flex-end"><button class="btn ghost" type="button" data-lg-close>Cancel</button><button class="btn" type="button" data-lg-close>Dispatch</button></div>
+  </div>
+</div>
+<script src="js/13-liquid-glass.js"></script>
+<script>document.getElementById('themeBtn').addEventListener('click',function(){var b=document.body;b.setAttribute('data-theme',b.getAttribute('data-theme')==='dark'?'light':'dark');});</script>
+</body>
+</html>

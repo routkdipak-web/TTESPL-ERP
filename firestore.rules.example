@@ -1,0 +1,14 @@
+// NOTE (v41): this template needs Firebase sign-in. The app does NOT sign in unless you turn ON Settings > Security > Secure mode.
+// Use firestore.rules.secure instead (it matches the secure login server). Publishing this file while Secure mode is OFF will lock every phone out.
+// TEMPLATE - apne Firebase Auth setup ke hisaab se badlo, phir Firebase console me test karke publish karo.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && get(/databases/$(db)/documents/staff/$(request.auth.uid)).data.role == 'Admin'; }
+    match /staff/{id}  { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /perms/{id}  { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /office_config/{id} { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /{col}/{id}  { allow read, write: if signedIn(); }
+  }
+}

@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+
+<link rel="stylesheet" href="css/01-base-and-layout.css?v=41">
+<link rel="stylesheet" href="css/03-theme-and-glass.css?v=41">
+<link rel="stylesheet" href="css/04-modules-v23-v25.css?v=41">
+<link rel="stylesheet" href="css/05-modules-v29.css?v=41">
+<link rel="stylesheet" href="css/06-patches-lists.css?v=41">
+<link rel="stylesheet" href="css/07-patches-final.css?v=41">
+<link rel="stylesheet" href="css/99-performance.css?v=41">
+<link rel="stylesheet" href="css/08-liquid-glass.css?v=41">
+<link rel="stylesheet" href="css/09-settings-ios.css?v=41">
+<link rel="stylesheet" href="css/10-liquid-motion.css?v=41">
+<link rel="stylesheet" href="css/11-v35-fixes.css?v=41">
+<link rel="stylesheet" href="css/12-v36-dropdown.css?v=41">
+<link rel="stylesheet" href="css/13-v41-upgrade.css?v=41">
+</head>
+<body data-theme="light">
+<div id="ttSplash"><div class="sp-logo"><i></i><i></i><div class="tt-logo"></div></div><div class="sp-name">TWIN TOWN EXPRESS SERVICES</div><div class="sp-bar"><b></b></div></div>
+
+<div id="moneyRainOverlay"></div>
+<div id="broadcastToastContainer"></div>
+<div id="ttOfflineBanner">📡 Offline Mode — changes will sync when online</div>
+<div id="ttPullRefreshIndicator"><span id="ttPullRefreshIcon">↓</span> <span id="ttPullRefreshLabel">Pull to refresh</span></div>
+
+<div id="pullToRefreshIndicator">
+  <span>🔄</span> <span id="ptrText">Refreshing data from Cloud...</span>
+</div>
+
+<!-- FLOATING POPUP FILTER MODAL -->
+<div class="filter-floating-modal" id="globalFilterModal">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+    <strong style="font-size:15px; color:var(--text-main);" id="filterModalTitle">🔍 Filter Records</strong>
+    <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeFilterModal()">✕</button>
+  </div>
+  <div class="form-group">
+    <label class="form-label">📅 Date From:</label>
+    <input type="date" id="popFilterDateFrom">
+  </div>
+  <div class="form-group">
+    <label class="form-label">📅 Date To:</label>
+    <input type="date" id="popFilterDateTo">
+  </div>
+  <div class="form-group">
+    <label class="form-label">👤 Staff / Engineer:</label>
+    <select id="popFilterStaff" class="all-staff-filter">
+      <option value="ALL">All Staff Combined</option>
+    </select>
+  </div>
+  <div style="display:flex; gap:8px; margin-top:14px;">
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); applyModalFilter()">✓ Apply Filter</button>
+    <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); resetModalFilter()">Reset</button>
+  </div>
+</div>
+
+<!-- COMPANY DETAILS POPUP MODAL -->
+<div id="companyDetailsModal" class="auth-overlay" style="display:none; z-index:4000;">
+  <div class="auth-card" style="max-width:500px;">
+    <div class="card-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="brand-logo-round" style="width:34px; height:34px;"><span class="emblem-car-icon" style="font-size:13px;">🏎️</span><span class="emblem-txt" style="font-size:6.5px;">TTESPL</span></div>
+        <strong class="card-title" style="font-size:15px;">Twin Town Express Services Pvt. Ltd.</strong>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="closeCompanyDetailsModal()">✕</button>
+    </div>
+    <div id="companyDetailsViewBox" style="font-size:12.5px; line-height:1.6; color:var(--text-main); margin-top:10px;">
+      <div style="background:var(--bg); padding:12px; border-radius:12px; border:1px solid var(--border); margin-bottom:12px;">
+        <div>📍 <strong>Registered Address:</strong> <span id="cdvAddress"></span></div>
+        <div style="margin-top:6px;">🏢 <strong>Branch / Work Center:</strong> <span id="cdvBranch"></span></div>
+        <div style="margin-top:6px;">📞 <strong>Contact No:</strong> <span id="cdvContact"></span></div>
+        <div style="margin-top:6px;">✉️ <strong>Email ID:</strong> <span id="cdvEmail"></span></div>
+      </div>
+      <div style="background:rgba(0,180,216,0.1); padding:12px; border-radius:12px; border:1.5px solid var(--cyan); margin-bottom:12px;">
+        <strong style="color:var(--cyan); display:block; margin-bottom:4px;">🛡️ Statutory & Tax Registrations:</strong>
+        <div><strong>GSTIN:</strong> <span id="cdvGstin" style="font-family:monospace; font-weight:800;"></span></div>
+        <div><strong>CIN:</strong> <span id="cdvCin"></span></div>
+        <div><strong>Authorized Brand Partner:</strong> <span id="cdvBrand"></span></div>
+      </div>
+      <div style="background:var(--card); padding:12px; border-radius:12px; border:1px solid var(--border);">
+        <strong style="color:var(--primary); display:block; margin-bottom:4px;">🏦 Official Bank & UPI Details:</strong>
+        <div><strong>Bank Name:</strong> <span id="cdvBankName"></span></div>
+        <div><strong>Account No:</strong> <span id="cdvAccountNo" style="font-family:monospace; font-weight:800;"></span></div>
+        <div><strong>IFSC Code:</strong> <span id="cdvIfsc" style="font-family:monospace; font-weight:800;"></span></div>
+        <div><strong>UPI ID:</strong> <span id="cdvUpi" style="color:var(--cyan); font-weight:800;"></span></div>
+      </div>
+    </div>
+    <div id="companyDetailsEditBox" style="display:none; margin-top:10px;">
+      <div class="form-group"><label class="form-label">Registered Address</label><textarea id="cdeAddress" rows="2"></textarea></div>
+      <div class="form-group"><label class="form-label">Branch / Work Center</label><input type="text" id="cdeBranch"></div>
+      <div class="form-group"><label class="form-label">Contact No</label><input type="text" id="cdeContact"></div>
+      <div class="form-group"><label class="form-label">Email ID</label><input type="text" id="cdeEmail"></div>
+      <div class="form-group"><label class="form-label">GSTIN</label><input type="text" id="cdeGstin"></div>
+      <div class="form-group"><label class="form-label">CIN</label><input type="text" id="cdeCin"></div>
+      <div class="form-group"><label class="form-label">Authorized Brand Partner</label><input type="text" id="cdeBrand"></div>
+      <div class="form-group"><label class="form-label">Bank Name</label><input type="text" id="cdeBankName"></div>
+      <div class="form-group"><label class="form-label">Account No</label><input type="text" id="cdeAccountNo"></div>
+      <div class="form-group"><label class="form-label">IFSC Code</label><input type="text" id="cdeIfsc"></div>
+      <div class="form-group"><label class="form-label">UPI ID</label><input type="text" id="cdeUpi"></div>
+    </div>
+    <div id="companyDetailsAdminBtns" style="display:none; gap:8px; margin-top:10px;">
+      <button class="btn btn-outline btn-block" onclick="toggleCompanyDetailsEdit(true)">✏️ Edit Details</button>
+    </div>
+    <div id="companyDetailsSaveBtns" style="display:none; gap:8px; margin-top:10px;">
+      <button class="btn btn-outline" style="flex:1;" onclick="toggleCompanyDetailsEdit(false)">Cancel</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveCompanyDetailsAction()">💾 Save</button>
+    </div>
+    <button id="companyDetailsCloseBtn" class="btn btn-primary btn-block" style="margin-top:14px;" onclick="closeCompanyDetailsModal()">✓ Close Details</button>
+  </div>
+</div>
+
+<input type="file" id="chatAttachmentInput" style="display:none;" accept="image/*,.pdf,.doc,.docx" onchange="handleChatFileUpload(event)">
+<input type="file" id="chatCameraInput" style="display:none;" accept="image/*" capture="environment" onchange="handleChatFileUpload(event)">
+<input type="file" id="deliveryPhotoFileInput" accept="image/*" style="display:none;" onchange="handleDeliveryPhotoCaptured(event)">
+<input type="file" id="paymentProofFileInput" accept="image/*" style="display:none;" onchange="handlePaymentProofCaptured(event)">
+
+<!-- AUTH SCREEN -->
+<div id="authScreen" class="auth-overlay" style="display:none;">
+  <div class="tt-scene"><canvas id="ttWashCanvas"></canvas><div class="tt-beam"></div><svg class="tt-foam f2" viewBox="0 0 1200 120" preserveAspectRatio="none"><path fill="rgba(190,235,255,.35)" d="M0 60 Q75 10 150 60 T300 60 T450 60 T600 60 T750 60 T900 60 T1050 60 T1200 60 V120 H0Z"/></svg><svg class="tt-foam" viewBox="0 0 1200 120" preserveAspectRatio="none"><path fill="rgba(235,248,255,.6)" d="M0 60 Q75 10 150 60 T300 60 T450 60 T600 60 T750 60 T900 60 T1050 60 T1200 60 V120 H0Z"/></svg></div>
+  <div class="auth-card">
+    <div class="tt-head">
+      <div class="tt-ring"><div class="tt-logo"></div></div>
+      <h2 style="font-size:17.5px; color:var(--text-main); font-weight:800;">TWIN TOWN EXPRESS SERVICES</h2>
+      <div style="font-size:10px; color:var(--cyan); font-weight:800; letter-spacing:0.6px; text-transform:uppercase; margin:2px 0 4px;">Pvt. Ltd.</div>
+      <span style="font-size:11.5px; color:var(--text-muted); font-weight:600;">Authorised Detailing & Machinery Portal</span>
+    </div>
+
+    <div id="loginFormSection">
+      <div class="form-group">
+        <label class="form-label">Registered Mobile Number</label>
+        <input type="tel" id="loginPhone" placeholder="10-digit mobile number" maxlength="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary btn-block" onclick="processLogin()" style="margin-top:12px; padding:12px;">🔐 Secure Login</button>
+      
+      <div style="display:flex; justify-content:space-between; margin-top:18px; font-size:12.5px;">
+        <a href="javascript:void(0)" onclick="showAuthMode('forgot')" style="color:var(--danger); text-decoration:none; font-weight:700;">Forgot Password?</a>
+        <a href="javascript:void(0)" onclick="showAuthMode('register')" style="color:var(--cyan); text-decoration:none; font-weight:700;">+ Create New Account</a>
+      </div>
+    </div>
+
+    <div id="registerFormSection" style="display:none;">
+      <div style="font-size:15px; font-weight:800; color:var(--text-main); margin-bottom:14px;">Staff Registration</div>
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="regName" placeholder="e.g. Dipak Kumar Rout">
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Mobile Number</label>
+          <input type="tel" id="regPhone" placeholder="10-digit phone" maxlength="10">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select id="regRole">
+            <option value="Machinery Specialist">Machinery Lead</option>
+            <option value="Field Technician">Field Technician</option>
+            <option value="Sales & Support">Sales & Support</option>
+            <option value="Store Manager">Store / Inventory</option>
+            <option value="Admin">Admin (Full Control)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Create Password</label>
+        <input type="password" id="regPass" placeholder="Min 6 characters">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Security PIN (For Password Reset)</label>
+        <input type="password" id="regPin" placeholder="4 or 6-digit PIN" maxlength="6" inputmode="numeric">
+      </div>
+      <button class="btn btn-accent btn-block" onclick="processRegister()" style="padding:12px;">✓ Register Account</button>
+      <div style="text-align:center; margin-top:16px; font-size:12.5px;">
+        <a href="javascript:void(0)" onclick="showAuthMode('login')" style="color:var(--text-main); text-decoration:none; font-weight:700;">Back to Login</a>
+      </div>
+    </div>
+
+    <div id="forgotFormSection" style="display:none;">
+      <div style="font-size:15px; font-weight:800; color:var(--danger); margin-bottom:14px;">Reset Password</div>
+      <div class="form-group">
+        <label class="form-label">Mobile Number</label>
+        <input type="tel" id="recPhone" placeholder="Registered 10-digit mobile">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Security PIN</label>
+        <input type="password" id="recPin" placeholder="4 or 6-digit PIN" maxlength="6" inputmode="numeric">
+      </div>
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" id="recNewPass" placeholder="Enter New Password">
+      </div>
+      <button class="btn btn-primary btn-block" onclick="processPasswordReset()" style="padding:12px;">Update Password</button>
+      <div style="text-align:center; margin-top:16px; font-size:12.5px;">
+        <a href="javascript:void(0)" onclick="showAuthMode('login')" style="color:var(--text-muted); text-decoration:none;">Back to Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MANDATORY DELIVERY PROOF MODAL -->
+<div id="deliveryProofModal" class="auth-overlay" style="display:none; z-index:3600;">
+  <div class="auth-card" style="max-width:440px;">
+    <div class="card-header">
+      <strong class="card-title">📸 Delivery Proof Photo (Mandatory)</strong>
+      <button class="btn btn-outline btn-sm" onclick="closeDeliveryProofModal()">✕</button>
+    </div>
+    <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+      Order deliver karne se pehle product/package ya handover ki photo upload karna zaroori hai.
+    </div>
+    <div id="deliveryPhotoPreviewWrap" style="text-align:center; margin-bottom:14px;">
+      <img id="deliveryPhotoPreview" src="" alt="Proof Preview" style="display:none; max-width:100%; max-height:220px; border-radius:10px; border:2px solid var(--success); margin:0 auto 10px;">
+      <button class="btn btn-accent btn-block" onclick="document.getElementById('deliveryPhotoFileInput').click()">📷 Camera / Gallery se Photo Chunein</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Delivery Date</label>
+      <input type="date" id="deliveryManualDate">
+    </div>
+    <input type="hidden" id="pendingDeliverOrderId">
+    <button class="btn btn-primary btn-block" id="confirmDeliveryBtn" disabled onclick="executeConfirmedDelivery()">✓ Confirm & Complete Delivery</button>
+  </div>
+</div>
+
+<!-- MANDATORY PAYMENT PROOF MODAL -->
+<div id="paymentProofModal" class="auth-overlay" style="display:none; z-index:3600;">
+  <div class="auth-card" style="max-width:440px;">
+    <div class="card-header">
+      <strong class="card-title">💵 Payment Receipt & Voucher Proof</strong>
+      <button class="btn btn-outline btn-sm" onclick="closePaymentProofModal()">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Payment Amount Collected (₹):</label>
+      <input type="number" id="payCollectInputAmt" style="font-size:16px; font-weight:800;">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Payment Received Mode:</label>
+      <select id="payCollectModeSelect">
+        <option value="Cash">💵 Cash Collection (ATM Sound)</option>
+        <option value="UPI / QR Code">📱 UPI / QR Code (Coin Sound)</option>
+        <option value="Net Banking / NEFT">🏦 Net Banking / NEFT</option>
+        <option value="Cheque">📜 Cheque</option>
+      </select>
+    </div>
+    <div id="payProofPreviewWrap" style="text-align:center; margin-bottom:14px;">
+      <img id="payProofPreview" src="" alt="Proof Preview" style="display:none; max-width:100%; max-height:220px; border-radius:10px; border:2px solid var(--cyan); margin:0 auto 10px;">
+      <button class="btn btn-accent btn-block" onclick="document.getElementById('paymentProofFileInput').click()">📸 Take Payment Photo / Receipt</button>
+    </div>
+    <input type="hidden" id="pendingCollectOrderId">
+    <button class="btn btn-primary btn-block" id="confirmCollectPayBtn" disabled onclick="executeConfirmedPaymentCollection()">✓ Confirm Payment & Cloud Push</button>
+  </div>
+</div>
+
+<!-- MAIN APP WRAPPER -->
+<div id="mainAppWrapper">
+
+  <div class="daily-reminder-banner" id="dailyReminderBanner">
+    <div>
+      <strong>📅 SCHEDULE:</strong>
+      <span id="dailyReminderText">Checking schedules...</span>
+    </div>
+    <button class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:10px;" onclick="triggerAppHaptic(); document.getElementById('dailyReminderBanner').style.display='none'">✕</button>
+  </div>
+
+  <!-- SLIM TRUE TOP STICKY HEADER -->
+  <header>
+    <div class="carwash-bg-canvas">
+      <div class="water-spray"></div>
+      <div class="wash-bubble wb1"></div>
+      <div class="wash-bubble wb2"></div>
+      <div class="wash-bubble wb3"></div>
+      <div class="wash-bubble wb4"></div>
+    </div>
+
+    <div class="tt-hdr-runwrap"><div class="tt-hdr-run"><i class="tt-hdr-dust d1"></i><i class="tt-hdr-dust d2"></i><i class="tt-hdr-dust d3"></i><i class="tt-hdr-dust d4"></i><img class="tt-hdr-runimg" alt=""></div></div>
+
+    <!-- Left: Branding with TTESPL Logo & Glowing Animated Title (Clickable for Company Details) -->
+    <div class="brand-area" onclick="triggerAppHaptic(); openCompanyDetailsModal()" title="Tap for Company & Bank Details">
+      <!-- 3D LIVE ANIMATED CIRCULAR CAR EMBLEM -->
+      <div class="brand-logo-round tt-logo-plate"><span class="tt-logo-mask"><i class="tt-logo-shine"></i></span></div>
+      <div class="brand-text-row">
+        <div class="brand-title-line">
+          <span class="brand-title-glow">TWIN TOWN EXPRESS SERVICES</span>
+          <span class="brand-title-pvt">PVT. LTD.</span>
+        </div>
+        <div class="brand-sub-horizontal">
+          <span class="tt-live-pill"><span class="header-cloud-dot" id="syncDot" title="Cloud Active"></span><span id="syncText" style="font-weight:700;"></span></span>
+          <span class="tt-tagline">Performance • Precision • Perfection</span>
+          <span id="offlineQueueBadge" style="display:none; margin-left:6px; font-size:9.5px; font-weight:800; color:#fff; background:var(--danger,#e11d48); padding:1px 7px; border-radius:8px;"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Single Profile Avatar Touch Button -->
+    <div class="tt-hdr-right">
+      <button type="button" class="tt-hdr-btn" id="ttBrandBtn" onclick="triggerAppHaptic(); ttOpenBrands()" title="Brands &amp; Catalogs"><span class="tt-bic">🏢</span><span class="l">Brands</span></button>
+    <div class="profile-menu-wrapper">
+      <div class="profile-avatar-btn" id="profileHeaderTriggerBtn" onclick="triggerAppHaptic(); toggleProfileDrawer(event)" title="Profile & App Menu">
+        <div class="profile-avatar-img" id="headerProfileAvatarInitial">D</div>
+        <div class="profile-avatar-role-dot admin" id="headerProfileDot"></div>
+        <span style="font-size:10px; font-weight:800; margin:0 2px;">▾</span>
+      </div>
+    </div>
+    </div>
+  </header>
+
+  <!-- GLASSMORPHIC PROFILE DRAWER -->
+  <div class="profile-dropdown-card" id="profileDropdownCard">
+    <div class="profile-header-info">
+      <div class="profile-header-name" id="menuStaffName">Dipak Kumar Rout</div>
+      <span class="profile-header-role admin" id="menuStaffRole">ADMIN</span>
+      <div style="font-size:10px; color:#94a3b8; margin-top:4px;" id="menuStaffPhone">Mob: Active Staff</div>
+    </div>
+
+    <div class="profile-menu-list">
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); toggleThemeMode(); closeProfileDrawer();">
+        <div class="profile-menu-item-left">
+          <span>🌙</span>
+          <span>Day / Night Theme</span>
+        </div>
+        <span style="font-size:11px; opacity:0.8;" id="currentThemeTag">Light/Dark</span>
+      </div>
+
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); requestAppSystemPermissions(); closeProfileDrawer();">
+        <div class="profile-menu-item-left">
+          <span>🔔</span>
+          <span>Permissions</span>
+        </div>
+        <span style="font-size:10px; color:#10b981;">Camera/Alerts</span>
+      </div>
+
+<div class="profile-menu-item" onclick="triggerAppHaptic(); openNotionCrm(); closeProfileDrawer();">
+  <div class="profile-menu-item-left">
+    <span>🗂️</span>
+    <span>Daily CRM & Visits</span>
+  </div>
+  <span style="font-size:10px; color:#38bdf8;">Notion Style</span>
+</div>
+
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); openTravelExpenses(); closeProfileDrawer();">
+        <div class="profile-menu-item-left"><span>🧳</span><span>Travel Expenses</span></div>
+        <span style="font-size:10px; color:#fbbf24;">Daily Km</span>
+      </div>
+
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); ttExpOpen(); closeProfileDrawer();">
+        <div class="profile-menu-item-left"><span>💼</span><span>Expenses</span></div>
+        <span style="font-size:10px; color:#34d399;">Claim &amp; Track</span>
+      </div>
+
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); openQuotationHistory(); closeProfileDrawer();">
+        <div class="profile-menu-item-left"><span>📝</span><span>Quotation History</span></div>
+        <span style="font-size:10px; color:#a78bfa;">Edit / Resend</span>
+      </div>
+
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); openGlobalSearchModal(); closeProfileDrawer();">
+        <div class="profile-menu-item-left">
+          <span>🔍</span>
+          <span>Master Search</span>
+        </div>
+        <span style="font-size:11px; opacity:0.7;">1-Tap</span>
+      </div>
+
+      <div class="profile-menu-item admin-only-item" id="menuAdminStaffBtn" onclick="triggerAppHaptic(); openStaffManageModal(); closeProfileDrawer();" style="display:none; background:rgba(0,180,216,0.18);">
+        <div class="profile-menu-item-left">
+          <span>👥</span>
+          <span style="color:#38bdf8;">All Employees (Admin)</span>
+        </div>
+        <span class="badge badge-info" style="font-size:9.5px; padding:2px 6px;">Manage</span>
+      </div>
+
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); openBackupModal(); closeProfileDrawer();">
+        <div class="profile-menu-item-left">
+          <span>💾</span>
+          <span>Data Backup & Import</span>
+        </div>
+        <span style="font-size:11px; opacity:0.7;">JSON</span>
+      </div>
+
+      <div class="profile-menu-item" onclick="triggerAppHaptic(); performFullLogout(); closeProfileDrawer();" style="color:#ef4444; border-top:1px solid rgba(255,255,255,0.12); margin-top:4px;">
+        <div class="profile-menu-item-left">
+          <span>🚪</span>
+          <span>Logout Session</span>
+        </div>
+        <span>→</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- TAB 0: EXECUTIVE BENTO DASHBOARD -->
+    <div id="view-dashboard" class="view-panel active">
+      <div id="ttDashSkeleton" style="padding:4px 0 2px;">
+        <div class="tt-skeleton tt-skeleton-line" style="width:55%; height:16px;"></div>
+        <div class="tt-skeleton tt-skeleton-line" style="width:80%;"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0 14px;">
+          <div class="tt-skeleton tt-skeleton-card" style="margin-bottom:0;"></div>
+          <div class="tt-skeleton tt-skeleton-card" style="margin-bottom:0;"></div>
+          <div class="tt-skeleton tt-skeleton-card" style="margin-bottom:0;"></div>
+          <div class="tt-skeleton tt-skeleton-card" style="margin-bottom:0;"></div>
+        </div>
+      </div>
+      <div class="page-top-header-banner">
+        <div>
+          <div class="page-top-title"><span>📊</span> <span>Executive Command Center</span></div>
+          <div class="page-top-sub">Live Business Status, Recoveries & High Priority Schedules</div>
+        </div>
+      </div>
+
+      <div class="grid-4" style="margin-bottom:14px;">
+        <div class="card stat-card" data-icon="💰" style="margin-bottom:0; background:linear-gradient(135deg, #0a2540, #13395e); color:white; border:none;">
+          <div class="stat-label" style="font-size:10.5px; opacity:0.85; font-weight:700;">TODAY'S CASH & RECV</div>
+          <div class="stat-value" style="font-size:21px; font-weight:900; margin-top:4px;" id="dashTodayRecv">₹0</div>
+          <div style="font-size:10px; opacity:0.75; margin-top:2px;">Cleared Collections</div>
+        </div>
+        <div class="card stat-card" data-icon="⏰" style="margin-bottom:0; background:var(--danger-bg); border-top:4px solid var(--danger);">
+          <div class="stat-label" style="font-size:10.5px; color:var(--danger); font-weight:800;">PENDING DUES</div>
+          <div class="stat-value" style="font-size:21px; font-weight:900; color:var(--danger); margin-top:4px;" id="dashTotalDue">₹0</div>
+          <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Recoverable balance</div>
+        </div>
+        <div class="card stat-card" data-icon="🛠️" style="margin-bottom:0; background:var(--success-bg); border-top:4px solid var(--success);">
+          <div class="stat-label" style="font-size:10.5px; color:var(--success); font-weight:800;">SERVICE SCHEDULES</div>
+          <div class="stat-value" style="font-size:21px; font-weight:900; color:var(--success); margin-top:4px;" id="dashActiveServices">0 Calls</div>
+          <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Pending & Warranty</div>
+        </div>
+        <div class="card stat-card" data-icon="🏷️" style="margin-bottom:0; background:rgba(0,180,216,0.1); border-top:4px solid var(--cyan);">
+          <div class="stat-label" style="font-size:10.5px; color:var(--cyan); font-weight:800;">STOCK INVENTORIES</div>
+          <div class="stat-value" style="font-size:21px; font-weight:900; color:var(--cyan); margin-top:4px;" id="dashTotalItems">0 Items</div>
+          <div style="font-size:10px; color:var(--text-muted); margin-top:2px;" id="dashTotalClients">0 Clients</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <strong class="card-title">⚡ Quick Action Terminal</strong>
+          <span class="badge badge-info">1-Tap Fast Workflow</span>
+        </div>
+        <div class="grid-4">
+          <div class="qa-tile" onclick="triggerAppHaptic(); openOrderModal()">
+            <div class="qa-icon-badge">📦</div>
+            <span>Create Order</span>
+          </div>
+          <div class="qa-tile" onclick="triggerAppHaptic(); openLeadModal()">
+            <div class="qa-icon-badge">🎯</div>
+            <span>Machine Inquiry</span>
+          </div>
+          <div class="qa-tile" onclick="triggerAppHaptic(); openServiceCallModal()">
+            <div class="qa-icon-badge">🛠️</div>
+            <span>Service Call</span>
+          </div>
+          <div class="qa-tile" onclick="triggerAppHaptic(); openProfitCalculatorModal()">
+            <div class="qa-icon-badge">🧮</div>
+            <span>Profit / Markup</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <strong class="card-title">🚨 Action Required (Today's Follow-ups & Orders)</strong>
+          <span class="badge badge-pending" id="dashPriorityCount">0 Pending</span>
+        </div>
+        <div id="dashPriorityContainer" style="font-size:12.5px;"></div>
+      </div>
+    </div>
+
+    <!-- TAB 1: LEADS -->
+    <div id="view-leads" class="view-panel">
+      <div class="page-top-header-banner">
+        <div>
+          <div class="page-top-title"><span>🎯</span> <span>Machine Leads & Inquiries</span></div>
+          <div class="page-top-sub">Customer Quotes, Lead Conversions & 4 Free Service Schedules</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openFilterModal('leads')">🔍 Filter</button>
+          <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openLeadModal()">+ New Lead</button>
+        </div>
+      </div>
+      <div id="leadsListContainer"></div>
+    </div>
+
+    <!-- TAB 2: ORDERS -->
+    <div id="view-orders" class="view-panel">
+      <div class="page-top-header-banner">
+        <div>
+          <div class="page-top-title"><span>📦</span> <span>Orders & Dispatch Hub</span></div>
+          <div class="page-top-sub">Track Deliveries, Generate GST Bills & Record Proofs</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openFilterModal('orders')">🔍 Filter</button>
+          <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openOrderModal()">+ New Order</button>
+        </div>
+      </div>
+
+      <div class="sub-tabs" style="margin-bottom:14px;">
+        <button class="sub-tab-btn active" id="btnSubTabActiveOrders" onclick="triggerAppHaptic(); switchOrderSubTab('active')">⏳ Active Orders (<span id="countActiveOrders">0</span>)</button>
+        <button class="sub-tab-btn" id="btnSubTabCancelledOrders" onclick="triggerAppHaptic(); switchOrderSubTab('cancelled')">🚫 Cancelled Orders (<span id="countCancelledOrders">0</span>)</button>
+      </div>
+
+      <div id="ordersListContainer"></div>
+    </div>
+
+    <!-- TAB 3: SERVICES -->
+    <div id="view-services" class="view-panel">
+      <div class="page-top-header-banner">
+        <div>
+          <div class="page-top-title"><span>🛠️</span> <span>Service & Machine Repairs</span></div>
+          <div class="page-top-sub">High-Pressure Washers, Motors & Breakdown Tickets</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openMachinePartsModal()">🔩 Parts Reminders</button>
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openFilterModal('services')">🔍 Filter</button>
+          <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openServiceCallModal()">+ New Call</button>
+        </div>
+      </div>
+      <div id="serviceListContainer"></div>
+    </div>
+
+    <!-- TAB 4: INVENTORY -->
+    <div id="view-inventory" class="view-panel">
+      <div class="page-top-header-banner">
+        <div>
+          <div class="page-top-title"><span>🏷️</span> <span>Stock & Master Inventory</span></div>
+          <div class="page-top-sub">Machinery, Spares, Detailing Chemicals & Verified Clients</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); switchTab('catalog', null)">📖 Product Catalog</button>
+          <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); loadMasterCatalogAction()">📦 Master Data</button>
+          <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); openAddPartModal()">+ Add Item</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <input type="text" id="stockFilterInput" placeholder="🔍 Master Search: Type ANY product, machine, chemical, spare, polisher, code..." oninput="ttDeb('stk',filterStockList,this.value)" style="flex:1; font-size:14px; padding:12px 16px; border-width:2px; box-shadow:var(--shadow-sm);">
+        <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; cursor:pointer; background:var(--card); padding:10px 14px; border-radius:10px; border:1.5px solid var(--border);">
+          <input type="checkbox" id="onlyAvailableStockCheck" onchange="renderStockList()" style="width:18px; height:18px; accent-color:var(--success);"> Only Available Stock (>0)
+        </label>
+      </div>
+
+      <div class="sub-tabs cat-chip-row" id="inventoryCategoryTabs" style="padding-bottom:10px; margin-bottom:14px; gap:8px;">
+        <button class="cat-chip active" onclick="triggerAppHaptic(); selectInventoryCategory('ALL', this)"><span class="cat-chip-icon">🌟</span><span class="cat-chip-label">All Items</span><span class="cat-chip-count"><span id="catCountAll">0</span></span></button>
+        <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Machines & Equipment', this)"><span class="cat-chip-icon">🚜</span><span class="cat-chip-label">Machines</span><span class="cat-chip-count"><span id="catCountMach">0</span></span></button>
+        <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Ma-Fra Chemicals', this)"><span class="cat-chip-icon">🧼</span><span class="cat-chip-label">Ma-Fra Chem</span><span class="cat-chip-count"><span id="catCountMafraChem">0</span></span></button>
+        <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Mafra Detailing', this)"><span class="cat-chip-icon">✨</span><span class="cat-chip-label">Mafra Detail</span><span class="cat-chip-count"><span id="catCountMafraDet">0</span></span></button>
+        <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Maniac Line', this)"><span class="cat-chip-icon">⚡</span><span class="cat-chip-label">Maniac Line</span><span class="cat-chip-count"><span id="catCountManiac">0</span></span></button>
+        <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Maxshine Gear & Tools', this)"><span class="cat-chip-icon">🛠️</span><span class="cat-chip-label">Maxshine</span><span class="cat-chip-count"><span id="catCountMaxshine">0</span></span></button>
+        <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Vista Car Care', this)"><span class="cat-chip-icon">🚗</span><span class="cat-chip-label">Vista</span><span class="cat-chip-count"><span id="catCountVista">0</span></span></button>
+        <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Machine Spares', this)"><span class="cat-chip-icon">⚙️</span><span class="cat-chip-label">Spares</span><span class="cat-chip-count"><span id="catCountSpares">0</span></span></button>
+        <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('Fireball', this)"><span class="cat-chip-icon">🔥</span><span class="cat-chip-label">Fireball</span><span class="cat-chip-count"><span id="catCountFireball">0</span></span></button>
+        <button class="cat-chip" onclick="triggerAppHaptic(); selectInventoryCategory('CUSTOMERS', this)"><span class="cat-chip-icon">👥</span><span class="cat-chip-label">Customers</span><span class="cat-chip-count"><span id="catCountCust">0</span></span></button>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+        <div>
+          <span class="badge badge-delivered" id="totalPartsBadge" style="font-size:12px; padding:6px 12px;">0 Items</span>
+          <span id="currentCategoryTitle" style="font-size:12px; font-weight:700; color:var(--text-main); margin-left:8px;"></span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-accent btn-sm" id="dynamicRegisterClientBtn" onclick="triggerAppHaptic(); openAddCustomerModal()" style="display:none;">+ Register Client</button>
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); exportInventoryCSV()">📥 CSV</button>
+        </div>
+      </div>
+
+      <div id="stockListContainer"></div>
+    </div>
+
+    <!-- PRODUCT CATALOG (info-only - kabhi bhi order/bill me item add nahi karta) -->
+    <div id="view-catalog" class="view-panel">
+      <div class="page-top-header-banner">
+        <div>
+          <div class="page-top-title"><span>📖</span> <span>Product Catalog</span></div>
+          <div class="page-top-sub">For information only - description, technical data & accessories. No bill or order is created from this.</div>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+          <button class="btn btn-accent btn-sm" onclick="triggerAppHaptic(); ttCatProdEdit()">➕ Add Product</button>
+          <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); switchTab('inventory', document.querySelectorAll('.nav-item')[4])">← Back to Stock</button>
+        </div>
+      </div>
+
+      <div class="form-group autocomplete-wrapper" style="margin-bottom:12px;">
+        <input type="text" id="catalogSearchInput" placeholder="🔍 Type product, machine, chemical or brand..." oninput="ttDeb('cat',handleCatalogSearchInput,this.value)" autocomplete="off">
+        <div class="solid-suggestion-box" id="catalogSuggestionBox" style="display:none;"></div>
+      </div>
+
+      <div class="sub-tabs" id="catalogSubTabs" style="padding-bottom:10px; margin-bottom:14px; gap:8px;"></div>
+
+      <div id="catalogListContainer" class="catalog-grid"></div>
+    </div>
+
+    <!-- TAB 5: BILLING & LEDGER -->
+    <div id="view-billing" class="view-panel">
+      <div class="page-top-header-banner tt23-ledbanner">
+        <div>
+          <div class="page-top-title"><span>📑</span> <span>Financial Ledger &amp; Billing</span></div>
+          <div class="page-top-sub">Live Dues, Tax Invoices, Collections &amp; Cash Drawer Summary</div>
+        </div>
+      </div>
+
+      <div class="lg-led-search" id="ledgerSearchWrap" role="search">
+        <span class="lg-led-ic" aria-hidden="true">🔍</span>
+        <input id="ledgerSearchInput" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Search ledger: customer, invoice no., phone, amount, date" aria-label="Search ledger">
+        <button type="button" id="ledgerSearchClear" class="lg-led-x" aria-label="Clear search" hidden>✕</button>
+      </div>
+      <div class="lg-led-meta" id="ledgerSearchMeta" hidden aria-live="polite"></div>
+
+      <div class="grid-3" style="margin-bottom:14px;">
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:12px; border-top:4px solid var(--primary);" onclick="triggerAppHaptic(); filterBilling('all')">
+          <div style="font-size:10.5px; color:var(--text-muted); font-weight:800;">TOTAL BILLED</div>
+          <div style="font-size:17px; font-weight:800; color:var(--text-main);" id="metricTotalBilled">₹0</div>
+        </div>
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:12px; border-top:4px solid var(--success);" onclick="triggerAppHaptic(); filterBilling('received')">
+          <div style="font-size:10.5px; color:var(--text-muted); font-weight:800;">RECEIVED</div>
+          <div style="font-size:17px; font-weight:800; color:var(--success);" id="metricTotalRecv">₹0</div>
+        </div>
+        <div class="card" style="margin-bottom:0; cursor:pointer; text-align:center; padding:12px; border-top:4px solid var(--danger); background:var(--danger-bg);" onclick="triggerAppHaptic(); filterBilling('due')">
+          <div style="font-size:10.5px; color:var(--danger); font-weight:800;">DUE REMAINING</div>
+          <div style="font-size:17px; font-weight:800; color:var(--danger);" id="metricTotalDue">₹0</div>
+        </div>
+      </div>
+
+      <!-- v26: single expandable Financial Tools panel (same buttons / handlers as before) -->
+      <div class="tt-acc" id="ttFinTools">
+        <button type="button" class="tt-acc-h" id="ttFinToolsH" aria-expanded="false" aria-controls="ttFinToolsBody" onclick="ttAccToggle('ttFinTools')">
+          <span class="tt-acc-ic">📊</span>
+          <span class="tt-acc-t"><b>Financial Tools</b><small>Reports &amp; analysis</small></span>
+          <svg class="tt-acc-chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7.5l5 5 5-5"/></svg>
+        </button>
+        <div class="tt-acc-b" id="ttFinToolsBody" role="region" aria-labelledby="ttFinToolsH"><div class="tt-acc-in"><div class="tt-acc-pad">
+        <div class="tt23-btns">
+          <button class="tt23-gbtn g-gold" id="ttPnlLedBtn" style="display:none;" onclick="triggerAppHaptic(); openProfitLossModal()"><span class="ic">📈</span><span class="tx">Profit &amp; Loss</span><span class="tt23-bdg" id="ttPnlLedBadge" style="display:none;">0</span></button>
+          <button class="tt23-gbtn g-cyan" onclick="triggerAppHaptic(); openPerformanceReportModal()"><span class="ic">👥</span><span class="tx">Staff Sales</span></button>
+          <button class="tt23-gbtn g-orange" onclick="triggerAppHaptic(); openDailyCashClosingModal()"><span class="ic">💰</span><span class="tx">Cash Closing</span></button>
+          <button class="tt23-gbtn g-violet" onclick="triggerAppHaptic(); openAgeingAnalysisModal()"><span class="ic">⏳</span><span class="tx">Ageing Analysis</span></button>
+          <button class="tt23-gbtn g-green" onclick="triggerAppHaptic(); downloadBusinessSummaryReport()"><span class="ic">📄</span><span class="tx">Summary Report</span></button>
+          <button class="tt23-gbtn g-cyan" id="ttBulkLedBtn" style="display:none;" onclick="triggerAppHaptic(); ttBulkOpen()"><span class="ic">📥</span><span class="tx">Bulk Ledger Import</span></button>
+        </div>
+        </div></div></div>
+      </div>
+
+      <div class="card" style="padding:12px 16px; background:var(--bg); margin-bottom:14px;">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label" style="color:var(--danger); font-weight:800;">👤 Filter Due Amount by Booked Staff:</label>
+          <select id="billingEmployeeFilter" onchange="filterBillingByEmployee(this.value)">
+            <option value="ALL">All Staff Combined</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="billingFilterTitle" style="font-size:13.5px; font-weight:800; margin-bottom:12px; color:var(--text-main);">
+        Showing Invoices
+      </div>
+      <div id="billingListContainer"></div>
+    </div>
+
+    <!-- TAB 6: WHATSAPP / MESSENGER CHAT HUB -->
+    <div id="view-chat" class="view-panel">
+      <div id="ttChat" class="ttc">
+        <div class="ttc-hd">
+          <div class="ttc-av" aria-hidden="true">TT</div>
+          <button type="button" class="ttc-ht" onclick="ttChat.info()" aria-label="Team details"><b>TTESPL Team</b><small id="ttcSub">Team chat</small></button>
+          <button type="button" class="ttc-ib" onclick="triggerAppHaptic(); ttChat.toggleSearch()" aria-label="Search in chat">🔍</button>
+          <button type="button" class="ttc-ib" onclick="triggerAppHaptic(); ttChat.info()" aria-label="Team details">ⓘ</button>
+          <span id="chatCountBadge" hidden></span>
+        </div>
+        <div class="ttc-sb" id="ttcSearch" hidden>
+          <input type="search" id="ttcSInput" placeholder="Search in this chat…" autocomplete="off" aria-label="Search messages">
+          <span id="ttcSCount"></span>
+          <button type="button" onclick="ttChat.step(-1)" aria-label="Previous match">▲</button>
+          <button type="button" onclick="ttChat.step(1)" aria-label="Next match">▼</button>
+          <button type="button" onclick="ttChat.toggleSearch(false)" aria-label="Close search">✕</button>
+        </div>
+        <button type="button" class="ttc-pin" id="ttcPin" hidden></button>
+        <div class="ttc-stream" id="chatMessagesContainer" role="log" aria-live="polite" aria-label="Team messages"></div>
+        <button type="button" class="ttc-newpill" id="ttcNew" hidden>↓</button>
+        <div class="ttc-mention" id="ttcMention" hidden></div>
+        <div class="ttc-emoji" id="ttcEmoji" hidden></div>
+        <div class="ttc-reply" id="ttcReplyBar" hidden></div>
+        <div class="ttc-comp">
+          <div class="ttc-inw">
+            <button type="button" class="ttc-ic" id="ttcEmojiBtn" onclick="ttChat.toggleEmoji()" aria-label="Emoji" aria-expanded="false">😊</button>
+            <textarea id="chatInputMessage" rows="1" placeholder="Message" enterkeyhint="send" aria-label="Type a message" autocomplete="off"></textarea>
+            <button type="button" class="ttc-ic" onclick="triggerAppHaptic(); document.getElementById('chatAttachmentInput').click()" aria-label="Attach file">📎</button>
+            <button type="button" class="ttc-ic" onclick="triggerAppHaptic(); document.getElementById('chatCameraInput').click()" aria-label="Camera">📷</button>
+          </div>
+          <button type="button" class="ttc-send" id="ttcSend" onclick="triggerAppHaptic(); sendLiveChatMessage()" aria-label="Send">➤</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FLOATING QUICK ACTION BUTTON WITH 5 LIVE ANIMATED ITEMS (HIDDEN AUTOMATICALLY ON CHAT TAB) -->
+  <div id="fabMenu">
+    <div class="fab-action-btn" onclick="triggerAppHaptic(); openOrderModal(); toggleFabMenu();">📦 New Order</div>
+    <div class="fab-action-btn" onclick="triggerAppHaptic(); openLeadModal(); toggleFabMenu();">🎯 New Lead</div>
+    <div class="fab-action-btn" onclick="triggerAppHaptic(); openServiceCallModal(); toggleFabMenu();">🛠️ Service Call</div>
+    <div class="fab-action-btn" onclick="triggerAppHaptic(); openQuotationModal(); toggleFabMenu();">📝 Quotation</div>
+    <div class="fab-action-btn" onclick="triggerAppHaptic(); openProfitCalculatorModal(); toggleFabMenu();">🧮 Profit Calculator</div>
+  </div>
+  <div id="fabMainBtn" onclick="triggerAppHaptic(); toggleFabMenu()" aria-label="Quick Actions">
+    <div class="fab-bubble-clip">
+      <svg class="fab-ring-text" viewBox="0 0 100 100" aria-hidden="true">
+        <defs><path id="fabRingTextPath" d="M 50,50 m -40,0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0"/></defs>
+        <text><textPath href="#fabRingTextPath" startOffset="0%">• TWIN TOWN EXPRESS SERVICES PVT LTD, BHUBANESWAR • TWIN TOWN EXPRESS SERVICES PVT LTD, BHUBANESWAR </textPath></text>
+      </svg>
+      <div class="fab-bubble-core">
+        <span class="fab-center-label">TTESPL</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRUE FULL-PAGE FOOTER WITH RACING SPORTS CAR & DUST -->
+  <div class="nav-bar">
+    <div class="nav-active-pill" id="navActivePill"></div>
+    <div class="footer-carwash-canvas">
+      <div class="water-spray" style="right:auto; left:15%; width:200px;"></div>
+      <div class="wash-bubble wb1" style="left:20%;"></div>
+      <div class="wash-bubble wb2" style="left:40%;"></div>
+      <div class="wash-bubble wb3" style="left:60%;"></div>
+      <div class="wash-bubble wb4" style="left:80%;"></div>
+      
+      <!-- FLYING DUST PARTICLES -->
+      <div class="racing-dust">
+        <div class="dust-particle" style="width:5px; height:5px; left:10%; animation-delay:0.1s;"></div>
+        <div class="dust-particle" style="width:8px; height:8px; left:25%; animation-delay:0.3s;"></div>
+        <div class="dust-particle" style="width:4px; height:4px; left:40%; animation-delay:0.2s;"></div>
+        <div class="dust-particle" style="width:7px; height:7px; left:60%; animation-delay:0.5s;"></div>
+        <div class="dust-particle" style="width:5px; height:5px; left:80%; animation-delay:0.4s;"></div>
+      </div>
+
+      <!-- EXACT EMBLEM MATCHED SPORTS CAR RACING SVG -->
+      <div class="tt-runner"><i class="tt-run-lines"></i><img class="tt-runner-img" alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAByCAYAAADpjuxGAAAuXklEQVR42u2deZRcR33vP7e7Z0ayZFnSWLYsy5LxIks2FtjY2BADBuKF4INZExLgvfACL04IPAJZCNnzIAQwkMeSsCSPEB48whLA7JgYO2DAgI2NNyzLWrxIsqzF2mfp7ps/6lfn/rqm6t7b3bd7uke3zrlnpme6b9+q+tW3vr+1ojiOKVvfWwRU5CdADDRS3l8FxoFlwAlyLQNOBk4EFgHHAQvkGpPPRM59YqAJHAb2A4eAfcBeYBfwKPAYsAPYCeyRq57xbJHc296/bGXrzcIpAavv4NSQhe22moDPauB04DS5VggwHQ8sBkb69NyTAmq7gUeArcADwP3AZuAhAbg0EGsqICtb2UrAGsBmwckuWB/jWCqgdDbwROAceb0SOCbHdzQ9IBAFfve1OPC7BtisdgDYAtwD/Ay4FbhXwM0HxnHguctWthKwZgmgfOzpOOAs4EnABcC5wJnCmEJgohd2pK48YFRUi9XP2HmeSuA5DgIbBby+D/wI2OCAdkWuZqk+lq0ErP6qeD6AWgE8GbhYrvWi6vkAoeEBpWhIxsG1WVU8zKwB3Af8J/BN4AcYG5key2oJXmUrAas3AOVbWKuEOT1LAGodcGwGOFV6DEyxB1hIUceiHPfxfcbH+iyIWTDSbQ/wE+BrwLcFzFymWqqNZSsBq0M1D2Z678YFoJ4DXIqxQbl2p6ZatL0CpzigruW1QfWiNZxn0c/qMrBp4IfAF4GviippW61kXWUrASubLfhsK6PA+QqgzmOm/amhFmXRap2revmYi6/ZkIU9JN6+3fL3/fK/3QIcE/KzLt9VFdCYh/FKzhfWeBzGU7lY1Nyl6lqY0YeG6ktEq7fzCPAfwKeBbwCPOxtHoxTRsh3tgKXZjxtntBK4BLgMeCZwRh8YlMuYsoBpNyZW6kFgE8Y79xCwDRNHtUvA6UCPx3E+Jg7sROAkjLfzFGAtcKr8Ph7o77T8HFN/fwj4DPBxjNdRz1UJXCVgxUcTQIVYVIQxjl8OXAE8lVY7lGUIRQJUMyc47caED/xCFvBG+f0hYSLNnH3Peu60MIk86miojQtwnSPs9FyMnW+FZzzqwmjBxIFdB3wQY7S3rVoCVwlYc7VpFc1lUScCTxOQeoYsqCig5nVrE9JqXQicmgJC9wJ3yLUBE6S5J+XeVY+9KI+hvciNQG8IeaL3jxXWej7wS7JBrCEcFHsD8GHgCw6zLYGrBKw5o+a5LKoiLOq5cl0kthfd6gWxqDwA9TBwJyZm6WeYAMzNwiyyGFKzj4BUJLMFvzE9EgC7WObmmcATPPf6MfAe4LNqTqE0zpeANQcACkxKy9NlEVwiLIoAi+rGWJ4FUNPCln6IiUW6HZPicjDACisetXGuquc+JjZP1Mcr5XoSrXauG4F3YEIjLMsswyFKwBo6gDpOhPsZwLOZaYsqmkXZRVJz/jclqt33xf5yGyYPLw6AUzs2oTkphxkAthZ4PnC1sDCrOn4J+DPgbgVcpZpYAtasCnFa2ssijBH36QJSFwLLe8SitDrj2rViAahbgJuESW3wfL5MCm5/Y3Jtj+sFuF4imxPAtcBfYMIjSrZVAlbfwSlksD0ekzB8sdg5zmOmt6lIj14ai3oME7V9PcYofJeH8dVK9lRIsxuE3rQqskm9BnglJsTj9ST2rZJtlYBVCDDBTAOyz2g6gimvsh4TWX4xxgY13kOA0iBlhV63ewSgvoExAO9NYVClIbi34KWZ10rgGuDVwm7fjCmHU7YSsDpiTGQs4mMwOXlnYVJdzhOgeoKH2fQiJkrfU4PUfmFR38JEYt9OuPJAyaBmR21EMakFwG9h7JefBL5CEr1fthKwWhYt5KuceYIA0dkCSmdjYnBOxh/vZNWAovPytFdPf+8ujBfqSxh71MMBNa+0kwwu6xrFBADvA24u56oErKy2mKR65lphTqdjIp5PJpx3psGpF+VWLKC6RvPtGBf5dcD3aC2BUrKo4WNdDTV3Opsgy1SR5/5xhnylvS7bLAKWnbxzgF/B2JbWKFA6nnCEeD9rQYVsUttEzfsi8F2ShFv9vnJnHgwQcn/PU11VexjjWX7+kGbgy0go5a2HgIWod9cxMyjTLvhmn4ApL0h9W6l7JUjNHgClVVHthWfVMuUaxqEzIr/byhRj8tO+r6p+j5xNui4bbkN+n5KrLteEet3Jc7opTqWXuSCV0E5gDfi/wKtkoqrkK4HSC5ByQxAeEwb1OeA7JUj1FIAIbEjd2PxsmRtb4mahuuxpQfbvi9XrMfmbPUlovpLLUbk0YI3QmY3UJm1Pq58TmBSrIySnEh0Q2duFyQ3diTnEY7f8374na4yqRzOYFWV0t2zmb4A/V/ao6iz1awITG/UpYVS7SpAqnAl1CkILBFCOxeRyjgvQ2KPLFsvPcQeE5sk1Ngtj0U4li07aEUya1k65bKmgrZhKHVtJjl3LArI5DWJFGd31KTG/DnwIWCI7Tq1PArUbE4LwdUwYwv3q/yO0FpEr7UFh9bxdILIMaLECn5MEjJZhAnuXYDIQjhegWqwYTyet6bEB5bF95QWcqEMg8/09TgG9vNVhrXzvwKR4bRD5ttU8tgXUTw1ic2KDLtpLWJOBOwv4BKYighWqSg/Bqokp+vZhAa3JDDtGL20lg6CS+dhQu4ecVgV0FmGcKEsFfJYLEK0UIDqB1kNcO5k7d0H7gLVX7GYQWuiEIp/Muu0wJvRmAybb4jb5ucmzDmyc4dACWC/CGixojQJvA/6AxGNT7YPAHcYcbnA7pmzL3UKrH0kBMj2hlQDr8O2ScYGAkwZCFGQTioTZaDa0QoHRCmFBKwSElola1g5LDoV/RBmgWrb2AS0EZk1RI+/EZGTcIutge2ADH5qQnV7FYWm71qXABzAR7L20bTUJeyAnhU5vFkq9RXagh0kqd+4dUmGeJ2rWfAGbcWFFK0mOt9cAtERA6NguQSiPt69s/QGzPKW192NSy76HCYz+Ma22XUs2Bpp99TKX0A5cHZN68yeYHK/5tKbW9GoCmzkp9TTGk/OoANd2jHHzUfn9oLzei6mR3iDxAB0hcV/niaPRC3sEY0AeI/FajcqYWTvPIgVI48KEjpGfx5N4yhbTmUE6BERznQnFGT97qbqHxjXqIYj51sBu4KcYz/kNmAq3DcckwKCBVz+Sn3XW/BOBtwMvUGyrH8dSFX0klo29mSRxZ2fZxFx1c8RzFV0r/mhjQ2m2oNk+Aq0IdbqbudPMyQdg9wh4fRlTZHJiEJlXFmBFBe08mm0BvBBTeO0pfQaudoVcq7j9Wuh5HAF5DO1Hiwrk2wyymo6ROoiJf7JHnx1WLHpCXk+SBIs2PZuQDUitCUseE01insj9fIxD4hi5bIjGImHJo4Tr2aeBWzMAalGbAObaKB/AnNR9HaYI5WEHvGatGklehlWlfS9TyLZlB7uKqWP0JkwSNM4OEA34okl73Y56kOfvpW0mn3o/IWr9o3I9jLFd7sDYKg9g4pkel/cecJhEP1tNgdiYqPX2fMcTMd7XxRgP7QkkcWo2ji0vGOkNN8oBgK5jbBPmoNsvYBLJG849+8q6QoBlYzdOlgfa7ui13RZG02riCPBy4PcwJY212lXEiTVlGx5wymN3bIg8PkQSi7RVFtY2TGbDoQ42kCx2UsShJN2eZrSA5AzI5ZjiAqsw6XGnCqgtJz28JE+BgVBl3bsEuD4vvxdNaLoCLDCG3atlgL5EUjvb7hDdBmK6VSEvA34HU797dMhYV9naX7hp5zE2MKEomzFhKveJneUBAaZDOWTLBzRxDgDKYyboxjwSutKAPA9JGBEWtkoA7CzMGZBnyuulGewqrY6dZl7TmMIBnwS+Jqp0X1hXXpXwOZh4qgng75l5sCVdPKTvjLl1wG8Av4qpAIHD7Erwmlvq3C7MCda/wHir7hJgelBsTSG5qXq+s8g0It/3jZEkTqfF7Nm8wob62ezy+yuEg5+z7r9UGNnZGOfXEzGln07B71321aGz4KVtXg9jylJ/3GFdRRCatgFLp9xUgb8E/lDo9z9gSrNscx6yG+FwqeU8zBFdL8MUZFse2BVKABsOYDok6tt9Ak53Yw7v2Ipxs/uaWyASR6VpB5BGRV1aKtdi0SLs70toTaa2SdPWgG7TkCxgRSmA1XAAy3qTD8nGf0RsaAcwYTO7hansltePYxwBNin6UM71445XMwU4aph4vXWYQ23PJ6n0Ww0AmAYvTVimMaXDPy4/J3uhLuZlWDoQ9CwBq+fIoH8ekxZzIzO9CZ2Cl69u91JM6dur5efKHDtC2YoBJTyqXNoYT8lG9oCocXcKQG0S+1MzZcFFKcCU5Z0aEzvOScIcThNVaCWJ0XqJANLIEIx9U9bUPmGhO2X8tguz2Sxgb6s+NDPYYYXWQ14aAbXydIwH/yKMXflcjHMgtN5cT+O9wD8D/0pSDLMQ4Go3DqumQOTXgHeLYCDGz68KgN3iPFin4OWr240I3IVi83q27Arz29DLy5bPXpPl9DgidqaNIqT3ye/WAD6ZAUzgjxdLA6YaxqZ6sjABXc12lfxvfofsEM+z+OxdUQfjGxrzLBtXnrZXwGyLANj9ah4eIpzFUXU2iRCIrZb19kySw2BcAKuTGOoteG0X0PqoPEvXwNVJ4KgOTVgM/BHmeCVd9vhOTNWEr2JSAKY8i6Dd/KUQeNkBvUAN6FqMNyVkXOQoAbI4AEq6/1le2Kbskg/LgrCeuftlcewQdSBLncOxMWVtYCPClM4QlWWt/P4EYUwLMvrdZKaBvV+Bs3GO37u9lx3frDS33co+eDsmv3aDzGcjsCHoNe5TJ1fJOrsMeBbGqK/btHzW2sYOAJ/GpOjd3Q1wdRPprj186zB1sF7uEYT7MEdjfUuY12OB3bYdAEs7aBMR9HNEJ78Ac+DmasKpK77FM2gpKmmLICuqPuu+B0TleESEe7NSN2ws074cKnyopRlfFwhbOlUA6RxaS23PbwOUerUBpQF/J2PeC9Wx6dmQawFAOyLM6z6Mk0NXeGh4AExvMnWPGn6ukIXLRI1c4oCXvcckpkbd+0gM9G0dfFtExVHt4btUgOs5iiZq3XYX8CNMUb0bBW2bKXaMvB3RgXG+xVET1fUM2anXiSpxKsaQf0ybwtHP3LNuFqEFo72yUTxKUhzO/twu/3vcYcJZqlwe0NdtISYJ+0yMp8rOwWpR42oZi7GXoBRSiztN55kgKZM8SWJo16lcWgVzI/b1NUKSJ2odADaafoT280dDB3JMCmDdhkmQ/qGo+dMBANPeSd2WA5cAVwkOnBIAzE8B7yKpW5fLq1hULmFFgQXAi4E/JgkEnSJJ+NUDd7cA2E2iOm70AJh2X+etXxV5DIy+NirG2BWiZpwqA6zrPlmv0Xz6U4wwDSjrJN6lg7IQdgngWO+SLb27SwHRXrJL67jAH/J+ZRm+bf0suznYa7WMaXWWgEk/v36dJzjZAr8d40dlnHfIGO8lKX28V+bGAtSU/F7EQrMANSogNipyaUtFLxGZXSabwGJM0vyJJEnyi3KOaV0Y2C1CLn6AcaKkbWCubCwU29fVmINqXNVxH/ARYVw7PJpbzwALD72LgJdiKjRcpFSDhmOY0wO0QXTsHwG3Cvruymm4bbZpyMyTD1UR9mXLsdif4yIg1vW9kMT1rSsvVDzMTLuap0WoJ9VOfFhAaT9JntshtUvvJ8lvayfjICI7RSPOyWxrJGVrThNBXKsY07IUEOgHMLWb0tMUMNopKvA2UY1tiWK7AezLCfx5WHO7/em22Zr4y0i8qKtJvKgnkXhRawEGdgfmfITvCMHY7yEWcYAojAnzejEmROl09b/twLVinD/o2NB6Clg++1YEvAh4I/AMB6Ai0iOe9who3QH8XPTejSJQcRuG3lBKRCgLvpMKnbPRojYWfdwGUFsBXyZs6TQxdp8pgn6KsKWFOe1WRQNTJ6DUIHEebBUb3UYSz9oOWg8oyRrzSg47F10Y3NuZW/c9Wn7zzneECR1aLmCyRtkTT6M1BtKuzRswjrUbxLzgrkE9/3VHtp4hhOZ5JCFKGzFlqD4fsm/1uryML/Xm9aLfRgq4Ko7dKs1eclCE7F5RKe8T3XurCGQe1uQKQJawdVK/KE9drLT/6Z0q7XNxhwC7iKTW+nIBJBu7tIKkLHJWiIDPBsMsAtMuAaVNJMUaN4p8bHdYQbcbXtGbTx4zRifNtTuRocq5bbHIxXq5niw/x9V7bgH+DVPh4QHPemvid5QtEXXx5ZiUvEhMRG8Se1oLjvSjHpYPKZ8CvBYTy7XYUesqhF3facJ6QJjXVrlsasdmRekP0nn6UNEew14VkbM2DVsC+WSxYawiKYN8AklBwNEcz9lLb1yoXEyau94Gpm4RM4LNNdwsoLQ3JzD0E5DSniPkKLK21SdgIvJtRdkFJMeSIaYFe+rOdpF761jZkwLKrnruzm+aeWChgNh5GA/hJSRpdD/DHKv3OdksNA64ZzxoYD5DWNc1oq5+FBM2tc8+X78Ay31gO0grBVlfiQk9wOlEKFernahrq3/btIdtJOVG9sik7lVG1f2yIA7LNRsFy2zO2nxlZD1OAGYBSenjxfI3a2BdpgT6uDYAIy1mqZeglDVve0jiv2xQqo3/2kZ6aZhBPL8vLRxnhTCXC+Xn2bI+juni+/YIiG/AVBf9MSZGcp8HHNNYlqsGh957AiaU6HKMh3CZfN9nga/QGtJUcYhI7IDnFcDvyri8HxOA2nfAcmmiBqZnA78p6uJij60rS7iLKOwWKwO49cTZEsiHBMy0y9ou9Gn1vgatjgdb92hU9dUe3DmP1oJuow5Y6QNARzsEimZOu91sGbwtM35EWLFlSg8IWO3Oqb4N8glIbgFLCxIXycK8VEDKV+eqSf5QmkiNS4ihPkpSGvl6Wiuw5AGvEIj54iGXA0/DBJmeKMzvBoxTbSJlPvW91gL/TUD2s7MFWGkTuUJA66VimJvXAXilqV+h8sHDkH8YEtzQqcu96E8nKlxdVJUtAkT2bL0H5W87MxbIsJ527G7MkSzgq0XGz3beP+2wjAqdnzTlBpPaOao5msxtmGTl6zCeeZ/tqd1sFJ+aWxH1cb08x0b57gMBeXZVxmXACbMNWGkPaHXaqzEllS+kNUjOzR4vSnUhsJP1wsYRtfG6n2CqwaAZAA5f2ydsaZMA0S+EMW0RtnRkDrClbkwfrxAm5QJULQfgTwrDP+Cwezt2Y2K7PJakNHPa/Rqe771F1Ld/lznTrKuTUjFpKvDJosHsY6ZzKci6BgWwfKzLpaVnitr4K8K83GJkvQCwudx8xuY8kd0TYovYrGxKVo2zFT/jDMaRN35uGIFKA8nTgd+SDXdpxmf3ilq8RcZ0i1w2Q8EeZ38owEarJIfZLsDEVY2TxFmtwTheTsnxLAcwBfr+BRO20OgSuEKMs+3NfRABy4eu7iCdINT6Cox3Yh0zg9004B2NINZNusk0ScS8BSX782H5+8RRwpbyyqlmo5cBbyBx07tyuUVA/k5MbOHdGEfCHtqvZtLumI4LcK3D5ACuF9V0VUAmbsWUk/o3kppcbeX/ZWgXbd1j0AHLtwh8p4WsEQB7OiYdaA3++KHYsScMc7WGbsrCWKa0G+MttUed/0JebxXAOtQBKDGHgSmk8liZuhKTknapes9+AfofYQ5xuB3/MfIhex2e+c1TDscXDB1iNvMwoRPrMQbypwiI6TirhzDeuo8ou1OVYuPF5hRg5dWNkd3iiWLkO092k9WES5Lk8ab12o4Up4BRmloVak2SA2IfxBi99anXjwgoHc45zkcLW+qE3TwbeJtsmNYWdCPmiKw7aI0C9wF+vxLqfQw7K0ThaepaKGD1twJeh7tgekcVYKVNQD3wvhUYI/5ZspOslV0l65SRkN0nLui5O2V4Nt9wOyYoditJaMAjwpr2yP/iEpR6AlbnCqO6RIDpc5hKB1s9n6k54BQP4BpKq3gyjinV9CJRdQ8B/4ipLHqwX6A1FwArpK7oaN20ag3LMEZJnQx6kgDcMpJM+LEeP3OD1koMtta3rcDwMEkunP3bHnlvXnWaEpQKWdxg8uyuFHXveg9TrTE8OalZG5mPhV2AsSE3MCERv+iHPM1VwMrDZvIEx1UxbuJFmADP42h1HVuPjK1RpOtm2+hdW5HBlhs5LLuT/t1WZMjyBHUCSJSg1JM2QmutqGrK4p4ra8hnhqnImni8VAn7C2TQ/iks/WSKIftWCUazPz/No2wetBmm3tcvjuN42E9WbnqEqBcqQJHJz2lBqW5c0rB5MZttCv2w9WUY1ks7pcaLONG6NLqXbc7uzNYVXgpeb1vfjo/vN8NaSVK6uJKC0oNyAINW45oYl72lpfMwBnP3vWn5d3m+N8rBktq9p28hH8R4/XQ7AWMzi1PUQ1/f4gzGmPY8efrlq5hh56MRYCZ68djDSyuk29riLmUv79y5MjPJzHCEMYwzJo2hFJ26FeeUpVg992Mk9rW0WKnjMaEKkWetZK3BGsZLvaPfgLUF49qPCVdRdAcv8izoXoFbHJjEikzO2Uqwngt8jZl1tdLulfc72xH4dsDKqh4jmMM5nk9rCsN1JN6YWpuLr4gF7+uXr4ZXBWN4PQcTSqFlwoLVAuB/YsrkrpPFUskAq35smFqO7SnnmzCxfPYglTrmSKtvpchX3s2OAvoamvcp2fRuwkSo3+4BLfv6i5iKn+3KVgPjZPp3TE27vgWQ1kRoxhjepifXniYSM1x2H7dMtH5264Echj6NpjCrMzGlb9cPyZz4+jIyBGtlTBj5Gky5pjcKcGlQsUB0bIfrxQL2aL87Z2vfxEO2yGP8AW467mWYnAkNWrPm9VzYPrrvGcT5cGUoUgvjK5ig3WnypQ7NVtOyUwmw+0GXL/uMNeBDoqZ/1cOE6h3KVkOx0b4DlhayYWIllpH4ThaOhrAvoWcelpxHX50yW+vsfwhYTc3GrtzFXEQBYB6WubAnVL0XE9w65Tx7o8P+ZNm7etYqDLe3Js0IPezq7TA211Fjd+Cr5O/VIewPnv4MS7PjfSamBHns2eCHqlmV0Jb1bXfBFEHtO4kM1iqhe68GnUcbF9GfTlz2DXrrgq73YWFHou65BuwI47ntlpX0K4K8qdhJ1KP7t9OPTirs+vqzGlPTPeQ1HxrAGhcknq3drxuQcD0bI7PcFzr8btuPY3rEtPp1YvW459krBc1Hv+1ei+lNUHK/+6HPFhh6Rl8DPok5G0yXXXUrd7pGeev5WY0pqdGJwd5+5oeY4nBVZta58tUqjxUwTNN6ztw2jKs2dvqTFqVu7zctfTmDzh0Q08DXMXmDvpSNOGAXsWENP015X6eCelieaTJF3Yk8Kl3ssVe4Z+e5sVgHmVkGudv0IXvvBzD1pCrMDJlwnydLxQvZqWLFrHZ4mGk3/bBM507MMVhVZpahdp+nLmvzCkyMYSdyEXlYdtzF5jqrgFcDXtPF568AvkkSu9LuBFaBd2A8SEW0OzAxPp2292HcwI02WYkVpAPAy2hNiu1UuKsFAdZj8kyzbf/p5h514AXAPQNiy+oGsD4FvLPNz/418BcdyOVQs6kQYFVTOhanfK5O63Fcnbb5cr9awNaSJSwNj77fTl+sKlmnuzPg7PctwVTyzOtFcW0KRdtpqphYuwmK8exkRf83Cl4s1ja2T2Sk4hmjuMPvSctW8PWliEU/liHv7jqbxtQ363a+KoE+zjaQtw1YnUaoNijGmKszvusFDGCnBe7rBU1AQ6kVg2DUjNVczdYzFVHs0C7wCrPnrStKPtqR9wZJ6lxRz94pwA8Ew5rtCRykQWvOob5ohjVCEoNTlKrWT9CwMXe63ljRQNSvUj2dPHujoD4OIoCXgDWLbRADChu0OiaGdVz3K/baS3DvNRh3smaK8k4OfasNiDDOlTZodbrB2OVehKli6nrW0mwavnpcNt1jB+b4p16rmPb+o8BbMQ4e97QeN+o6yhgPC0jWCB5jHBMbMXYy+qB2VsgX3mDnaapHsnnUqYRFdHgu1euJBvBZxjFZ9UW2/8RULmjHsdBtP35frl617ZhKH+/AVGroFWjZcJupnO+FmUfadzJ+vQCsWQlrKFtxEzCokcNFLTybmzYxC2pyKPI8LmCebTT+a4SNvlhAuUjQst7438YctFpTz+/a0Cqqz4uAi3q0Xrudl76rmYMAWHNCtx5w0KoU2Ldqm/fLyybyLvhezltdMdL1wrqigsHhdLn6LZPRkMjqUQUWZRscJmrBLQbuZfDL9UYkJ+GMA6+jNwnbNt+1navbfkWY2EAXpLqdj1mp1jBX1JW5olbOxfYxWtNnBn0Tj4HLlVpW5Nza3Mp2rm4BZR9wWw/W29CFNZQLfDhaUdUadDHBvO+vAN8BPgC8vuDnSQOFShfyGAnLsoxrGGXUnok5iinit4ekgF9R9e+GzuhexmENR6sVfJ9FbcpIBXgDJsXkLRST0tWPjXQQyst0A9ijmBr0f016StNRA1glwxoAmpzyHDYh++8wVRTc6gp5DuFwc+vsAQ15+6q/753A/8Mc8f4kzKktGhxctTEKyIqvokSsWN1a4CkUX/Y7LhBMet22iSr+t8zMcogGTFaHCrDK1lvA2itCO9vgbA3YjwD/3OO+HwdsESY3KGcV2EDV/wC+S1J+qOIBXxwAbwbA2WVrFUw5ofsxZZse93wGisslPCptWHOtDRpjrGAOgThCsbmEnXivGsyMVC967G14wuSAza0Fp68A/6dPc19lZk22ImX0qLRhzaUTgAdVva0zu9Ua3IXb7OH4F3V0eq/GaSH5y8t08+xN+nRW4NHGsEqje+8ZlvZ29RKwQsyr2qd51oDV7FH/itpAoPfe0l73w5b96fX81osCrGgABq1s2WrY/gF4hn62AwxGnuygy323xv8pxd7nPMPSFQAGpc1F9fRYzPHwk/iNuKF+RznGxq06cAj4EjO9Us8HlpKcouN6rNICSqMcQGLvaSPrL8Z4ILsxuM+J6gY9lq0zgFcQPivB9fi6FYFD5wfo8yTqmFSpg0BUK0FizgvVYuAjffrOJiaJeKcDSh8ETi2nZM6Ano2+Px8TptLrdnNRgFWESlgtZXjoVTLLZPYFWNhBkvMiK31eVN18vtKDzXWu1X9r9vDeuCpnaXQ/OvrTj0oHUeB7bFJx1aMSDPJCPEBSZaLUAsKyXu2xTLWYCyoDIhxlm9ttmObY2tluJKmwOlc312EpPBANEmANYpXOsnXWfGknzSFaGHVhDBOYMyrd8IjqHJGxQXR4pT1rpSiVsCmT3OhgF20M4KDV6cxNa+lrL2xFjS7GuJ8MytYeb3oEzkaf99OG1YnabNfDazAnTdvqBlVH3jvpx2zHXhW9fvslUy3H73ULWPpQyHZbbYBYnm3HdtEfMK77onfQxV0+Uz/bEvxpIOND8vw3Y05YvkGBlSuznfbDfu6YAQEDO1+DLlu14IsOdN/bgD8mOZrdF1tj1YRQidYfDQDTst/9r5jj0NMOVXUrGehrEmOsLfKZ3oOJd9GMVMevxAH6HCmVJhTvEjn3DP3d7W9oLA6p/usE3bcCJ6hxbXrUI2s7qqbIg+9Z4pTdOQ6oYrqCRAVTK+rnJEXuKg5Y2We5C/jDDFl150QX4asIGM62vMdKtq5jZhXSUAxVmsxkqZvuqUXajKDv4d5/CthlPxvFcWnzLlvZHMBvlEMxoBPUJWAV4dYcJP25iFpFRdso+pWHV1SrD2kf8jgHipD3QXJCDIts1bsBrJBK0O17h2UHzkO1Z+N54gH5niigvlUCKkG7G0pIXS1bfjkd2vVYhEoYsiNEzB2QKtWE/u30jSGXm9nsiwX0OSur7QKW9ShMqwnxgZN9XaP1qKSpYRsfp18jASYRz5KAzlfPcaSH321V5azCfZpJNdT4nQqcJn/figkZaHdDi4ALgAXy+jZMFYq5sjEWKauRWns+WR30I9e6Biyd+f9l4GTp8E7ghZgyvNYjZQuTvQd4gQjuFCZj/yEl+O1Q1bzHbbeTYR/nFICTgD8BniEA4XsmG3B4E3ANScH/blTIKONzyzDR2Ivk9VUYT5c+bCDq8LtR9zkJ+Kbq+3/HlN/VfYwxBx58HThF3vfnwOfkf+/CeNcA3g/8L5ETC35XYLyIANcDO5wFGMtmsVWeB+CZwPdoDT9op0Z91ji0O3dWrp8pAB0B33fAuUj59MnqWTLOF3sAy75nWp7148C1zDxJp0hZLby/ecMaLEvaD7wDcxIHMkD/hDna2yaL1oFXAW9Sn/9dAasR0kMGLKXOU/4k638VZevo1AZwPObI8jNyfm6iA1B01c28KmgNWKeedaH6fLVAG888zCnIth0XELwKcLYClJPw1x5veMbn70WWwBzjvl39X7u7dwpwNmktgZw1ZnZMfLIX+mzW2IXk9K0kZxpeA2zEf2JNHvms5pADC5RrBSDHc87rk3OQgaznbcdcUs3QQKp5mF87cVg24vfbAkbvFTXkRcAbRegi4Bzgw4LkI/L3f3RUyQX46xwdYaaXSXtmfB2u0RpNDa0pFfPU5/UAH8oYXAu8ZwgQzcMcIHAvrQZkO8jz5H968qsyBm7Sr33eQ47qBK2n08x3dseGLNSGPNPPBSRGHJZRVyqjW3/IgsBkTkGLZV7G5HU9BRQm1bhPB1TFqmdu9bwvlLG0TH1CmROep9Ty7WoB6TGbR2ssWh1zMENdaQmR6sthzxxEwhgjWuMIY7Ux1T0L2rLGuuqrNaNUFGBq+RxlZr5iRFLhIo+6XsfEQ47LHFQwdckece5tN44xYecagNwEdTdu6ohH9bTjPiL9iJ2xOuzZqBY6m5BlfRNFMiwNWjVMntUvAS8RQXo3JiDu58BnSKJ5vw+8maRE77OBvwROxx8+cAj4LPBXSqCuUWztM6Jq2PstF7Z3rEzwL8suHANPFFXkbMcQWgEeAy7BBDmm2UCeoCb4Trl/XkYK8EXMcVZxYKw3CWP9htqxF2BOublMLS678CIZz8+KGv5tuf8GTMCrBdrLgD+V59f2J3245oeBt5GvtrgbkJpl68KZ36bn9ybwBdngVqnx+SeZl4qSmYfk/x8T2akCLxc7ViTA/C7p9wJaAxEbopbdDDxXVFZdyPABGYfvKLm6HFNDLFZgo72Th+T9b5Hfm8C/AE8DTlR9+d+ymVtTyatEnY6FHf8dcK7adPXY7pax+ECAobnjeZrcdwz4PPCrOTUJu9leL/MQ01pax4LcBuDPgFuUrC6VcX+WfG+smFIkc/Q9udebgVcKqLrjOQ38WEwvD6T1t5NId5tH9WoBg3Xy948BdwtQNDDRqb+uhOZ0sXHMy7j/n8pkvU9eL1cq2ame5z9b7Wyj8vdjMFUKzwx8x4k5+95QE7dD7YjNFKDSu+K5IgShdjJwkdD5LfL5t5CckOxryxVzXCR2onerRb5cgHJBRt9WdGHcbfd9Tc/fI+BCYKXzuXFHrRlRbOVJ6v0L1L1fJ1eorZRFFfrfhSIr29UzrM7o3xp5pmvk9TnKsWDbUrlcddrK59oM2Xi/bGpfy6EeajvUdpKDVOsp6zhWm8t5GTKzStb2WpG1GHP6zytSPmPPnXy1AFtaWy3jd7GH8XYNWFV56JcJ4h4DPFUuu8h/A3hYkHdSGNk8QdM9sij3KRXhj8SwjTCZ9ymW5VMzbDsiA31IdfBkAci6PMu1wvbsIEwwM4Ukq414nidrwV4pfY4dpnMc8P9lQkcxlRs3y+fOV2zqZlG9dbPpI5NqsaCY0hkyHg1hnS8RRqnTdGqyKZBD7QiVtc0jJz7w0vd6mYDuP8h8Iez6ByTJ1NvU9x52GJptp6t+3CyLwxrq3yuLIRZm+mn57CpxDI2J/D5ZvqsirF3Pg1X3muJ0eJ0y/Nv2Wkxu3tsFAMFUWr1OzfutavGfpVT8VwkwRQoIni6fe44AVtTGBjFCkticJ5B5StihZnqW1a/CVBWdL5vhGuAn8rn1aty/jDlvMlLquZXVZ6n3XS9MymoD64BPSF/Pl+/bRMA512kuoVUN78Zktn9K2ZdGBIxucDxB2tuzQZgBjtBdmrFgKin/1zR2WibBAuS1smi7ae1EwOvd4XLZZWOlmuo8NpeVTal5+YoIQojNVTweqElnrF+IOVBT26/uErWhnZZ1WjQZBlXfGNk80j0KsG5S9hXf9/tsYbqiwk9kgdv2m4r5fNf53x8IwLvG/d2yyM5zAKshC6riYQA/lZ+vczaX61MM5XbRTskmNk9tNO06jDrN0LDANCKyeqxjBB91Xutxn1SvPyUalK/V1fsOSl9rCjOmZeOoq+8rxIblPkRN7EqvxIQtIDr6B9Vk+AqgVZRR075vfmC3qHqEv6qYXpSxcGLZxfc4unGjTSGoOzttaMHa6wIZi1oOlTMOfOd8Zbite6h802OsvVsW7YXyud8LfPeXMN7dduOYLEOrMjMBuRnoRxxgXlWPHC4U2agqA3bTc88QcNoxs8x+zPO/imIT7gbTEPveb2ewR1+MXpPWWL0Fyqhuy7i4jqNFsjGF2mgHa3OS1nI5aX1oyNr9as4NK8ScfbJq7ZANtYZeKlcarvQEsHQnHld/25djEdhdxVXtsnbqhrogCRx0F4lmWzGtNX/a2bVqqo/j8tmpHJ+pi4G3Ju9/APh9BXqxgPoaz8S7tp8G+aKX7XMeFnr/CmEPVjCtk+I18lzPFRVmT8Z8uTv34hRVY766z0gApNz5dL9jb2CMo4xNyR2zhmfMms7i8YHnGMYbaWvQv0tYX01k9KnAOwMA4H7ffunLVMqmOiEq8WHF3KzGMCXqUl62ZWVgeaD/ofV/lVon3xdngP3OUXEoLOtAVt2Qiapspt9yNn7b3y3Ag6ScK1lEHZzYEbgK6ccrNcRwd6WzWC6jtSSNj7lcgPHu2QVzrghY07NAmp7f221blC1lvahnd5N4jnQqRA0Tc/MhNVnW5TsJ3OfsUpOBBdfoci5GxID8PUwMmV0AdbGbvFaN+UgO9e5RWXj2mK73iu1mitYSNmtloUyJkO8J9K+SseP/mrNgb8Pv8s5zT/DHffkWXOyR3xGMh/I+md9JjOMnJlyfPlJ9uQq432G/j9MaK1cVu9utHlU/kgWcBlhWa3hIyepLgE9iAm11WI22L93kMDvrydyLCc+xm+0CWsMxKjlslr6NzI7JPgFAXwmbQ1mEoBeFu+JAR36uUPZEjCs/BH43qL/doiZvvSxE365yP4knD8fu1W5Gut0pPiH2OBu9/QK5Qu0uYU6Inc7u2k9WRvUsG0+ntggruCuBO1Lm1o7XdpIMhdD7qmJzeD/wN/L3lSlqplVhHhF7RkUtSh9IWDZ6M8YD2JTx1l7SNTK3rmyFDPlRioynnXHYUIxnkxjqrXqYx9Btf79VGFpTnAovU++5UtjFg8K6T5fPfSHlOy4VcAl5CS0QvBcTE2lDil6ZIS9LxCEASXXVppgJXpyzz3mDu3+onueXZWP3tXsw3tbCDXU+L4NV8yY9A1oBbgd+RyZL6/Kx8mgcFvT9gGIw38DEszyqaHqsjNUN2YVfrb7bqm42IC3uAHRtZPXzZGJ3q/5Nyn0n5Jn3y8+dalyvw3h79nvsFocwcSc71X30WE4rx0EnRtQmrQemxo796x5RDacy1EE7d2/HxL9tlnmyzzYhatIRkuKFNwqz2KnAwsrHpIyTuzH8lYzXESVH0wKWegwOyz2mnWeeVJcbEDwh768zsyjfQTWH02r83iAOAZ8JYZMwLvdEbduXazHeyMNqrCYdM8hBUdl/omS4qa7Y+Rs5bFG3iazeIM81reTVztNhYXiHZLOym+XHMGEW0x5QfFwcCvs8DGhK9bEZMP1EwEcxAeSPO2shVmu1SY7g0f8CkjZGsObvgw4AAAAASUVORK5CYII="></div>
+    </div>
+
+    <div class="nav-item active" onclick="triggerAppHaptic(); switchTab('dashboard', this)">
+      <div class="nav-icon nav-icon-dash" data-fallback="📊"><i data-lucide="layout-dashboard"></i></div>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="triggerAppHaptic(); switchTab('leads', this)">
+      <div class="nav-icon nav-icon-leads" data-fallback="🎯"><i data-lucide="target"></i></div>
+      <span>Leads</span>
+    </div>
+    <div class="nav-item" onclick="triggerAppHaptic(); switchTab('orders', this)">
+      <div class="nav-icon nav-icon-orders" data-fallback="📦"><i data-lucide="package"></i></div>
+      <span>Orders</span>
+    </div>
+    <div class="nav-item" onclick="triggerAppHaptic(); switchTab('services', this)">
+      <div class="nav-icon nav-icon-services" data-fallback="🛠️"><i data-lucide="wrench"></i></div>
+      <span>Services</span>
+    </div>
+    <div class="nav-item" onclick="triggerAppHaptic(); switchTab('inventory', this)">
+      <div class="nav-icon nav-icon-stock" data-fallback="🏷️"><i data-lucide="tag"></i></div>
+      <span>Stock</span>
+    </div>
+    <div class="nav-item" onclick="triggerAppHaptic(); switchTab('billing', this)">
+      <div class="nav-icon nav-icon-ledger" data-fallback="📑"><i data-lucide="receipt"></i></div>
+      <span>Ledger</span>
+    </div>
+    <div class="nav-item" onclick="triggerAppHaptic(); switchTab('chat', this)">
+      <div class="nav-icon nav-icon-chat" data-fallback="💬"><i data-lucide="message-circle"></i></div>
+      <span>Chat</span>
+      <span class="nav-badge" id="chatNavBadge" style="display:none;">0</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODALS -->
+
+<!-- 0. SMART UPI QR MODAL -->
+<div id="upiModal" class="auth-overlay" style="display:none; z-index:3200;">
+  <div class="auth-card" style="max-width:440px; text-align:center;">
+    <div class="card-header">
+      <strong class="card-title">📱 Scan & Pay via UPI / QR</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeUpiModal()">✕</button>
+    </div>
+    <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">
+      Billed To: <strong id="upiCustName" style="color:var(--text-main);">-</strong>
+    </div>
+    <div style="background:#ffffff; padding:14px; border-radius:16px; display:inline-block; border:2px dashed #0284c7; box-shadow:0 6px 20px rgba(0,0,0,0.1); margin-bottom:12px;">
+      <div id="upiQrImage" style="width:210px; height:210px; margin:0 auto; border-radius:8px; overflow:hidden; background:#fff;"></div>
+    </div>
+    <div style="font-size:22px; font-weight:900; color:var(--text-main); margin-bottom:12px;" id="upiAmountText">₹0</div>
+    <div style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:12px 14px; text-align:left; font-size:11.5px; line-height:1.6; margin-bottom:14px;">
+      <div style="color:var(--primary); font-weight:800; border-bottom:1px solid var(--border); padding-bottom:5px; margin-bottom:5px;">
+        🏦 TWINTOWN EXPRESS SERVICES PVT LTD
+      </div>
+      <div><strong>Bank:</strong> ICICI Bank (Cuttack Road, BBSR)</div>
+      <div><strong>A/C No:</strong> <span style="font-family:monospace; font-weight:700; color:var(--text-main);">150005501249</span></div>
+      <div><strong>IFSC Code:</strong> <span style="font-family:monospace; font-weight:700; color:var(--text-main);">ICIC0001500</span></div>
+      <div><strong>UPI ID:</strong> <span style="color:var(--cyan); font-weight:800;">eazypay.574099310@icici</span></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); closeUpiModal()">✓ Done / Payment Received</button>
+  </div>
+</div>
+
+<!-- 0.1 DIGITAL SIGNATURE MODAL -->
+<div id="signatureModal" class="auth-overlay" style="display:none; z-index:3100;">
+  <div class="auth-card" style="max-width:460px;">
+    <div class="card-header">
+      <strong class="card-title">✍️ Customer Service Verification Sign</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeSignModal()">✕</button>
+    </div>
+    <canvas id="signCanvas" width="400" height="180" style="background:#ffffff; border:1.8px solid var(--border); border-radius:12px; width:100%; touch-action:none;"></canvas>
+    <div style="display:flex; justify-content:space-between; margin-top:10px;">
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); clearSignCanvas()">Clear Signature</button>
+      <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); saveCustomerSignature()">✓ Confirm Signature</button>
+    </div>
+  </div>
+</div>
+
+<!-- 0.2 ADMIN STAFF MANAGEMENT MODAL (NO FACTORY RESET) -->
+<div id="staffManageModal" class="auth-overlay" style="display:none; z-index:3300;">
+  <div class="auth-card" style="max-width:540px;">
+    <div class="card-header">
+      <strong class="card-title">👥 Admin Staff Management & Role Control</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeStaffManageModal()">✕</button>
+    </div>
+    <div id="staffManageList" style="max-height:380px; overflow-y:auto; margin-bottom:14px;"></div>
+    <button class="btn btn-outline btn-block" onclick="triggerAppHaptic(); closeStaffManageModal()">Close</button>
+  </div>
+</div>
+
+<!-- 0.3 ADMIN LEDGER INVOICE EDIT MODAL -->
+<div id="editLedgerModal" class="auth-overlay" style="display:none; z-index:3400;">
+  <div class="auth-card" style="max-width:480px;">
+    <div class="card-header">
+      <strong class="card-title">✏️ Admin Edit Ledger Invoice</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeEditLedgerModal()">✕</button>
+    </div>
+    <input type="hidden" id="editLedgerInvId">
+    <div class="form-group">
+      <label class="form-label">Customer Name</label>
+      <input type="text" id="editLedgerCustName">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Total Amount (₹)</label>
+        <input type="number" id="editLedgerTotalAmt" oninput="calcEditLedgerBalance()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount Received (₹)</label>
+        <input type="number" id="editLedgerRecvAmt" oninput="calcEditLedgerBalance()">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Due Amount (₹)</label>
+        <input type="number" id="editLedgerDueAmt" readonly style="font-weight:800; color:var(--danger);">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Mode</label>
+        <select id="editLedgerPayMode">
+          <option value="Cash">💵 Cash</option>
+          <option value="UPI / QR Code">📱 UPI / QR Code</option>
+          <option value="Net Banking / NEFT">🏦 Net Banking / NEFT</option>
+          <option value="Cheque">📜 Cheque</option>
+          <option value="Not Paid / Full Due">⏳ Not Paid / Full Due</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" id="editLedgerPrevDueBox" style="border:1px dashed var(--border); border-radius:12px; padding:10px 12px;">
+      <label style="display:flex; align-items:center; justify-content:space-between; gap:10px; cursor:pointer; margin:0;">
+        <span><b style="font-size:13px;">➕ Show customer's previous pending due on this bill</b><br><small style="opacity:.7;">ON = invoice also shows old due + total outstanding. Bill total / received / due are not changed.</small></span>
+        <input type="checkbox" id="editLedgerPrevDueOn" style="width:22px; height:22px; flex:none;" onchange="ttPrevDueToggle()">
+      </label>
+      <div id="editLedgerPrevDueRow" style="display:none; margin-top:8px;">
+        <label class="form-label">Previous pending due of this customer (₹)</label>
+        <input type="number" id="editLedgerPrevDueAmt" oninput="ttPrevDueTotal()">
+        <small id="editLedgerPrevDueNote" style="display:block; margin-top:4px; opacity:.75;"></small>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Booked By Staff</label>
+      <select id="editLedgerStaffSelect" class="emp-dropdown"></select>
+    </div>
+    <div class="form-group" style="margin-top:4px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+        <label class="form-label" style="margin:0;">🧾 Bill Items (Full Edit)</label>
+        <button type="button" class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); addEditLedgerItemRow()">+ Add Item</button>
+      </div>
+      <div id="editLedgerItemsRows" style="display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto; -webkit-overflow-scrolling:touch;"></div>
+      <button type="button" class="btn btn-outline btn-sm btn-block" style="margin-top:8px;" onclick="triggerAppHaptic(); recalcLedgerTotalFromItems()">🔄 Recalculate Total From Items</button>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveAdminLedgerInvoice()">💾 Update Ledger Bill</button>
+  </div>
+</div>
+
+<!-- 0.4 PROFIT MARGIN & MARKUP CALCULATOR MODAL -->
+<div id="profitCalculatorModal" class="auth-overlay" style="display:none; z-index:3500;">
+  <div class="auth-card" style="max-width:460px;">
+    <div class="card-header">
+      <strong class="card-title">🧮 Profit Margin & Markup Calculator</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeProfitCalculatorModal()">✕</button>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Dealer / Purchase Cost (₹)</label>
+        <input type="number" id="calcCostPrice" placeholder="1000" oninput="calculateProfitMargins()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Selling / MRP Price (₹)</label>
+        <input type="number" id="calcSellPrice" placeholder="1500" oninput="calculateProfitMargins()">
+      </div>
+    </div>
+    <div style="background:var(--bg); border:1.5px solid var(--border); border-radius:12px; padding:14px; margin-top:12px; font-size:13px;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+        <span>Net Profit Amount:</span>
+        <strong id="calcProfitAmt" style="color:var(--success); font-size:15px;">₹0</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+        <span>Profit Margin %:</span>
+        <strong id="calcProfitMargin" style="color:var(--cyan); font-size:15px;">0%</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span>Markup %:</span>
+        <strong id="calcMarkupPct" style="color:var(--accent); font-size:15px;">0%</strong>
+      </div>
+    </div>
+    <button class="btn btn-outline btn-block" style="margin-top:14px;" onclick="triggerAppHaptic(); closeProfitCalculatorModal()">Close Calculator</button>
+  </div>
+</div>
+
+<!-- 0.5 AGEING ANALYSIS MODAL -->
+<div id="ageingAnalysisModal" class="auth-overlay" style="display:none; z-index:3500;">
+  <div class="auth-card" style="max-width:560px;">
+    <div class="card-header">
+      <strong class="card-title">⏳ Receivables Ageing Analysis</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeAgeingAnalysisModal()">✕</button>
+    </div>
+    <div id="ageingReportContainer" style="max-height:360px; overflow-y:auto; margin-bottom:14px;"></div>
+    <button class="btn btn-outline btn-block" onclick="triggerAppHaptic(); closeAgeingAnalysisModal()">Close</button>
+  </div>
+</div>
+
+<!-- 0.6 PERFORMANCE REPORT MODAL -->
+<div id="performanceReportModal" class="auth-overlay" style="display:none; z-index:3500;">
+  <div class="auth-card" style="max-width:620px;">
+    <div class="card-header">
+      <strong class="card-title">📈 Employee-wise Sales Performance</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closePerformanceReportModal()">✕</button>
+    </div>
+    <div id="performanceReportContainer" style="max-height:380px; overflow-y:auto; margin-bottom:14px;"></div>
+    <button class="btn btn-outline btn-block" onclick="triggerAppHaptic(); closePerformanceReportModal()">Close</button>
+  </div>
+</div>
+
+<!-- 1. Stock Detail Modal -->
+<div id="stockDetailModal" class="auth-overlay" style="display:none; z-index:2500;">
+  <div class="auth-card" style="max-width:580px;">
+    <div class="card-header">
+      <strong class="card-title" id="detName" style="font-size:15px;">Item Specifications</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeStockDetailModal()">✕</button>
+    </div>
+    <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;" id="detMeta"></div>
+    <div class="grid-3" style="background:var(--bg); padding:12px; border-radius:12px; margin-bottom:14px; text-align:center; border:1px solid var(--border);">
+      <div>
+        <div style="font-size:10.5px; color:var(--text-muted); font-weight:800;">DEALER PRICE</div>
+        <div style="font-size:16px; font-weight:800; color:var(--text-main);" id="detDealer">₹0</div>
+      </div>
+      <div>
+        <div style="font-size:10.5px; color:var(--text-muted); font-weight:800;">CUSTOMER MRP</div>
+        <div style="font-size:16px; font-weight:800; color:var(--accent);" id="detMrp">₹0</div>
+      </div>
+      <div>
+        <div style="font-size:10.5px; color:var(--text-muted); font-weight:800;">STOCK IN HAND</div>
+        <div style="font-size:16px; font-weight:800;" id="detStock">0</div>
+      </div>
+    </div>
+    <div id="detDescWrap" style="background:rgba(0,180,216,0.1); border:1.5px solid var(--cyan); padding:12px; border-radius:12px; margin-bottom:14px; font-size:12.5px;">
+      <strong style="color:var(--cyan); display:block; margin-bottom:4px;">🛠️ Technical Data / Specifications:</strong>
+      <div id="detDesc" style="color:var(--text-main); line-height:1.5;"></div>
+    </div>
+    <div style="display:flex; gap:10px; margin-bottom:14px;">
+      <button class="btn btn-outline btn-sm btn-block" onclick="triggerAppHaptic(); editFromDetailModal()">✏️ Edit Item Details</button>
+      <button class="btn btn-wa btn-sm btn-block" onclick="triggerAppHaptic(); ttShareProduct(activeStockDetailId)">📤 Share</button>
+    </div>
+    <div style="font-size:13.5px; font-weight:800; color:var(--text-main); margin-bottom:8px;">📋 Sales History:</div>
+    <div id="detSalesHistory" style="max-height:240px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:6px;"></div>
+  </div>
+</div>
+
+<!-- 2. Global Search Modal -->
+<div id="globalSearchModal" class="auth-overlay" style="display:none; align-items:flex-start; padding-top:60px;">
+  <div class="auth-card" style="max-width:520px;">
+    <div class="card-header">
+      <strong class="card-title">🔍 Master Search</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeGlobalSearchModal()">✕</button>
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <input type="text" id="globalSearchInput" placeholder="Customer, order ref, machine, item code, phone..." oninput="ttDeb('gs',performGlobalSearch,this.value)">
+    </div>
+    <div id="globalSearchResults"></div>
+  </div>
+</div>
+
+<!-- 3. Lead Modal -->
+<div id="leadModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card tt-sheet-card">
+    <div class="card-header">
+      <strong class="card-title" id="leadModalTitle">Machine Inquiry & Lead</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeLeadModal()">✕</button>
+    </div>
+    <input type="hidden" id="editLeadId">
+    <div class="form-group autocomplete-wrapper">
+      <label class="form-label">🔍 Select Customer:</label>
+      <input type="text" id="leadCustSearchInput" placeholder="Type customer name or phone..." oninput="handleCustomerAutocomplete(this, 'leadCustSearchInput')">
+      <div class="solid-suggestion-box" id="leadCustSuggestBox"></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Inquiry Date</label>
+        <input type="date" id="leadInqDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Handled By</label>
+        <select id="leadStaffSelect" class="emp-dropdown"></select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">🚜 Machine Model:</label>
+        <input type="text" id="leadMachine" placeholder="Type machine model..." oninput="handleMachineAutocomplete(this, 'leadMachine')">
+        <div class="solid-suggestion-box" id="leadMachineSuggestBox"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quoted Price (₹)</label>
+        <input type="number" id="leadPrice" placeholder="85000">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Next Follow-up Date</label>
+      <input type="date" id="leadFollowupDate">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Discussion Remarks</label>
+      <textarea id="leadRemarks" rows="2" placeholder="Discussion notes..."></textarea>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveLeadAction()" style="padding:12px;">💾 Save Machine Lead</button>
+  </div>
+</div>
+
+<!-- 5. Order Modal -->
+<div id="orderModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card tt-sheet-card" style="max-width:680px;">
+    <div class="card-header">
+      <strong class="card-title" id="orderModalTitle">Multi-Item Product Order</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeOrderModal()">✕</button>
+    </div>
+    <input type="hidden" id="editOrderId">
+    <div class="grid-2">
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">🔍 Customer:</label>
+        <input type="text" id="ordCustSearchInput" placeholder="Type customer name/phone..." oninput="handleCustomerAutocomplete(this, 'ordCustSearchInput')">
+        <div class="solid-suggestion-box" id="ordCustSuggestBox"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Order Booked By</label>
+        <select id="ordStaffSelect" class="emp-dropdown"></select>
+      </div>
+    </div>
+    <div class="grid-3" style="align-items:center; background:var(--bg); padding:10px; border-radius:10px; margin-bottom:12px; border:1px solid var(--border);">
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Tax Supply Type</label>
+        <select id="ordTaxType" onchange="calcOrderTotals()">
+          <option value="INTRA">Intra-State (CGST + SGST @ 9%+9%)</option>
+          <option value="INTER">Inter-State (IGST @ 18%)</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Order Date</label>
+        <input type="date" id="ordDate">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Expected Delivery</label>
+        <input type="date" id="ordDelDate">
+      </div>
+    </div>
+
+    <label class="form-label">Order Items (MRP & Discount):</label>
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Product / Item</th>
+          <th style="width:60px;">Qty</th>
+          <th style="width:75px;">MRP (₹)</th>
+          <th style="width:65px;">Disc %</th>
+          <th style="width:80px;">Rate (₹)</th>
+          <th style="width:85px;">Total</th>
+          <th style="width:25px;"></th>
+        </tr>
+      </thead>
+      <tbody id="orderItemsTbody"></tbody>
+    </table>
+    <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); addOrderItemRow()" style="margin-bottom:12px;">+ Add Product Item</button>
+
+    <div class="grid-3" style="background:var(--bg); padding:12px; border-radius:10px; margin-bottom:12px; border:1px solid var(--border);">
+      <div>
+        <label class="form-label">🚚 Courier/Transport (₹)</label>
+        <input type="number" id="ordCourierCharge" value="0" min="0" oninput="calcOrderTotals()">
+      </div>
+      <div>
+        <label class="form-label">Total Amount</label>
+        <input type="number" id="ordTotalAmt" readonly style="font-weight:800;">
+        <input type="hidden" id="ordTotalRaw" value="0">
+        <div id="ordRoundOffNote" style="font-size:9.5px; color:var(--text-muted); margin-top:2px; font-variant-numeric:tabular-nums;"></div>
+      </div>
+      <div>
+        <label class="form-label">Advance Recv (₹)</label>
+        <input type="number" id="ordRecvAmt" value="0" oninput="calcOrderBalance()">
+      </div>
+      <div>
+        <label class="form-label">Due (₹)</label>
+        <input type="number" id="ordDueAmt" readonly style="font-weight:800; color:var(--danger);">
+      </div>
+    </div>
+
+    <div id="ordPayProofBox" style="display:none; background:var(--bg); padding:10px 12px; border-radius:10px; margin-bottom:12px; border:1px dashed var(--success,#10b981);">
+      <label class="form-label" style="margin-bottom:6px;">📷 Advance Payment Photo (screenshot / receipt)</label>
+      <div id="ordPayProofList" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px;"></div>
+      <label id="ordPayAddBtn" class="btn btn-outline btn-sm" style="margin:0; cursor:pointer;">➕ Photo Add<input type="file" accept="image/*" multiple style="display:none;" onchange="ttPayPick(this)"></label>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Payment Mode Collected:</label>
+      <select id="ordPayMode">
+        <option value="Cash">💵 Cash</option>
+        <option value="UPI / QR Code">📱 UPI / QR Code</option>
+        <option value="Net Banking / NEFT">🏦 Net Banking / NEFT</option>
+        <option value="Cheque">📜 Cheque</option>
+        <option value="Not Paid / Full Due">⏳ Not Paid / Full Due</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveOrderAction()" style="padding:12px;">💾 Save Order Place</button>
+  </div>
+</div>
+      
+<!-- 6. Service Call Modal -->
+<div id="serviceModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card tt-sheet-card" style="max-width:540px;">
+    <div class="card-header">
+      <strong class="card-title" id="serviceModalTitle">Service & Repair Record</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeServiceModal()">✕</button>
+    </div>
+    <input type="hidden" id="editServiceId">
+    <div class="grid-2">
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">🔍 Customer:</label>
+        <input type="text" id="srvCustSearchInput" placeholder="Type customer name..." oninput="handleCustomerAutocomplete(this, 'srvCustSearchInput')">
+        <div class="solid-suggestion-box" id="srvCustSuggestBox"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Attended Engineer</label>
+        <select id="srvStaffSelect" class="emp-dropdown"></select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group autocomplete-wrapper">
+        <label class="form-label">🚜 Machine Model:</label>
+        <input type="text" id="srvMachine" placeholder="Search machine model..." oninput="handleMachineAutocomplete(this, 'srvMachine')">
+        <div class="solid-suggestion-box" id="srvMachineSuggestBox"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Call Received Date</label>
+        <input type="date" id="srvRecvDate">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Target Service Date</label>
+        <input type="date" id="srvTargetDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Service Status</label>
+        <select id="srvStatusSelect" onchange="toggleServiceCompletionFields(this.value)">
+          <option value="Pending / Scheduled">Pending / Scheduled</option>
+          <option value="Work Completed">Work Completed</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Reported Issue / Symptoms</label>
+      <textarea id="srvProblem" rows="2" placeholder="Symptoms..."></textarea>
+    </div>
+    <div id="srvCompletedFields" style="display:none; background:var(--success-bg); border:1px solid rgba(16,185,129,0.3); padding:12px; border-radius:10px; margin-bottom:12px;">
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Completion Date</label>
+          <input type="date" id="srvDoneDate">
+        </div>
+        <div class="form-group autocomplete-wrapper">
+          <label class="form-label">Part Used (Stock Deducted)</label>
+          <div style="display:flex; gap:6px;">
+            <input type="text" id="srvPartSearchInput" placeholder="Search replaced part..." oninput="handlePartAutocomplete(this, 'srvPartSearchInput')" style="flex:1;">
+            <input type="number" id="srvPartQty" value="1" min="1" title="Qty used" style="width:54px;">
+          </div>
+          <div class="solid-suggestion-box" id="srvPartSuggestBox"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Action Taken & Root Cause</label>
+        <input type="text" id="srvActionDone" placeholder="Replaced ceramic plunger & valve seals">
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+        <span style="font-size:11.5px; font-weight:700; color:var(--success);" id="srvSignStatus">Customer Sign: Pending</span>
+        <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openSignatureModal()">✍️ Take Customer Signature</button>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveServiceAction()" style="padding:12px;">💾 Save Service Call</button>
+  </div>
+</div>
+
+<!-- 7. Inventory Item Modal -->
+<div id="stockItemModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title" id="stockModalTitle">Inventory Item</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeStockModal()">✕</button>
+    </div>
+    <input type="hidden" id="editStockId">
+    <div class="form-group">
+      <label class="form-label">Part / Product Name</label>
+      <input type="text" id="stkName" placeholder="e.g. AR Pump Ceramic Plunger 18mm">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Part / SKU Code</label>
+        <input type="text" id="stkCode" placeholder="AR-PL-18">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select id="stkCategory">
+          <option value="Machines &amp; Equipment">Machines</option>
+          <option value="Ma-Fra Chemicals">Ma-Fra Chemical</option>
+          <option value="Mafra Detailing">Ma-Fra Detailing</option>
+          <option value="Maniac Line">Maniac Line</option>
+          <option value="Maxshine Gear &amp; Tools">Maxshine</option>
+          <option value="Vista Car Care">Vista</option>
+          <option value="Machine Spares">Spares</option>
+          <option value="Fireball">Fireball</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Machine Model (Applicable)</label>
+        <input type="text" id="stkMachine" placeholder="e.g. HRC / HRK / BC780">
+      </div>
+      <div class="form-group">
+        <label class="form-label">HSN Code</label>
+        <input type="text" id="stkHsn" placeholder="84139190">
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="form-group">
+        <label class="form-label">Current Stock</label>
+        <input type="number" id="stkQty" value="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Dealer Price (₹)</label>
+        <input type="number" id="stkDealerRate" placeholder="1200">
+      </div>
+      <div class="form-group">
+        <label class="form-label">MRP (₹)</label>
+        <input type="number" id="stkRate" placeholder="1500">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Technical Specs & Notes</label>
+      <textarea id="stkDesc" rows="2" placeholder="Specifications, specs, machine match..."></textarea>
+    </div>
+    <button class="btn btn-accent btn-block" onclick="triggerAppHaptic(); saveStockItemAction()" style="padding:12px;">💾 Save Item</button>
+  </div>
+</div>
+
+<!-- 9. Customer Profile Modal -->
+<div id="customerModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card">
+    <div class="card-header">
+      <strong class="card-title" id="custModalTitle">Customer Profile</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeCustomerModal()">✕</button>
+    </div>
+    <input type="hidden" id="editCustId">
+    <div class="form-group">
+      <label class="form-label">Workshop / Business Name</label>
+      <input type="text" id="cName" placeholder="e.g. Sambit Autocare Private Limited">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" id="cPhone" placeholder="10-digit number" maxlength="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email ID</label>
+        <input type="email" id="cEmail" placeholder="client@gmail.com">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Workshop Address & Landmark</label>
+      <input type="text" id="cAddress" placeholder="Plot No, Street, City, District">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">GSTIN / Reg No.</label>
+        <input type="text" id="cGst" placeholder="21AAAAA0000A1Z5">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contact Person Name</label>
+        <input type="text" id="cPerson" placeholder="Owner / Manager">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="triggerAppHaptic(); saveCustomerAction()" style="padding:12px;">💾 Save Customer Profile</button>
+  </div>
+</div>
+
+<!-- 10. Cash Closing Modal -->
+<div id="cashClosingModal" class="auth-overlay" style="display:none;">
+  <div class="auth-card" style="max-width:540px;">
+    <div class="card-header">
+      <strong class="card-title">💰 Daily Shift & Cash Closing Summary</strong>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeDailyCashClosingModal()">✕</button>
+    </div>
+    <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px;">
+      Date: <strong id="closeSummaryDate">Today</strong> | Verified By: <strong id="closeSummaryStaff">Staff</strong>
+    </div>
+    <div class="grid-3" style="margin-bottom:14px;">
+      <div style="background:var(--success-bg); border:1px solid rgba(16,185,129,0.3); padding:12px; border-radius:10px; text-align:center;">
+        <div style="font-size:10.5px; color:var(--success); font-weight:800;">CASH COLLECTED</div>
+        <div style="font-size:17px; font-weight:800; color:var(--success);" id="closeCashAmt">₹0</div>
+      </div>
+      <div style="background:rgba(0,180,216,0.1); border:1px solid rgba(0,180,216,0.3); padding:12px; border-radius:10px; text-align:center;">
+        <div style="font-size:10.5px; color:var(--cyan); font-weight:800;">UPI / ONLINE</div>
+        <div style="font-size:17px; font-weight:800; color:var(--cyan);" id="closeUpiAmt">₹0</div>
+      </div>
+      <div style="background:rgba(126,34,206,0.1); border:1px solid rgba(126,34,206,0.3); padding:12px; border-radius:10px; text-align:center;">
+        <div style="font-size:10.5px; color:#7e22ce; font-weight:800;">BANK / CHEQUE</div>
+        <div style="font-size:17px; font-weight:800; color:#7e22ce;" id="closeBankAmt">₹0</div>
+      </div>
+    </div>
+    <div style="background:var(--bg); border:1.2px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px;">
+      <div style="font-size:12.5px; font-weight:800; color:var(--text-main); margin-bottom:10px;">💵 Cash Drawer Denomination Count:</div>
+      <div class="grid-3" style="font-size:12px; row-gap:10px;">
+        <div>₹500 x <input type="number" id="note500" style="width:68px; display:inline-block; padding:5px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹200 x <input type="number" id="note200" style="width:68px; display:inline-block; padding:5px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹100 x <input type="number" id="note100" style="width:68px; display:inline-block; padding:5px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹50 &nbsp;x <input type="number" id="note50" style="width:68px; display:inline-block; padding:5px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹20 &nbsp;x <input type="number" id="note20" style="width:68px; display:inline-block; padding:5px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+        <div>₹10 &nbsp;x <input type="number" id="note10" style="width:68px; display:inline-block; padding:5px;" min="0" value="0" oninput="calcCashDenominations()"></div>
+      </div>
+      <div style="margin-top:12px; display:flex; justify-content:space-between; font-weight:800; font-size:13px; border-top:1px dashed var(--border); padding-top:8px;">
+        <span>Total Counted Physical Cash:</span>
+        <span id="denomTotalDisplay" style="color:var(--text-main);">₹0</span>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-wa btn-block" onclick="triggerAppHaptic(); sendClosingSummaryWhatsApp()" style="padding:12px;">💬 Send Report to WhatsApp</button>
+      <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeDailyCashClosingModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- 11. INVOICE PRINT MODAL -->
+<div id="invoicePrintModal" class="auth-overlay" style="display:none; z-index:3000;">
+  <div class="auth-card" style="max-width:740px; width:95%;">
+    <div class="card-header no-print">
+      <strong class="card-title">🖨️ GST Tax Invoice Preview</strong>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-wa btn-sm" onclick="triggerAppHaptic(); ttShareCurrentInvoice()">📎 WhatsApp PDF</button>
+        <button class="btn btn-print btn-sm" onclick="triggerAppHaptic(); executeInvoicePrint()">🖨️ Print / Save as PDF</button>
+        <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); closeInvoicePrintModal()">✕ Close</button>
+      </div>
+    </div>
+    <div id="printableInvoiceArea"><div id="tallyInvoiceBody"></div></div>
+  </div>
+</div>
+
+<!-- NOTION-STYLE DAILY CRM MODAL -->
+<div id="notionCrmModal" class="auth-overlay" style="display:none; z-index:3800;">
+  <div class="auth-card" style="max-width:700px; width:95%; max-height:90dvh;">
+    <div class="card-header">
+      <strong class="card-title">🗂️ Daily Field CRM & Visits</strong>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="triggerAppHaptic(); printDailyCrmReport()">🖨️ Print Daily Report</button>
+        <button class="btn btn-outline btn-sm" onclick="closeNotionCrmModal()">✕</button>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
+      <input type="text" id="crmSearchInput" placeholder="🔍 Search shop, client or phone..." oninput="ttDeb('crm',renderCrmRecords)" style="flex:1; font-size:13px; padding:8px 12px;">
+      <button class="btn btn-accent btn-sm" onclick="openCrmEditModal()">+ New Visit / Client</button>
+    </div>
+
+    <div id="crmRecordsContainer" style="max-height:55vh; overflow-y:auto; padding-right:4px;"></div>
+  </div>
+</div>
+
+<!-- ADD/EDIT CRM RECORD MODAL -->
+<div id="crmEditModal" class="auth-overlay" style="display:none; z-index:3900;">
+  <div class="auth-card" style="max-width:500px;">
+    <div class="card-header">
+      <strong class="card-title" id="crmEditTitle">📝 CRM Visit Entry</strong>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('crmEditModal').style.display='none'">✕</button>
+    </div>
+    <input type="hidden" id="crmEditId">
+    <div class="form-group autocomplete-wrapper">
+      <label class="form-label">Shop / Business Name</label>
+      <input type="text" id="crmShopName" placeholder="Type to search existing customer, or type a new name" oninput="handleCrmCustomerAutocomplete(this)" autocomplete="off">
+      <div class="solid-suggestion-box" id="crmShopSuggestBox"></div>
+      <div style="font-size:10px; color:var(--text-muted); margin-top:3px;">🔍 If the customer already exists, select from the list - all details fill in automatically.</div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Owner / Contact Person</label>
+        <input type="text" id="crmOwnerName" placeholder="Owner name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" id="crmPhone" placeholder="10-digit mobile" maxlength="10">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">CRM Status / Stage</label>
+        <select id="crmStage">
+          <option value="New Lead">📌 New Lead</option>
+          <option value="Phone Call">📱 Phone Call</option>
+          <option value="Visited / Contacted">🤝 Visited / Contacted</option>
+          <option value="Visiting Card Collected">📇 Visiting Card Collected</option>
+          <option value="Demo Given">🚗 Demo Given</option>
+          <option value="Negotiation">💬 Negotiation</option>
+          <option value="Won / Converted">✅ Won / Converted</option>
+          <option value="Lost">❌ Lost</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Visit Date</label>
+        <input type="date" id="crmVisitDate">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Location / Address</label>
+      <input type="text" id="crmAddress" placeholder="Shop address, area">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Daily Notes & Discussion</label>
+      <textarea id="crmNotes" rows="2" placeholder="Machine discussed, requirements, pricing notes..."></textarea>
+    </div>
+
+    <!-- PHOTOS UPLOAD SECTION -->
+    <div class="grid-2" style="margin-bottom:12px; text-align:center;">
+      <div style="background:var(--bg); padding:8px; border-radius:10px; border:1px solid var(--border);">
+        <label class="form-label" style="font-size:11px;">🏪 Shop / Dukan Photo</label>
+        <img id="crmShopPhotoPrev" src="" style="display:none; width:100%; height:90px; object-fit:cover; border-radius:8px; margin-bottom:6px;">
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="document.getElementById('crmShopFileCam').click()">📷 Camera</button>
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="document.getElementById('crmShopFileGallery').click()">🖼️ Gallery</button>
+        </div>
+        <input type="file" id="crmShopFileCam" accept="image/*" capture="environment" style="display:none;" onchange="handleCrmPhoto(event, 'shop')">
+        <input type="file" id="crmShopFileGallery" accept="image/*" style="display:none;" onchange="handleCrmPhoto(event, 'shop')">
+      </div>
+      <div style="background:var(--bg); padding:8px; border-radius:10px; border:1px solid var(--border);">
+        <label class="form-label" style="font-size:11px;">📇 Visiting Card Photo</label>
+        <img id="crmCardPhotoPrev" src="" style="display:none; width:100%; height:90px; object-fit:cover; border-radius:8px; margin-bottom:6px;">
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="document.getElementById('crmCardFileCam').click()">📷 Camera</button>
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="document.getElementById('crmCardFileGallery').click()">🖼️ Gallery</button>
+        </div>
+        <input type="file" id="crmCardFileCam" accept="image/*" capture="environment" style="display:none;" onchange="handleCrmPhoto(event, 'card')">
+        <input type="file" id="crmCardFileGallery" accept="image/*" style="display:none;" onchange="handleCrmPhoto(event, 'card')">
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-block" onclick="saveCrmRecord()" style="padding:12px;">💾 Save CRM Entry</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="https://unpkg.com/lucide@0.525.0/dist/umd/lucide.min.js" crossorigin="anonymous" onerror="window.__lucideFailed=1"></script>
+<script src="master-data.js?v=41"></script>
+<script src="live-sync.js?v=41"></script>
+
+<script src="js/00-ai-models.js?v=41"></script>
+<script src="js/00-hoisted-core.js?v=41"></script>
+<script src="js/01-core-auth-dashboard-orders-stock.js?v=41"></script>
+<script src="js/02-customers-billing-chat-machine-parts.js?v=41"></script>
+<script src="js/03-reports-ledger-quotation-catalog.js?v=41"></script>
+<script src="js/04-travel-lists-ambient-ui.js?v=41"></script>
+<script src="js/05-invoice-tax-quotation-print.js?v=41"></script>
+<script src="js/06-expenses-and-old-bills.js?v=41"></script>
+<script src="js/07-profit-loss-sales-settings.js?v=41"></script>
+<script src="js/08-customer-card-back-manager-import.js?v=41"></script>
+<script src="js/09-office-followups-tasks-attendance.js?v=41"></script>
+<script src="js/10-cash-bank-backup-restore.js?v=41"></script>
+<script src="js/11-saved-filters-ai-core-images.js?v=41"></script>
+<script src="js/12-ai-copilot-insights.js?v=41"></script>
+<script src="js/13-liquid-glass.js?v=41"></script>
+<script src="js/14-fab-logo-ledger-search.js?v=41"></script>
+<script src="js/15-v35-fixes.js?v=41"></script>
+<script src="js/16-v36-dropdown.js?v=41"></script>
+<script src="js/17-v40-prevdue.js?v=41"></script>
+<script src="js/18-v41-core.js?v=41"></script>
+<script src="js/19-v41-features.js?v=41"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

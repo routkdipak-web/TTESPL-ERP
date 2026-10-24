@@ -1,0 +1,13 @@
+rules_version = '2';
+// TTESPL photo storage (used when Settings > Speed & Data > "Keep photos in Cloud Storage" is ON).
+// Publish in Firebase console > Storage > Rules. Only images up to 3 MB, only inside erp/.
+// If you use Secure mode, change the write line to:  allow write: if request.auth != null && ...
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /erp/{allPaths=**} {
+      allow read: if true;   // photos open through long secret links
+      allow write: if request.resource != null && request.resource.size < 3 * 1024 * 1024 && request.resource.contentType.matches('image/.*');
+    }
+    match /backups/{allPaths=**} { allow read, write: if false; }  // server backups: console / admin only
+  }
+}
