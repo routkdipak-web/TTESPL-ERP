@@ -63,3 +63,26 @@ html.tt-smooth.tt-smooth.tt-smooth body #ordersListContainer > .card, html.tt-sm
 
 /* the liquid-glass theme puts a blur on every card; Smooth mode turns it off (header + bottom bar are untouched) */
 html.tt-smooth.tt-smooth.tt-smooth body :is(.card, .stat-card, .tt25Spark, .ttxDashCard, .tt-tile-link) { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+
+/* delivery add-on (bill number, invoice details, payment at delivery) */
+.tt41-bn { border: 1px dashed var(--border, rgba(148,163,184,.5)); border-radius: 12px; padding: 9px 11px; margin: 4px 0 10px; font-size: 13px; }
+.tt41-bn select { width: 100%; margin-top: 7px; }
+.tt41-dt { border: 1px solid var(--border, rgba(148,163,184,.4)); border-radius: 12px; padding: 9px 11px; margin: 0 0 10px; }
+.tt41-dt summary { cursor: pointer; font-weight: 700; font-size: 13px; list-style: none; }
+.tt41-dt summary::-webkit-details-marker { display: none; }
+.tt41-dt summary small { font-weight: 500; opacity: .65; }
+.tt41-mg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.tt41-mg .form-label { font-size: 11px; margin-bottom: 2px; }
+.tt41-mg input { width: 100%; box-sizing: border-box; }
+.tt41-payb { border: 1px solid rgba(34,197,94,.35); background: rgba(34,197,94,.06); border-radius: 12px; padding: 10px 11px; margin: 0 0 12px; }
+.tt41-payh { display: flex; flex-direction: column; gap: 3px; font-size: 13px; margin-bottom: 8px; }
+.tt41-payh span { font-size: 11.5px; opacity: .85; }
+@media (max-width: 380px) { .tt41-mg { grid-template-columns: 1fr; } }
+
+/* extra photos (thumbnails with a small remove button) */
+.tt41-ph { text-align: center; margin: -4px 0 12px; }
+.tt41-thumbs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 8px; }
+.tt41-thumbs:empty { display: none; }
+.tt41-th { position: relative; display: inline-block; }
+.tt41-th img { width: 78px; height: 78px; object-fit: cover; border-radius: 10px; border: 2px solid var(--success, #16a34a); display: block; }
+.tt41-th b { position: absolute; top: -7px; right: -7px; width: 22px; height: 22px; border-radius: 50%; background: var(--danger, #dc2626); color: #fff; font-size: 11px; line-height: 22px; text-align: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
