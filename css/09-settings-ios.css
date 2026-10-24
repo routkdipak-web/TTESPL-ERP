@@ -1,0 +1,42 @@
+/* iPhone-style Settings (v31). Scoped to .ios-set, uses the app's theme variables. */
+html body .auth-card.ios-set { padding: 0 !important; display: flex; flex-direction: column; overflow: hidden; height: min(86dvh, 680px); max-height: none; width: 100%; background: var(--bg) !important; border-radius: 26px !important; }
+.ios-set .ios-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 12px 14px 8px; background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); border-bottom: 1px solid var(--border); z-index: 2; }
+.ios-set .ios-back, .ios-set .ios-done { appearance: none; border: 0; background: none; font: inherit; font-size: 15px; font-weight: 600; color: var(--cyan, #0a84ff); cursor: pointer; padding: 8px 4px; display: inline-flex; align-items: center; gap: 2px; -webkit-tap-highlight-color: transparent; }
+.ios-set .ios-done { justify-self: end; }
+.ios-set .ios-bt { font-size: 15px; font-weight: 700; color: var(--text-main); max-width: 46vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ios-set .ios-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 6px 16px calc(24px + env(safe-area-inset-bottom)); flex: 1; }
+.ios-set .ios-large { margin: 8px 2px 10px; font-size: 30px; font-weight: 800; letter-spacing: -.5px; color: var(--text-main); }
+.ios-set .ios-search { width: 100%; box-sizing: border-box; margin: 0 0 14px; padding: 10px 14px; border-radius: 12px; border: 0; background: color-mix(in srgb, var(--text-muted) 16%, transparent); color: var(--text-main); font: inherit; font-size: 15px; outline: none; }
+.ios-set .ios-search:focus-visible { box-shadow: 0 0 0 2px var(--cyan, #0a84ff); }
+.ios-set .ios-me { display: flex; align-items: center; gap: 14px; background: var(--card, #fff); border-radius: 16px; padding: 14px; margin: 0 0 18px; }
+.ios-set .ios-av { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; font-size: 22px; font-weight: 800; color: #fff; background: linear-gradient(160deg, #8e8e93, #636366); flex: none; }
+.ios-set .ios-me b { display: block; font-size: 17px; color: var(--text-main); }
+.ios-set .ios-me small { display: block; font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+.ios-set .ios-cap { margin: 14px 16px 6px; font-size: 13px; color: var(--text-muted); }
+.ios-set .ios-list { background: var(--card, #fff); border-radius: 16px; overflow: hidden; margin: 0 0 18px; }
+.ios-set .ios-cap + .ios-list { margin-top: 0; }
+.ios-set .ios-list > .tt25-row, .ios-set .ios-list > .ios-nav { border-top: 0; position: relative; padding: 12px 16px; }
+.ios-set .ios-list > * + *::before { content: ""; position: absolute; top: 0; left: 16px; right: 0; height: 1px; background: var(--border); }
+.ios-set .ios-list > .ios-nav + .ios-nav::before { left: 60px; }
+.ios-set .ios-nav { appearance: none; width: 100%; border: 0; background: none; font: inherit; text-align: left; display: flex; align-items: center; gap: 12px; cursor: pointer; color: var(--text-main); -webkit-tap-highlight-color: transparent; transition: background .15s; }
+.ios-set .ios-nav:active { background: color-mix(in srgb, var(--text-muted) 14%, transparent); }
+.ios-set .ios-ic { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; font-size: 17px; flex: none; box-shadow: inset 0 1px 0 rgba(255,255,255,.35); }
+.ios-set .ios-nt { flex: 1; min-width: 0; }
+.ios-set .ios-nt b { display: block; font-size: 16px; font-weight: 600; }
+.ios-set .ios-nt small { display: block; font-size: 12px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ios-set .ios-chev { width: 8px; height: 8px; border-top: 2px solid var(--text-muted); border-right: 2px solid var(--text-muted); transform: rotate(45deg); opacity: .6; flex: none; margin-right: 3px; }
+.ios-set .ios-chev.back { border-color: var(--cyan, #0a84ff); opacity: 1; transform: rotate(-135deg); margin: 0 4px 0 2px; }
+.ios-set .ios-empty { text-align: center; color: var(--text-muted); padding: 40px 10px; font-size: 14px; }
+.ios-set .tt25-rt b { font-size: 15.5px; font-weight: 600; }
+.ios-set .tt25-rt small { font-size: 12.5px; }
+.ios-set .ios-page.push { animation: iosPush .38s cubic-bezier(.32, .72, 0, 1) both; }
+.ios-set .ios-page.pop { animation: iosPop .38s cubic-bezier(.32, .72, 0, 1) both; }
+@keyframes iosPush { from { opacity: 0; transform: translate3d(28px, 0, 0); } to { opacity: 1; transform: none; } }
+@keyframes iosPop { from { opacity: 0; transform: translate3d(-28px, 0, 0); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ios-set .ios-page.push, .ios-set .ios-page.pop { animation: none; } }
+/* glass lists inside the liquid sheet */
+html body .auth-card.ios-set { background: linear-gradient(160deg, var(--lg-fill-a), var(--lg-fill-b)) !important; -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)); backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)); }
+.ios-set .ios-list, .ios-set .ios-me { background: rgba(255,255,255,.5); border: 1px solid var(--lg-line); box-shadow: var(--lg-inner); }
+body[data-theme="dark"] .ios-set .ios-list, body[data-theme="dark"] .ios-set .ios-me { background: rgba(255,255,255,.06); }
+body[data-theme="dark"] .ios-set .ios-list > * + *::before { background: rgba(255,255,255,.1); }
+.ios-set .ios-bar { background: transparent; }

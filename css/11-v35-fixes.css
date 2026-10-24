@@ -1,0 +1,38 @@
+/* v35: fixed-size Office Hub sheets, real profile-menu scrim, tappable dashboard tiles, recent-bills box in New Order */
+
+/* 1. Every Office Hub page (Tasks, Follow-ups, Purchase, Attendance, Duplicate review, ...) opens at the SAME size,
+      whether it has data or is empty. Content scrolls inside. */
+html body .ttx-sh { height: min(88dvh, 720px); max-height: 92dvh; min-height: 0; }
+html body .ttx-sh .ttx-bd { min-height: 0; }
+@supports not (height: 1dvh) { html body .ttx-sh { height: min(88vh, 720px); } }
+@media (min-width: 700px) { html body .ttx-sh { height: min(80vh, 720px); } }
+
+/* 2. Profile menu: page behind is blurred AND cannot be touched (tap on it just closes the menu) */
+body:has(.profile-dropdown-card.show)::after { display: none !important; }
+#ttProfScrim {
+  position: fixed; inset: 0; z-index: 999990; display: none; touch-action: none; overscroll-behavior: contain;
+  background: rgba(4, 14, 28, .42); -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%);
+}
+#ttProfScrim.on { display: block; animation: ttScrimIn .28s ease-out both; }
+@keyframes ttScrimIn { from { opacity: 0; } to { opacity: 1; } }
+html.lg-lite #ttProfScrim { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(4, 14, 28, .72); }
+
+/* 3. Dashboard tiles you can tap */
+.tt-tile-link { cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform .18s ease, filter .18s ease; position: relative; }
+.tt-tile-link:active { transform: scale(.97); filter: brightness(1.08); }
+.tt-tile-link::before { content: "›"; position: absolute; right: 10px; top: 8px; font-size: 18px; font-weight: 900; opacity: .55; line-height: 1; }
+
+/* 4. Recent bills under the customer in New Order */
+#ttRecentOrders { margin: -2px 0 12px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border, #d9dee5); background: var(--bg, rgba(255,255,255,.05)); font-size: 12px; }
+#ttRecentOrders .tro-h { font-weight: 800; font-size: 12px; margin-bottom: 6px; display: flex; justify-content: space-between; gap: 8px; }
+#ttRecentOrders .tro-warn { color: #d97706; font-weight: 800; margin-bottom: 6px; }
+#ttRecentOrders .tro-r { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px dashed var(--border, rgba(128,128,128,.3)); }
+#ttRecentOrders .tro-r b { font-variant-numeric: tabular-nums; }
+#ttRecentOrders .tro-r small { display: block; opacity: .7; font-size: 10.5px; }
+#ttRecentOrders .tro-st { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 99px; background: rgba(120,120,120,.18); white-space: nowrap; }
+#ttRecentOrders .tro-st.ok { background: rgba(16,185,129,.2); color: #10b981; }
+#ttRecentOrders .tro-st.pe { background: rgba(245,158,11,.2); color: #d97706; }
+
+/* 5. Bulk import: paste box */
+.tt-bk-paste { margin-bottom: 10px; }
+.tt-bk-paste textarea { width: 100%; box-sizing: border-box; font: inherit; font-size: 12.5px; padding: 10px; border-radius: 10px; border: 1px solid var(--border, #d9dee5); background: var(--bg, transparent); color: inherit; margin-bottom: 8px; }

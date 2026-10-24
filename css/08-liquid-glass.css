@@ -1,0 +1,283 @@
+/* ==========================================================================
+   TTESPL ERP - LIQUID WATER GLASS  (v31)
+   Standalone component layer: .lg-* classes  +  integration for existing
+   .nav-bar / .auth-card / .profile-dropdown-card / .emp-dropdown.
+   Pure CSS visuals; behaviour lives in js/13-liquid-glass.js.
+   Nothing here touches ids, handlers or data.
+   ========================================================================== */
+
+:root {
+  --lg-blur: 16px;
+  --lg-sat: 160%;
+  --lg-tint: rgba(255, 255, 255, .14);
+  --lg-tint-strong: rgba(255, 255, 255, .26);
+  --lg-edge-a: rgba(255, 255, 255, .85);
+  --lg-edge-b: rgba(120, 220, 255, .35);
+  --lg-edge-c: rgba(255, 255, 255, .12);
+  --lg-inner: inset 0 1px 1px rgba(255, 255, 255, .75), inset 0 -10px 22px rgba(0, 150, 200, .10), inset 0 0 0 1px rgba(255, 255, 255, .18);
+  --lg-drop: 0 18px 40px -12px rgba(8, 40, 70, .35), 0 2px 6px rgba(8, 40, 70, .12);
+  --lg-accent: #00b4d8;
+  --lg-text: #0b2236;
+  --lg-radius: 22px;
+  /* liquid easing: overshoot then settle */
+  --lg-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --lg-melt: cubic-bezier(.16, 1.2, .3, 1);
+  --lg-out: cubic-bezier(.4, 0, .2, 1);
+}
+[data-theme="dark"], .lg-dark {
+  --lg-tint: rgba(14, 26, 46, .46);
+  --lg-tint-strong: rgba(24, 42, 70, .62);
+  --lg-edge-a: rgba(170, 225, 255, .55);
+  --lg-edge-b: rgba(0, 180, 216, .35);
+  --lg-edge-c: rgba(255, 255, 255, .06);
+  --lg-inner: inset 0 1px 1px rgba(200, 235, 255, .35), inset 0 -12px 24px rgba(0, 180, 216, .10), inset 0 0 0 1px rgba(255, 255, 255, .06);
+  --lg-drop: 0 22px 48px -14px rgba(0, 0, 0, .65), 0 2px 8px rgba(0, 0, 0, .35);
+  --lg-text: #e8f4ff;
+}
+
+/* ---------- 1. Base surface ---------- */
+.lg-glass {
+  position: relative;
+  isolation: isolate;
+  color: var(--lg-text);
+  background: var(--lg-tint);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+  border-radius: var(--lg-radius);
+  box-shadow: var(--lg-inner), var(--lg-drop);
+  transform: translate3d(0, 0, 0);
+}
+/* fluid gradient border (masked ring) */
+.lg-glass::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 1.2px; pointer-events: none;
+  background: conic-gradient(from var(--lg-angle, 200deg) at 50% 50%, var(--lg-edge-a), var(--lg-edge-c) 22%, var(--lg-edge-b) 48%, var(--lg-edge-c) 70%, var(--lg-edge-a));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+/* light reflection that follows the pointer (vars set by JS, rAF-throttled) */
+.lg-glass::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: .9;
+  background:
+    radial-gradient(180px 120px at var(--lg-x, 28%) var(--lg-y, 0%), rgba(255, 255, 255, .38), rgba(255, 255, 255, 0) 70%),
+    linear-gradient(160deg, rgba(255, 255, 255, .22) 0%, rgba(255, 255, 255, 0) 38%, rgba(0, 190, 230, .07) 100%);
+  transition: background-position .3s var(--lg-out);
+}
+
+/* ---------- 2. Tabs with sliding liquid indicator ---------- */
+.lg-tabs { display: inline-flex; position: relative; padding: 5px; gap: 2px; max-width: 100%; overflow-x: auto; scrollbar-width: none; --lg-radius: 18px; }
+.lg-tabs::-webkit-scrollbar { display: none; }
+.lg-tab {
+  position: relative; z-index: 1; appearance: none; border: 0; background: none; cursor: pointer; font: inherit; font-weight: 600; font-size: 13.5px;
+  color: inherit; opacity: .72; padding: 9px 16px; border-radius: 14px; white-space: nowrap; -webkit-tap-highlight-color: transparent;
+  transition: opacity .25s var(--lg-out), transform .5s var(--lg-spring);
+}
+.lg-tab:hover { opacity: 1; }
+.lg-tab:active { transform: scale(.94); }
+.lg-tab[aria-selected="true"] { opacity: 1; }
+.lg-tab:focus-visible { outline: 2px solid var(--lg-accent); outline-offset: 2px; }
+.lg-tab-indicator {
+  position: absolute; z-index: 0; left: 0; top: 5px; height: calc(100% - 10px); width: 0; border-radius: 14px; pointer-events: none; opacity: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, .16));
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .9), inset 0 -6px 14px rgba(0, 180, 216, .18), 0 6px 16px -4px rgba(0, 150, 200, .45);
+  will-change: transform, width; transform: translate3d(0, 0, 0);
+  transition: transform .62s var(--lg-spring), width .62s var(--lg-spring), opacity .2s linear;
+}
+[data-theme="dark"] .lg-tab-indicator, .lg-dark .lg-tab-indicator { background: linear-gradient(180deg, rgba(120, 210, 255, .34), rgba(0, 180, 216, .12)); }
+.lg-tab-indicator.is-ready { opacity: 1; }
+.lg-tab-indicator.is-moving { animation: lgSquish .62s var(--lg-spring); }
+@keyframes lgSquish { 0% { scale: 1 1; } 30% { scale: 1.12 .9; } 65% { scale: .97 1.04; } 100% { scale: 1 1; } }
+.lg-panel[hidden] { display: none; }
+
+/* ---------- 3. Pop-ups & drop-downs: melt into view ---------- */
+.lg-menu, .lg-modal-card {
+  --lg-ox: 50%; --lg-oy: 0%;
+  transform-origin: var(--lg-ox) var(--lg-oy);
+  will-change: transform, opacity, filter;
+}
+.lg-menu { position: absolute; z-index: 3000; min-width: 200px; padding: 6px; --lg-radius: 18px; visibility: hidden; opacity: 0; pointer-events: none; transform: translate3d(0, -8px, 0) scale(.82, .6); filter: blur(6px); }
+.lg-menu.is-open { visibility: visible; pointer-events: auto; animation: lgMelt .52s var(--lg-melt) both; }
+.lg-menu.is-closing { visibility: visible; animation: lgFade .18s var(--lg-out) both; }
+.lg-menu [role="menuitem"] { display: block; width: 100%; text-align: left; appearance: none; border: 0; background: none; color: inherit; font: inherit; font-size: 13.5px; padding: 10px 12px; border-radius: 12px; cursor: pointer; transition: background .2s, transform .35s var(--lg-spring); }
+.lg-menu [role="menuitem"]:hover, .lg-menu [role="menuitem"]:focus-visible { background: rgba(0, 180, 216, .16); outline: none; transform: translate3d(3px, 0, 0); }
+
+.lg-overlay { position: fixed; inset: 0; z-index: 3100; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(6, 20, 36, .32); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.lg-overlay.is-open { display: flex; animation: lgFadeIn .25s var(--lg-out) both; }
+.lg-modal-card { width: min(440px, 100%); max-height: calc(100dvh - 32px); overflow: auto; padding: 22px; --lg-radius: 26px; }
+.lg-overlay.is-open .lg-modal-card { animation: lgMelt .6s var(--lg-melt) both; }
+
+@keyframes lgMelt {
+  0%   { opacity: 0; transform: translate3d(0, -10px, 0) scale(.78, .55); filter: blur(8px); }
+  45%  { opacity: 1; transform: translate3d(0, 2px, 0) scale(1.045, 1.06); filter: blur(0); }
+  70%  { transform: translate3d(0, 0, 0) scale(.985, .99); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+@keyframes lgFade { to { opacity: 0; transform: translate3d(0, -6px, 0) scale(.94); filter: blur(4px); } }
+@keyframes lgFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- 4. Integration with the existing ERP (beats the older !important patches) ---------- */
+html body[data-theme] .nav-bar {
+  background: var(--lg-tint) !important;
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important; backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important;
+  border: 1px solid rgba(255, 255, 255, .28) !important; box-shadow: var(--lg-inner), var(--lg-drop) !important;
+}
+html body[data-theme] .nav-active-pill {
+  position: absolute !important; left: 0; top: 7px !important; bottom: auto !important; width: 54px !important; height: calc(100% - 14px) !important; border-radius: 18px !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, .12)) !important;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .9), inset 0 -6px 14px rgba(0, 180, 216, .22), 0 8px 18px -6px rgba(0, 150, 200, .55) !important;
+  will-change: transform; transition: transform .62s var(--lg-spring) !important; z-index: 0;
+}
+html body[data-theme][data-theme="dark"] .nav-active-pill { background: linear-gradient(180deg, rgba(120, 210, 255, .32), rgba(0, 180, 216, .1)) !important; }
+html body[data-theme] .nav-item { position: relative; z-index: 1; }
+
+/* modal cards (every .auth-overlay / .auth-card melts in when its display flips from none) */
+html body .auth-overlay { -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); }
+html body .auth-overlay .auth-card {
+  background: var(--lg-tint-strong) !important; color: var(--lg-text);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important; backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important;
+  border: 1px solid rgba(255, 255, 255, .3) !important; box-shadow: var(--lg-inner), var(--lg-drop) !important;
+  transform-origin: 50% 40%; will-change: transform, opacity; animation: lgMelt .6s var(--lg-melt) both;
+}
+/* profile dropdown + employee dropdowns */
+html body[data-theme] .profile-dropdown-card, html body[data-theme] .emp-dropdown {
+  background: var(--lg-tint-strong) !important; color: var(--lg-text);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important; backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important;
+  border: 1px solid rgba(255, 255, 255, .3) !important; box-shadow: var(--lg-inner), var(--lg-drop) !important; border-radius: 20px !important;
+  transform-origin: 90% 0%; will-change: transform, opacity;
+}
+html body[data-theme] .profile-dropdown-card.show { animation: lgMelt .52s var(--lg-melt) both; }
+
+/* ---------- 5. Fallbacks ---------- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lg-glass, .lg-menu, .lg-modal-card, html body[data-theme] .nav-bar, html body .auth-overlay .auth-card, html body[data-theme] .profile-dropdown-card { background: rgba(240, 248, 252, .94) !important; }
+  [data-theme="dark"] .lg-glass, [data-theme="dark"] .auth-card { background: rgba(12, 22, 38, .96) !important; }
+}
+@media (prefers-reduced-transparency: reduce) { :root { --lg-blur: 0px; --lg-tint: rgba(240, 248, 252, .96); --lg-tint-strong: rgba(240, 248, 252, .98); } [data-theme="dark"] { --lg-tint: rgba(12, 22, 38, .97); --lg-tint-strong: rgba(12, 22, 38, .98); } }
+@media (prefers-reduced-motion: reduce) {
+  .lg-tab-indicator, html body[data-theme] .nav-active-pill { transition: none !important; }
+  .lg-menu.is-open, .lg-overlay.is-open .lg-modal-card, html body .auth-overlay .auth-card, html body[data-theme] .profile-dropdown-card.show { animation: lgFadeIn .15s linear both; }
+  .lg-tab-indicator.is-moving { animation: none; }
+}
+/* phones: lighter blur keeps scrolling at 60fps on mid-range devices */
+@media (max-width: 480px) { :root { --lg-blur: 12px; } }
+
+/* ==========================================================================
+   6. WHOLE-APP SKIN  (every screen, card, button, field, tab, sheet)
+   Accent colour follows Settings -> Accent (var(--brand-red)). No ids / handlers touched.
+   Blur only on large surfaces; repeated list items use a cheap gradient glass (smooth on phones).
+   ========================================================================== */
+@property --lg-x { syntax: "<length-percentage>"; inherits: false; initial-value: 22%; }
+@property --lg-y { syntax: "<length-percentage>"; inherits: false; initial-value: -12%; }
+:root {
+  --lg-base: #d9eef7; --lg-line: rgba(255, 255, 255, .62); --lg-fill-a: rgba(255, 255, 255, .62); --lg-fill-b: rgba(255, 255, 255, .34);
+  --lg-field: rgba(255, 255, 255, .5); --lg-glint: rgba(255, 255, 255, .55); --lg-drop-sm: 0 10px 26px -12px rgba(8, 50, 80, .32), 0 1px 3px rgba(8, 50, 80, .08);
+  --lg-aur1: rgba(0, 190, 230, .7); --lg-aur2: rgba(110, 140, 255, .55); --lg-aur3: rgba(120, 235, 200, .6);
+}
+[data-theme="dark"] {
+  --lg-base: #050b15; --lg-line: rgba(160, 215, 255, .2); --lg-fill-a: rgba(26, 42, 68, .62); --lg-fill-b: rgba(12, 22, 40, .46);
+  --lg-field: rgba(255, 255, 255, .06); --lg-glint: rgba(190, 230, 255, .22); --lg-drop-sm: 0 14px 30px -14px rgba(0, 0, 0, .75), 0 1px 3px rgba(0, 0, 0, .4);
+  --lg-aur1: rgba(0, 150, 200, .5); --lg-aur2: rgba(70, 90, 220, .42); --lg-aur3: rgba(0, 170, 140, .34);
+}
+/* water-light background */
+html body[data-theme] { background: var(--lg-base) !important; }
+html body[data-theme]::before {
+  content: ""; position: fixed; inset: -25%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(38% 32% at 18% 14%, var(--lg-aur1), transparent 70%),
+    radial-gradient(34% 30% at 86% 24%, var(--lg-aur2), transparent 70%),
+    radial-gradient(44% 38% at 52% 96%, var(--lg-aur3), transparent 70%);
+  transform: translate3d(0, 0, 0); will-change: transform;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html body[data-theme]::before { animation: lgDrift 26s ease-in-out infinite alternate; }
+}
+@keyframes lgDrift { from { transform: translate3d(-2%, -1%, 0) scale(1); } to { transform: translate3d(3%, 2%, 0) scale(1.08); } }
+
+/* big glass surfaces: blur + gradient border + inner shadow + pointer-follow glint */
+html body[data-theme] :is(.card, .stat-card, .page-top-header-banner, .view-panel .card, .sub-tabs, .tt23-tabs, .tt-sheet-card) {
+  background:
+    radial-gradient(170px 110px at var(--lg-x) var(--lg-y), var(--lg-glint), transparent 70%),
+    linear-gradient(160deg, var(--lg-fill-a), var(--lg-fill-b)) !important;
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important; backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important;
+  border-top: 1px solid var(--lg-line) !important; border-right: 1px solid var(--lg-line) !important; border-bottom: 1px solid var(--lg-line) !important;
+  box-shadow: var(--lg-inner), var(--lg-drop-sm) !important;
+  transition: --lg-x .45s var(--lg-out), --lg-y .45s var(--lg-out), transform .5s var(--lg-spring);
+}
+html body[data-theme] :is(.card, .page-top-header-banner, .sub-tabs, .tt23-tabs) { border-left: 1px solid var(--lg-line) !important; border-radius: 20px !important; }
+html body[data-theme] .stat-card { border-radius: 20px !important; }
+html body[data-theme] .card:hover { transform: none !important; }
+/* long lists: no live blur per row (keeps scrolling at 60fps) */
+html body[data-theme] :is([id$="Container"], [id$="List"], .view-panel .tx) > .card { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; background: linear-gradient(160deg, var(--lg-fill-a), var(--lg-fill-b)) !important; }
+/* small repeated tiles + chips: gradient glass without blur */
+html body[data-theme] :is(.qa-tile, .cat-chip) {
+  background: radial-gradient(120px 80px at var(--lg-x) var(--lg-y), var(--lg-glint), transparent 70%), linear-gradient(160deg, var(--lg-fill-a), var(--lg-fill-b)) !important;
+  border: 1px solid var(--lg-line) !important; box-shadow: var(--lg-inner), 0 6px 14px -10px rgba(8, 50, 80, .4) !important; border-radius: 16px !important;
+  transition: transform .45s var(--lg-spring), box-shadow .3s var(--lg-out), --lg-x .4s var(--lg-out), --lg-y .4s var(--lg-out);
+}
+html body[data-theme] :is(.qa-tile, .cat-chip):active { transform: scale(.94) !important; }
+html body[data-theme] .cat-chip.active { background: linear-gradient(180deg, color-mix(in srgb, var(--brand-red, #00b4d8) 88%, white), var(--brand-red, #00b4d8)) !important; color: #fff !important; border-color: rgba(255, 255, 255, .45) !important; box-shadow: inset 0 1px 1px rgba(255, 255, 255, .6), 0 10px 20px -8px color-mix(in srgb, var(--brand-red, #00b4d8) 75%, transparent) !important; }
+
+/* header: dark-tinted glass (white text stays readable in both themes) */
+html body[data-theme] header {
+  background: linear-gradient(180deg, rgba(8, 20, 38, .66), rgba(8, 20, 38, .44)) !important;
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important; backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, .22) !important; box-shadow: 0 10px 28px -14px rgba(0, 20, 40, .55), inset 0 -1px 0 rgba(255, 255, 255, .08) !important;
+}
+
+/* buttons */
+html body[data-theme] .btn { transition: transform .45s var(--lg-spring), box-shadow .3s var(--lg-out), background .25s !important; }
+html body[data-theme] :is(.btn-primary, .btn-accent, .auth-card .btn-primary) {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--brand-red, #00b4d8) 86%, white), var(--brand-red, #00b4d8)) !important;
+  border: 1px solid rgba(255, 255, 255, .4) !important;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .65), inset 0 -8px 14px rgba(0, 0, 0, .12), 0 10px 20px -8px color-mix(in srgb, var(--brand-red, #00b4d8) 75%, transparent) !important;
+}
+html body[data-theme] .btn-outline { background: linear-gradient(160deg, var(--lg-fill-a), var(--lg-fill-b)) !important; border: 1px solid var(--lg-line) !important; box-shadow: var(--lg-inner) !important; }
+html body[data-theme] .btn:active { transform: scale(.95) !important; }
+
+/* fields */
+html body[data-theme] :is(.view-panel, .auth-card, .tt-sheet-card, .ttx) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), select, textarea) {
+  background: var(--lg-field) !important; border: 1px solid var(--lg-line) !important; border-radius: 14px !important; color: var(--text-main) !important;
+  box-shadow: inset 0 2px 6px rgba(8, 50, 80, .08), inset 0 1px 0 rgba(255, 255, 255, .25) !important; transition: box-shadow .3s var(--lg-out), border-color .3s var(--lg-out), transform .4s var(--lg-spring);
+}
+html body[data-theme] :is(input, select, textarea):focus { border-color: var(--brand-red, #00b4d8) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-red, #00b4d8) 28%, transparent), inset 0 2px 6px rgba(8, 50, 80, .08) !important; outline: none; }
+
+/* tabs: container + sliding liquid indicator (JS adds .lg-ti and the indicator) */
+.lg-ti { position: relative; }
+.lg-ti-ind { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 0; border-radius: 12px; pointer-events: none; opacity: 0; will-change: transform, width, height; transform: translate3d(0, 0, 0);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--brand-red, #00b4d8) 30%, rgba(255, 255, 255, .6)), color-mix(in srgb, var(--brand-red, #00b4d8) 14%, rgba(255, 255, 255, .14)));
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .85), inset 0 -6px 12px color-mix(in srgb, var(--brand-red, #00b4d8) 20%, transparent), 0 8px 16px -6px color-mix(in srgb, var(--brand-red, #00b4d8) 55%, transparent);
+  transition: transform .6s var(--lg-spring), width .6s var(--lg-spring), height .6s var(--lg-spring), opacity .2s linear; }
+.lg-ti-ind.is-ready { opacity: 1; }
+.lg-ti-ind.is-moving { animation: lgSquish .6s var(--lg-spring); }
+html body[data-theme] .lg-ti.lg-ti.lg-ti > :is(.sub-tab-btn, button, .tt23-tab) { position: relative; z-index: 1; background: transparent !important; box-shadow: none !important; border-color: transparent !important; color: var(--text-muted) !important; }
+html body[data-theme] .lg-ti.lg-ti.lg-ti > :is(.active, .on, [aria-selected="true"]) { background: transparent !important; color: var(--text-main) !important; font-weight: 800; }
+html body[data-theme] .lg-ti.lg-ti > button i { background: rgba(120, 140, 160, .22); }
+
+/* sheets, toast, suggestion lists */
+html body[data-theme] :is(.broadcast-toast, .solid-suggestion-box, .autocomplete-list) {
+  background: linear-gradient(160deg, rgba(14, 28, 48, .72), rgba(10, 20, 36, .6)) !important; color: #eaf6ff;
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)); backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+  border: 1px solid rgba(255, 255, 255, .22) !important; box-shadow: var(--lg-inner), 0 18px 36px -14px rgba(0, 0, 0, .6) !important; border-radius: 18px !important;
+}
+html body[data-theme] .badge { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+
+@media (prefers-reduced-motion: reduce) { .lg-ti-ind { transition: none; } .lg-ti-ind.is-moving { animation: none; } html body[data-theme] :is(.card, .stat-card, .qa-tile, .cat-chip) { transition: none; } }
+
+/* ==========================================================================
+   7. READABILITY: light (day) theme = dark letters on light glass, always.
+   ========================================================================== */
+:root { --lg-tint-strong: rgba(255, 255, 255, .8); }
+[data-theme="dark"] { --lg-tint-strong: rgba(18, 32, 54, .74); }
+
+/* profile dropdown: it was written for a dark card (white text) - make it match the theme */
+html body[data-theme]:not([data-theme="dark"]) .profile-dropdown-card { background: linear-gradient(160deg, rgba(255, 255, 255, .9), rgba(232, 245, 252, .82)) !important; color: #0b2236 !important; }
+html body[data-theme]:not([data-theme="dark"]) .profile-header-name { color: #0b2236 !important; }
+html body[data-theme]:not([data-theme="dark"]) .profile-header-info { border-bottom-color: rgba(8, 50, 80, .14); }
+html body[data-theme]:not([data-theme="dark"]) .profile-menu-item { color: #0b2236 !important; background: rgba(255, 255, 255, .6) !important; border: 1px solid rgba(255, 255, 255, .8); box-shadow: 0 1px 2px rgba(8, 50, 80, .06); text-shadow: none !important; }
+html body[data-theme]:not([data-theme="dark"]) .profile-menu-item:hover, html body[data-theme]:not([data-theme="dark"]) .profile-menu-item:active { background: color-mix(in srgb, var(--brand-red, #00b4d8) 14%, white) !important; color: #0b2236 !important; }
+html body[data-theme]:not([data-theme="dark"]) .profile-menu-item span[style*="#38bdf8"] { color: color-mix(in srgb, var(--brand-red, #0a84ff) 85%, black) !important; }
+html body[data-theme="dark"] .profile-dropdown-card { background: linear-gradient(160deg, rgba(14, 28, 48, .88), rgba(8, 18, 34, .8)) !important; }
+
+/* safety net: white text hard-coded for dark cards, but now sitting on light glass */
+html body[data-theme]:not([data-theme="dark"]) :is(.auth-card, .tt-sheet-card, .profile-dropdown-card, .emp-dropdown, .view-panel .card) :is([style*="color:#fff"], [style*="color: #fff"], [style*="color:#FFF"], [style*="color:white"], [style*="color: white"], [style*="color:#e2e8f0"], [style*="color:#f8fafc"], [style*="color:rgb(255"]):not([style*="background"]):not(.btn):not([class*="btn-"]):not(.badge):not([class*="badge"]):not(.nav-item) { color: #0b2236 !important; }
+html body[data-theme]:not([data-theme="dark"]) :is(.auth-card, .tt-sheet-card, .emp-dropdown) { color: #0b2236; }
+html body[data-theme]:not([data-theme="dark"]) .profile-menu-item > span:last-child:not(:first-child) { filter: brightness(.68) saturate(1.25); }
