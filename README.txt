@@ -1,3 +1,18 @@
+v41.4 - Delivery photo, Payment photo (delivery ke time) aur Collect Due payment photo - teeno me pehli photo ke baad "Add another photo (optional)".
+  Delivery: total 3 photo, Payment: total 3 photo. Photo par X dabake hata sakte ho. Ledger Details me Photo 2 / Photo 3 ke button dikhte hain.
+
+v41.3 - DELIVERY + BILL NUMBER
+  - "Deliver & Upload Proof" screen me ab: (1) Invoice details (Delivery Note, Reference, Other Ref, Buyer's Order No./Date, Dispatch Doc,
+    Delivery Note Date, Dispatched through, Destination, Terms of Delivery) - ye bill ke right side me print hote hain;
+    (2) "Payment received now?" - amount likhte hi payment photo ka box apne aap aata hai (photo zaroori), mode chuno, "Full due amount" button;
+    (3) Bill number apne aap.
+  - Bill number: GST wale customer ko TTESPL-101, 102...  Non-GST customer ko TT-101, 102...  Number delivery par milta hai, kabhi repeat nahi hota
+    (sab phone ke liye ek cloud counter). Internet na ho to delivery ho jati hai aur number internet aate hi apne aap lag jata hai.
+    Prefix aur start number Settings > Invoice & GST me badal sakte ho. Purane bills ka number (ORD-xxx) waisa hi rahta hai.
+  - Invoice details baad me Admin Edit Ledger screen me bhi badal sakte ho.
+  - Ledger card, search, WhatsApp text, receipts me naya bill number dikhta hai.
+  - Ledger search chalu ho to saare matching bills dikhte hain (sirf pehle 50 nahi).
+
 v41.2 - Settings ke saare naye categories ko rangeen iPhone-style icon + chhota subtitle mila (grey gear hata).
 
 v41.1 - UI UPDATE
