@@ -100,7 +100,7 @@ function ttRenderTravel(full) {
   }
   document.getElementById('trvMonth').value = ttTravelState.month;
   var dEl = document.getElementById('trvDate');
-  if ((full || !dEl.value) && !dEl.value) dEl.value = ttYmd(new Date());
+  if ((full || !dEl.value) && !dEl.value) dEl.value = new Date().toISOString().split('T')[0];
 
   var recs = ttTravelMonthRecords();
   var total = recs.reduce(function (s, r) { return s + (Number(r.km) || 0); }, 0);

@@ -15,7 +15,7 @@ function closeNotionCrmModal() {
 window.openNotionCrm = openNotionCrm;
 
 function openCrmEditModal(rec = null) {
-  const today = ttYmd(new Date());
+  const today = new Date().toISOString().split('T')[0];
   tempShopPhoto = ""; tempCardPhoto = "";
   document.getElementById('crmShopPhotoPrev').style.display = 'none';
   document.getElementById('crmCardPhotoPrev').style.display = 'none';
@@ -253,7 +253,7 @@ function deleteCrmRecord(id) {
 window.deleteCrmRecord = deleteCrmRecord;
 
 function printDailyCrmReport() {
-  const today = ttYmd(new Date());
+  const today = new Date().toISOString().split('T')[0];
   const myCrm = crmRecordsData.filter(ttCrmVisible);
   const todayList = myCrm.filter(x => x.visitDate === today);
   const targetList = todayList.length ? todayList : myCrm.slice(0, 20);
@@ -1339,8 +1339,8 @@ async function processRegister() {
   const pass = document.getElementById('regPass').value.trim();
   const pin = document.getElementById('regPin').value.trim();
 
-  if (!name || !/^\d{10}$/.test(mobile) || pass.length < 6 || !/^(\d{4}|\d{6})$/.test(pin)) {
-    alert("Please fill all details correctly: name, 10-digit mobile, password (min 6 characters) and a 4 or 6-digit PIN.");
+  if (!name || !/^\d{10}$/.test(mobile) || pass.length < 6 || !/^\d{4}$/.test(pin)) {
+    alert("Please fill all details correctly: name, 10-digit mobile, password (min 6 characters) and a 4-digit PIN.");
     return;
   }
   if (TT_ROLES.indexOf(role) < 0) { alert("Invalid role selected."); return; }
@@ -1390,7 +1390,7 @@ function performFullLogout() {
 
 function getNowStr() {
   const d = new Date();
-  return ttYmd(d) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return d.toISOString().split('T')[0] + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 function refreshAllData() {
@@ -1410,7 +1410,7 @@ window.refreshAllData = refreshAllData;
 /* DISTINCT COLORS IN EMPLOYEE DROPDOWN (NAME & POSITION) */
 function populateDropdownsAndDatalists() {
   const formatEmpOption = (e) => {
-    return `<option value="${ttEscHtml(e.name)}" style="font-weight:700; color:#0a2540;">${ttEscHtml(e.name)} — [${e.role}]</option>`;
+    return `<option value="${e.name}" style="font-weight:700; color:#0a2540;">${e.name} — [${e.role}]</option>`;
   };
 
   document.querySelectorAll('.emp-dropdown').forEach(sel => {
@@ -1569,7 +1569,7 @@ async function editStaffDetailsPrompt(empId) {
   const newName = ttCleanText(prompt("Update Staff Full Name:", emp.name) || '', 50);
   if (!newName) return;
   const newRole = (prompt("Update Role (" + TT_ROLES.join(' / ') + "):", emp.role) || '').trim();
-  const newPass = String(await (window.ttAskSecret ? ttAskSecret("New password (leave blank to keep the current one, min 6 characters)") : Promise.resolve(prompt("New password (leave blank to keep the current one, min 6 characters):", "")))  || '').trim();
+  const newPass = (prompt("New password (leave blank to keep the current one, min 6 characters):", "") || '').trim();
   if (newRole && TT_ROLES.indexOf(newRole) < 0) { alert("Invalid role. Nothing was changed."); return; }
   if (newPass && newPass.length < 6) { alert("Password must be at least 6 characters. Nothing was changed."); return; }
   const admins = registeredEmployees.filter(e => String(e.role).trim().toLowerCase() === 'admin');
@@ -1690,14 +1690,7 @@ function saveAdminLedgerInvoice() {
       const name = (row.querySelector('.tt-ledger-item-name').value || '').trim();
       const qty = parseFloat(row.querySelector('.tt-ledger-item-qty').value) || 0;
       const total = parseFloat(row.querySelector('.tt-ledger-item-total').value) || 0;
-      if (name) {
-        const idx = newItems.length, old = (o.items || [])[idx];
-        const keep = (old && String(old.name || '').trim().toLowerCase() === name.toLowerCase()) ? old : ((o.items || []).find(x => String(x.name || '').trim().toLowerCase() === name.toLowerCase() && !newItems.some(y => y.__src === x)) || null);
-        const ni = Object.assign({}, keep || {}, { name, qty, total });   // v41: keep id / hsn / mrp / gstRate of the line (was dropped)
-        if (keep && qty > 0) { ni.rate = ttR2(total / qty); if (keep.mrp > 0 && ni.rate < keep.mrp) ni.disc = ttR2((1 - ni.rate / keep.mrp) * 100); }
-        Object.defineProperty(ni, '__src', { value: keep, enumerable: false });
-        newItems.push(ni);
-      }
+      if (name) newItems.push({ name, qty, total });
     });
     o.items = newItems;
   }
@@ -1732,7 +1725,7 @@ function renderDashboard() {
   // SKELETON LOADER: pehli baar real data aa jaye to shimmer placeholder hata do
   const skel = document.getElementById('ttDashSkeleton');
   if (skel) skel.style.display = 'none';
-  const today = ttYmd(new Date());
+  const today = new Date().toISOString().split('T')[0];
   let todayRecv = 0;
   let totalDue = 0;
 
@@ -1778,7 +1771,7 @@ function renderDashboard() {
       row.onclick = item.action;
       row.innerHTML = `
         <div>
-          <strong style="color:var(--text-main); font-size:13px;">${ttEscHtml(item.title)}</strong>
+          <strong style="color:var(--text-main); font-size:13px;">${item.title}</strong>
           <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${item.sub}</div>
         </div>
         <button class="btn btn-outline btn-sm">View →</button>
@@ -1996,7 +1989,7 @@ function handleMachineAutocomplete(inputEl, targetInputId) {
   box.innerHTML = combined.map(m => `
     <div class="suggestion-item" onmousedown="selectMachineSuggestion('${targetInputId}', '${encodeURIComponent(m.name || '')}', ${m.price || 0})">
       <div style="flex:1;">
-        <strong style="color:var(--text-main);">🚜 ${ttEscHtml(m.name)}</strong>
+        <strong style="color:var(--text-main);">🚜 ${m.name}</strong>
         <div class="suggestion-sub">${m.sub}</div>
       </div>
       <strong style="color:var(--primary); font-size:12.5px;">₹${Number(m.price || 0).toLocaleString('en-IN')}</strong>
@@ -2034,7 +2027,7 @@ function handleOrderItemInput(inputEl) {
   let html = matches.map(p => `
     <div class="suggestion-item" onmousedown="selectOrderItemSuggestion(this, '${encodeURIComponent(p.name || '')}', '${p.code || ''}', ${p.rate || 0}, ${p.stock || 0})">
       <div style="flex:1;">
-        <strong style="font-size:12.5px; color:var(--text-main);">${ttEscHtml(p.name)}</strong>
+        <strong style="font-size:12.5px; color:var(--text-main);">${p.name}</strong>
         <div class="suggestion-sub">SKU: ${p.code || 'N/A'} • <span style="color:${p.stock>0?'var(--success)':'var(--danger)'}">Stock: ${p.stock || 0}</span></div>
       </div>
       <strong style="color:var(--accent); font-size:13px; white-space:nowrap;">MRP: ₹${p.rate || 0}</strong>
@@ -2076,7 +2069,7 @@ function handlePartAutocomplete(inputEl, targetInputId) {
   box.innerHTML = matches.map(p => `
     <div class="suggestion-item" onmousedown="selectPartSuggestion('${targetInputId}', '${encodeURIComponent(p.name || '')}', '${p.code || ''}')">
       <div style="flex:1;">
-        <strong style="color:var(--text-main);">${ttEscHtml(p.name)}</strong>
+        <strong style="color:var(--text-main);">${p.name}</strong>
         <div class="suggestion-sub">Code: ${p.code || 'N/A'} | Stock: ${p.stock || 0}</div>
       </div>
       <strong style="color:var(--accent);">₹${p.rate || 0}</strong>
@@ -2204,7 +2197,7 @@ function renderLeads() {
     card.innerHTML = `
       <div class="card-header">
         <div>
-          <strong style="font-size:15px; color:var(--text-main);">${ttEscHtml(lead.customerName)}</strong>
+          <strong style="font-size:15px; color:var(--text-main);">${lead.customerName}</strong>
           <div style="font-size:11.5px; color:var(--text-muted);">Inquiry: ${lead.inquiryDate} | Lead Eng: <strong>${lead.handledBy}</strong></div>
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
@@ -2213,9 +2206,9 @@ function renderLeads() {
           ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="triggerAppHaptic(); deleteLeadAction('${lead.id}')">🗑️</button>` : ''}
         </div>
       </div>
-      <div style="font-size:12.5px; margin-bottom:6px;">Machine: <strong>${ttEscHtml(lead.machine)}</strong> | Quoted: <strong>₹${Number(lead.quotedPrice || 0).toLocaleString('en-IN')}</strong></div>
+      <div style="font-size:12.5px; margin-bottom:6px;">Machine: <strong>${lead.machine}</strong> | Quoted: <strong>₹${Number(lead.quotedPrice || 0).toLocaleString('en-IN')}</strong></div>
       <div style="background:var(--bg); padding:10px; border-radius:8px; font-size:12px;">
-        💬 <strong>Remarks:</strong> ${ttEscHtml(lead.remarks)} <br>
+        💬 <strong>Remarks:</strong> ${lead.remarks} <br>
         <span style="color:var(--danger); font-weight:800;">Next Followup: ${lead.followupDate}</span>
       </div>
       ${lead.status === 'Installed' ? `
@@ -2247,7 +2240,7 @@ function openLeadModal(leadObj = null) {
   } else {
     title.textContent = "New Machine Inquiry Entry";
     editId.value = "";
-    const today = ttYmd(new Date());
+    const today = new Date().toISOString().split('T')[0];
     document.getElementById('leadCustSearchInput').value = "";
     document.getElementById('leadInqDate').value = today;
     document.getElementById('leadFollowupDate').value = today;
@@ -2324,7 +2317,7 @@ function switchOrderSubTab(sub) {
 function renderOrders() {
   const c = document.getElementById('ordersListContainer');
   c.innerHTML = '';
-  const today = ttYmd(new Date());
+  const today = new Date().toISOString().split('T')[0];
   const isAdmin = isAdminUser();
 
   const pendingList = ordersData.filter(o => o.status === 'Pending');
@@ -2353,15 +2346,15 @@ function renderOrders() {
     let statusBadge = o.deliveryDate < today ? 'badge-danger' : 'badge-pending';
     let statusText = o.status === 'Pending' ? (o.deliveryDate < today ? '⚠️ Delayed' : '⏳ Pending Dispatch') : '🚫 Cancelled';
 
-    let itemsHtml = o.items.map(i => `<div>• ${ttEscHtml(i.name)} (Qty: ${i.qty}, Disc: ${i.disc || 0}%) = ₹${i.total}</div>`).join('');
+    let itemsHtml = o.items.map(i => `<div>• ${i.name} (Qty: ${i.qty}, Disc: ${i.disc || 0}%) = ₹${i.total}</div>`).join('');
 
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
       <div class="card-header">
         <div>
-          <strong style="font-size:15px; color:var(--text-main);">${ttEscHtml(o.customerName)}</strong>
-          <div style="font-size:11.5px; color:var(--text-muted);">Ref: ${o.id} | Date: ${o.orderDate} | Staff: <strong>${ttEscHtml(o.bookedBy)}</strong></div>
+          <strong style="font-size:15px; color:var(--text-main);">${o.customerName}</strong>
+          <div style="font-size:11.5px; color:var(--text-muted);">Ref: ${o.id} | Date: ${o.orderDate} | Staff: <strong>${o.bookedBy}</strong></div>
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
           <span class="badge ${statusBadge}">${statusText}</span>
@@ -2380,7 +2373,7 @@ function renderOrders() {
       ${o.status === 'Pending' ? `
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button class="btn btn-primary btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openDeliveryProofModal('${o.id}')">📸 Deliver & Upload Proof</button>
-          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openUpiModal('${esc(o.customerName)}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
           <button class="btn btn-wa btn-sm" style="flex:1;" onclick="triggerAppHaptic(); shareOrderWhatsApp('${o.id}')">💬 WhatsApp</button>
           <button class="btn btn-danger-sm btn-sm" style="flex:1;" onclick="triggerAppHaptic(); cancelOrderAction('${o.id}')">🚫 Cancel</button>
         </div>
@@ -2425,7 +2418,7 @@ function openOrderModal(orderObj = null) {
   } else {
     title.textContent = "New Multi-Item Product Order";
     editId.value = "";
-    const today = ttYmd(new Date());
+    const today = new Date().toISOString().split('T')[0];
     document.getElementById('ordCustSearchInput').value = "";
     document.getElementById('ordDate').value = today;
     document.getElementById('ordDelDate').value = today;
@@ -2524,8 +2517,8 @@ function calcOrderBalance() {
    format, but retry until the id is unused (and widen to 4+ digits only if all 900 short ids are taken). */
 function ttNewOrderId() {
   var used = {}; (ordersData || []).forEach(function (o) { if (o && o.id != null) used[String(o.id).toLowerCase()] = 1; });
-  /* v41: 6-digit random id (was 3-digit: two phones could pick the same id and one bill overwrote the other) */
-  for (var i = 0; i < 80; i++) { var id = 'ORD-' + Math.floor(100000 + Math.random() * 900000); if (!used[id.toLowerCase()]) return id; }
+  for (var i = 0; i < 60; i++) { var id = 'ORD-' + Math.floor(100 + Math.random() * 900); if (!used[id.toLowerCase()]) return id; }
+  for (var n = 1000; n < 1000000; n++) { var id2 = 'ORD-' + n; if (!used[id2.toLowerCase()]) return id2; }
   return 'ORD-' + Date.now();
 }
 function saveOrderAction() {
@@ -2546,7 +2539,7 @@ function saveOrderAction() {
   let items = [];
   document.querySelectorAll('#orderItemsTbody tr').forEach(r => {
     const pName = r.querySelector('.item-product-input').value.trim();
-    const qty = parseFloat(r.querySelector('.item-qty').value) || 0;   // v41: was parseInt (1.5 became 1 but the total used 1.5)
+    const qty = parseInt(r.querySelector('.item-qty').value) || 0;
     const mrp = parseFloat(r.querySelector('.item-mrp').value) || 0;
     const disc = parseFloat(r.querySelector('.item-disc').value) || 0;
     const rate = parseFloat(r.querySelector('.item-rate').value) || 0;
@@ -2612,7 +2605,7 @@ function openDeliveryProofModal(ordId) {
   preview.src = "";
   preview.style.display = 'none';
   document.getElementById('confirmDeliveryBtn').disabled = true;
-  document.getElementById('deliveryManualDate').value = ttYmd(new Date());
+  document.getElementById('deliveryManualDate').value = new Date().toISOString().split('T')[0];
   document.getElementById('deliveryProofModal').style.display = 'flex';
 }
 function closeDeliveryProofModal() {
@@ -2651,7 +2644,7 @@ function executeConfirmedDelivery() {
 
   const chosenDate = document.getElementById('deliveryManualDate').value;
   o.status = "Delivered";
-  o.deliveredDate = chosenDate || ttYmd(new Date());
+  o.deliveredDate = chosenDate || new Date().toISOString().split('T')[0];
   o.deliveryProofPhoto = currentDeliveryPhotoBase64;
   o.deliveredAt = getNowStr();
   o.deliveredBy = currentUser ? currentUser.name : 'Staff';
@@ -2724,7 +2717,7 @@ function executeConfirmedPaymentCollection() {
   o.recvAmount = (o.recvAmount || 0) + amt;
   o.dueAmount = Math.max(0, o.totalAmount - o.recvAmount);
   o.lastPaymentProof = currentPaymentProofBase64;
-  o.lastPaymentDate = ttYmd(new Date());
+  o.lastPaymentDate = new Date().toISOString().split('T')[0];
   o.payMode = payModeChosen;
   o.payments = Array.isArray(o.payments) ? o.payments : [];
   o.payments.push({ amount: amt, mode: payModeChosen, at: getNowStr(), by: currentUser ? currentUser.name : 'Staff', photo: currentPaymentProofBase64 });
@@ -2845,7 +2838,7 @@ function executeInvoicePrint() {
 }
 
 function downloadBusinessSummaryReport() {
-  const today = ttYmd(new Date());
+  const today = new Date().toISOString().split('T')[0];
   const delivered = ordersData.filter(o => o.status === 'Delivered');
   const totalBilled = delivered.reduce((s, o) => s + o.totalAmount, 0);
   const totalRecv = delivered.reduce((s, o) => s + o.recvAmount, 0);
@@ -2898,7 +2891,7 @@ function openInvoicePrintModal(ordId) {
 function closeInvoicePrintModal() { document.getElementById('invoicePrintModal').style.display = 'none'; }
 
 function openDailyCashClosingModal() {
-  const today = ttYmd(new Date());
+  const today = new Date().toISOString().split('T')[0];
   document.getElementById('closeSummaryDate').textContent = today;
   document.getElementById('closeSummaryStaff').textContent = currentUser ? currentUser.name : "Staff";
 
@@ -2930,7 +2923,7 @@ function sendClosingSummaryWhatsApp() {
 function renderServices() {
   const c = document.getElementById('serviceListContainer');
   c.innerHTML = '';
-  const today = ttYmd(new Date());
+  const today = new Date().toISOString().split('T')[0];
   const isAdmin = isAdminUser();
 
   if (serviceCallsData.length === 0) {
@@ -2959,7 +2952,7 @@ function renderServices() {
     card.innerHTML = `
       <div class="card-header">
         <div>
-          <strong style="font-size:15px; color:var(--text-main);">${ttEscHtml(s.customerName)}</strong>
+          <strong style="font-size:15px; color:var(--text-main);">${s.customerName}</strong>
           <div style="font-size:11.5px; color:var(--text-muted);">Call: ${s.recvDate} | Tech: <strong>${s.attendedBy}</strong></div>
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
@@ -2968,8 +2961,8 @@ function renderServices() {
           ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="triggerAppHaptic(); deleteServiceAction('${s.id}')">🗑️</button>` : ''}
         </div>
       </div>
-      <div style="font-size:12.5px; margin-bottom:6px;"><strong>Machine:</strong> ${ttEscHtml(s.machine)}</div>
-      <div style="font-size:12px; margin-bottom:10px;"><strong>Issue:</strong> ${ttEscHtml(s.problem)}</div>
+      <div style="font-size:12.5px; margin-bottom:6px;"><strong>Machine:</strong> ${s.machine}</div>
+      <div style="font-size:12px; margin-bottom:10px;"><strong>Issue:</strong> ${s.problem}</div>
       ${s.status === 'Work Completed' ? `<div style="background:var(--success-bg); padding:8px; border-radius:8px; font-size:11.5px; margin-bottom:6px;">✅ <strong>Done:</strong> ${s.actionDone}</div>
         ${s.stockDeducted ? `<div style="font-size:10.5px; color:var(--text-muted); margin-bottom:6px;">📦 <strong>Part used:</strong> ${esc(s.partUsed || '')} x${s.partQty || 1} <span class="badge badge-info" style="font-size:9px;">Stock Auto-Deducted</span></div>` : ''}
         <div style="display:flex; gap:6px;">
@@ -3000,7 +2993,7 @@ function openServiceCallModal(srvObj = null) {
   } else {
     title.textContent = "New Service / Repair Call";
     editId.value = "";
-    const today = ttYmd(new Date());
+    const today = new Date().toISOString().split('T')[0];
     document.getElementById('srvCustSearchInput').value = "";
     document.getElementById('srvRecvDate').value = today;
     document.getElementById('srvTargetDate').value = today;
@@ -3167,7 +3160,7 @@ function renderStockList() {
       card.onclick = () => { triggerAppHaptic(); ttCustDash(cust.id); };
       card.innerHTML = `
         <div class="card-header">
-          <div><strong>${ttEscHtml(cust.name)}</strong><div style="font-size:11px; color:var(--text-muted);">${cust.phone}</div></div>
+          <div><strong>${cust.name}</strong><div style="font-size:11px; color:var(--text-muted);">${cust.phone}</div></div>
           <div style="display:flex; gap:6px;">
             <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); ttCustDash(${cust.id})">📊 Dashboard</button>
             <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); editCustomerPrompt(${cust.id})">✏️ Edit</button>
@@ -3199,11 +3192,11 @@ function renderStockList() {
       <div style="display:flex; justify-content:space-between; align-items:flex-start;">
         <div>
           <span style="font-size:11px; font-weight:700; color:var(--cyan);">${item.code || ''}</span>
-          <strong style="font-size:14px; color:var(--text-main); display:block;">${ttEscHtml(item.name)}</strong>
+          <strong style="font-size:14px; color:var(--text-main); display:block;">${item.name}</strong>
           <div style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">${item.category}${ttBrandBadge(item.name)}</div>
         </div>
         <div style="text-align:right;">
-          <span class="badge ${item.stock <= ttLowLimit(item) ? 'badge-danger low-stock-pulse' : 'badge-delivered'}">${item.stock} in stock</span>
+          <span class="badge ${item.stock <= 5 ? 'badge-danger low-stock-pulse' : 'badge-delivered'}">${item.stock} in stock</span>
           <div style="font-size:13.5px; font-weight:800; color:var(--text-main); margin-top:4px;">MRP: ₹${item.rate || 0}</div>
         </div>
       </div>
@@ -3213,7 +3206,7 @@ function renderStockList() {
         ${isAdmin ? `<button class="btn btn-danger-sm admin-only-btn" onclick="event.stopPropagation(); triggerAppHaptic(); deleteStockItem(${item.id})">🗑️</button>` : ''}
       </div>
     `;
-    if (item.stock <= ttLowLimit(item)) card.classList.add('low-stock-card-pulse');
+    if (item.stock <= 5) card.classList.add('low-stock-card-pulse');
     c.appendChild(card);
   });
 }
@@ -3251,16 +3244,16 @@ function filterStockList(val) {
       <div style="display:flex; justify-content:space-between; align-items:flex-start;">
         <div>
           <span style="font-size:11px; font-weight:700; color:var(--cyan);">${item.code || ''}</span>
-          <strong style="font-size:14px; color:var(--text-main); display:block;">${ttEscHtml(item.name)}</strong>
+          <strong style="font-size:14px; color:var(--text-main); display:block;">${item.name}</strong>
           <div style="font-size:11px; color:var(--text-muted);">${item.category || item.phone || ''}</div>
         </div>
         <div style="text-align:right;">
-          ${item.stock !== undefined ? `<span class="badge ${item.stock <= ttLowLimit(item) ? 'badge-danger low-stock-pulse' : 'badge-delivered'}">${item.stock} in stock</span>` : ''}
+          ${item.stock !== undefined ? `<span class="badge ${item.stock <= 5 ? 'badge-danger low-stock-pulse' : 'badge-delivered'}">${item.stock} in stock</span>` : ''}
           <div style="font-size:13.5px; font-weight:800; color:var(--text-main); margin-top:4px;">${item.rate ? 'MRP: ₹' + item.rate : (item.address || '')}</div>
         </div>
       </div>
     `;
-    if (item.stock !== undefined && item.stock <= ttLowLimit(item)) card.classList.add('low-stock-card-pulse');
+    if (item.stock !== undefined && item.stock <= 5) card.classList.add('low-stock-card-pulse');
     c.appendChild(card);
   });
 }

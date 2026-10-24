@@ -111,7 +111,7 @@ function renderBilling(filterType, empFilter = "ALL") {
     card.innerHTML = `
       <div class="card-header" style="cursor:pointer;" onclick="if(!event.target.closest('button')){ triggerAppHaptic(); openLedgerDetail('${o.id}'); }">
         <div>
-          <strong style="font-size:15px; color:var(--text-main);">${ttEscHtml(o.customerName)}</strong>
+          <strong style="font-size:15px; color:var(--text-main);">${o.customerName}</strong>
           <div style="font-size:11.5px; color:var(--text-muted);">Invoice: ${o.id} | Delivered: ${o.deliveredDate || o.orderDate}</div>
         </div>
         <div style="display:flex; align-items:center; gap:6px;">
@@ -119,11 +119,11 @@ function renderBilling(filterType, empFilter = "ALL") {
           <button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openAdminEditLedgerModal('${o.id}')">✏️</button>
         </div>
       </div>
-      ${(o.dueAmount > 0 && o.payFollowupDate) ? `<div style="margin-top:8px; font-size:12px; font-weight:800; color:${o.payFollowupDate <= ttYmd(new Date()) ? 'var(--danger)' : 'var(--warning, #d97706)'};">📅 Payment follow-up: ${o.payFollowupDate}${o.payFollowupNote ? ' — ' + esc(o.payFollowupNote) : ''}</div>` : ''}
+      ${(o.dueAmount > 0 && o.payFollowupDate) ? `<div style="margin-top:8px; font-size:12px; font-weight:800; color:${o.payFollowupDate <= new Date().toISOString().split('T')[0] ? 'var(--danger)' : 'var(--warning, #d97706)'};">📅 Payment follow-up: ${o.payFollowupDate}${o.payFollowupNote ? ' — ' + esc(o.payFollowupNote) : ''}</div>` : ''}
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
         <button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openLedgerDetail('${o.id}')">📄 Details</button>
         <button class="btn btn-print btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openInvoicePrintModal('${o.id}')">🖨️ Tax Invoice</button>
-        <button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openUpiModal('${esc(o.customerName)}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
+        <button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openUpiModal('${o.customerName}', ${o.dueAmount > 0 ? o.dueAmount : o.totalAmount})">📱 UPI QR</button>
         ${o.dueAmount > 0 ? `<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); collectDuePayment('${o.id}')">💵 Collect Due</button>` : ''}
         ${o.dueAmount > 0 ? `<button class="btn btn-outline btn-sm" style="flex:1;" onclick="triggerAppHaptic(); openPayFollowupModal('${o.id}')">📅 Payment Follow-up</button>` : ''}
       </div>
@@ -292,12 +292,12 @@ function handleChatFileUpload(event) {
 }
 
 function getPaymentFollowupsDue() {
-  const today = ttYmd(new Date());
+  const today = new Date().toISOString().split('T')[0];
   return ordersData.filter(o => o.dueAmount > 0 && o.payFollowupDate && o.payFollowupDate <= today);
 }
 
 function updateGlobalReminders() {
-  const today = ttYmd(new Date());
+  const today = new Date().toISOString().split('T')[0];
   let delDue = ordersData.filter(o => o.status === 'Pending' && o.deliveryDate <= today).length;
   let srvDue = serviceCallsData.filter(s => s.status !== 'Work Completed' && s.targetDate <= today).length;
   const payFu = getPaymentFollowupsDue();
@@ -359,10 +359,10 @@ function ttPartNextDue(p) {
   const d = new Date(p.installedDate);
   if (isNaN(d)) return '';
   d.setMonth(d.getMonth() + (Number(p.intervalMonths) || 0));
-  return ttYmd(d);
+  return d.toISOString().split('T')[0];
 }
 function getDuePartsList() {
-  const today = ttYmd(new Date());
+  const today = new Date().toISOString().split('T')[0];
   return (machinePartsData || []).filter(p => ttPartNextDue(p) && ttPartNextDue(p) <= today);
 }
 window.getDuePartsList = getDuePartsList;
@@ -384,7 +384,7 @@ window.openMachinePartsModal = openMachinePartsModal;
 function renderMachinePartsModal() {
   const m = document.getElementById('machinePartsModal');
   if (!m) return;
-  const today = ttYmd(new Date());
+  const today = new Date().toISOString().split('T')[0];
   const list = (machinePartsData || []).slice().sort((a, b) => (ttPartNextDue(a) || '9999').localeCompare(ttPartNextDue(b) || '9999'));
   const rows = list.map(p => {
     const due = ttPartNextDue(p);
@@ -521,7 +521,7 @@ function showBroadcastToastAlert(notif) {
   toast.innerHTML = `
     <div class="toast-icon">${icons[notif.type] || '🔔'}</div>
     <div class="toast-content">
-      <div class="toast-title">${ttEscHtml(notif.title)}</div>
+      <div class="toast-title">${notif.title}</div>
       <div class="toast-body">${notif.body}</div>
     </div>
     <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
@@ -710,7 +710,7 @@ function openPayFollowupModal(ordId) {
   document.getElementById('pfuOrdId').value = ordId;
   document.getElementById('pfuInfo').innerHTML = `<strong>${esc(o.customerName)}</strong> — Invoice ${esc(o.id)} — Due ₹${Number(o.dueAmount).toLocaleString('en-IN')}`;
   const d = new Date(); d.setDate(d.getDate() + 3);
-  document.getElementById('pfuDate').value = o.payFollowupDate || ttYmd(d);
+  document.getElementById('pfuDate').value = o.payFollowupDate || d.toISOString().split('T')[0];
   document.getElementById('pfuNote').value = o.payFollowupNote || '';
   m.style.display = 'flex';
 }
@@ -756,11 +756,11 @@ function ttNum(v) {
   return isNaN(n) ? null : n;
 }
 function ttDate(v) {
-  const today = ttYmd(new Date());
+  const today = new Date().toISOString().split('T')[0];
   if (v === null || v === undefined || v === '') return today;
   if (typeof v === 'number' || /^\d{5}$/.test(String(v).trim())) {
     const d = new Date(Math.round((Number(v) - 25569) * 86400 * 1000));
-    return isNaN(d) ? today : ttYmd(d);
+    return isNaN(d) ? today : d.toISOString().split('T')[0];
   }
   const s = String(v).trim();
   let m = s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/);
@@ -768,7 +768,7 @@ function ttDate(v) {
   m = s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
   if (m) return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
   const d = new Date(s);
-  return isNaN(d) ? today : ttYmd(d);
+  return isNaN(d) ? today : d.toISOString().split('T')[0];
 }
 const TT_LEDGER_ALIASES = {
   inv: ['invoicenumber', 'invoiceno', 'invoice', 'billno', 'billnumber', 'invno'],
@@ -962,7 +962,7 @@ function ttBrandBadge(name) {
   const lower = String(name).toLowerCase();
   const b = TT_BRANDS.find(function (x) { return lower.indexOf(x.key) !== -1; });
   if (!b) return '';
-  return `<span style="font-size:9px; font-weight:800; padding:1px 6px; border-radius:6px; color:#fff; background:${b.color}; letter-spacing:.2px;">${ttEscHtml(b.label)}</span>`;
+  return `<span style="font-size:9px; font-weight:800; padding:1px 6px; border-radius:6px; color:#fff; background:${b.color}; letter-spacing:.2px;">${b.label}</span>`;
 }
 
 // SKELETON LOADER: cloud se data fetch hone tak (list khaali ho) ek chhota

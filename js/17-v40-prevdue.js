@@ -15,7 +15,7 @@
     var sum = 0, n = 0, mine = dOf(o), p = l10(o.phone), nn = nm(o.customerName);
     (ordersData || []).forEach(function (x) {
       if (!x || x.id === o.id || x.status === 'Cancelled') return;
-      var xp = l10(x.phone), same = (p && xp) ? (xp === p) : (nn && nm(x.customerName) === nn); if (!same) return;   /* v41: two different customers with the same name but different phones are no longer mixed */
+      var same = (p && l10(x.phone) === p) || (nn && nm(x.customerName) === nn); if (!same) return;
       var d = dOf(x); if (mine && d && d > mine) return;
       var due = Number(x.dueAmount) || 0; if (due > 0) { sum += due; n++; }
     });
