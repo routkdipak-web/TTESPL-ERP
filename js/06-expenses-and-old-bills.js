@@ -680,7 +680,7 @@ window.ttR2 = ttR2; window.ttDueOf = ttDueOf; window.ttStatusOf = ttStatusOf;
       card.innerHTML =
         '<div class="card-header" style="cursor:pointer;" onclick="if(!event.target.closest(\'button\')){ triggerAppHaptic(); openLedgerDetail(\'' + E(o.id) + '\'); }">' +
         '<div><strong style="font-size:15px;color:var(--text-main);">' + E(o.customerName) + '</strong>' +
-        '<div style="font-size:11.5px;color:var(--text-muted);">Invoice: ' + E(o.id) + ' | Delivered: ' + E(o.deliveredDate || o.orderDate) + ' | Staff: ' + E(o.bookedBy || '-') + '</div></div>' +
+        '<div style="font-size:11.5px;color:var(--text-muted);">Invoice: ' + E(window.ttInvNo ? ttInvNo(o) : o.id) + ' | Delivered: ' + E(o.deliveredDate || o.orderDate) + ' | Staff: ' + E(o.bookedBy || '-') + '</div></div>' +
         '<div style="display:flex;align-items:center;gap:6px;">' + badge + '<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openAdminEditLedgerModal(\'' + E(o.id) + '\')">✏️</button></div></div>' +
         '<div class="tt21-amts"><span>Total <b>' + FM(o.totalAmount) + '</b></span><span style="color:var(--success);">Received <b>' + FM(o.recvAmount) + '</b></span><span style="color:' + (due > 0 ? 'var(--danger)' : 'var(--success)') + ';">Due <b>' + FM(due) + '</b></span></div>' +
         (lines.length > 1 || (lines.length === 1 && st !== 'Paid') ? '<div class="tt21-trail">' + lines.map(function (p) { return '<span>' + E(p.date) + ' · ' + FM(p.amt) + (p.mode ? ' · ' + E(p.mode) : '') + '</span>'; }).join('') + '</div>' : '') +

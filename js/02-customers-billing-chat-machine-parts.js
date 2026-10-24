@@ -112,7 +112,7 @@ function renderBilling(filterType, empFilter = "ALL") {
       <div class="card-header" style="cursor:pointer;" onclick="if(!event.target.closest('button')){ triggerAppHaptic(); openLedgerDetail('${o.id}'); }">
         <div>
           <strong style="font-size:15px; color:var(--text-main);">${ttEscHtml(o.customerName)}</strong>
-          <div style="font-size:11.5px; color:var(--text-muted);">Invoice: ${o.id} | Delivered: ${o.deliveredDate || o.orderDate}</div>
+          <div style="font-size:11.5px; color:var(--text-muted);">Invoice: ${ttEscHtml(window.ttInvNo ? ttInvNo(o) : o.id)} | Delivered: ${o.deliveredDate || o.orderDate}</div>
         </div>
         <div style="display:flex; align-items:center; gap:6px;">
           <span class="badge ${o.dueAmount > 0 ? 'badge-danger' : 'badge-delivered'}">${o.dueAmount > 0 ? 'Due: ₹' + o.dueAmount : 'Paid'}</span>

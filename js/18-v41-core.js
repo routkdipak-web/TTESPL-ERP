@@ -10,7 +10,7 @@
     secureMode: 0, secureUrl: '',
     blockOverpay: 1, freshWrite: 1, receipts: 1,
     stockWarn: 1, singleDeliver: 1, restoreOnCancel: 1,
-    seqInvoice: 0, invPrefix: 'TTE', invStart: 1, gstPerItem: 0, courierTaxable: 0, autoInter: 1, bankFromCompany: 1,
+    seqInvoice: 0, invPrefix: 'TTE', invStart: 1, billSeries: 1, billPrefixB2B: 'TTESPL-', billPrefixB2C: 'TT-', billStartB2B: 101, billStartB2C: 101, gstPerItem: 0, courierTaxable: 0, autoInter: 1, bankFromCompany: 1,
     recycleBin: 1, cloudDelete: 1, backupRemind: 1, backupDays: 7,
     offlineApp: 1, photoStorage: 0, pageLists: 1, pageSize: 50, insights: 1
   };
@@ -68,7 +68,9 @@
       sw('restoreOnCancel', 'Put stock back on cancel / delete of a delivered bill', 'Asks first'),
       actRow('Stock in / adjust', 'Add received goods or correct stock, with a reason (logged)', 'ttOpenStockAdjust()', 'Open')];
     group('📦 Stock Control (on / off)', stk);
-    var inv = [sw('seqInvoice', 'Sequential invoice number (financial year)', 'New bills get TTE/26-27/0001, 0002… (one series, all phones)'), txtRow('invPrefix', 'Invoice prefix', '', 'TTE'), numRow('invStart', 'Series starts at', 'First number of the series (when you switch on)', '1'),
+    var inv = [sw('billSeries', 'Automatic bill number on delivery', 'GST customer: TTESPL-101, 102…   Non-GST customer: TT-101, 102…  (never repeats, shared by all phones)'),
+      txtRow('billPrefixB2B', 'GST bill (B2B) prefix', '', 'TTESPL-'), numRow('billStartB2B', 'GST bills start at', 'First number (used only before the first bill)', '101'),
+      txtRow('billPrefixB2C', 'Non-GST bill (B2C) prefix', '', 'TT-'), numRow('billStartB2C', 'Non-GST bills start at', 'First number (used only before the first bill)', '101'),
       sw('gstPerItem', 'GST rate per item (0 / 5 / 12 / 18 / 28 %)', 'Set the rate in each stock item. OFF = 18% for everything like before'),
       sw('courierTaxable', 'Courier / transport charge is taxable (18%)', 'Counts inside taxable value on invoice and GST report. Ask your CA before using'),
       sw('autoInter', 'Auto IGST / CGST+SGST from GSTIN', 'Picks Inter-State when the customer GSTIN state differs from yours (you can still change it)'),
@@ -240,7 +242,9 @@
       return freshOrder(id).then(function (f) {
         if (f) mergeFresh(o, f);
         if (F('singleDeliver') && o.status === 'Delivered') return already();
-        return oDel.apply(self, args);
+        var was = o.status, r0 = oDel.apply(self, args);
+        if (was !== 'Delivered' && o.status === 'Delivered') window.__tt41Delivered = id;   // lets the delivery add-on know this phone really delivered it
+        return r0;
       }).then(function (r) { delete busy['d' + id]; return r; }, function (e) { delete busy['d' + id]; throw e; });
     };
   })();

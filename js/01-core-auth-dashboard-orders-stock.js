@@ -2793,7 +2793,7 @@ function shareOrderWhatsApp(ordId) {
   const o = ordersData.find(x => x.id === ordId);
   if(!o) return;
   const itemsTextPlain = o.items.map(i => `${i.name} (x${i.qty}, Disc:${i.disc || 0}%) - Rs.${i.total}`).join('\n');
-  const plainMsg = `TWIN TOWN EXPRESS SERVICES PVT LTD\nInvoice: ${o.id}\nCustomer: ${o.customerName}\n-----------------------\nItems:\n${itemsTextPlain}\n-----------------------\nTotal Bill: Rs.${o.totalAmount}\nPaid: Rs.${o.recvAmount}\nDue: Rs.${o.dueAmount}\n\nRasulgarh, Bhubaneswar`;
+  const plainMsg = `TWIN TOWN EXPRESS SERVICES PVT LTD\nInvoice: ${window.ttInvNo ? ttInvNo(o) : o.id}\nCustomer: ${o.customerName}\n-----------------------\nItems:\n${itemsTextPlain}\n-----------------------\nTotal Bill: Rs.${o.totalAmount}\nPaid: Rs.${o.recvAmount}\nDue: Rs.${o.dueAmount}\n\nRasulgarh, Bhubaneswar`;
   ttNativeShareOrFallback(
     { title: `TTESPL Invoice ${o.id}`, text: plainMsg },
     function () {

@@ -88,13 +88,13 @@ function ttBuildInvoicePaged(o, opt) {
       <div style="border-left:1px solid #000;">
         <div style="display:grid;grid-template-columns:1fr 1fr;">
           ${meta(opt.noLabel || 'Invoice No.', ttEscHtml((window.ttInvNo ? ttInvNo(o, opt) : o.id)))}${meta('Dated', ttEscHtml(dt))}
-          ${meta('Delivery Note', '')}${meta('Mode/Terms of Payment', ttEscHtml(o.payMode && o.payMode !== 'Imported' ? o.payMode : ''))}
-          ${meta('Reference No. &amp; Date.', '')}${meta('Other References', '')}
-          ${meta("Buyer's Order No.", '')}${meta('Dated', ttEscHtml(opt.noOrderDate ? '' : (o.orderDate || '')))}
-          ${meta('Dispatch Doc No.', '')}${meta('Delivery Note Date', '')}
-          ${meta('Dispatched through', '')}${meta('Destination', '')}
+          ${meta('Delivery Note', ttEscHtml((o.invMeta || {}).deliveryNote || ''))}${meta('Mode/Terms of Payment', ttEscHtml(o.payMode && o.payMode !== 'Imported' ? o.payMode : ''))}
+          ${meta('Reference No. &amp; Date.', ttEscHtml((o.invMeta || {}).refNo || ''))}${meta('Other References', ttEscHtml((o.invMeta || {}).otherRef || ''))}
+          ${meta("Buyer's Order No.", ttEscHtml((o.invMeta || {}).buyerOrderNo || ''))}${meta('Dated', ttEscHtml((o.invMeta || {}).buyerOrderDate || (opt.noOrderDate ? '' : (o.orderDate || ''))))}
+          ${meta('Dispatch Doc No.', ttEscHtml((o.invMeta || {}).dispatchDoc || ''))}${meta('Delivery Note Date', ttEscHtml((o.invMeta || {}).deliveryNoteDate || ''))}
+          ${meta('Dispatched through', ttEscHtml((o.invMeta || {}).dispatchedThrough || ''))}${meta('Destination', ttEscHtml((o.invMeta || {}).destination || ''))}
         </div>
-        <div style="padding:3px 5px;min-height:40px;font-size:9.5px;">Terms of Delivery${opt.delivery ? ': <strong>' + ttEscHtml(opt.delivery) + '</strong>' : ''}<br>${opt.byLabel || 'Billed By'}: <strong>${ttEscHtml(o.bookedBy || '')}</strong></div>
+        <div style="padding:3px 5px;min-height:40px;font-size:9.5px;">Terms of Delivery${(opt.delivery || (o.invMeta || {}).termsOfDelivery) ? ': <strong>' + ttEscHtml(opt.delivery || (o.invMeta || {}).termsOfDelivery) + '</strong>' : ''}<br>${opt.byLabel || 'Billed By'}: <strong>${ttEscHtml(o.bookedBy || '')}</strong></div>
       </div>
     </div>`;
 
@@ -512,7 +512,7 @@ window.ttRenderBrandsIfOpen = function () {
     var due = custOrders(c).filter(function (o) { return o.status !== 'Cancelled' && (o.dueAmount || 0) > 0; });
     var tot = due.reduce(function (s, o) { return s + (Number(o.dueAmount) || 0); }, 0);
     var msg = 'Hello ' + c.name + ',\nThis is a reminder from Twin Town Express Services Pvt Ltd (Rasulgarh, BBSR) that an amount of ' + INR(tot) +
-      ' is outstanding (Invoice: ' + due.map(function (o) { return o.id; }).join(', ') + ').\nKindly pay at the earliest. Let us know if you need our UPI / bank details.\nThank you!';
+      ' is outstanding (Invoice: ' + due.map(function (o) { return window.ttInvNo ? ttInvNo(o) : o.id; }).join(', ') + ').\nKindly pay at the earliest. Let us know if you need our UPI / bank details.\nThank you!';
     window.open(waUrl(c.phone, msg), '_blank');
   };
 

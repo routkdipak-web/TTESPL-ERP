@@ -516,6 +516,7 @@ function openLedgerDetail(ordId) {
   const row = (l, v) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--border);font-size:12.5px;"><span style="color:var(--text-muted);">${l}</span><strong style="text-align:right;">${v}</strong></div>`;
   const sec = (t, body) => `<div class="card" style="margin:10px 12px;padding:12px 14px;"><div style="font-weight:800;font-size:13.5px;margin-bottom:6px;color:var(--text-main);">${t}</div>${body}</div>`;
   const photoBtn = (src, label) => src ? `<button class="btn btn-accent btn-sm" style="margin-top:8px;" onclick="ttViewPhoto(window.__ttPhotoStore['${reg(src)}'])">🖼️ ${label}</button>` : `<div style="font-size:11.5px;color:var(--text-muted);margin-top:6px;">No photo</div>`;
+  const photoBtns = (src, extra, label) => photoBtn(src, label) + (Array.isArray(extra) ? extra.filter(Boolean).map((x, k) => photoBtn(x, label.replace(' Dekhein', '') + ' ' + (k + 2) + ' Dekhein')).join('') : '');   // v41: extra photos
 
   const cust = customerDatabase.find(c => (c.phone && c.phone === o.phone) || c.name === o.customerName) || {};
   const trail = (o.auditTrail || []).slice().reverse();
@@ -523,9 +524,9 @@ function openLedgerDetail(ordId) {
 
   let payHtml = '';
   if (pays.length) {
-    payHtml = pays.map((p, i) => `<div style="padding:8px 0;border-bottom:1px dashed var(--border);"><div style="display:flex;justify-content:space-between;font-size:12.5px;"><strong>Payment #${i + 1} — ₹${ttInr(p.amount)}</strong><span>${esc(p.mode || '')}</span></div><div style="font-size:11.5px;color:var(--text-muted);">🕒 ${esc(p.at || '')} · by ${esc(p.by || '')}</div>${photoBtn(p.photo, 'Payment Photo Dekhein')}</div>`).join('');
+    payHtml = pays.map((p, i) => `<div style="padding:8px 0;border-bottom:1px dashed var(--border);"><div style="display:flex;justify-content:space-between;font-size:12.5px;"><strong>Payment #${i + 1} — ₹${ttInr(p.amount)}</strong><span>${esc(p.mode || '')}</span></div><div style="font-size:11.5px;color:var(--text-muted);">🕒 ${esc(p.at || '')} · by ${esc(p.by || '')}</div>${photoBtns(p.photo, p.photos, 'Payment Photo Dekhein')}</div>`).join('');
   } else if (o.recvAmount > 0) {
-    payHtml = `<div style="font-size:12.5px;">Received: <strong>₹${ttInr(o.recvAmount)}</strong>${o.lastPaymentDate ? ' · Last: ' + esc(o.lastPaymentDate) : ''}${o.payMode ? ' · ' + esc(o.payMode) : ''}</div>${photoBtn(o.lastPaymentProof, 'Payment Photo Dekhein')}`;
+    payHtml = `<div style="font-size:12.5px;">Received: <strong>₹${ttInr(o.recvAmount)}</strong>${o.lastPaymentDate ? ' · Last: ' + esc(o.lastPaymentDate) : ''}${o.payMode ? ' · ' + esc(o.payMode) : ''}</div>${photoBtns(o.lastPaymentProof, o.lastPaymentProofs, 'Payment Photo Dekhein')}`;
   } else {
     payHtml = `<div style="font-size:12.5px;color:var(--text-muted);">No payment received yet.</div>`;
   }
@@ -540,7 +541,7 @@ function openLedgerDetail(ordId) {
     ${sec('📅 Order & Follow-up Timeline', row('Order received on', esc(o.orderDate || '-')) + row('Delivery target', esc(o.deliveryDate || '-')) +
         (o.payFollowupDate ? row('Payment follow-up', esc(o.payFollowupDate) + (o.payFollowupNote ? ' — ' + esc(o.payFollowupNote) : '')) : '') +
         (trail.length ? trail.map(t => `<div style="font-size:12px;padding:5px 0;border-bottom:1px dashed var(--border);">🕒 <strong>${esc(t.time || '')}</strong> — ${esc(t.note || '')}<br><span style="color:var(--text-muted);">by ${esc(t.by || '')}</span></div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);padding-top:6px;">No follow-up history.</div>'))}
-    ${sec('🚚 Delivery Details', row('Status', esc(o.status || '-')) + row('Delivered date & time', esc(o.deliveredAt || o.deliveredDate || '-')) + row('Delivered by', esc(o.deliveredBy || '-')) + photoBtn(o.deliveryProofPhoto, 'Delivery Photo Dekhein'))}
+    ${sec('🚚 Delivery Details', row('Status', esc(o.status || '-')) + row('Delivered date & time', esc(o.deliveredAt || o.deliveredDate || '-')) + row('Delivered by', esc(o.deliveredBy || '-')) + photoBtns(o.deliveryProofPhoto, o.deliveryProofPhotos, 'Delivery Photo Dekhein'))}
     ${sec('💵 Payment Details', payHtml)}
     ${sec('🧾 Items (' + (o.items || []).length + ')' + (isAdminUser() ? ` <button class="btn btn-outline btn-sm" style="float:right;" onclick="openAdminEditLedgerModal('${o.id}')">✏️ Edit</button>` : ''), (o.items || []).map((it, i) => `<div style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12.5px;"><span>${i + 1}. ${esc(it.name)} × ${it.qty}</span><strong>₹${ttInr(it.total)}</strong></div>`).join(''))}
     <div style="display:flex;gap:8px;padding:6px 12px 30px;">

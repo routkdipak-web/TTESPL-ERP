@@ -192,7 +192,8 @@
       /* the "Show more" button lives OUTSIDE the list (next to it) so other scripts watching the list never see it - this avoids watcher loops */
       var btn = c.__more; if (btn && btn.parentNode) btn.parentNode.removeChild(btn);
       var kids = [].slice.call(c.children);
-      if (!F('pageLists') || kids.length <= N0) { kids.forEach(function (k) { if (k.classList.contains('tt41-hide')) k.classList.remove('tt41-hide'); }); }
+      var q = (c.id === 'billingListContainer' && $('ledgerSearchInput') && $('ledgerSearchInput').value.trim());   // while searching the ledger, show every match (not only the first page)
+      if (!F('pageLists') || kids.length <= N0 || q) { kids.forEach(function (k) { if (k.classList.contains('tt41-hide')) k.classList.remove('tt41-hide'); }); }
       else {
         if (c.__first !== kids[0]) { c.__first = kids[0]; c.__shown = N0; }
         var shown = c.__shown || N0;
@@ -205,6 +206,7 @@
       }
     } finally { applying = false; if (obs) obs.takeRecords(); }
   }
+  document.addEventListener('input', function (e) { if (e.target && e.target.id === 'ledgerSearchInput') setTimeout(function () { var c = $('billingListContainer'); if (c) pgApply(c); }, 0); });
   window.ttPgRefresh = function () { IDS.forEach(function (id) { var c = $(id); if (c) { c.__first = null; pgApply(c); } }); };
   function pgInit() {
     if (obs) return; var any = false;
