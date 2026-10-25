@@ -1941,16 +1941,17 @@ function handleCustomerAutocomplete(inputEl, targetInputId) {
     const nameMatch = c.name && c.name.toLowerCase().includes(val);
     const phoneMatch = c.phone && String(c.phone).includes(val);
     const personMatch = c.person && c.person.toLowerCase().includes(val);
-    return nameMatch || phoneMatch || personMatch;
+    const contactMatch = Array.isArray(c.contacts) && c.contacts.some(k => (k.name && String(k.name).toLowerCase().includes(val)) || (k.phone && String(k.phone).includes(val)));   // v41: extra contacts
+    return nameMatch || phoneMatch || personMatch || contactMatch;
   }).slice(0, 10);
 
   let html = matches.map(c => `
     <div class="suggestion-item" onmousedown="selectCustomerSuggestion('${targetInputId}', '${encodeURIComponent(c.name || '')}', '${c.phone || ''}')">
       <div style="flex:1;">
-        <strong style="font-size:13px; color:var(--text-main);">${c.name || ''}</strong>
-        <div class="suggestion-sub">${(c.person && c.person !== c.name) ? c.person + ' | ' : ''}📍 ${c.address || ''}</div>
+        <strong style="font-size:13px; color:var(--text-main);">${ttEscHtml(c.name || '')}</strong>
+        <div class="suggestion-sub">${(c.person && c.person !== c.name) ? ttEscHtml(c.person) + ' | ' : ''}📍 ${ttEscHtml(c.address || '')}${(Array.isArray(c.contacts) && c.contacts.length) ? ' | 📇 +' + c.contacts.length : ''}</div>
       </div>
-      <span class="badge badge-info" style="font-size:10px;">${c.phone || ''}</span>
+      <span class="badge badge-info" style="font-size:10px;">${ttEscHtml(c.phone || '')}</span>
     </div>
   `).join('');
 
@@ -2104,9 +2105,9 @@ document.addEventListener('click', function(e) {
 function resolveCustomerFromSearch(text) {
   if(!text) return null;
   const match = text.match(/\((\d{10})\)/);
-  if(match) return customerDatabase.find(c => c.phone === match[1]);
+  if(match) return customerDatabase.find(c => c.phone === match[1]) || customerDatabase.find(c => Array.isArray(c.contacts) && c.contacts.some(k => k.phone === match[1]));
   const t = text.toLowerCase().trim();
-  return customerDatabase.find(c => (c.name && c.name.toLowerCase() === t) || (c.phone && String(c.phone) === t));
+  return customerDatabase.find(c => (c.name && c.name.toLowerCase() === t) || (c.phone && String(c.phone) === t) || (Array.isArray(c.contacts) && c.contacts.some(k => k.phone && String(k.phone) === t)));
 }
 
 function resolvePartFromSearch(text) {
@@ -3167,13 +3168,13 @@ function renderStockList() {
       card.onclick = () => { triggerAppHaptic(); ttCustDash(cust.id); };
       card.innerHTML = `
         <div class="card-header">
-          <div><strong>${ttEscHtml(cust.name)}</strong><div style="font-size:11px; color:var(--text-muted);">${cust.phone}</div></div>
+          <div><strong>${ttEscHtml(cust.name)}</strong><div style="font-size:11px; color:var(--text-muted);">${ttEscHtml(cust.phone)}</div></div>
           <div style="display:flex; gap:6px;">
             <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); ttCustDash(${cust.id})">📊 Dashboard</button>
             <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); editCustomerPrompt(${cust.id})">✏️ Edit</button>
           </div>
         </div>
-        <div style="font-size:11.5px; color:var(--text-muted);">📍 ${cust.address || 'Odisha'} | GSTIN: ${cust.gst || 'Unregistered'}</div>
+        <div style="font-size:11.5px; color:var(--text-muted);">📍 ${ttEscHtml(cust.address || 'Odisha')} | GSTIN: ${ttEscHtml(cust.gst || 'Unregistered')}</div>${window.ttContactsLine ? ttContactsLine(cust) : ''}
       `;
       c.appendChild(card);
     });

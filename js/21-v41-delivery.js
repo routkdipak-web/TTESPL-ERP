@@ -76,7 +76,21 @@
   var PEND = 'TTESPL_V41_PENDBILL';
   function pendGet() { try { return JSON.parse(localStorage.getItem(PEND) || '[]') || []; } catch (e) { return []; } }
   function pendSet(a) { try { localStorage.setItem(PEND, JSON.stringify(a)); } catch (e) {} }
-  var working = false;
+  var working = false, lastErrToast = 0;
+  function noteErr(e) {
+    var code = (e && e.code) || '', msg = (e && e.message) || String(e || '');
+    window.__billErr = (code ? code + ': ' : '') + msg;
+    if (Date.now() - lastErrToast > 60000) {
+      lastErrToast = Date.now();
+      V.toast('Bill number not created yet (' + (code || msg).slice(0, 60) + '). It will retry by itself.' + (/permission/i.test(code + msg) ? ' Firebase rules block the counter: see README.' : ''), true);
+    }
+  }
+  window.ttBillStatus = function () {
+    var pend = pendGet(), noNo = (typeof ordersData !== 'undefined' ? ordersData : []).filter(function (o) { return o.status === 'Delivered' && !o.invoiceNo; }).length;
+    var html = '<div class="tt41-sub">Pending (waiting for a number on this phone): <b>' + pend.length + '</b><br>Old delivered bills without a new number: <b>' + noNo + '</b> (they keep ORD-xxx, new deliveries get numbers)<br>Last problem: <b>' + H(window.__billErr || 'none') + '</b><br><span id="tt41BsCtr">Reading counters…</span></div><button class="btn btn-primary" style="width:100%;" onclick="ttV41.assignBills();setTimeout(ttBillStatus,2500)">Retry now</button>';
+    V.modal('tt41Bs', '🧾 Bill number status', html);
+    if (cloud() && cloud().peekNumber) Promise.all([cloud().peekNumber('bill_b2b'), cloud().peekNumber('bill_b2c')]).then(function (r) { var el = $('tt41BsCtr'); if (el) el.innerHTML = 'Counter now → GST: <b>' + (r[0] == null ? 'cannot read' : fmt('b2b', r[0] + 1) + ' (next)') + '</b> · Non-GST: <b>' + (r[1] == null ? 'cannot read' : fmt('b2c', r[1] + 1) + ' (next)') + '</b>'; });
+  };
   function assignBills() {   // only the phone that delivered the bill numbers it, one at a time, through a cloud counter (no two bills can get the same number)
     if (working || !F('billSeries')) return;
     var ids = pendGet(); if (!ids.length) return;
@@ -95,7 +109,7 @@
           setStored('ORDERS', ordersData);   // save right away so the number is never lost
           next();
         });
-      }).catch(function () { finish(); });
+      }).catch(function (e) { noteErr(e); finish(); });
     })();
     function finish() {
       pendSet(rest); working = false;
@@ -141,7 +155,7 @@
     if (o.invoiceNo) { el.innerHTML = '🧾 Bill no.: <b>' + H(o.invoiceNo) + '</b>'; return; }
     var t = typeFor(o, ($('tt41DlType') || {}).value), tag = t === 'b2b' ? 'GST bill' : 'Non-GST bill';
     el.innerHTML = '🧾 Bill no. will be given automatically <small>(' + tag + ')</small>';
-    if (cloud() && cloud().peekNumber && navigator.onLine !== false) cloud().peekNumber('bill_' + t).then(function (n) { if (n == null) return; var cur = $('tt41DlBill'); if (cur && ($('pendingDeliverOrderId') || {}).value === id) cur.innerHTML = '🧾 Bill no.: <b>' + H(fmt(t, n + 1)) + '</b> <small>(' + tag + ')</small>'; });
+    if (cloud() && cloud().peekNumber && navigator.onLine !== false) cloud().peekNumber('bill_' + t).then(function (n) { if (n == null) { var c0 = $('tt41DlBill'); if (c0) c0.innerHTML += '<br><small style="color:var(--danger)">⚠ Counter not reachable now – the number will be added automatically.</small>'; return; } var cur = $('tt41DlBill'); if (cur && ($('pendingDeliverOrderId') || {}).value === id) cur.innerHTML = '🧾 Bill no.: <b>' + H(fmt(t, n + 1)) + '</b> <small>(' + tag + ')</small>'; });
   };
   window.ttDlPayToggle = function () {
     var amt = N(($('tt41DlAmt') || {}).value), box = $('tt41DlProof'); if (box) box.style.display = amt > 0 ? 'block' : 'none';

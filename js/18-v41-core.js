@@ -69,6 +69,7 @@
       actRow('Stock in / adjust', 'Add received goods or correct stock, with a reason (logged)', 'ttOpenStockAdjust()', 'Open')];
     group('📦 Stock Control (on / off)', stk);
     var inv = [sw('billSeries', 'Automatic bill number on delivery', 'GST customer: TTESPL-101, 102…   Non-GST customer: TT-101, 102…  (never repeats, shared by all phones)'),
+      actRow('Bill number status', 'Shows pending numbers, the next number and any problem; Retry button', 'ttBillStatus()', 'Open'),
       txtRow('billPrefixB2B', 'GST bill (B2B) prefix', '', 'TTESPL-'), numRow('billStartB2B', 'GST bills start at', 'First number (used only before the first bill)', '101'),
       txtRow('billPrefixB2C', 'Non-GST bill (B2C) prefix', '', 'TT-'), numRow('billStartB2C', 'Non-GST bills start at', 'First number (used only before the first bill)', '101'),
       sw('gstPerItem', 'GST rate per item (0 / 5 / 12 / 18 / 28 %)', 'Set the rate in each stock item. OFF = 18% for everything like before'),
@@ -155,7 +156,8 @@
   var LISTS = {
     ORDERS: { get: function () { return ordersData; }, kind: 'Order' }, LEADS: { get: function () { return leadsData; }, kind: 'Lead' },
     SERVICES: { get: function () { return serviceCallsData; }, kind: 'Service' }, STAFF: { get: function () { return registeredEmployees; }, kind: 'Staff' },
-    MACHINE_PARTS: { get: function () { return machinePartsData; }, kind: 'Machine reminder' }
+    MACHINE_PARTS: { get: function () { return machinePartsData; }, kind: 'Machine reminder' },
+    CUSTOMERS: { get: function () { return customerDatabase; }, kind: 'Customer' }
   };
   window.ttV41.LISTS = LISTS;
   function findPart(it) {
@@ -183,6 +185,7 @@
       if (F('cloudDelete') && cloud() && cloud().deleteItem) { try { cloud().deleteItem(key, rec.id); } catch (e) { console.warn(e); } }
     });
   }
+  window.ttV41.afterDelete = afterDelete;
   function wrapDelete(fn, key) {
     var orig = window[fn]; if (typeof orig !== 'function') return;
     window[fn] = function () {
@@ -463,7 +466,7 @@
     var secureCtx = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     if (!secureCtx) return;
     if (F('offlineApp')) { caches.delete('ttespl-nocache').catch(function () {}); navigator.serviceWorker.register('firebase-messaging-sw.js').catch(function (e) { console.warn('SW', e && e.message); }); }
-    else { caches.open('ttespl-nocache').catch(function () {}); caches.delete('ttespl-shell-v41').catch(function () {}); }
+    else { caches.open('ttespl-nocache').catch(function () {}); caches.delete('ttespl-shell-v414').catch(function () {}); }
   }
   window.addEventListener('load', function () { setTimeout(applyOffline, 1500); });
 

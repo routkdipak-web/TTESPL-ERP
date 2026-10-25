@@ -88,7 +88,10 @@
   function stData() {
     var nm = ($('tt41StName').value || '').trim(), from = $('tt41StFrom').value, to = $('tt41StTo').value; if (!nm) return null;
     var key = nm.toLowerCase(), first = orders().find(function (o) { return String(o.customerName || '').toLowerCase() === key; }), ph = first && String(first.phone || '').slice(-10);
-    var list = orders().filter(function (o) { return o && o.status !== 'Cancelled' && (String(o.customerName || '').toLowerCase() === key || (ph && String(o.phone || '').slice(-10) === ph)) && (!from || dateOf(o) >= from) && (!to || dateOf(o) <= to); }).sort(function (a, b) { return dateOf(a) < dateOf(b) ? -1 : 1; });
+    var cu = (typeof customerDatabase !== 'undefined' ? customerDatabase : []).find(function (c) { return String(c.name || '').toLowerCase() === key; }), names = {}, phones = {};   // v41: merged customers (extra contacts + old names)
+    names[key] = 1; if (ph) phones[ph] = 1;
+    if (cu) { if (cu.phone) phones[String(cu.phone).replace(/\D/g, '').slice(-10)] = 1; (cu.contacts || []).forEach(function (k) { if (k.phone) phones[String(k.phone).replace(/\D/g, '').slice(-10)] = 1; }); (cu.aliases || []).forEach(function (a) { names[String(a).toLowerCase()] = 1; }); }
+    var list = orders().filter(function (o) { return o && o.status !== 'Cancelled' && (names[String(o.customerName || '').toLowerCase()] || phones[String(o.phone || '').replace(/\D/g, '').slice(-10)]) && (!from || dateOf(o) >= from) && (!to || dateOf(o) <= to); }).sort(function (a, b) { return dateOf(a) < dateOf(b) ? -1 : 1; });
     var t = 0, r = 0; list.forEach(function (o) { t += N(o.totalAmount); r += N(o.recvAmount); });
     return { nm: nm, list: list, t: R2(t), r: R2(r), d: R2(t - r), ph: ph || '' };
   }
