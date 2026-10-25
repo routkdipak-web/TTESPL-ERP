@@ -35,3 +35,7 @@ function ttFindStock(it) {
   return null;
 }
 window.ttFindStock = ttFindStock;
+
+/* v42.2: encodeURIComponent leaves ' ! ( ) * untouched, which breaks inline onclick strings (e.g. customer "Gugu's Auto"). Use this inside inline handlers. */
+function ttEnc(s) { return encodeURIComponent(s).replace(/[!'()*]/g, function (c) { return '%' + c.charCodeAt(0).toString(16).toUpperCase(); }); }
+window.ttEnc = ttEnc;

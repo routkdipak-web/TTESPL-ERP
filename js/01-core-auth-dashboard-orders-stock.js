@@ -1946,7 +1946,7 @@ function handleCustomerAutocomplete(inputEl, targetInputId) {
   }).slice(0, 10);
 
   let html = matches.map(c => `
-    <div class="suggestion-item" onmousedown="selectCustomerSuggestion('${targetInputId}', '${encodeURIComponent(c.name || '')}', '${c.phone || ''}')">
+    <div class="suggestion-item" onmousedown="selectCustomerSuggestion('${targetInputId}', '${ttEnc(c.name || '')}', '${c.phone || ''}')">
       <div style="flex:1;">
         <strong style="font-size:13px; color:var(--text-main);">${ttEscHtml(c.name || '')}</strong>
         <div class="suggestion-sub">${(c.person && c.person !== c.name) ? ttEscHtml(c.person) + ' | ' : ''}📍 ${ttEscHtml(c.address || '')}${(Array.isArray(c.contacts) && c.contacts.length) ? ' | 📇 +' + c.contacts.length : ''}</div>
@@ -1995,7 +1995,7 @@ function handleMachineAutocomplete(inputEl, targetInputId) {
   if (combined.length === 0) { box.style.display = 'none'; return; }
 
   box.innerHTML = combined.map(m => `
-    <div class="suggestion-item" onmousedown="selectMachineSuggestion('${targetInputId}', '${encodeURIComponent(m.name || '')}', ${m.price || 0})">
+    <div class="suggestion-item" onmousedown="selectMachineSuggestion('${targetInputId}', '${ttEnc(m.name || '')}', ${m.price || 0})">
       <div style="flex:1;">
         <strong style="color:var(--text-main);">🚜 ${ttEscHtml(m.name)}</strong>
         <div class="suggestion-sub">${m.sub}</div>
@@ -2033,7 +2033,7 @@ function handleOrderItemInput(inputEl) {
   ).slice(0, 8);
 
   let html = matches.map(p => `
-    <div class="suggestion-item" onmousedown="selectOrderItemSuggestion(this, '${encodeURIComponent(p.name || '')}', '${p.code || ''}', ${p.rate || 0}, ${p.stock || 0})">
+    <div class="suggestion-item" onmousedown="selectOrderItemSuggestion(this, '${ttEnc(p.name || '')}', '${p.code || ''}', ${p.rate || 0}, ${p.stock || 0})">
       <div style="flex:1;">
         <strong style="font-size:12.5px; color:var(--text-main);">${ttEscHtml(p.name)}</strong>
         <div class="suggestion-sub">SKU: ${p.code || 'N/A'} • <span style="color:${p.stock>0?'var(--success)':'var(--danger)'}">Stock: ${p.stock || 0}</span></div>
@@ -2075,7 +2075,7 @@ function handlePartAutocomplete(inputEl, targetInputId) {
   if (matches.length === 0) { box.style.display = 'none'; return; }
 
   box.innerHTML = matches.map(p => `
-    <div class="suggestion-item" onmousedown="selectPartSuggestion('${targetInputId}', '${encodeURIComponent(p.name || '')}', '${p.code || ''}')">
+    <div class="suggestion-item" onmousedown="selectPartSuggestion('${targetInputId}', '${ttEnc(p.name || '')}', '${p.code || ''}')">
       <div style="flex:1;">
         <strong style="color:var(--text-main);">${ttEscHtml(p.name)}</strong>
         <div class="suggestion-sub">Code: ${p.code || 'N/A'} | Stock: ${p.stock || 0}</div>
@@ -2557,7 +2557,7 @@ function saveOrderAction() {
 
     if(pName && qty > 0) {
       items.push({
-        id: part ? part.id : Date.now(),
+        id: part ? part.id : (Date.now() + items.length),   // v42.3: two free-text lines in one save no longer share an id
         name: part ? part.name : pName,
         hsn: part ? (part.hsn || "84139190") : "84139190",
         qty, mrp, disc, rate, total: ttR2(qty * rate)
@@ -3174,6 +3174,7 @@ function renderStockList() {
           <div style="display:flex; gap:6px;">
             <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); ttCustDash(${cust.id})">📊 Dashboard</button>
             <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); editCustomerPrompt(${cust.id})">✏️ Edit</button>
+            ${isAdmin ? `<button class="btn btn-danger-sm btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); ttDeleteCustomer('${esc(String(cust.id))}')">🗑️</button>` : ''}
           </div>
         </div>
         <div style="font-size:11.5px; color:var(--text-muted);">📍 ${ttEscHtml(cust.address || 'Odisha')} | GSTIN: ${ttEscHtml(cust.gst || 'Unregistered')}</div>${window.ttContactsLine ? ttContactsLine(cust) : ''}${window.ttCustActions ? ttCustActions(cust) : ''}

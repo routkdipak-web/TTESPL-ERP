@@ -679,7 +679,7 @@ window.ttR2 = ttR2; window.ttDueOf = ttDueOf; window.ttStatusOf = ttStatusOf;
       var badge = st === 'Paid' ? '<span class="badge badge-delivered">Paid</span>' : (st === 'Partial' ? '<span class="badge badge-pending">Partial · Due ' + FM(due) + '</span>' : '<span class="badge badge-danger">Due: ' + FM(due) + '</span>');
       card.innerHTML =
         '<div class="card-header" style="cursor:pointer;" onclick="if(!event.target.closest(\'button\')){ triggerAppHaptic(); openLedgerDetail(\'' + E(o.id) + '\'); }">' +
-        '<div><strong style="font-size:15px;color:var(--text-main);">' + E(o.customerName) + '</strong>' +
+        '<div><strong style="font-size:15px;color:var(--text-main);">' + E(o.customerName) + '</strong>' + (window.ttMfBadge ? ttMfBadge(o) : '') +
         '<div style="font-size:11.5px;color:var(--text-muted);">Invoice: ' + E(window.ttInvNo ? ttInvNo(o) : o.id) + ' | Delivered: ' + E(o.deliveredDate || o.orderDate) + ' | Staff: ' + E(o.bookedBy || '-') + '</div></div>' +
         '<div style="display:flex;align-items:center;gap:6px;">' + badge + '<button class="btn btn-outline btn-sm" onclick="triggerAppHaptic(); openAdminEditLedgerModal(\'' + E(o.id) + '\')">✏️</button></div></div>' +
         '<div class="tt21-amts"><span>Total <b>' + FM(o.totalAmount) + '</b></span><span style="color:var(--success);">Received <b>' + FM(o.recvAmount) + '</b></span><span style="color:' + (due > 0 ? 'var(--danger)' : 'var(--success)') + ';">Due <b>' + FM(due) + '</b></span></div>' +

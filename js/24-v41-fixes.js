@@ -36,18 +36,26 @@
   window.ttGroupSubs = Object.assign(window.ttGroupSubs || {}, { 'Fixes & Health': 'Missing prices, data check, storage' });
 
   /* ---------- A3: missing prices ---------- */
-  var MP = { mode: 'rate', q: '', page: 0 };
+  var MP = { mode: 'rate', q: '', page: 0, draft: {} };
   function mpList() {
     var q = MP.q.toLowerCase();
     return inv().filter(function (p) { var miss = MP.mode === 'rate' ? !(N(p.rate) > 0) : !(N(p.dealerPrice) > 0); return miss && (!q || (String(p.name || '') + ' ' + String(p.code || '')).toLowerCase().indexOf(q) >= 0); });
   }
-  window.ttOpenMissingPrices = function () { MP.page = 0; mpDraw(); };
+  window.ttOpenMissingPrices = function () { MP.page = 0; MP.draft = {}; mpDraw(); };
+  function mpCapture() {   // v42.3: remember typed prices so search / page change / tab change does not lose them
+    document.querySelectorAll('#tt41Mp .tt41-mpr').forEach(function (r) {
+      var id = r.getAttribute('data-id');
+      r.querySelectorAll('input[data-f]').forEach(function (i) { var f = i.getAttribute('data-f'); if (i.value !== '') { (MP.draft[id] = MP.draft[id] || {})[f] = i.value; } else if (MP.draft[id]) { delete MP.draft[id][f]; } });
+    });
+  }
+  function mpVal(p, f) { var d = MP.draft[String(p.id)]; if (d && d[f] !== undefined) return d[f]; return N(p[f]) > 0 ? p[f] : ''; }
   function mpDraw() {
+    mpCapture();
     var all = mpList(), per = 25, pages = Math.max(1, Math.ceil(all.length / per)); MP.page = Math.min(MP.page, pages - 1);
     var cntRate = inv().filter(function (p) { return !(N(p.rate) > 0); }).length, cntDeal = inv().filter(function (p) { return !(N(p.dealerPrice) > 0); }).length;
     var h = '<div class="tt41-row2"><button class="btn ' + (MP.mode === 'rate' ? 'btn-primary' : 'btn-outline') + ' btn-sm" onclick="ttMpMode(\'rate\')">No rate (' + cntRate + ')</button><button class="btn ' + (MP.mode === 'dealer' ? 'btn-primary' : 'btn-outline') + ' btn-sm" onclick="ttMpMode(\'dealer\')">No cost price (' + cntDeal + ')</button></div>' +
       '<input class="tt41-in" placeholder="Search item" value="' + H(MP.q) + '" oninput="ttMpQ(this.value)"><div class="tt41-sub">Fill the price and press Save. “Rate” is what you sell at (incl. GST); “Cost” is the dealer / purchase price (incl. GST) used for profit.</div>' +
-      all.slice(MP.page * per, MP.page * per + per).map(function (p) { return '<div class="tt41-mpr" data-id="' + H(p.id) + '"><div class="tt41-mpn">' + H(p.name) + '<small>' + H(p.category || '') + ' · stock ' + H(p.stock) + '</small></div><input type="number" class="tt41-in" data-f="rate" step="any" inputmode="decimal" placeholder="Rate" value="' + (N(p.rate) > 0 ? p.rate : '') + '"><input type="number" class="tt41-in" data-f="dealerPrice" step="any" inputmode="decimal" placeholder="Cost" value="' + (N(p.dealerPrice) > 0 ? p.dealerPrice : '') + '"></div>'; }).join('') +
+      all.slice(MP.page * per, MP.page * per + per).map(function (p) { return '<div class="tt41-mpr" data-id="' + H(p.id) + '"><div class="tt41-mpn">' + H(p.name) + '<small>' + H(p.category || '') + ' · stock ' + H(p.stock) + '</small></div><input type="number" class="tt41-in" data-f="rate" step="any" inputmode="decimal" placeholder="Rate" value="' + H(mpVal(p, 'rate')) + '"><input type="number" class="tt41-in" data-f="dealerPrice" step="any" inputmode="decimal" placeholder="Cost" value="' + H(mpVal(p, 'dealerPrice')) + '"></div>'; }).join('') +
       (all.length ? '' : '<div class="tt41-empty">Nothing missing here 🎉</div>') +
       '<div class="tt41-row2" style="margin-top:8px;"><button class="btn btn-outline btn-sm" onclick="ttMpPage(-1)"' + (MP.page ? '' : ' disabled') + '>‹ Prev</button><button class="btn btn-primary btn-sm" onclick="ttMpSave()">💾 Save this page</button><button class="btn btn-outline btn-sm" onclick="ttMpPage(1)"' + (MP.page < pages - 1 ? '' : ' disabled') + '>Next ›</button></div><div class="tt41-sub" style="text-align:center;">Page ' + (MP.page + 1) + ' / ' + pages + '</div>';
     V.modal('tt41Mp', '💲 Missing prices', h, true);
@@ -56,11 +64,12 @@
   window.ttMpPage = function (d) { MP.page = Math.max(0, MP.page + d); mpDraw(); };
   window.ttMpQ = function (v) { MP.q = v; MP.page = 0; var el = document.querySelector('#tt41Mp .tt41-in'), pos = el && el.selectionStart; mpDraw(); el = document.querySelector('#tt41Mp .tt41-in'); if (el) { el.focus(); try { el.setSelectionRange(pos, pos); } catch (e) {} } };
   window.ttMpSave = function () {
-    var n = 0;
-    document.querySelectorAll('#tt41Mp .tt41-mpr').forEach(function (r) {
-      var id = r.getAttribute('data-id'), p = inv().find(function (x) { return String(x.id) === String(id); }); if (!p) return;
-      r.querySelectorAll('input').forEach(function (i) { var v = R2(i.value), f = i.getAttribute('data-f'); if (v > 0 && N(p[f]) !== v) { p[f] = v; n++; } });
+    var n = 0; mpCapture();
+    Object.keys(MP.draft).forEach(function (id) {   // every page, not only the one on screen
+      var p = inv().find(function (x) { return String(x.id) === String(id); }); if (!p) return;
+      Object.keys(MP.draft[id]).forEach(function (f) { var v = R2(MP.draft[id][f]); if (v > 0 && N(p[f]) !== v) { p[f] = v; n++; } });
     });
+    MP.draft = {};
     if (n) { setStored('INVENTORY', sampleInventory); try { renderStockList(); } catch (e) {} try { window.ttActAdd && ttActAdd('Stock', 'prices updated', '', n + ' price(s) via Missing prices'); } catch (e) {} }
     V.toast(n ? n + ' price(s) saved' : 'Nothing changed'); mpDraw();
   };

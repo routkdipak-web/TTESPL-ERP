@@ -84,7 +84,7 @@
         if (merged.length) { c.aliases = Array.from(new Set((c.aliases || []).concat(merged.map(function (id) { var m = cust(id); return m ? m.name : ''; }).filter(Boolean)))); }
         setStored('CUSTOMERS', customerDatabase);
         try { renderStockList(); } catch (e) {}
-        if (merged.length) offerRemoval(c, merged);
+        if (merged.length) { try { if (window.ttMfMoveBills) ttMfMoveBills(c, merged.map(cust).filter(Boolean)); } catch (e) { console.warn('merge bills', e); } offerRemoval(c, merged); }
         pendingMerge = [];
       } catch (e) { console.warn('customer save hook', e); }
       return r;
@@ -92,7 +92,7 @@
   })();
   function offerRemoval(main, ids) {
     var rest = ids.map(cust).filter(Boolean); if (!rest.length) return;
-    if (!confirm('Merged: ' + rest.map(function (c) { return '"' + c.name + '"'; }).join(', ') + ' → "' + main.name + '".\n\nRemove the old customer record(s) now? (A copy stays in the Recycle bin. Old bills keep the name they were billed with.)')) return;
+    if (!confirm('Merged: ' + rest.map(function (c) { return '"' + c.name + '"'; }).join(', ') + ' → "' + main.name + '".\n\nRemove the old customer record(s) now? (A copy stays in the Recycle bin. Bills already moved to the new name stay marked in Ledger until you update them.)')) return;
     var before = (customerDatabase || []).slice();
     customerDatabase = customerDatabase.filter(function (c) { return ids.indexOf(String(c.id)) < 0 && ids.indexOf(c.id) < 0; });
     setStored('CUSTOMERS', customerDatabase);

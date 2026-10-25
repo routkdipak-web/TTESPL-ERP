@@ -1187,7 +1187,7 @@ function handleQuotCustomerAutocomplete(inputEl) {
   ).slice(0, 8);
   if (matches.length === 0) { box.style.display = 'none'; return; }
   box.innerHTML = matches.map(c => `
-    <div class="suggestion-item" onmousedown="selectQuotCustomerSuggestion('${encodeURIComponent(c.name || '')}', '${c.phone || ''}', '${encodeURIComponent(c.address || '')}', '${encodeURIComponent(c.gst || '')}')">
+    <div class="suggestion-item" onmousedown="selectQuotCustomerSuggestion('${ttEnc(c.name || '')}', '${c.phone || ''}', '${ttEnc(c.address || '')}', '${ttEnc(c.gst || '')}')">
       <div style="flex:1;">
         <strong style="font-size:13px; color:var(--text-main);">${ttEscHtml(c.name || '')}</strong>
         <div class="suggestion-sub">📍 ${ttEscHtml(c.address || '')}</div>
@@ -1240,7 +1240,7 @@ function handleQuotItemInput(inputEl) {
   const matches = all.filter(p => p.category === 'Catalog Equipment').concat(all.filter(p => p.category !== 'Catalog Equipment')).slice(0, 10);
   if (matches.length === 0) { box.style.display = 'none'; return; }
   box.innerHTML = matches.map(p => `
-    <div class="suggestion-item" onmousedown="ttSelQuotItem(this, '${encodeURIComponent(String(p.id))}')">
+    <div class="suggestion-item" onmousedown="ttSelQuotItem(this, '${ttEnc(String(p.id))}')">
       <div style="flex:1;">
         <strong style="font-size:12.5px; color:var(--text-main);">${ttH(p.name)}</strong>
         <div class="suggestion-sub">${p.category === 'Catalog Equipment' ? '📚 Catalog' + (p.subCategory ? ' • ' + ttH(p.subCategory) : '') : 'SKU: ' + ttH(p.code || 'N/A')}</div>
