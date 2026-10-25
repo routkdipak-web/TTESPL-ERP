@@ -190,14 +190,28 @@
         var g = F.getDocFromServer || F.getDoc;
         return g(F.doc(db, col, did(id))).then(function (sn) { return sn.exists() ? sn.data() : null; }).catch(function () { return null; });
       },
-      nextNumber: function (name) {    // gap-free counter shared by all phones (needs internet)
-        var ref = F.doc(db, 'counters', did(name));
-        return F.runTransaction(db, function (tx) {
-          return tx.get(ref).then(function (sn) { var n = ((sn.exists() && sn.data().n) || 0) + 1; tx.set(ref, { n: n, updatedAt: Date.now() }, { merge: true }); return n; });
+      nextNumber: function (name) {    // gap-free counter shared by all phones (needs internet). Uses "counters"; if your rules refuse it, falls back to "office_config".
+        function tx(col, withId) {
+          var ref = F.doc(db, col, withId ? 'ctr_' + did(name) : did(name));
+          return F.runTransaction(db, function (t) {
+            return t.get(ref).then(function (sn) { var n = ((sn.exists() && sn.data().n) || 0) + 1, d = { n: n, updatedAt: Date.now() }; if (withId) d.id = 'ctr_' + did(name); t.set(ref, d, { merge: true }); return n; });
+          });
+        }
+        var first = localStorage.getItem('TTESPL_COUNTER_COL') === 'office_config';
+        return (first ? tx('office_config', true) : tx('counters', false)).catch(function (e) {
+          if (!first && e && (e.code === 'permission-denied' || /permission/i.test(String(e.message || '')))) {
+            return tx('office_config', true).then(function (n) { try { localStorage.setItem('TTESPL_COUNTER_COL', 'office_config'); } catch (x) {} return n; });
+          }
+          throw e;
         });
       },
       peekNumber: function (name) {
-        return F.getDoc(F.doc(db, 'counters', did(name))).then(function (sn) { return (sn.exists() && sn.data().n) || 0; }).catch(function () { return null; });
+        function rd(col, withId) { return F.getDoc(F.doc(db, col, withId ? 'ctr_' + did(name) : did(name))).then(function (sn) { return (sn.exists() && sn.data().n) || 0; }); }
+        var first = localStorage.getItem('TTESPL_COUNTER_COL') === 'office_config';
+        return (first ? rd('office_config', true) : rd('counters', false)).catch(function (e) {
+          if (!first) return rd('office_config', true).catch(function () { return null; });
+          return null;
+        });
       },
       secureSignIn: function (token) { return secureReady.then(function (A2) { return A2.signInWithCustomToken(A2.auth, token); }).then(function () { startListeners(); return true; }); },
       secureSignOut: function () { return secureReady.then(function (A2) { return A2.signOut(A2.auth); }).catch(function () {}); },

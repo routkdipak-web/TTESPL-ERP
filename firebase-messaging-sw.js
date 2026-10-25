@@ -1,5 +1,5 @@
 /* TTESPL service worker (v41): push notifications + offline app shell. One file, one registration. */
-var CACHE = 'ttespl-shell-v41';
+var CACHE = 'ttespl-shell-v414';
 try {
   importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
   firebase.initializeApp({ apiKey: 'AIzaSyAjsq2wbyXmt8_MjEazM9mAYd5vlZW0dy4', authDomain: 'ttespl.firebaseapp.com', projectId: 'ttespl', storageBucket: 'ttespl.firebasestorage.app', messagingSenderId: '244674439608', appId: '1:244674439608:web:7f7299ffd94e0a0cc5474d' });
@@ -27,7 +27,7 @@ self.addEventListener('fetch', function (e) {
   e.respondWith(caches.has('ttespl-nocache').then(function (off) { if (off) return fetch(r); return netFirst(r); }));
 });
 function netFirst(r) {
-  return (fetch(r).then(function (res) {
+  return (fetch(r.mode === 'navigate' ? r.url : new Request(r, { cache: 'no-cache' }), r.mode === 'navigate' ? { cache: 'no-cache', credentials: 'same-origin' } : undefined).then(function (res) {
     if (res && (res.ok || res.type === 'opaque')) { var c = res.clone(); caches.open(CACHE).then(function (ch) { ch.put(r, c); }).catch(function () {}); }
     return res;
   }).catch(function () { return caches.match(r, { ignoreSearch: false }).then(function (m) { return m || (r.mode === 'navigate' ? caches.match('index.html') || caches.match('./') : undefined); }); }));

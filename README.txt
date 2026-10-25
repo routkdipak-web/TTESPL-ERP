@@ -1,3 +1,16 @@
+v41.6 - CUSTOMER CONTACTS
+  - Customer > Edit me "More contacts": ek customer ke neeche bahut saare contact (naam, role, phone, email), "Merge another customer" button (dusre customer ka naam/phone/email contact bankar aa jata hai, Save dabane par pakka hota hai, purana record chaho to hata sakte ho - Recycle bin me copy rehti hai).
+  - Order form me customer ab kisi bhi contact ke number / naam se mil jata hai. Customer card par contacts ke call / WhatsApp chip.
+  - Statement me merge kiye hue customer ke purane bills bhi judte hain.
+  - FIX: Customer form me Email aur Contact Person pehle save hi nahi hote the - ab hote hain.
+  - Customer save par same phone dusre customer ka ho to chetavni.
+
+v41.5 - BILL NUMBER FIX
+  - Cache version ?v=414 (purane files phone me atke na rahein), service worker ab har baar server se naya file check karta hai.
+  - Bill number counter 'counters' collection me banta hai; agar aapke Firebase rules wo refuse karein to app apne aap 'office_config' me counter banata hai.
+  - Number na bane to ab saaf message dikhta hai, aur Settings > Invoice & GST > Bill number status me pending / agla number / problem dikhta hai + Retry.
+  - Purane delivered bills ka number ORD-xxx hi rehta hai (naye deliver hue bills ko TTESPL-101 / TT-101 milta hai).
+
 v41.4 - Delivery photo, Payment photo (delivery ke time) aur Collect Due payment photo - teeno me pehli photo ke baad "Add another photo (optional)".
   Delivery: total 3 photo, Payment: total 3 photo. Photo par X dabake hata sakte ho. Ledger Details me Photo 2 / Photo 3 ke button dikhte hain.
 
