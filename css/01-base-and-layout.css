@@ -600,14 +600,16 @@ body:has(.auth-overlay[style*="display: flex"]) .carwash-bg-canvas *, body:has(.
 #orderModal .items-table tr{display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px 6px; padding: 10px; margin-bottom: 8px; border-radius: 14px; background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.25); position: relative;}
 #orderModal .items-table td{display: block; padding: 0; border: 0; min-width: 0;}
 #orderModal .items-table td:nth-child(1){grid-column: 1 / -1;}
-#orderModal .items-table td:nth-child(n+2):nth-child(-n+5)::before{display: block; font-size: 9.5px; font-weight: 800; opacity: .65; margin-bottom: 2px;}
+#orderModal .items-table td:nth-child(n+2):nth-child(-n+6)::before{display: block; font-size: 9.5px; font-weight: 800; opacity: .65; margin-bottom: 2px;}
 #orderModal .items-table td:nth-child(2)::before{content: 'Qty';}
 #orderModal .items-table td:nth-child(3)::before{content: 'MRP (₹)';}
 #orderModal .items-table td:nth-child(4)::before{content: 'Disc %';}
 #orderModal .items-table td:nth-child(5)::before{content: 'Rate (₹)';}
+#orderModal .items-table td:nth-child(6)::before{content: 'GST %';}
 #orderModal .items-table td input{width: 100% !important; min-width: 0; box-sizing: border-box;}
-#orderModal .items-table td:nth-child(6){grid-column: 1 / 4; align-self: center; font-size: 13px;}
-#orderModal .items-table td:nth-child(7){grid-column: 4; text-align: right;}
+#orderModal .items-table td:nth-child(6){grid-column: 1;}
+#orderModal .items-table td:nth-child(7){grid-column: 2 / 4; align-self: end; font-size: 13px; padding-bottom: 8px;}
+#orderModal .items-table td:nth-child(8){grid-column: 4; text-align: right; align-self: end;}
 }
 .grid-2{grid-template-columns: repeat(2, minmax(0, 1fr));}
 .grid-3{grid-template-columns: repeat(3, minmax(0, 1fr));}

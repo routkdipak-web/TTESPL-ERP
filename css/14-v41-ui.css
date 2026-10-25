@@ -98,3 +98,27 @@ html.tt-smooth.tt-smooth.tt-smooth body :is(.card, .stat-card, .tt25Spark, .ttxD
 .tt41-cc { display: inline-flex; align-items: center; gap: 7px; padding: 3px 9px; border-radius: 99px; font-size: 11.5px; background: rgba(59,130,246,.1); }
 .tt41-cc a { text-decoration: none; font-size: 14px; }
 @media (max-width: 380px) { .tt41-ctr { grid-template-columns: 1fr; } }
+
+/* GST column + tax table in new order */
+html.tt41-nogst #orderModal .items-table td.item-gst-td, html.tt41-nogst #orderModal .items-table th:nth-child(6), html.tt41-nogst #tt41TaxBox { display: none !important; }
+.tt41-tax { border: 1px solid var(--border, rgba(148,163,184,.4)); border-radius: 14px; padding: 10px 11px; margin: 0 0 12px; background: rgba(59,130,246,.05); }
+.tt41-tax-h { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; margin-bottom: 8px; }
+.tt41-tax-h span { font-size: 10.5px; opacity: .65; }
+.tt41-tax-all { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; font-size: 11px; }
+.tt41-tax-all > div { display: flex; gap: 8px; } .tt41-tax-all input { flex: 1; min-width: 0; }
+.tt41-tax-w { overflow-x: auto; }
+.tt41-tax table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tt41-tax th, .tt41-tax td { padding: 5px 6px; text-align: right; white-space: nowrap; }
+.tt41-tax th:first-child, .tt41-tax td:first-child { text-align: left; font-weight: 700; }
+.tt41-tax th { font-size: 10.5px; opacity: .7; border-bottom: 1px solid var(--border, rgba(148,163,184,.4)); }
+.tt41-tax tr.t td { font-weight: 800; border-top: 1px solid var(--border, rgba(148,163,184,.4)); }
+#orderItemsTbody input.item-gst::-webkit-outer-spin-button, #orderItemsTbody input.item-gst::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+#orderItemsTbody input.item-gst { -moz-appearance: textfield; appearance: textfield; }
+
+/* missing prices + customer check */
+.tt41-mpr { display: grid; grid-template-columns: 1fr 88px 88px; gap: 6px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border, rgba(148,163,184,.25)); }
+.tt41-mpr .tt41-in { margin: 0; padding: 8px 9px; font-size: 13px; }
+.tt41-mpn { font-size: 12.5px; font-weight: 700; min-width: 0; word-break: break-word; } .tt41-mpn small { display: block; font-weight: 500; opacity: .6; font-size: 10.5px; }
+.tt41-grp { border: 1px solid var(--border, rgba(148,163,184,.35)); border-radius: 12px; padding: 0 10px; margin-bottom: 8px; }
+.tt41-grp .tt41-row:last-child { border-bottom: 0; }
+@media (max-width: 380px) { .tt41-mpr { grid-template-columns: 1fr 1fr; } .tt41-mpn { grid-column: 1 / -1; } }
