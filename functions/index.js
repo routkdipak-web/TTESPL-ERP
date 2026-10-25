@@ -249,3 +249,26 @@ exports.dailyBackup = onSchedule({ schedule: '30 1 * * *', timeZone: 'Asia/Kolka
   const old = files.map((f) => f.name).sort().slice(0, Math.max(0, files.length - 30));
   await Promise.all(old.map((n) => bucket.file(n).delete().catch(() => {})));
 });
+
+
+/* ===== v41: evening summary (8 pm IST) -> becomes a push notification through pushOnNotification. Turn off: Settings > Office Tools > Evening summary ===== */
+exports.dailySummary = onSchedule({ schedule: '0 20 * * *', timeZone: 'Asia/Kolkata', region: 'asia-south1', memory: '256MiB', timeoutSeconds: 120 }, async () => {
+  const db = admin.firestore();
+  const flag = await db.collection('office_config').doc('v41_flags').get();
+  if (flag.exists && flag.data().dailySummary === false) return;
+  const today = new Date(Date.now() + 5.5 * 3600 * 1000).toISOString().slice(0, 10);
+  const snap = await db.collection('orders').get();
+  let sales = 0, bills = 0, coll = 0, booked = 0, pend = 0, due = 0;
+  snap.forEach((d) => {
+    const o = d.data(); if (!o || o.status === 'Cancelled') return;
+    const pays = Array.isArray(o.payments) ? o.payments : [], sum = pays.reduce((a, p) => a + (Number(p.amount) || 0), 0);
+    const dd = String(o.deliveredDate || o.orderDate || '').slice(0, 10);
+    if (o.status === 'Delivered' && dd === today) { sales += Number(o.totalAmount) || 0; bills++; }
+    if (o.orderDate === today) { booked++; const adv = (Number(o.recvAmount) || 0) - sum; if (adv > 0) coll += adv; }
+    pays.forEach((p) => { if (p && !p.adjust && Number(p.amount) > 0 && String(p.at || '').slice(0, 10) === today) coll += Number(p.amount); });
+    if (o.status === 'Pending') pend++;
+    if (o.status === 'Delivered') due += Number(o.dueAmount) || 0;
+  });
+  const f = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
+  await db.collection('app_notifications').doc('DS-' + today).set({ id: 'DS-' + today, title: '📊 Today: ' + f(sales) + ' sales', body: bills + ' bills delivered · collected ' + f(coll) + ' · ' + booked + ' new orders · ' + pend + ' pending deliveries · total dues ' + f(due), type: 'summary', by: 'system', at: Date.now() });
+});
