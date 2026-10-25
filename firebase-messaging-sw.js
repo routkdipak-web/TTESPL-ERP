@@ -1,5 +1,5 @@
-/* TTESPL service worker (v41): push notifications + offline app shell. One file, one registration. */
-var CACHE = 'ttespl-shell-v414';
+/* TTESPL service worker (v42.1): push notifications + offline app shell. One file, one registration. */
+var CACHE = 'ttespl-shell-v420';
 try {
   importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
   firebase.initializeApp({ apiKey: 'AIzaSyAjsq2wbyXmt8_MjEazM9mAYd5vlZW0dy4', authDomain: 'ttespl.firebaseapp.com', projectId: 'ttespl', storageBucket: 'ttespl.firebasestorage.app', messagingSenderId: '244674439608', appId: '1:244674439608:web:7f7299ffd94e0a0cc5474d' });

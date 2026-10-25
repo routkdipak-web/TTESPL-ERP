@@ -1,3 +1,6 @@
+v42.1 - UI: profile menu ab 4 sections me (Sales & Reports / Work & Team / Admin & Data / Preferences) + search + quick tiles + Logout; tab badalna ab 0.24s ka ek halka slide (pehle ~1s, blur veil + water wave hata diya); popup ko header se neeche swipe karke band karo; 'saved' jaise message ab toast me; Ultra smooth mode (profile > Preferences, kam-memory phone par apne aap ON); har tab ka scroll yaad rehta hai.
+  FIXES: stock ab negative ja sakta hai (delivery, service call parts, bill edit, stock form) - customer / stock edit ab string id par bhi chalta hai - cache version ?v=420
+
 v42 - GST TABLE + FIXES + OFFICE TOOLS
   ORDER: har item ke saath "GST %" box (shuru me 18) + neeche GST table (rate-wise taxable, CGST/SGST ya IGST). Kapde jaise item ka rate badal sakte ho;
          stock item me GST % set karoge to us item ko chunte hi wahi rate aata hai. Invoice, GST report aur Profit&Loss isi rate se chalte hain. Switch: Settings > Invoice & GST.
