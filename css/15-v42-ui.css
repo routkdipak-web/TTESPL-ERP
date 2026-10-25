@@ -1,0 +1,110 @@
+/* ==========================================================================
+   TTESPL ERP v42.1 - SMOOTH + MINIMAL UI  (loads last)
+   Visual / motion only. No ids, handlers, data or formulas are changed.
+   1) fast tab + sheet motion   2) touch feel   3) toast   4) minimal profile menu
+   5) Ultra smooth mode   6) pause when app is hidden
+   ========================================================================== */
+
+/* ---------- 1. TAB + SHEET MOTION: one short fade/slide, transform + opacity only ---------- */
+html body[data-theme] .view-panel.active { animation: v42TabIn .24s cubic-bezier(.2, .8, .2, 1) both !important; transform-origin: 50% 0; }
+html body[data-theme] .view-panel.active > *,
+html body[data-theme] .view-panel.active .card { animation: none !important; }
+@keyframes v42TabIn { from { opacity: 0; transform: translate3d(0, 10px, 0); } to { opacity: 1; transform: none; } }
+#lgVeil, .lg-wave, .lg-rip { display: none !important; }          /* blurred veil + water ring on every tab change = main jank source */
+html body[data-theme] .tt-sheet-card { animation-duration: .3s !important; }
+html body[data-theme] .tt-sheet-card.tt-sheet-closing { animation-duration: .2s !important; }
+
+/* ---------- 2. TOUCH FEEL ---------- */
+html { -webkit-tap-highlight-color: transparent; }
+a, button, .btn, .nav-item, .cat-chip, .sub-tab-btn, [onclick], input, select, textarea, label { touch-action: manipulation; }
+.profile-dropdown-card, .tt-sheet-card, .auth-card, .modal-body, .view-panel { overscroll-behavior: contain; }
+html body .btn, html body .nav-item, html body .cat-chip, html body .sub-tab-btn, html body .fab-action-btn {
+  transition: transform .14s ease, background-color .2s ease, box-shadow .2s ease, opacity .2s ease;
+}
+html body .btn:active, html body .nav-item:active, html body .cat-chip:active, html body .sub-tab-btn:active, html body .fab-action-btn:active { transform: scale(.965); }
+.tt-sheet-card .card-header { cursor: grab; }
+.tt-sheet-card .card-header { flex-wrap: wrap; }
+.tt-sheet-card .card-header::before {            /* small grab handle on every popup */
+  content: ""; flex: 0 0 100%; height: 4px; margin: -4px 0 8px; pointer-events: none; opacity: .2;
+  background: linear-gradient(currentColor, currentColor) center / 36px 4px no-repeat; border-radius: 4px;
+}
+.v42-dragging { transition: none !important; animation: none !important; }
+.v42-snap { transition: transform .22s cubic-bezier(.2, .8, .2, 1) !important; animation: none !important; }
+html body .tt-num, html body [id^="metric"], html body .stat-value, html body .badge { font-variant-numeric: tabular-nums; }
+
+/* ---------- 3. TOAST (replaces the blocking "saved" pop-ups) ---------- */
+#v42Toast {
+  position: fixed; left: 50%; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); z-index: 100000; max-width: min(88vw, 420px);
+  padding: 11px 18px; border-radius: 999px; font: 700 13px/1.35 'Plus Jakarta Sans', system-ui, sans-serif; text-align: center;
+  color: #fff; background: rgba(17, 24, 39, .94); box-shadow: 0 8px 24px rgba(0, 0, 0, .28);
+  opacity: 0; transform: translate3d(-50%, 14px, 0); pointer-events: none; transition: opacity .2s ease, transform .25s cubic-bezier(.2, .8, .2, 1);
+}
+#v42Toast.on { opacity: 1; transform: translate3d(-50%, 0, 0); }
+#v42Toast::before { content: "✓"; margin-right: 8px; color: #34d399; font-weight: 900; }
+
+/* ---------- 4. PROFILE MENU: minimal, grouped ---------- */
+html body[data-theme] #profileDropdownCard {
+  --pm-bg: #ffffff; --pm-fg: #0f172a; --pm-mut: #64748b; --pm-line: rgba(15, 23, 42, .08); --pm-soft: rgba(15, 23, 42, .045); --pm-acc: var(--brand-red, #e11d48);
+  width: min(318px, calc(100vw - 20px)) !important; max-height: calc(100dvh - 84px) !important; padding: 0 !important; overflow-y: auto !important;
+  background: var(--pm-bg) !important; color: var(--pm-fg) !important; border: 1px solid var(--pm-line) !important; border-radius: 22px !important;
+  box-shadow: 0 18px 48px rgba(2, 6, 23, .22) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  transform-origin: calc(100% - 28px) 0; transform: translate3d(0, -8px, 0) scale(.96) !important; opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .18s ease, transform .22s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .22s; animation: none !important;
+}
+html body[data-theme="dark"] #profileDropdownCard {
+  --pm-bg: #12161f; --pm-fg: #e8eef8; --pm-mut: #8b98ad; --pm-line: rgba(255, 255, 255, .08); --pm-soft: rgba(255, 255, 255, .055);
+}
+html body[data-theme] #profileDropdownCard.show { transform: none !important; opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; animation: none !important; }
+#profileDropdownCard .profile-header-info, #profileDropdownCard .profile-menu-list { display: none !important; }   /* originals stay in the page (other code reads them); #pm2 mirrors them */
+
+#pm2 { padding: 14px 12px 10px; }
+#pm2 .pm-me { display: flex; align-items: center; gap: 12px; padding: 2px 6px 12px; }
+#pm2 .pm-av { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; font-weight: 800; font-size: 18px; color: #fff; background: linear-gradient(135deg, var(--pm-acc), #7c3aed); flex: none; }
+#pm2 .pm-nm { font-weight: 800; font-size: 15px; line-height: 1.2; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#pm2 .pm-sub { font-size: 11.5px; color: var(--pm-mut); margin-top: 3px; display: flex; gap: 6px; align-items: center; }
+#pm2 .pm-role { font-size: 9.5px; font-weight: 800; letter-spacing: .06em; padding: 2px 7px; border-radius: 99px; background: var(--pm-soft); color: var(--pm-fg); }
+#pm2 .pm-find { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; border-radius: 12px; background: var(--pm-soft); margin-bottom: 10px; }
+#pm2 .pm-find input, html body #pm2 .pm-find input[type=search] { -webkit-appearance: none !important; appearance: none !important; border: 0 !important; outline: 0 !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important; height: auto !important; flex: 1; min-width: 0; width: auto; font-size: 14px !important; color: var(--pm-fg) !important; }
+#pm2 .pm-find input::placeholder { color: var(--pm-mut); }
+#pm2 .pm-quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+#pm2 .pm-q { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 11px 4px 9px; border-radius: 14px; background: var(--pm-soft); cursor: pointer; font-size: 11.5px; font-weight: 700; user-select: none; }
+#pm2 .pm-q i { font-style: normal; font-size: 19px; line-height: 1; }
+#pm2 .pm-q:active, #pm2 .pm-row:active, #pm2 .pm-sh:active, #pm2 .pm-out:active { transform: scale(.97); }
+#pm2 .pm-sec { border-top: 1px solid var(--pm-line); }
+#pm2 .pm-sec:first-of-type { border-top: 0; }
+#pm2 .pm-sh { display: flex; align-items: center; gap: 10px; padding: 11px 6px; cursor: pointer; user-select: none; font-size: 12px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--pm-mut); }
+#pm2 .pm-sh b { flex: 1; font: inherit; }
+#pm2 .pm-n { font-size: 10.5px; font-weight: 800; padding: 1px 7px; border-radius: 99px; background: var(--pm-soft); letter-spacing: 0; }
+#pm2 .pm-ch { width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform .2s ease; opacity: .7; margin-right: 4px; }
+#pm2 .pm-sec.open .pm-ch { transform: rotate(45deg); }
+#pm2 .pm-sb { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .24s cubic-bezier(.2, .8, .2, 1); }
+#pm2 .pm-sec.open .pm-sb, #pm2.pm-searching .pm-sb { grid-template-rows: 1fr; }
+#pm2 .pm-si { overflow: hidden; min-height: 0; }
+#pm2 .pm-row { display: flex; align-items: center; gap: 12px; padding: 6px 6px; border-radius: 12px; cursor: pointer; user-select: none; transition: background-color .15s ease, transform .12s ease; }
+#pm2 .pm-row:hover { background: var(--pm-soft); }
+#pm2 .pm-ic { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font-size: 15px; background: var(--pm-soft); flex: none; }
+#pm2 .pm-lb { flex: 1; min-width: 0; font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#pm2 .pm-tg { font-size: 11px; font-weight: 700; color: var(--pm-acc); white-space: nowrap; }
+#pm2 .pm-go { width: 7px; height: 7px; border-right: 2px solid var(--pm-mut); border-top: 2px solid var(--pm-mut); transform: rotate(45deg); opacity: .5; flex: none; margin: 0 4px 0 2px; }
+#pm2 .pm-sw { width: 38px; height: 22px; border-radius: 99px; background: var(--pm-line); position: relative; flex: none; transition: background-color .2s ease; }
+#pm2 .pm-sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); transition: transform .2s cubic-bezier(.2, .8, .2, 1); }
+#pm2 .pm-sw.on { background: #22c55e; }
+#pm2 .pm-sw.on::after { transform: translateX(16px); }
+#pm2 .pm-hide { display: none !important; }
+#pm2 .pm-none { text-align: center; color: var(--pm-mut); font-size: 13px; padding: 18px 0 8px; }
+#pm2 .pm-out { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px; padding: 12px; border-radius: 14px; cursor: pointer; font-weight: 800; font-size: 14px; color: #ef4444; background: rgba(239, 68, 68, .09); user-select: none; }
+
+/* ---------- 5. ULTRA SMOOTH MODE (profile menu switch; auto-on for low-memory phones) ---------- */
+html.v42-lite *, html.v42-lite *::before, html.v42-lite *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+html.v42-lite body::before, html.v42-lite body::after, html.v42-lite #ttAmbient { display: none !important; }
+html.v42-lite body :is(.card, .stat-card, .page-top-header-banner, .sub-tabs, .tt23-tabs, .tt-sheet-card, .nav-bar, .profile-avatar-btn, .fab-action-btn) { box-shadow: 0 1px 4px rgba(15, 23, 42, .12) !important; }
+html.v42-lite body :not(.spinner):not([class*="spin"]):not([class*="load"]):not([class*="Load"]) { animation-iteration-count: 1 !important; }
+html.v42-lite body .view-panel.active { animation-duration: .16s !important; }
+
+/* ---------- 6. nothing animates while the app is in the background ---------- */
+html.v42-paused *, html.v42-paused *::before, html.v42-paused *::after { animation-play-state: paused !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  html body[data-theme] .view-panel.active { animation: none !important; }
+  #profileDropdownCard, #pm2 .pm-sb, #v42Toast { transition-duration: .01s !important; }
+}
