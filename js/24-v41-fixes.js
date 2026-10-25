@@ -136,7 +136,7 @@
           if (diffs.length) {
             var lines = diffs.map(function (x) { var p = inv().find(function (i) { return String(i.id) === x[0]; }); return '• ' + (p ? p.name : x[0]) + ': stock ' + (x[1] > 0 ? '−' : '+') + Math.abs(x[1]); }).join('\n');
             if (confirm('This bill was already delivered and the quantities changed.\n\nCorrect the stock?\n' + lines)) {
-              diffs.forEach(function (x) { var p = inv().find(function (i) { return String(i.id) === x[0]; }); if (p) p.stock = Math.max(0, R2(N(p.stock) - x[1])); });
+              diffs.forEach(function (x) { var p = inv().find(function (i) { return String(i.id) === x[0]; }); if (p) p.stock = R2(N(p.stock) - x[1]); });
               setStored('INVENTORY', sampleInventory); try { renderStockList(); } catch (e) {}
               try { window.ttActAdd && ttActAdd('Stock', 'edit sync', ex.id, diffs.length + ' item(s) corrected after bill edit'); } catch (e) {}
             }

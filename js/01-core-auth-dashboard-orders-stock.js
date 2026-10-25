@@ -2649,7 +2649,7 @@ function executeConfirmedDelivery() {
 
   o.items.forEach(it => {
     const p = ttFindStock(it);   // v41: id first, then name
-    if(p) { p.stock = Math.max(0, p.stock - it.qty); }
+    if(p) { p.stock = ttR2((Number(p.stock) || 0) - (Number(it.qty) || 0)); }   // v42.1: stock may go negative
   });
 
   const chosenDate = document.getElementById('deliveryManualDate').value;
@@ -3063,7 +3063,7 @@ function saveServiceAction() {
       s.recvDate = rDate; s.targetDate = tDate; s.status = status; s.problem = prob; s.actionDone = actDone;
       s.partUsed = partSearch; s.partQty = partQty;
       if (linkedPart && !alreadyDeducted) {
-        linkedPart.stock = Math.max(0, (linkedPart.stock || 0) - partQty);
+        linkedPart.stock = ttR2((Number(linkedPart.stock) || 0) - (Number(partQty) || 0));
         linkedPart.stockAudit = linkedPart.stockAudit || [];
         linkedPart.stockAudit.unshift({ by: staff || (currentUser ? currentUser.name : 'Staff'), time: getNowStr(), note: `-${partQty} used in Service Call ${s.id} (${custName})` });
         s.stockDeducted = true;
@@ -3080,7 +3080,7 @@ function saveServiceAction() {
       partUsed: partSearch, partQty: partQty
     };
     if (linkedPart) {
-      linkedPart.stock = Math.max(0, (linkedPart.stock || 0) - partQty);
+      linkedPart.stock = ttR2((Number(linkedPart.stock) || 0) - (Number(partQty) || 0));
       linkedPart.stockAudit = linkedPart.stockAudit || [];
       linkedPart.stockAudit.unshift({ by: staff || (currentUser ? currentUser.name : 'Staff'), time: getNowStr(), note: `-${partQty} used in Service Call ${newS.id} (${custName})` });
       newS.stockDeducted = true;
@@ -3325,14 +3325,14 @@ function saveStockItemAction() {
   const name = document.getElementById('stkName').value.trim();
   const code = document.getElementById('stkCode').value.trim();
   const cat = document.getElementById('stkCategory').value.trim() || "Spares";
-  const stock = Math.max(0, Math.round((parseFloat(document.getElementById('stkQty').value) || 0) * 1000) / 1000);   // v41: decimal stock (litres / kg) allowed
+  const stock = Math.round((parseFloat(document.getElementById('stkQty').value) || 0) * 1000) / 1000;   // v42.1: negative allowed   // v41: decimal stock (litres / kg) allowed
   const dealerPrice = parseFloat(document.getElementById('stkDealerRate').value) || 0;
   const rate = parseFloat(document.getElementById('stkRate').value) || 0;
 
   if(!name || !code) { alert("Please enter name and code!"); return; }
 
   if(editId) {
-    const item = sampleInventory.find(x => x.id === parseInt(editId));
+    const item = sampleInventory.find(x => String(x.id) === String(editId));
     if(item) { item.name = name; item.code = code; item.category = cat; item.stock = stock; item.dealerPrice = dealerPrice; item.rate = rate; item.machine = document.getElementById('stkMachine').value.trim(); item.hsn = document.getElementById('stkHsn').value.trim() || item.hsn || '84139190'; item.desc = document.getElementById('stkDesc').value.trim(); }
   } else {
     sampleInventory.unshift({ id: Date.now(), name, code, category: cat, stock, dealerPrice, rate, machine: document.getElementById('stkMachine').value.trim(), hsn: document.getElementById('stkHsn').value.trim() || '84139190', desc: document.getElementById('stkDesc').value.trim() });

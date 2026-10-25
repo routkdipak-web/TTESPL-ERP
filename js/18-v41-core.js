@@ -347,7 +347,7 @@
       try {
         var closed = $('stockItemModal') && $('stockItemModal').style.display === 'none';
         if (closed) {
-          var it = editId ? sampleInventory.find(function (x) { return x.id === parseInt(editId); }) : sampleInventory[0];
+          var it = editId ? sampleInventory.find(function (x) { return String(x.id) === String(editId); }) : sampleInventory[0];
           if (it && g !== undefined) { it.gstRate = Number(g) || 0; if (Number(m) > 0) it.minStock = Number(m); else delete it.minStock; setStored('INVENTORY', sampleInventory); try { renderStockList(); } catch (e) {} }
         }
       } catch (e) { console.warn(e); }
@@ -467,7 +467,7 @@
     var secureCtx = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     if (!secureCtx) return;
     if (F('offlineApp')) { caches.delete('ttespl-nocache').catch(function () {}); navigator.serviceWorker.register('firebase-messaging-sw.js').catch(function (e) { console.warn('SW', e && e.message); }); }
-    else { caches.open('ttespl-nocache').catch(function () {}); caches.delete('ttespl-shell-v414').catch(function () {}); }
+    else { caches.open('ttespl-nocache').catch(function () {}); caches.delete('ttespl-shell-v420').catch(function () {}); }
   }
   window.addEventListener('load', function () { setTimeout(applyOffline, 1500); });
 

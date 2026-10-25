@@ -42,7 +42,7 @@ function openAddCustomerModal(cObj = null) {
   document.getElementById('customerModal').style.display = 'flex';
 }
 function closeCustomerModal() { document.getElementById('customerModal').style.display = 'none'; }
-function editCustomerPrompt(id) { const c = customerDatabase.find(x => x.id === id); if(c) openAddCustomerModal(c); }
+function editCustomerPrompt(id) { const c = customerDatabase.find(x => String(x.id) === String(id)); if(c) openAddCustomerModal(c); }
 
 function saveCustomerAction() {
   const editId = document.getElementById('editCustId').value;
@@ -54,7 +54,7 @@ function saveCustomerAction() {
   if(!name || !phone) { alert("Name & Phone required!"); return; }
 
   if(editId) {
-    const cust = customerDatabase.find(x => x.id === parseInt(editId));
+    const cust = customerDatabase.find(x => String(x.id) === String(editId));
     if(cust) { cust.name = name; cust.phone = phone; cust.address = addr; cust.gst = gst; }
   } else {
     customerDatabase.unshift({ id: Date.now(), name, phone, address: addr, gst: gst || "Unregistered" });
