@@ -1,3 +1,14 @@
+v42 - GST TABLE + FIXES + OFFICE TOOLS
+  ORDER: har item ke saath "GST %" box (shuru me 18) + neeche GST table (rate-wise taxable, CGST/SGST ya IGST). Kapde jaise item ka rate badal sakte ho;
+         stock item me GST % set karoge to us item ko chunte hi wahi rate aata hai. Invoice, GST report aur Profit&Loss isi rate se chalte hain. Switch: Settings > Invoice & GST.
+  FIXES: A1 delivery par same-naam wale stock me galat item nahi katta - A2 customer rename par purane bills ka naam badalne ka option - A3 Missing prices (rate / cost) bulk edit
+         A4 decimal stock - A5 stock CSV export safe - A6 ledger edit par "Admin adjustment" line - A7 delivered bill edit par stock sudhar - A9 Security status
+         A10 bache hue unescaped text - A11 phone storage warning - A12 Customer data check (no phone / same phone / same name)
+  OFFICE TOOLS (Settings > Office Tools): Collection list, Daily summary (+ 8 baje notification, functions deploy chahiye), Staff targets, Delivery challan, Price list share,
+         Barcode labels (Code 39), E-way bill JSON (DRAFT - portal par check karo), auto service reminder after machine delivery.
+  CUSTOMERS & CREDIT: customer ka personal credit limit, customer documents (photo / chhota PDF), card par Statement button.
+  Pehle se maujood tha (dobara nahi banaya): Quotation -> Order, Goods receipt se stock, Expense approval.
+
 v41.6 - CUSTOMER CONTACTS
   - Customer > Edit me "More contacts": ek customer ke neeche bahut saare contact (naam, role, phone, email), "Merge another customer" button (dusre customer ka naam/phone/email contact bankar aa jata hai, Save dabane par pakka hota hai, purana record chaho to hata sakte ho - Recycle bin me copy rehti hai).
   - Order form me customer ab kisi bhi contact ke number / naam se mil jata hai. Customer card par contacts ke call / WhatsApp chip.
