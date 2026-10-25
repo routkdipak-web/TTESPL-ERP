@@ -1,7 +1,9 @@
 /* TTESPL service worker (v42.1): push notifications + offline app shell. One file, one registration. */
-var CACHE = 'ttespl-shell-v420';
+var CACHE = 'ttespl-shell-v422';
 try {
-  importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
+  /* v42.3: same SDK version as the page (12.19.0); if that bundle cannot load, fall back to the old 10.12.2 one */
+  try { importScripts('https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/12.19.0/firebase-messaging-compat.js'); }
+  catch (e0) { importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js'); }
   firebase.initializeApp({ apiKey: 'AIzaSyAjsq2wbyXmt8_MjEazM9mAYd5vlZW0dy4', authDomain: 'ttespl.firebaseapp.com', projectId: 'ttespl', storageBucket: 'ttespl.firebasestorage.app', messagingSenderId: '244674439608', appId: '1:244674439608:web:7f7299ffd94e0a0cc5474d' });
   var messaging = firebase.messaging();
   messaging.onBackgroundMessage(function (p) {

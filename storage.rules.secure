@@ -1,0 +1,13 @@
+rules_version = '2';
+// TTESPL photo storage - SECURE version (v42.3). Use this together with Secure mode (staff are signed in through the login server).
+// Only a signed-in staff member can upload (images up to 3 MB, only inside erp/). Reading stays by long secret link so photos open in bills / WhatsApp.
+// Publish in Firebase console > Storage > Rules. Do NOT publish while Secure mode is OFF - photo upload will stop working.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /erp/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.resource != null && request.resource.size < 3 * 1024 * 1024 && request.resource.contentType.matches('image/.*');
+    }
+    match /backups/{allPaths=**} { allow read, write: if false; }
+  }
+}

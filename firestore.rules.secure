@@ -18,7 +18,16 @@ service cloud.firestore {
     match /recycle_bin/{id}      { allow read, write: if isAdmin(); }
 
     // only Admin can delete bills / leads / services
-    match /orders/{id} { allow read, create, update: if signedIn(); allow delete: if isAdmin(); }
+    // v42.3: a DELIVERED bill: only Admin can change its total or its items. Staff can still collect payments, add photos / bill number, etc.
+    function sameBill() {
+      return request.resource.data.get('totalAmount', null) == resource.data.get('totalAmount', null)
+          && request.resource.data.get('items', null) == resource.data.get('items', null);
+    }
+    match /orders/{id} {
+      allow read, create: if signedIn();
+      allow update: if isAdmin() || resource.data.get('status', '') != 'Delivered' || sameBill();
+      allow delete: if isAdmin();
+    }
     match /leads/{id} { allow read, create, update: if signedIn(); allow delete: if isAdmin(); }
     match /services/{id} { allow read, create, update: if signedIn(); allow delete: if isAdmin(); }
 

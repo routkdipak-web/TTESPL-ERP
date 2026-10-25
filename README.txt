@@ -1,3 +1,22 @@
+v42.3 - BUG LIST FIXES
+  functions (redeploy: cd functions && firebase deploy --only functions):
+    - Login lock is now per phone/IP + number (5 wrong = 5 min) plus a wide limit per number (40 wrong = 15 min). A stranger can no longer keep a staff member locked out.
+    - Photo-finder (/og-image) checks the address at connect time (no DNS tricks) and blocks 100.64/10, 198.18/15, multicast, IPv4-mapped IPv6.
+  rules (publish only with Secure mode ON):
+    - firestore.rules.secure: staff cannot change total / items of a DELIVERED bill (Admin can). Payments, photos, bill number still work. Test: collect a due payment as staff after publishing.
+    - storage.rules.secure (new): uploads need sign-in. storage.rules stays for Secure mode OFF.
+  app:
+    - Missing prices: typed prices are kept when you search, change page or switch Rate/Cost; Save saves all pages.
+    - Free-text order lines in one save get different ids.
+    - Service worker uses SDK 12.19.0 like the page (falls back to 10.12.2). Cache name v421 everywhere. Cache version ?v=422
+
+v42.2 - FIXES + MERGE + DELETE
+  FIX: customer naam me ' (jaise Gugu's Auto) ho to order form ki suggestion list me touch karne par kuch nahi hota tha (list nila atak jati thi). Ab theek (ttEnc). Machine / part / quotation list me bhi.
+  MERGE: Customer > Edit > Merge another customer > Save ke baad poochta hai: purane customer ke bills / leads / services naye (main) naam + number par le aao? Haan karo to
+         Ledger me un bills par "Merged from ... - update needed" warning aati hai. Admin "Updated" dabaye ya Ledger me bill edit karke Save kare to warning hat jati hai.
+  DELETE: Customer card par Admin ko 🗑️ button (Recycle bin me copy, bills delete nahi hote).
+  Cache version ?v=421
+
 v42.1 - UI: profile menu ab 4 sections me (Sales & Reports / Work & Team / Admin & Data / Preferences) + search + quick tiles + Logout; tab badalna ab 0.24s ka ek halka slide (pehle ~1s, blur veil + water wave hata diya); popup ko header se neeche swipe karke band karo; 'saved' jaise message ab toast me; Ultra smooth mode (profile > Preferences, kam-memory phone par apne aap ON); har tab ka scroll yaad rehta hai.
   FIXES: stock ab negative ja sakta hai (delivery, service call parts, bill edit, stock form) - customer / stock edit ab string id par bhi chalta hai - cache version ?v=420
 
