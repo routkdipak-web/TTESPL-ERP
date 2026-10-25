@@ -18,7 +18,7 @@
       if (!o || o.status === 'Cancelled') return;
       var pays = Array.isArray(o.payments) ? o.payments : [], sum = pays.reduce(function (a, p) { return a + N(p.amount); }, 0), hit = false;
       if (o.orderDate === d) { var adv = r2(N(o.recvAmount) - sum); if (adv > 0) { hit = true; if (!pays.length) e[bucketOf(o.payMode)] += adv; else e.unk += adv; } }
-      pays.forEach(function (p) { if (String(p.at || '').slice(0, 10) === d && N(p.amount) > 0) { hit = true; e[bucketOf(p.mode)] += N(p.amount); } });
+      pays.forEach(function (p) { if (p && p.adjust) return; /* v41: Admin adjustment lines are not cash movement */ if (String(p.at || '').slice(0, 10) === d && N(p.amount) > 0) { hit = true; e[bucketOf(p.mode)] += N(p.amount); } });
       if (hit) refs.push(o.id);
     });
     Object.keys(e).forEach(function (k) { e[k] = r2(e[k]); });

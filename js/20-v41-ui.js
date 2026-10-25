@@ -56,7 +56,8 @@
       var a = al[norm(it.name)], p = (a != null && byId[String(a)]) || byId[String(it.id)] || byName[norm(it.name)] || (it.code ? byCode[norm(it.code)] : null);
       var qty = N(it.qty), t = N(it.total) || (qty * N(it.rate)), unit = p ? N(p.dealerPrice) : 0;
       tot += t;
-      if (unit > 0) { sale += t * f; cost += unit * qty * f; } else unp++;
+      var lf = window.ttItemGstRate ? 1 / (1 + ttItemGstRate(it) / 100) : f;   // per-item GST rate
+      if (unit > 0) { sale += t * lf; cost += unit * qty * lf; } else unp++;
     });
     var profit = sale - cost;
     return { sale: sale, cost: cost, profit: profit, margin: sale > 0 ? profit / sale * 100 : 0, markup: cost > 0 ? profit / cost * 100 : 0, unp: unp, n: (o.items || []).length };

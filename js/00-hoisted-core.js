@@ -24,3 +24,14 @@ function ttLowLimit(item) {
   return g;
 }
 window.ttLowLimit = ttLowLimit;
+
+/* v41: find the stock item of a bill line: by id first, then by exact name (the old code matched "id OR name", which could pick another item that has the same name) */
+function ttFindStock(it) {
+  var inv = (typeof sampleInventory !== 'undefined' && Array.isArray(sampleInventory)) ? sampleInventory : [];
+  if (!it) return null;
+  if (it.id != null) { for (var i = 0; i < inv.length; i++) if (String(inv[i].id) === String(it.id)) return inv[i]; }
+  var nm = String(it.name || '').trim().toLowerCase(); if (!nm) return null;
+  for (var j = 0; j < inv.length; j++) if (String(inv[j].name || '').trim().toLowerCase() === nm) return inv[j];
+  return null;
+}
+window.ttFindStock = ttFindStock;

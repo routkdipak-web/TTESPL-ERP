@@ -80,10 +80,11 @@
   }, 60000);
 
   /* ===== Customer statement ===== */
-  window.ttOpenStatement = function () {
+  window.ttOpenStatement = function (preName) {
     var names = {}; orders().forEach(function (o) { if (o && o.customerName) names[o.customerName] = 1; });
     var h = '<input class="tt41-in" id="tt41StName" list="tt41StList" placeholder="Customer name" autocomplete="off"><datalist id="tt41StList">' + Object.keys(names).sort().slice(0, 1500).map(function (n) { return '<option value="' + H(n) + '">'; }).join('') + '</datalist><div class="tt41-row2"><input type="date" class="tt41-in" id="tt41StFrom"><input type="date" class="tt41-in" id="tt41StTo"></div><button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="ttStatementGo()">Show statement</button><div id="tt41StOut"></div>';
     V.modal('tt41St', '📄 Customer statement', h);
+    if (preName && $('tt41StName')) { $('tt41StName').value = preName; ttStatementGo(); }
   };
   function stData() {
     var nm = ($('tt41StName').value || '').trim(), from = $('tt41StFrom').value, to = $('tt41StTo').value; if (!nm) return null;
@@ -229,6 +230,7 @@
     var items = [];
     if (F('insights')) items.push(menuItem('📊', 'Business Insights', 'Month · Top', 'ttOpenInsights()'));
     items.push(menuItem('🧾', 'Receipts & Refunds', 'Print', 'ttOpenReceipts()'));
+    (V.menuExtra || []).forEach(function (m) { items.push(menuItem(m[0], m[1], m[2], m[3])); });
     if (isAdm() && F('recycleBin')) items.push(menuItem('🗑️', 'Recycle bin', 'Admin', 'ttOpenRecycle()'));
     items.forEach(function (it) { list.insertBefore(it, anchor); });
   }

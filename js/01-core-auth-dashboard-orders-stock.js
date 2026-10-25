@@ -2422,7 +2422,7 @@ function openOrderModal(orderObj = null) {
     document.getElementById('ordTaxType').value = orderObj.taxType || 'INTRA';
     document.getElementById('ordCourierCharge').value = orderObj.courierCharge || 0;
     ttPayProofs = (orderObj.payProofs || []).slice();
-    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.mrp || it.rate, it.disc || 0, it.rate));
+    orderObj.items.forEach(it => addOrderItemRow(it.name, it.qty, it.mrp || it.rate, it.disc || 0, it.rate, it.gstRate));
   } else {
     title.textContent = "New Multi-Item Product Order";
     editId.value = "";
@@ -2443,7 +2443,8 @@ function openOrderModal(orderObj = null) {
 }
 function closeOrderModal() { ttCloseSheetModal('orderModal'); }
 
-function addOrderItemRow(itemName = "", qty = 1, mrp = 0, disc = 0, rate = null) {
+function addOrderItemRow(itemName = "", qty = 1, mrp = 0, disc = 0, rate = null, gst = null) {
+  const gstVal = (gst === null || gst === undefined || gst === "" || isNaN(parseFloat(gst))) ? 18 : parseFloat(gst);   // v41: GST % of this line (18 unless changed)
   const tbody = document.getElementById('orderItemsTbody');
   const tr = document.createElement('tr');
 
@@ -2457,6 +2458,7 @@ function addOrderItemRow(itemName = "", qty = 1, mrp = 0, disc = 0, rate = null)
     <td><input type="number" class="item-mrp" value="${mrp}" step="any" oninput="calcOrderTotals()" style="width:75px; font-size:13px; font-weight:700;"></td>
     <td><input type="number" class="item-disc" value="${disc}" min="0" max="100" step="any" oninput="this.closest('tr').dataset.src='disc'; calcOrderTotals()" style="width:65px; font-size:13px; font-weight:700;"></td>
     <td><input type="number" class="item-rate" step="any" oninput="this.closest('tr').dataset.src='rate'; calcOrderTotals()" style="width:80px; font-size:13px; font-weight:700;"></td>
+    <td class="item-gst-td"><input type="number" class="item-gst" list="tt41GstList" value="${gstVal}" min="0" max="40" step="any" inputmode="decimal" oninput="this.closest('tr').dataset.gst='1'; calcOrderTotals()" style="width:60px; font-size:13px; font-weight:700;"></td>
     <td class="item-row-total" style="font-weight:bold; font-size:12.5px;">₹0</td>
     <td><button class="btn btn-danger-sm" onclick="triggerAppHaptic(); this.closest('tr').remove(); calcOrderTotals();">✕</button></td>
   `;
@@ -2646,7 +2648,7 @@ function executeConfirmedDelivery() {
   if(!o) return;
 
   o.items.forEach(it => {
-    const p = sampleInventory.find(x => x.id === it.id || x.name === it.name);
+    const p = ttFindStock(it);   // v41: id first, then name
     if(p) { p.stock = Math.max(0, p.stock - it.qty); }
   });
 
@@ -3174,7 +3176,7 @@ function renderStockList() {
             <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); editCustomerPrompt(${cust.id})">✏️ Edit</button>
           </div>
         </div>
-        <div style="font-size:11.5px; color:var(--text-muted);">📍 ${ttEscHtml(cust.address || 'Odisha')} | GSTIN: ${ttEscHtml(cust.gst || 'Unregistered')}</div>${window.ttContactsLine ? ttContactsLine(cust) : ''}
+        <div style="font-size:11.5px; color:var(--text-muted);">📍 ${ttEscHtml(cust.address || 'Odisha')} | GSTIN: ${ttEscHtml(cust.gst || 'Unregistered')}</div>${window.ttContactsLine ? ttContactsLine(cust) : ''}${window.ttCustActions ? ttCustActions(cust) : ''}
       `;
       c.appendChild(card);
     });
@@ -3323,7 +3325,7 @@ function saveStockItemAction() {
   const name = document.getElementById('stkName').value.trim();
   const code = document.getElementById('stkCode').value.trim();
   const cat = document.getElementById('stkCategory').value.trim() || "Spares";
-  const stock = parseInt(document.getElementById('stkQty').value) || 0;
+  const stock = Math.max(0, Math.round((parseFloat(document.getElementById('stkQty').value) || 0) * 1000) / 1000);   // v41: decimal stock (litres / kg) allowed
   const dealerPrice = parseFloat(document.getElementById('stkDealerRate').value) || 0;
   const rate = parseFloat(document.getElementById('stkRate').value) || 0;
 

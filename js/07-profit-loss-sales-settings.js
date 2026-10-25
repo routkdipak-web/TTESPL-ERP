@@ -72,9 +72,9 @@ window.ttRenderPnlIfOpen = function () {
 
   function buildLines(o, idx, f) {
     return (o.items || []).map(function (it) {
-      var p = resolve(it, idx), qty = N(it.qty), tot = N(it.total) || r2(qty * N(it.rate));
+      var p = resolve(it, idx), qty = N(it.qty), tot = N(it.total) || r2(qty * N(it.rate)), ff = (f !== 1 && window.ttItemGstRate) ? 1 / (1 + ttItemGstRate(it) / 100) : f;   /* v41: per-item GST rate */
       var unit = p ? N(p.dealerPrice) : 0, priced = unit > 0;
-      var L = { it: it, p: p, aliased: !!(idx.alias && idx.alias[norm(it.name)]), key: prodKey(it, p), name: it.name || (p && p.name) || 'Item', qty: qty, sale: tot * f, priced: priced, unitCost: unit * f, cost: priced ? unit * qty * f : 0, unitSale: qty ? tot * f / qty : 0 };
+      var L = { it: it, p: p, aliased: !!(idx.alias && idx.alias[norm(it.name)]), key: prodKey(it, p), name: it.name || (p && p.name) || 'Item', qty: qty, sale: tot * ff, priced: priced, unitCost: unit * ff, cost: priced ? unit * qty * ff : 0, unitSale: qty ? tot * ff / qty : 0 };
       L.profit = priced ? L.sale - L.cost : 0;
       L.margin = priced && L.sale > 0 ? L.profit / L.sale * 100 : 0;
       L.markup = priced && L.cost > 0 ? L.profit / L.cost * 100 : 0;
@@ -773,7 +773,7 @@ window.ttRenderPnlIfOpen = function () {
     var d = new Date(); d.setDate(d.getDate() + 2); $('ordDelDate').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     if ($('ordTaxType') && o.taxType) $('ordTaxType').value = o.taxType;
     $('orderItemsTbody').innerHTML = '';
-    (o.items || []).forEach(function (it) { addOrderItemRow(it.name, it.qty, it.mrp || it.rate, it.disc || 0, it.rate); });
+    (o.items || []).forEach(function (it) { addOrderItemRow(it.name, it.qty, it.mrp || it.rate, it.disc || 0, it.rate, it.gstRate); });
     if ($('ordRecvAmt')) $('ordRecvAmt').value = 0;
     calcOrderTotals(); toast('Order copied — review and save');
   };

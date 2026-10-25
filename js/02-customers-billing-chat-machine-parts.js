@@ -9,9 +9,11 @@ function deleteStockItem(id) {
   }
 }
 function exportInventoryCSV() {
-  let csv = "ID,Name,Code,Category,Stock,MRP\n";
-  sampleInventory.forEach(i => { csv += `"${i.id}","${i.name}","${i.code}","${i.category}","${i.stock}","${i.rate}"\n`; });
-  downloadFile(csv, "TTESPL_Inventory.csv", "text/csv");
+  // v41: every cell is quoted properly (names with " or , no longer break the columns) and cannot start a spreadsheet formula
+  const cell = v => { let x = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(x) && isNaN(Number(x))) x = "'" + x; return '"' + x.replace(/"/g, '""') + '"'; };
+  let csv = "\ufeffID,Name,Code,Category,Stock,MRP\r\n";
+  sampleInventory.forEach(i => { csv += [i.id, i.name, i.code, i.category, i.stock, i.rate].map(cell).join(',') + "\r\n"; });
+  downloadFile(csv, "TTESPL_Inventory.csv", "text/csv;charset=utf-8");
 }
 window.exportInventoryCSV = exportInventoryCSV;
 
@@ -522,7 +524,7 @@ function showBroadcastToastAlert(notif) {
     <div class="toast-icon">${icons[notif.type] || '🔔'}</div>
     <div class="toast-content">
       <div class="toast-title">${ttEscHtml(notif.title)}</div>
-      <div class="toast-body">${notif.body}</div>
+      <div class="toast-body">${ttEscHtml(notif.body)}</div>
     </div>
     <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
   `;
@@ -1187,8 +1189,8 @@ function handleQuotCustomerAutocomplete(inputEl) {
   box.innerHTML = matches.map(c => `
     <div class="suggestion-item" onmousedown="selectQuotCustomerSuggestion('${encodeURIComponent(c.name || '')}', '${c.phone || ''}', '${encodeURIComponent(c.address || '')}', '${encodeURIComponent(c.gst || '')}')">
       <div style="flex:1;">
-        <strong style="font-size:13px; color:var(--text-main);">${c.name || ''}</strong>
-        <div class="suggestion-sub">📍 ${c.address || ''}</div>
+        <strong style="font-size:13px; color:var(--text-main);">${ttEscHtml(c.name || '')}</strong>
+        <div class="suggestion-sub">📍 ${ttEscHtml(c.address || '')}</div>
       </div>
       <span class="badge badge-info" style="font-size:10px;">${c.phone || ''}</span>
     </div>`).join('');

@@ -10,7 +10,7 @@
     secureMode: 0, secureUrl: '',
     blockOverpay: 1, freshWrite: 1, receipts: 1,
     stockWarn: 1, singleDeliver: 1, restoreOnCancel: 1,
-    seqInvoice: 0, invPrefix: 'TTE', invStart: 1, billSeries: 1, billPrefixB2B: 'TTESPL-', billPrefixB2C: 'TT-', billStartB2B: 101, billStartB2C: 101, gstPerItem: 0, courierTaxable: 0, autoInter: 1, bankFromCompany: 1,
+    seqInvoice: 0, invPrefix: 'TTE', invStart: 1, gstRowTax: 1, billSeries: 1, billPrefixB2B: 'TTESPL-', billPrefixB2C: 'TT-', billStartB2B: 101, billStartB2C: 101, gstPerItem: 0, courierTaxable: 0, autoInter: 1, bankFromCompany: 1,
     recycleBin: 1, cloudDelete: 1, backupRemind: 1, backupDays: 7,
     offlineApp: 1, photoStorage: 0, pageLists: 1, pageSize: 50, insights: 1
   };
@@ -72,7 +72,7 @@
       actRow('Bill number status', 'Shows pending numbers, the next number and any problem; Retry button', 'ttBillStatus()', 'Open'),
       txtRow('billPrefixB2B', 'GST bill (B2B) prefix', '', 'TTESPL-'), numRow('billStartB2B', 'GST bills start at', 'First number (used only before the first bill)', '101'),
       txtRow('billPrefixB2C', 'Non-GST bill (B2C) prefix', '', 'TT-'), numRow('billStartB2C', 'Non-GST bills start at', 'First number (used only before the first bill)', '101'),
-      sw('gstPerItem', 'GST rate per item (0 / 5 / 12 / 18 / 28 %)', 'Set the rate in each stock item. OFF = 18% for everything like before'),
+      sw('gstRowTax', 'GST % for every item in an order', 'A GST % box on each item + a tax table in the new order. Starts at 18% for all; change it when an item has a different rate (cloth 5%, etc.). OFF = 18% for everything'),
       sw('courierTaxable', 'Courier / transport charge is taxable (18%)', 'Counts inside taxable value on invoice and GST report. Ask your CA before using'),
       sw('autoInter', 'Auto IGST / CGST+SGST from GSTIN', 'Picks Inter-State when the customer GSTIN state differs from yours (you can still change it)'),
       sw('bankFromCompany', 'Bank details on invoice from Company Details', 'OFF = old fixed text')];
@@ -289,11 +289,12 @@
         if (warns.length && !confirm('Not enough stock for:\n' + warns.join('\n') + '\n\nSave the order anyway?')) return;
       }
       var seen = {}; (ordersData || []).forEach(function (o) { seen[o.id] = 1; });
+      var rowRates = []; document.querySelectorAll('#orderItemsTbody tr').forEach(function (r) { var nm = (r.querySelector('.item-product-input') || {}).value; if (nm && nm.trim()) { var g = parseFloat((r.querySelector('.item-gst') || {}).value); rowRates.push(isNaN(g) ? 18 : Math.min(40, Math.max(0, g))); } });
       var r = oSave.apply(this, arguments);
       try {
         var o = editId ? ex : (ordersData || []).find(function (x) { return !seen[x.id]; });
         if (o) {
-          if (F('gstPerItem')) { var ch = false; (o.items || []).forEach(function (it) { if (it.gstRate == null) { var p = findPart(it); it.gstRate = (p && p.gstRate != null) ? Number(p.gstRate) : 18; ch = true; } }); if (ch) setStored('ORDERS', ordersData); }
+          if (F('gstRowTax')) { var ch = false; (o.items || []).forEach(function (it, i) { var g = rowRates[i]; g = (g == null || isNaN(g)) ? 18 : g; if (it.gstRate !== g) { it.gstRate = g; ch = true; } }); if (ch) setStored('ORDERS', ordersData); }
           if (!editId && F('seqInvoice') && !o.invoiceNo) { o.needInvNo = true; setStored('ORDERS', ordersData); setTimeout(assignPending, 300); }
         }
       } catch (e) { console.warn('v41 save hook', e); }
@@ -302,9 +303,9 @@
   })();
 
   /* ================= GST helpers used by invoice / GST report ================= */
-  window.ttItemGstRate = function (it) {
-    if (!F('gstPerItem')) return 18;
-    var r = it && it.gstRate; if (r == null || r === '') { var p = findPart(it); r = p && p.gstRate; }
+  window.ttItemGstRate = function (it) {   // GST % of one bill line: what was saved on the line (default 18). Old lines without a rate stay at 18.
+    if (!F('gstRowTax')) return 18;
+    var r = it && it.gstRate; if (r == null || r === '') return 18;
     r = Number(r); return (isFinite(r) && r >= 0 && r <= 40) ? r : 18;
   };
   window.ttCourierTaxable = function () { return !!F('courierTaxable'); };
