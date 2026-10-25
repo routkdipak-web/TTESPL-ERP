@@ -18,30 +18,57 @@ const KEY = defineSecret('GEMINI_API_KEY');
 const GSTKEY = defineSecret('GST_API_KEY');   // gstinapi.in key (gak_...) or AppyFlow key_secret
 const ALLOWED = ['gemini-3.5-flash-lite', 'gemini-3.8-flash', 'gemini-3.1-pro-preview', 'gemini-4-argon'];
 
-/* ---------- safety: only public https pages (no localhost / private network) ---------- */
+/* ---------- safety: only public https pages (no localhost / private network) ----------
+   v42.3: the address is checked at CONNECT time (custom lookup), so DNS tricks between "check" and "fetch" cannot reach a private network.
+   Also blocks 100.64/10, 198.18/15, 192.0.0/24, multicast/reserved and IPv4-mapped IPv6. */
+const https = require('https');
 function privateIp(ip) {
-  if (net.isIPv6(ip)) return /^(::1|fc|fd|fe80)/i.test(ip);
+  ip = String(ip || '').toLowerCase();
+  const m = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/.exec(ip); if (m) ip = m[1];
+  if (net.isIPv6(ip)) return /^(::1?$|::$|fc|fd|fe[89ab]|ff|2001:db8|64:ff9b)/i.test(ip);
   const p = ip.split('.').map(Number);
-  return p[0] === 10 || p[0] === 127 || p[0] === 0 || (p[0] === 169 && p[1] === 254) || (p[0] === 172 && p[1] >= 16 && p[1] <= 31) || (p[0] === 192 && p[1] === 168);
+  if (p.length !== 4 || p.some((n) => !(n >= 0 && n <= 255))) return true;
+  return p[0] === 10 || p[0] === 127 || p[0] === 0 || p[0] >= 224 ||
+    (p[0] === 100 && p[1] >= 64 && p[1] <= 127) || (p[0] === 169 && p[1] === 254) || (p[0] === 172 && p[1] >= 16 && p[1] <= 31) ||
+    (p[0] === 192 && p[1] === 168) || (p[0] === 192 && p[1] === 0 && p[2] === 0) || (p[0] === 198 && (p[1] === 18 || p[1] === 19));
 }
-async function safeUrl(u) {
+function safeLookup(hostname, opts, cb) {
+  if (typeof opts === 'function') { cb = opts; opts = {}; }
+  require('dns').lookup(hostname, { all: true }, (err, addrs) => {
+    if (err) return cb(err);
+    if (!addrs || !addrs.length || addrs.some((a) => privateIp(a.address))) return cb(new Error('blocked'));
+    if (opts && opts.all) return cb(null, addrs);
+    cb(null, addrs[0].address, addrs[0].family);
+  });
+}
+function checkUrl(u) {
   const x = new URL(u);
-  if (x.protocol !== 'https:' || net.isIP(x.hostname) || /(^|\.)(localhost|internal|local)$/i.test(x.hostname)) throw new Error('blocked');
-  const { address } = await dns.lookup(x.hostname);
-  if (privateIp(address)) throw new Error('blocked');
+  if (x.protocol !== 'https:' || net.isIP(x.hostname.replace(/^\[|\]$/g, '')) || /(^|\.)(localhost|internal|local)$/i.test(x.hostname)) throw new Error('blocked');
   return x;
+}
+function fetchSafe(x) {   // one GET, no auto-redirect, max 400 KB, 7 s
+  return new Promise((resolve, reject) => {
+    const req = https.request({ protocol: 'https:', hostname: x.hostname, port: x.port || 443, path: x.pathname + x.search, method: 'GET', lookup: safeLookup, timeout: 7000,
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; TTESPL-ERP/1.0)', Accept: 'text/html', 'Accept-Encoding': 'identity' } }, (r) => {
+      const status = r.statusCode || 0, type = String(r.headers['content-type'] || ''), loc = r.headers.location;
+      if (status >= 300 && status < 400 && loc) { r.resume(); return resolve({ redirect: new URL(loc, x.href).href }); }
+      if (status < 200 || status >= 300 || !/html/i.test(type)) { r.resume(); return reject(new Error('not html')); }
+      let size = 0; const chunks = [];
+      r.on('data', (c) => { size += c.length; if (size > 400000) { r.destroy(); resolve({ html: Buffer.concat(chunks).toString('utf8').slice(0, 400000) }); } else chunks.push(c); });
+      r.on('end', () => resolve({ html: Buffer.concat(chunks).toString('utf8').slice(0, 400000) }));
+      r.on('error', reject);
+    });
+    req.on('timeout', () => req.destroy(new Error('timeout')));
+    req.on('error', reject);
+    req.end();
+  });
 }
 async function getPage(u) {
   let url = u;
   for (let hop = 0; hop < 3; hop++) {
-    const x = await safeUrl(url);
-    const ac = new AbortController(); const t = setTimeout(() => ac.abort(), 7000);
-    try {
-      const r = await fetch(x.href, { redirect: 'manual', signal: ac.signal, headers: { 'User-Agent': 'Mozilla/5.0 (compatible; TTESPL-ERP/1.0)', Accept: 'text/html' } });
-      if (r.status >= 300 && r.status < 400 && r.headers.get('location')) { url = new URL(r.headers.get('location'), x.href).href; continue; }
-      if (!r.ok || !/html/i.test(r.headers.get('content-type') || '')) throw new Error('not html');
-      return { html: (await r.text()).slice(0, 400000), url: x.href };
-    } finally { clearTimeout(t); }
+    const x = checkUrl(url), r = await fetchSafe(x);
+    if (r.redirect) { url = r.redirect; continue; }
+    return { html: r.html, url: x.href };
   }
   throw new Error('too many redirects');
 }
@@ -84,7 +111,17 @@ async function guard(id) {   // 5 wrong tries -> 5 minute lock, kept in the data
   const ref = admin.firestore().collection('login_guard').doc(id), d = (await ref.get()).data() || {};
   return { ref, n: d.n || 0, until: d.until || 0 };
 }
-async function failTry(g) { const n = g.n + 1; await g.ref.set(n >= 5 ? { n: 0, until: Date.now() + 5 * 60000 } : { n, until: 0 }); }
+async function failTry(g, max, lockMin) { max = max || 5; lockMin = lockMin || 5; const n = g.n + 1; await g.ref.set(n >= max ? { n: 0, until: Date.now() + lockMin * 60000 } : { n, until: 0 }); }
+/* v42.3: two counters. (1) this phone/IP + number: 5 wrong -> 5 min lock (a stranger can no longer lock a staff member out from anywhere).
+   (2) the number from anywhere: 40 wrong -> 15 min lock (stops slow guessing from many IPs). */
+function clientIp(req) { return String(((req && req.headers && req.headers['x-forwarded-for']) || (req && req.ip) || 'x')).split(',')[0].trim(); }
+async function guards(kind, mobile, req) {
+  const tag = crypto.createHash('sha256').update(clientIp(req)).digest('hex').slice(0, 16);
+  return { ip: await guard(kind + 'ip:' + tag + ':' + mobile), all: await guard(kind + 'all:' + mobile) };
+}
+function lockedMsg(G) { const u = Math.max(G.ip.until, G.all.until); return u > Date.now() ? 'Too many wrong attempts. Try again in ' + Math.ceil((u - Date.now()) / 60000) + ' minute(s).' : ''; }
+async function failBoth(G) { await failTry(G.ip, 5, 5); await failTry(G.all, 40, 15); }
+async function clearBoth(G) { await G.ip.ref.delete().catch(() => {}); await G.all.ref.delete().catch(() => {}); }
 async function findStaff(mobile) {
   const q = await admin.firestore().collection('staff').where('mobile', '==', mobile).limit(1).get();
   if (q.empty) return null;
@@ -111,15 +148,15 @@ async function migrateAllSecrets() {
   for (const d of all.docs) { if (await moveSecrets({ id: d.id, st: d.data(), sec: {} })) n++; }
   return n;
 }
-async function secureLogin(b, res) {
+async function secureLogin(b, res, req) {
   const mobile = String(b.mobile || '').trim(), pass = String(b.pass || '');
   if (!/^\d{10}$/.test(mobile) || !pass) return res.status(400).json({ error: 'Enter mobile and password' });
   try {
-    const g = await guard(mobile);
-    if (g.until > Date.now()) return res.status(429).json({ error: 'Too many wrong attempts. Try again in ' + Math.ceil((g.until - Date.now()) / 60000) + ' minute(s).' });
+    const G = await guards('', mobile, req), lm = lockedMsg(G);
+    if (lm) return res.status(429).json({ error: lm });
     const f = await findStaff(mobile);
-    if (!f || !checkField(f, 'pass', pass)) { await failTry(g); return res.status(401).json({ error: 'Invalid Mobile Number or Password!' }); }
-    await g.ref.delete().catch(() => {});
+    if (!f || !checkField(f, 'pass', pass)) { await failBoth(G); return res.status(401).json({ error: 'Invalid Mobile Number or Password!' }); }
+    await clearBoth(G);
     await moveSecrets(f).catch(() => {});
     const role = String(f.st.role || 'Staff');
     const token = await admin.auth().createCustomToken('staff_' + f.id, { role, staffId: f.st.id == null ? f.id : f.st.id, name: String(f.st.name || '') });
@@ -127,16 +164,16 @@ async function secureLogin(b, res) {
     return res.json({ token, user });
   } catch (e) { return res.status(500).json({ error: 'Login service error' }); }
 }
-async function securePinReset(b, res) {
+async function securePinReset(b, res, req) {
   const mobile = String(b.mobile || '').trim(), pin = String(b.pin || ''), np = String(b.newPass || '');
   if (!/^\d{10}$/.test(mobile) || !pin) return res.status(400).json({ error: 'Enter mobile and PIN' });
   if (np.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters!' });
   try {
-    const g = await guard('reset:' + mobile);
-    if (g.until > Date.now()) return res.status(429).json({ error: 'Too many wrong attempts. Try again in ' + Math.ceil((g.until - Date.now()) / 60000) + ' minute(s).' });
+    const G = await guards('reset:', mobile, req), lm = lockedMsg(G);
+    if (lm) return res.status(429).json({ error: lm });
     const f = await findStaff(mobile);
-    if (!f || !checkField(f, 'pin', pin)) { await failTry(g); return res.status(401).json({ error: 'Invalid Mobile Number or PIN!' }); }
-    await g.ref.delete().catch(() => {});
+    if (!f || !checkField(f, 'pin', pin)) { await failBoth(G); return res.status(401).json({ error: 'Invalid Mobile Number or PIN!' }); }
+    await clearBoth(G);
     await admin.firestore().collection('staff_secrets').doc(f.id).set({ passHash: hashSecret(np) }, { merge: true });
     await moveSecrets(f).catch(() => {});
     return res.json({ ok: true });
@@ -148,8 +185,8 @@ exports.api = onRequest({ secrets: [KEY, GSTKEY], cors: true, region: 'asia-sout
   const b = req.body || {};
 
   /* ===== v41 SECURE MODE routes (public: they check the staff password / PIN themselves, with a server-side lock) ===== */
-  if (req.path === '/login') return secureLogin(b, res);
-  if (req.path === '/reset') return securePinReset(b, res);
+  if (req.path === '/login') return secureLogin(b, res, req);
+  if (req.path === '/reset') return securePinReset(b, res, req);
 
   let decoded;
   try { decoded = await admin.auth().verifyIdToken(String(req.get('Authorization') || '').replace(/^Bearer /, '')); }   // only signed-in users
