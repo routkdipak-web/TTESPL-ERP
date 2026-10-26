@@ -83,7 +83,7 @@
   /* ---------- PROFILE MENU: grouped mirror of the original list ---------- */
   var CATS = [
     { id: 'biz', title: 'Sales & Reports', fns: /ttOpenInsights|ttOpenDaily|ttOpenCollect|ttOpenReceipts|ttOpenGst|openQuotationHistory/ },
-    { id: 'work', title: 'Work & Team', fns: /ttOpenHub|openNotionCrm|openTravelExpenses|ttExpOpen|ttOpenLowStock|ttaiCentre/ },
+    { id: 'work', title: 'Work & Team', fns: /ttOpenHub|openNotionCrm|openTravelExpenses|ttExpOpen|ttOpenLowStock|ttaiCentre|ttOpenPurchaseBill/ },
     { id: 'admin', title: 'Admin & Data', fns: /openStaffManageModal|ttOpenActivity|ttOpenRecycle|openBackupModal/ },
     { id: 'pref', title: 'Preferences', fns: /requestAppSystemPermissions/ }
   ];
