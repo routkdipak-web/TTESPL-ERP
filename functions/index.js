@@ -274,7 +274,7 @@ exports.pushOnNotification = onDocumentCreated({ document: 'app_notifications/{i
 
 /* ===== v41: automatic daily backup to Cloud Storage (backups/YYYY-MM-DD.json, last 30 kept). Needs the Blaze plan. ===== */
 exports.dailyBackup = onSchedule({ schedule: '30 1 * * *', timeZone: 'Asia/Kolkata', region: 'asia-south1', memory: '512MiB', timeoutSeconds: 300 }, async () => {
-  const cols = ['customers', 'inventory', 'machinery', 'leads', 'orders', 'services', 'machine_parts', 'quotations', 'travel_expenses', 'crm_records', 'company_settings', 'catalog_categories', 'brands', 'expenses', 'overheads', 'perms', 'tasks', 'suppliers', 'purchases', 'attendance', 'leaves', 'events', 'notices', 'cash_closings', 'office_config', 'recycle_bin', 'counters', 'staff'];
+  const cols = ['customers', 'inventory', 'machinery', 'leads', 'orders', 'services', 'machine_parts', 'quotations', 'travel_expenses', 'crm_records', 'company_settings', 'catalog_categories', 'brands', 'expenses', 'overheads', 'perms', 'tasks', 'suppliers', 'purchases', 'purchase_bills', 'attendance', 'leaves', 'events', 'notices', 'cash_closings', 'office_config', 'recycle_bin', 'counters', 'staff'];
   const out = { app: 'TTESPL-ERP', kind: 'server-backup', exportedAt: new Date().toISOString(), data: {} };
   for (const c of cols) {
     const s = await admin.firestore().collection(c).get(); out.data[c] = [];
