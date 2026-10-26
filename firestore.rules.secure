@@ -47,6 +47,7 @@ service cloud.firestore {
     match /tasks/{id} { allow read, write: if signedIn(); }
     match /suppliers/{id} { allow read, write: if signedIn(); }
     match /purchases/{id} { allow read, write: if signedIn(); }
+    match /purchase_bills/{id} { allow read, create, update: if signedIn(); allow delete: if isAdmin(); }
     match /attendance/{id} { allow read, write: if signedIn(); }
     match /leaves/{id} { allow read, write: if signedIn(); }
     match /events/{id} { allow read, write: if signedIn(); }

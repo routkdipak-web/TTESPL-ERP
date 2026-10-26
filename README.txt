@@ -1,3 +1,8 @@
+v42.4 - v42.3 (your bug-list fixes) + PURCHASE BILL ENTRY merged. Cache name v424, ?v=424
+  PURCHASE BILL: Stock tab > '🧾 Purchase Bill' (and Profile > Work & Team > Purchase Bill). Supplier, bill no, date, items (name / qty / rate ex-GST / disc / GST%) - on Save the stock of every item goes up;
+    an item not in stock is created as a new item; cost (dealer) price is updated from the bill (switch on the form); GST table, round-off, supplier payments, bill photo; Admin delete = stock goes back.
+    Cloud collection: purchase_bills  ->  publish the new firestore.rules.secure if you use Secure mode (it has the purchase_bills line), redeploy functions (daily backup list has it too).
+
 v42.3 - BUG LIST FIXES
   functions (redeploy: cd functions && firebase deploy --only functions):
     - Login lock is now per phone/IP + number (5 wrong = 5 min) plus a wide limit per number (40 wrong = 15 min). A stranger can no longer keep a staff member locked out.
