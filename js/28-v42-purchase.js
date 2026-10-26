@@ -19,43 +19,78 @@
   var busy = false, photo = '', CACHE = null;
 
   /* ---------- stock helpers ---------- */
+  var CATALOG = 'Catalog Equipment';   // read-only catalog items are never stock (same rule as the Order form)
   function findProduct(txt) {
     var q = norm(txt); if (!q) return null; var a = inv(), i;
-    for (i = 0; i < a.length; i++) if (norm(a[i].name) === q) return a[i];
-    for (i = 0; i < a.length; i++) if (a[i].code && norm(a[i].code) === q) return a[i];
+    for (i = 0; i < a.length; i++) if (a[i].category !== CATALOG && norm(a[i].name) === q) return a[i];
+    for (i = 0; i < a.length; i++) if (a[i].category !== CATALOG && a[i].code && norm(a[i].code) === q) return a[i];
     return null;
+  }
+  function prodOf(el, name) {
+    var id = el && el.dataset && el.dataset.pick;
+    if (id) { var p = inv().filter(function (x) { return String(x.id) === String(id); })[0]; if (p && norm(p.name) === norm(name)) return p; }
+    return findProduct(name);
   }
   function suppliers() {
     var m = {}; bills().forEach(function (b) { if (b && b.supplier) m[b.supplier] = b.gstin || ''; });
     try { X.list('SUPPLIERS').forEach(function (s) { var n = s && (s.name || s.company); if (n && !(n in m)) m[n] = s.gstin || s.gst || ''; }); } catch (e) {}
     return m;
   }
-  function listsHtml() {
-    var sup = suppliers(), cats = {}, h = '';
-    inv().forEach(function (p) { if (p.category) cats[p.category] = 1; });
-    h += '<datalist id="pbSup">' + Object.keys(sup).map(function (n) { return '<option value="' + H(n) + '">'; }).join('') + '</datalist>';
-    h += '<datalist id="pbCat">' + Object.keys(cats).map(function (n) { return '<option value="' + H(n) + '">'; }).join('') + '</datalist>';
-    h += '<datalist id="pbProd">' + inv().map(function (p) { return '<option value="' + H(p.name) + '">' + H(p.code || '') + '</option>'; }).join('') + '</datalist>';
-    return h;
+  /* ---------- suggestion box: same solid box as the Order form (no browser datalist) ---------- */
+  var sugIn = null, picking = false;
+  function box() { var o = $(ID), b = $('pbSug'); if (!b && o) { b = document.createElement('div'); b.id = 'pbSug'; b.className = 'solid-suggestion-box'; b.style.display = 'none'; b.style.zIndex = '99999'; o.appendChild(b); } return b; }
+  function hideSug() { var b = $('pbSug'); if (b) b.style.display = 'none'; sugIn = null; }
+  function sugItems(inp) {
+    var kind = inp.getAttribute('data-sug'), q = norm(inp.value), out = [];
+    if (kind === 'prod') {
+      if (!q) return [];
+      inv().filter(function (p) { return p.category !== CATALOG && ((p.name && norm(p.name).indexOf(q) >= 0) || (p.code && norm(p.code).indexOf(q) >= 0)); }).slice(0, 8).forEach(function (p) {
+        out.push({ v: p.name, pid: p.id, t: p.name, s: 'SKU: ' + (p.code || 'N/A') + ' • Stock: ' + R3(p.stock), r: N(p.dealerPrice) > 0 ? 'Cost ₹' + N(p.dealerPrice) : '' });
+      });
+    } else if (kind === 'sup') {
+      var m = suppliers(); Object.keys(m).filter(function (n) { return !q || norm(n).indexOf(q) >= 0; }).slice(0, 8).forEach(function (n) { out.push({ v: n, g: m[n], t: n, s: m[n] || 'Earlier supplier', r: '' }); });
+      if (out.length === 1 && norm(out[0].v) === q) return [];
+    } else if (kind === 'cat') {
+      var c = {}; inv().forEach(function (p) { if (p.category && p.category !== CATALOG) c[p.category] = 1; });
+      Object.keys(c).filter(function (n) { return !q || norm(n).indexOf(q) >= 0; }).slice(0, 8).forEach(function (n) { out.push({ v: n, t: n, s: '', r: '' }); });
+    }
+    return out;
+  }
+  function showSug(inp) {
+    var b = box(); if (!b) return; var items = sugItems(inp);
+    if (!items.length) { hideSug(); return; }
+    b.innerHTML = items.map(function (x, i) { return '<div class="suggestion-item" data-i="' + i + '"><div style="flex:1;min-width:0"><strong style="font-size:12.5px;color:var(--text-main)">' + H(x.t) + '</strong>' + (x.s ? '<div class="suggestion-sub">' + H(x.s) + '</div>' : '') + '</div>' + (x.r ? '<strong style="color:var(--accent);font-size:12.5px;white-space:nowrap">' + H(x.r) + '</strong>' : '') + '</div>'; }).join('');
+    b._items = items; sugIn = inp; b.style.display = 'block';
+    /* the shared drop-down placer (16-v36-dropdown.js) anchors a box to the first input in its parent, so sit next to the field being typed in */
+    if (b.parentElement !== inp.parentElement) inp.parentElement.appendChild(b);
+    b.style.display = 'block';
+  }
+  function pickSug(i) {
+    var b = $('pbSug'), x = b && b._items && b._items[i], inp = sugIn; if (!x || !inp) return;
+    picking = true; inp.value = x.v;
+    var r = inp.closest('.pb-row'); if (r) { if (x.pid != null) r.dataset.pick = x.pid; else delete r.dataset.pick; }
+    if (inp.id === 'pbSupplier' && x.g && !$('pbGstin').value) $('pbGstin').value = x.g;
+    hideSug(); inp.dispatchEvent(new Event('input', { bubbles: true })); picking = false;
+    if (r && x.pid != null) { var q = r.querySelector('.pb-qty'); if (q) q.focus(); }
   }
 
   /* ---------- entry form ---------- */
   function rowHtml() {
-    return '<div class="pb-row"><div class="pb-top"><input class="pb-name" list="pbProd" placeholder="Product name or code" autocomplete="off"><button type="button" class="pb-x" data-a="rm" aria-label="Remove">✕</button></div>' +
+    return '<div class="pb-row"><div class="pb-top"><input class="pb-name" data-sug="prod" placeholder="Type product name or code..." autocomplete="off"><button type="button" class="pb-x" data-a="rm" aria-label="Remove">✕</button></div>' +
       '<div class="pb-st"></div>' +
       '<div class="pb-g"><label><span>Qty</span><input class="pb-qty" type="number" inputmode="decimal" step="any" min="0" placeholder="0"></label>' +
       '<label><span>Rate (ex-GST)</span><input class="pb-rate" type="number" inputmode="decimal" step="any" min="0" placeholder="0.00"></label>' +
       '<label><span>Disc %</span><input class="pb-disc" type="number" inputmode="decimal" step="any" min="0" max="100" placeholder="0"></label>' +
       '<label><span>GST %</span><input class="pb-gst" type="number" inputmode="decimal" step="any" min="0" max="40" value="18"></label></div>' +
-      '<div class="pb-new" style="display:none"><label><span>Category (new item)</span><input class="pb-cat" list="pbCat" placeholder="e.g. Machines &amp; Equipment"></label>' +
+      '<div class="pb-new" style="display:none"><label><span>Category (new item)</span><input class="pb-cat" data-sug="cat" placeholder="e.g. Machines &amp; Equipment" autocomplete="off"></label>' +
       '<label><span>HSN</span><input class="pb-hsn" placeholder="HSN / SAC"></label>' +
       '<label><span>Sell price incl. GST (optional)</span><input class="pb-sell" type="number" inputmode="decimal" step="any" min="0" placeholder="0"></label></div>' +
       '<div class="pb-amt">Amount <b>₹0.00</b></div></div>';
   }
   function formHtml() {
-    return listsHtml() +
+    return ''  +
       '<div class="ttx-btns" style="margin-top:0"><button class="ttx-b" data-a="past">📋 Past purchase bills</button></div>' +
-      '<div class="ttx-two">' + X.field('Supplier name *', '<input id="pbSupplier" list="pbSup" autocomplete="off" placeholder="e.g. Manmachine Works Pvt. Ltd.">') +
+      '<div class="ttx-two">' + X.field('Supplier name *', '<input id="pbSupplier" data-sug="sup" autocomplete="off" placeholder="e.g. Manmachine Works Pvt. Ltd.">') +
       X.field('Supplier GSTIN', '<input id="pbGstin" maxlength="15" style="text-transform:uppercase" placeholder="09AAACM4906A1ZX">') + '</div>' +
       '<div class="ttx-two">' + X.field('Supplier bill no. *', '<input id="pbNo" maxlength="40" placeholder="26-27/818">') +
       X.field('Bill date', '<input id="pbDate" type="date" value="' + today() + '" max="' + today() + '">') + '</div>' +
@@ -97,7 +132,7 @@
   function refresh() {
     var c = calc(), inter = isInter(), box = $('pbTot'); if (!box) return c;
     c.rows.forEach(function (x) {
-      var p = findProduct(x.name), st = x.el.querySelector('.pb-st'), nw = x.el.querySelector('.pb-new');
+      var p = prodOf(x.el, x.name), st = x.el.querySelector('.pb-st'), nw = x.el.querySelector('.pb-new');
       if (st) st.innerHTML = x.qty > 0 || x.name ? (p ? '<span class="pb-ok">✔ In stock list: ' + H(p.name) + ' · stock ' + R3(p.stock) + (x.qty > 0 ? ' → <b>' + R3(N(p.stock) + x.qty) + '</b>' : '') + '</span>' : '<span class="pb-newtag">🆕 Not in stock list – will be added as a new item</span>') : '';
       if (nw) nw.style.display = p ? 'none' : '';
       var a = x.el.querySelector('.pb-amt b'); if (a) a.textContent = inr(x.total);
@@ -114,12 +149,17 @@
     X.bind(ID, { click: {
       add: function () { $('pbItems').insertAdjacentHTML('beforeend', rowHtml()); var r = document.querySelectorAll('#pbItems .pb-name'); r[r.length - 1].focus(); },
       rm: function (p, b) { var rs = document.querySelectorAll('#pbItems .pb-row'); if (rs.length <= 1) { rs[0].querySelectorAll('input').forEach(function (i) { i.value = i.classList.contains('pb-gst') ? '18' : ''; }); } else b.closest('.pb-row').remove(); refresh(); },
-      save: save, past: function () { X.close(ID); openList(); }
+      save: save, past: function () { hideSug(); X.close(ID); openList(); }
     } });
     if (!o.__pb) {
       o.__pb = 1;
+      o.addEventListener('mousedown', function (e) { var it = e.target.closest && e.target.closest('#pbSug .suggestion-item'); if (it) { e.preventDefault(); pickSug(Number(it.getAttribute('data-i'))); } });
+      o.addEventListener('focusin', function (e) { var t = e.target; if (t.getAttribute && t.getAttribute('data-sug') && t.getAttribute('data-sug') !== 'prod' && !t.value) showSug(t); });
+      o.addEventListener('focusout', function () { setTimeout(function () { if (document.activeElement && document.activeElement.getAttribute && document.activeElement.getAttribute('data-sug')) return; hideSug(); }, 200); });
+      o.querySelector('.ttx-bd').addEventListener('scroll', hideSug, { passive: true });
       o.addEventListener('input', function (e) {
-        var t = e.target; if (t.classList.contains('pb-name')) { var p = findProduct(t.value), r = t.closest('.pb-row'); if (p && r) { var g = r.querySelector('.pb-gst'); if (g && !g.dataset.t) g.value = p.gstRate != null && p.gstRate !== '' ? p.gstRate : 18; var h = r.querySelector('.pb-hsn'); if (h && !h.value) h.value = p.hsn || ''; } }
+        var t = e.target;
+        if (!picking && t.getAttribute && t.getAttribute('data-sug')) { if (t.classList.contains('pb-name')) { var rr = t.closest('.pb-row'); if (rr) delete rr.dataset.pick; } showSug(t); } if (t.classList.contains('pb-name')) { var r = t.closest('.pb-row'), p = prodOf(r, t.value); if (p && r) { var g = r.querySelector('.pb-gst'); if (g && !g.dataset.t) g.value = p.gstRate != null && p.gstRate !== '' ? p.gstRate : 18; var h = r.querySelector('.pb-hsn'); if (h && !h.value) h.value = p.hsn || ''; } }
         if (t.classList.contains('pb-gst')) t.dataset.t = '1';
         if (t.id === 'pbSupplier') { var m = suppliers()[t.value]; if (m && !$('pbGstin').value) $('pbGstin').value = m; }
         refresh();
@@ -152,7 +192,7 @@
     try {
       var upd = $('pbCost').checked, id = 'PB-' + Date.now().toString(36).toUpperCase(), nextId = Date.now(), made = 0, upN = 0, lines = [];
       items.forEach(function (x, i) {
-        var p = findProduct(x.name), created = false, unit = R2(x.rate * (1 - x.disc / 100)), cost = R2(unit * (1 + x.gst / 100));
+        var p = prodOf(x.el, x.name), created = false, unit = R2(x.rate * (1 - x.disc / 100)), cost = R2(unit * (1 + x.gst / 100));
         if (!p) {
           p = { id: nextId + i, name: x.name, code: 'PUR-' + (nextId + i).toString(36).toUpperCase(), category: x.cat || 'Machines & Equipment', stock: 0, dealerPrice: cost, rate: R2(x.sell), machine: '', hsn: x.hsn || '84249000', gstRate: x.gst };
           inv().unshift(p); created = true; made++;
