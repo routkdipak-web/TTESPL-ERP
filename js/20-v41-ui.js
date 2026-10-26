@@ -48,6 +48,8 @@
     try { var r = window.ttx && window.ttx.byId('OFFICE_CFG', 'pnl_aliases'); ((r && Array.isArray(r.list)) ? r.list : []).forEach(function (a) { if (a && a.n && a.id != null) m[a.n] = a.id; }); } catch (e) {}
     return m;
   }
+  var PF_INC = false; try { PF_INC = localStorage.getItem('TTESPL_PF_GST') === 'inc'; } catch (e) {}
+  window.ttPfGstToggle = function () { PF_INC = !PF_INC; try { localStorage.setItem('TTESPL_PF_GST', PF_INC ? 'inc' : 'ex'); } catch (e) {} rerender(); };
   function profitOf(o) {
     var inv = (typeof sampleInventory !== 'undefined' && sampleInventory) || [], byId = {}, byName = {}, byCode = {}, al = aliasMap(), f = 1 / 1.18;
     inv.forEach(function (p) { byId[String(p.id)] = p; var n = norm(p.name); if (n && !byName[n]) byName[n] = p; if (p.code) { var c = norm(p.code); if (!byCode[c]) byCode[c] = p; } });
@@ -56,7 +58,7 @@
       var a = al[norm(it.name)], p = (a != null && byId[String(a)]) || byId[String(it.id)] || byName[norm(it.name)] || (it.code ? byCode[norm(it.code)] : null);
       var qty = N(it.qty), t = N(it.total) || (qty * N(it.rate)), unit = p ? N(p.dealerPrice) : 0;
       tot += t;
-      var lf = window.ttItemGstRate ? 1 / (1 + ttItemGstRate(it) / 100) : f;   // per-item GST rate
+      var lf = PF_INC ? 1 : (window.ttItemGstRate ? 1 / (1 + ttItemGstRate(it) / 100) : f);   // per-item GST rate
       if (unit > 0) { sale += t * lf; cost += unit * qty * lf; } else unp++;
     });
     var profit = sale - cost;
@@ -65,9 +67,9 @@
   function profitHtml(o) {
     var P = profitOf(o);
     if (!P.n) return '';
-    if (P.sale <= 0) return '<div class="tt41-pf"><h6>💹 Profit report</h6><p>Cost price is not set for ' + (P.unp || 'these') + ' item(s). Set “Dealer / Cost price” in Stock to see profit.</p></div>';
+    if (P.sale <= 0) return '<div class="tt41-pf"><h6>💹 Profit report ' + '<button type="button" class="tt41-pfgst" onclick="event.stopPropagation(); triggerAppHaptic && triggerAppHaptic(); ttPfGstToggle()" style="float:right;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer">' + (PF_INC ? 'With GST ⇄' : 'Without GST ⇄') + '</button>' + '</h6><p>Cost price is not set for ' + (P.unp || 'these') + ' item(s). Set “Dealer / Cost price” in Stock to see profit.</p></div>';
     var neg = P.profit < 0, c = neg ? 'negc' : 'pos';
-    return '<div class="tt41-pf' + (neg ? ' neg' : '') + '"><h6>💹 Profit report <span>ex-GST</span></h6><div class="tt41-pfg">' +
+    return '<div class="tt41-pf' + (neg ? ' neg' : '') + '"><h6>💹 Profit report <span>' + (PF_INC ? 'incl. GST' : 'ex-GST') + '</span>' + '<button type="button" class="tt41-pfgst" onclick="event.stopPropagation(); triggerAppHaptic && triggerAppHaptic(); ttPfGstToggle()" style="float:right;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer">' + (PF_INC ? 'With GST ⇄' : 'Without GST ⇄') + '</button>' + '</h6><div class="tt41-pfg">' +
       '<div><small>Sale</small><b>' + inr2(P.sale) + '</b></div><div><small>Cost</small><b>' + inr2(P.cost) + '</b></div><div><small>Profit</small><b class="' + c + '">' + inr2(P.profit) + '</b></div>' +
       '<div><small>Margin</small><b class="' + c + '">' + P.margin.toFixed(1) + '%</b></div><div><small>Markup</small><b class="' + c + '">' + P.markup.toFixed(1) + '%</b></div><div><small>Items</small><b>' + P.n + '</b></div></div>' +
       (P.unp ? '<p>⚠ ' + P.unp + ' item(s) without cost price are not counted.</p>' : '') + '</div>';

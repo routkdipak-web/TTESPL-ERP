@@ -98,15 +98,19 @@
         (N(ex.paidNow) > 0 ? '💰 *Payment received now:* ' + rs(ex.paidNow) + (ex.mode ? ' (' + ex.mode + ')' : '') + '\n' : '') + payLine(o) + '\n\nWe look forward to serving you again.\n\n' + SIGN;
     }
     /* payment */
-    var amt = N(ex.amt), last = (o.payments || []).filter(function (p) { return p && !p.adjust && N(p.amount) > 0; }).slice(-1)[0];
+    var amt = N(ex.amt) || N(ex.paidNow), last = (o.payments || []).filter(function (p) { return p && !p.adjust && N(p.amount) > 0; }).slice(-1)[0];
     if (!(amt > 0) && last) { amt = N(last.amount); ex = Object.assign({}, ex, { mode: last.mode }); }
     if (!(amt > 0)) amt = N(o.recvAmount);
+    var forLine = '*For:* ' + (inv(o) !== o.id ? 'Invoice ' + inv(o) + ' / ' : '') + 'Order ' + o.id;
+    if (!(amt > 0) && due > 0.009) {   /* nothing paid yet -> reminder, never a thank-you */
+      return hi + '⏳ *Payment reminder*\n\n' + forLine + '\n*Total Amount:* ' + rs(o.totalAmount) + '\n⏳ *Pending:* ' + rs(due) + '\n\nKindly arrange the pending payment at the earliest. You can pay by UPI using the QR code.\n\n' + SIGN;
+    }
     return hi + '💰 *Payment received – thank you!*\n\n*Amount received:* ' + rs(amt) + (ex.mode ? ' (' + ex.mode + ')' : '') + '\n*For:* ' + (inv(o) !== o.id ? 'Invoice ' + inv(o) + ' / ' : '') + 'Order ' + o.id + '\n*Total Amount:* ' + rs(o.totalAmount) + '\n*Total paid so far:* ' + rs(o.recvAmount) + '\n' +
       (due > 0.009 ? '⏳ *Pending:* ' + rs(due) : '✅ *Balance:* Nil – fully cleared') + '\n\n' + SIGN;
   }
 
   /* ---------- sheet ---------- */
-  var TYPES = [['placed', '✅ Order placed'], ['dispatch', '🚚 Out for delivery'], ['delivered', '📦 Delivered'], ['payment', '💰 Payment']];
+  var TYPES = [['placed', '✅ Order placed'], ['dispatch', '🚚 Out for delivery'], ['delivered', '📦 Delivered'], ['payment', '💰 Payment / Due']];
 
   /* ---------- Bill (sample copy) + Money receipt as shareable PDF ---------- */
   var BILL_NOTE = 'NOTE: This is NOT the original GST invoice. It is only an app-generated sample bill. For the original bill, please call or message the Authorized person.';
@@ -137,10 +141,10 @@
   }
   function shareBill(o) {
     if (typeof window.ttShareDoc !== 'function' || typeof window.buildTallyInvoiceHtml !== 'function') return X.toast('Bill share not available');
-    var no = inv(o), due = dueOf(o);
+    var no = inv(o), due = dueOf(o), dl = String(o.status) === 'Delivered', W = dl ? 'bill' : 'order copy';
     ttShareDoc({
-      title: 'Bill ' + no, fileName: 'TTESPL_Bill_' + String(no).replace(/[^\w-]+/g, '_') + '.pdf', phone: o.phone,
-      msg: 'Hello ' + (o.customerName || '') + ',\nPlease find attached the bill for your order *' + no + '* (Total ' + rs(o.totalAmount) + (due > 0.009 ? ', Pending ' + rs(due) : ', Paid in full') + ').\n\n_Note: This is not the original GST bill. It is only an app-generated sample bill. For the original bill, please call or message the Authorized person._\n\n' + SIGN,
+      title: (dl ? 'Bill ' : 'Order ') + no, fileName: 'TTESPL_' + (dl ? 'Bill_' : 'Order_') + String(no).replace(/[^\w-]+/g, '_') + '.pdf', phone: o.phone,
+      msg: 'Hello ' + (o.customerName || '') + ',\nPlease find attached the ' + W + ' for your order *' + no + '* (Total ' + rs(o.totalAmount) + (due > 0.009 ? ', Pending ' + rs(due) : ', Paid in full') + ').\n\n_Note: This is not the original GST bill. It is only an app-generated sample ' + (dl ? 'bill' : 'copy') + '. For the original bill, please call or message the Authorized person._\n\n' + SIGN,
       html: function () { return billHtml(o); },
       textFn: function () { open(o.id, 'delivered'); },
       printFn: function () { ttPrintHtml('Bill ' + no, billHtml(o)); }
@@ -160,7 +164,7 @@
   window.ttShareReceiptPdf = function (id, i) { var o = ord(id), p = o && (o.payments || [])[i]; if (o && p) shareReceipt(o, p); };
   function docsOpt(o) {
     var h = '', ps = pays(o);
-    if (String(o.status) === 'Delivered') h += '<button type="button" class="ttx-b" data-a="bill" style="flex:1 1 100%">📄 Send Bill (PDF)</button>';
+    if (String(o.status) !== 'Cancelled') h += '<button type="button" class="ttx-b" data-a="bill" style="flex:1 1 100%">' + (String(o.status) === 'Delivered' ? '📄 Send Bill (PDF)' : '📄 Send Order (PDF)') + '</button>';
     if (ps.length) {
       var sel = ps.length > 1 ? '<select id="waPay" style="flex:1 1 100%;font-size:12.5px">' + ps.map(function (x) { return '<option value="' + x.i + '"' + (x === ps[ps.length - 1] ? ' selected' : '') + '>' + H(rs(x.p.amount) + ' · ' + String(x.p.at || '').slice(0, 10) + (x.p.mode ? ' · ' + x.p.mode : '')) + '</option>'; }).join('') + '</select>' : '';
       h += sel + '<button type="button" class="ttx-b" data-a="rcpt" style="flex:1 1 100%">🧾 Send Money Receipt (PDF)</button>';
