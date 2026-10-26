@@ -107,6 +107,67 @@
 
   /* ---------- sheet ---------- */
   var TYPES = [['placed', '✅ Order placed'], ['dispatch', '🚚 Out for delivery'], ['delivered', '📦 Delivered'], ['payment', '💰 Payment']];
+
+  /* ---------- Bill (sample copy) + Money receipt as shareable PDF ---------- */
+  var BILL_NOTE = 'NOTE: This is NOT the original GST invoice. It is only an app-generated sample bill. For the original bill, please call or message the Authorized person.';
+  function company() { return window.companyDetailsData || {}; }
+  function billHtml(o) {
+    var box = document.createElement('div'); box.innerHTML = window.buildTallyInvoiceHtml(o);
+    [].forEach.call(box.querySelectorAll('.tt-sheet'), function (sh) {
+      sh.style.position = 'relative';
+      var b = document.createElement('div');
+      b.style.cssText = 'position:absolute;left:8mm;right:8mm;top:1.2mm;height:5.6mm;line-height:2.8mm;box-sizing:border-box;border:0.3mm solid #b91c1c;background:#fef2f2;color:#b91c1c;font:700 7.6px Arial,sans-serif;text-align:center;padding:0.4mm 1mm;overflow:hidden';
+      b.textContent = BILL_NOTE; sh.insertBefore(b, sh.firstChild);
+    });
+    return box.innerHTML;
+  }
+  function pays(o) { return (o.payments || []).map(function (p, i) { return { p: p, i: i }; }).filter(function (x) { return x.p && !x.p.refund && N(x.p.amount) > 0; }); }
+  function receiptHtml(o, p) {
+    var d = company(), amt = N(p.amount), due = dueOf(o);
+    return '<div class="tt-sheet" style="width:210mm;padding:12mm;box-sizing:border-box;background:#fff;font-family:Arial,sans-serif;color:#000;font-size:13px;">' +
+      '<div style="border:1px solid #000;padding:16px;"><div style="text-align:center;border-bottom:2px solid #000;padding-bottom:8px;"><b style="font-size:18px;">TWINTOWN EXPRESS SERVICES PVT LTD</b><br>' + H(d.address || '') + '<br>GSTIN: ' + H(d.gstin || '') + ' · ' + H(d.contact || '') + '</div>' +
+      '<h2 style="text-align:center;margin:12px 0;">PAYMENT RECEIPT</h2>' +
+      '<table style="width:100%;font-size:13px;line-height:1.8"><tr><td><b>Receipt No.:</b> ' + H(p.rno || '—') + '</td><td style="text-align:right"><b>Date:</b> ' + H(String(p.at || '').slice(0, 10)) + '</td></tr>' +
+      '<tr><td colspan="2"><b>Received from:</b> ' + H(o.customerName || '') + (o.phone ? ' (' + H(o.phone) + ')' : '') + '</td></tr>' +
+      '<tr><td colspan="2"><b>Against bill / order:</b> ' + H(inv(o)) + '</td></tr><tr><td colspan="2"><b>Mode:</b> ' + H(p.mode || '-') + '</td></tr></table>' +
+      '<div style="margin:16px 0;padding:12px;border:1px solid #000;font-size:18px;"><b>Amount received: ₹ ' + N(amt).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</b>' + (window.ttWords ? '<br><small style="font-size:12px">' + H(ttWords(amt)) + '</small>' : '') + '</div>' +
+      '<div style="font-size:13px;line-height:1.8">Bill total ₹' + N(o.totalAmount).toLocaleString('en-IN') + ' · Total received ₹' + N(o.recvAmount).toLocaleString('en-IN') + ' · ' + (due > 0.009 ? '<b>Balance due ₹' + due.toLocaleString('en-IN') + '</b>' : '<b>Fully paid</b>') + '</div>' +
+      '<div style="display:flex;justify-content:flex-end;margin-top:46px;text-align:right">for TWINTOWN EXPRESS SERVICES PVT LTD<br><br>Authorised Signatory</div>' +
+      '<div style="margin-top:18px;font-size:10.5px;color:#555;text-align:center">App-generated receipt copy. For the original receipt, please contact the Authorized person.</div></div></div>';
+  }
+  function shareBill(o) {
+    if (typeof window.ttShareDoc !== 'function' || typeof window.buildTallyInvoiceHtml !== 'function') return X.toast('Bill share not available');
+    var no = inv(o), due = dueOf(o);
+    ttShareDoc({
+      title: 'Bill ' + no, fileName: 'TTESPL_Bill_' + String(no).replace(/[^\w-]+/g, '_') + '.pdf', phone: o.phone,
+      msg: 'Hello ' + (o.customerName || '') + ',\nPlease find attached the bill for your order *' + no + '* (Total ' + rs(o.totalAmount) + (due > 0.009 ? ', Pending ' + rs(due) : ', Paid in full') + ').\n\n_Note: This is not the original GST bill. It is only an app-generated sample bill. For the original bill, please call or message the Authorized person._\n\n' + SIGN,
+      html: function () { return billHtml(o); },
+      textFn: function () { open(o.id, 'delivered'); },
+      printFn: function () { ttPrintHtml('Bill ' + no, billHtml(o)); }
+    });
+  }
+  function shareReceipt(o, p) {
+    if (typeof window.ttShareDoc !== 'function') return X.toast('Receipt share not available');
+    ttShareDoc({
+      title: 'Receipt ' + (p.rno || inv(o)), fileName: 'TTESPL_Receipt_' + String(p.rno || inv(o)).replace(/[^\w-]+/g, '_') + '.pdf', phone: o.phone,
+      msg: 'Hello ' + (o.customerName || '') + ',\nPlease find attached the payment receipt for *' + rs(p.amount) + '* received against order *' + inv(o) + '*.\n\n' + SIGN,
+      html: function () { return receiptHtml(o, p); },
+      textFn: function () { open(o.id, 'payment', { paidNow: p.amount, mode: p.mode }); },
+      printFn: function () { ttPrintHtml('Receipt', receiptHtml(o, p)); }
+    });
+  }
+  window.ttShareBillPdf = function (id) { var o = ord(id); if (o) shareBill(o); };
+  window.ttShareReceiptPdf = function (id, i) { var o = ord(id), p = o && (o.payments || [])[i]; if (o && p) shareReceipt(o, p); };
+  function docsOpt(o) {
+    var h = '', ps = pays(o);
+    if (String(o.status) === 'Delivered') h += '<button type="button" class="ttx-b" data-a="bill" style="flex:1 1 100%">📄 Send Bill (PDF)</button>';
+    if (ps.length) {
+      var sel = ps.length > 1 ? '<select id="waPay" style="flex:1 1 100%;font-size:12.5px">' + ps.map(function (x) { return '<option value="' + x.i + '"' + (x === ps[ps.length - 1] ? ' selected' : '') + '>' + H(rs(x.p.amount) + ' · ' + String(x.p.at || '').slice(0, 10) + (x.p.mode ? ' · ' + x.p.mode : '')) + '</option>'; }).join('') + '</select>' : '';
+      h += sel + '<button type="button" class="ttx-b" data-a="rcpt" style="flex:1 1 100%">🧾 Send Money Receipt (PDF)</button>';
+    }
+    return h ? '<div class="ttx-btns" style="flex-wrap:wrap;margin:6px 0">' + h + '</div>' : '';
+  }
+
   function dueOf(o) { return Math.max(0, R2(N(o.totalAmount) - N(o.recvAmount))); }
   function qrOpt(o) {
     var d = dueOf(o); if (d <= 0.009) return '';
@@ -117,7 +178,7 @@
     var ph = phone10(o), chips = TYPES.map(function (t) { return '<button type="button" class="ttx-b' + (t[0] === S.type ? ' pri' : '') + '" data-a="type" data-p="' + t[0] + '">' + t[1] + '</button>'; }).join('');
     var h = '<div class="ttx-note"><b>' + H(o.customerName || '') + '</b> · ' + (ph ? '+91 ' + H(ph) : '<span style="color:#d97706">no mobile number saved – WhatsApp will ask you to pick the contact</span>') + '<br><small>Order ' + H(o.id) + ' · ' + H(o.status || '') + '</small></div>' +
       '<div class="ttx-btns wa-chips">' + chips + '</div>' +
-      qrOpt(o) +
+      qrOpt(o) + docsOpt(o) +
       '<textarea id="waText" rows="14" style="width:100%;font-size:13.5px;line-height:1.45"></textarea>' +
       '<div class="ttx-btns"><button class="ttx-b pri" data-a="send" style="flex:1">📲 Send on WhatsApp</button><button class="ttx-b" data-a="copy">📋 Copy</button><button class="ttx-b" data-a="skip">Not now</button></div>' +
       '<div class="ttx-note" style="font-size:11.5px;opacity:.8">Without QR the message opens directly in WhatsApp. With QR the phone share sheet opens - pick WhatsApp and the customer. Nothing is sent by itself.</div>';
@@ -129,6 +190,8 @@
         if (q && q.checked && d > 0.009) { X.close(ID); shareQr(d, o.customerName, tx); return; }
         var p = phone10(o); window.open((p ? 'https://wa.me/91' + p : 'https://wa.me/') + '?text=' + encodeURIComponent(tx), '_blank'); X.close(ID); },
       copy: function () { var el = $('waText'); try { navigator.clipboard.writeText(el.value).then(function () { X.toast('Copied'); }); } catch (e) { el.select(); document.execCommand('copy'); X.toast('Copied'); } },
+      bill: function () { X.close(ID); shareBill(o); },
+      rcpt: function () { var sl = $('waPay'), ps = pays(o), i = sl ? +sl.value : (ps.length ? ps[ps.length - 1].i : -1); var p = (o.payments || [])[i]; X.close(ID); if (p) shareReceipt(o, p); },
       skip: function () { X.close(ID); }
     } });
     $('waText').value = build(o, S.type, S.extra);
