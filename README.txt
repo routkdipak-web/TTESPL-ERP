@@ -1,3 +1,5 @@
+v42.7 - Ledger (delivered bills) now has the customer WhatsApp update too: open a bill card in Ledger > '📲 WhatsApp update to customer' (Delivered / Payment / Placed / Out for delivery messages). Button stays after filter / search / refresh. Cache v427
+
 v42.6 - CUSTOMER WHATSAPP UPDATES (manual): order placed / out for delivery / delivered / payment received messages. A sheet opens after a new order, after delivery and after collecting a payment (Send on WhatsApp / Copy / Not now);
   also '📲 Update' on every pending order (opens 'Out for delivery') and a button on the Ledger detail page. Message has Order ID, items, courier charges, total, payment status (received / due / partly paid + pending), 'will be delivered soon' line and 'Thank you - TTESPL, Bhubaneswar'.
   Nothing is sent by itself - it only opens WhatsApp with the customer's number. Cache v426.
