@@ -1,3 +1,7 @@
+v42.6 - CUSTOMER WHATSAPP UPDATES (manual): order placed / out for delivery / delivered / payment received messages. A sheet opens after a new order, after delivery and after collecting a payment (Send on WhatsApp / Copy / Not now);
+  also '📲 Update' on every pending order (opens 'Out for delivery') and a button on the Ledger detail page. Message has Order ID, items, courier charges, total, payment status (received / due / partly paid + pending), 'will be delivered soon' line and 'Thank you - TTESPL, Bhubaneswar'.
+  Nothing is sent by itself - it only opens WhatsApp with the customer's number. Cache v426.
+
 v42.5 - PURCHASE BILL drop-down fix: product / supplier / category suggestions now use the same solid box as the Order form (no more browser list that was sometimes transparent, sometimes solid).
   Catalog Equipment (read-only catalog) items no longer appear or match in the purchase bill - only real stock items, so no double entries. Cache name v425, ?v=425
 
