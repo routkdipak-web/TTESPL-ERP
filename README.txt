@@ -1,3 +1,6 @@
+v42.5 - PURCHASE BILL drop-down fix: product / supplier / category suggestions now use the same solid box as the Order form (no more browser list that was sometimes transparent, sometimes solid).
+  Catalog Equipment (read-only catalog) items no longer appear or match in the purchase bill - only real stock items, so no double entries. Cache name v425, ?v=425
+
 v42.4 - v42.3 (your bug-list fixes) + PURCHASE BILL ENTRY merged. Cache name v424, ?v=424
   PURCHASE BILL: Stock tab > '🧾 Purchase Bill' (and Profile > Work & Team > Purchase Bill). Supplier, bill no, date, items (name / qty / rate ex-GST / disc / GST%) - on Save the stock of every item goes up;
     an item not in stock is created as a new item; cost (dealer) price is updated from the bill (switch on the form); GST table, round-off, supplier payments, bill photo; Admin delete = stock goes back.
