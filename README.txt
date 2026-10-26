@@ -1,3 +1,10 @@
+v42.9 - Bill + Money Receipt PDF on WhatsApp
+ - Customer message sheet (order place / delivery / payment / Ledger) me ab: "Send Bill (PDF)" (sirf Delivered order) aur
+   "Send Money Receipt (PDF)" (payment ho to; kai payment hon to list se chuno, default latest).
+ - Bill PDF ke har page ke top par red note: "NOT the original GST invoice - app-generated sample bill - call/message Authorized person".
+ - Share sheet se WhatsApp + customer chunna padta he (WhatsApp link se file attach nahi hoti). Fallback: PDF save + wa.me.
+ - Sab manual, kuch bhi apne aap nahi jata.
+
 v42.8 - UPI QR share
  - QR dialog (Scan & Pay) me ab "Share QR" button: QR + amount + UPI ID ka PNG banke seedha share (screenshot ki zarurat nahi).
  - WhatsApp customer message sheet me "Attach UPI QR for pending Rs X" (due ho tabhi, default ON). ON ho to share sheet khulta he
