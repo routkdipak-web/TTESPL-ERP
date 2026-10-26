@@ -1,3 +1,11 @@
+v43.1 - Online Bill Link + Customer Portal + Tally Export
+ NEW FILES: view.html, js/30-v43-public.js, js/31-v43-tally.js   (changed: index.html, live-sync.js, js/26, js/29, sw, 18-v41-core, firestore rules)
+ - WhatsApp sheet: "Bill Link" (ek bill ka page) aur "Account Link" (customer ke saare bills + total pending + UPI QR). Link customer ko wa.me se jata he.
+ - Page par: bill, GST breakup, payments, Pay-with-UPI button + QR, Print/PDF, "sample bill - not original GST" note. Payment aane par page khud update hota he.
+ - Profile menu > Shared Links: sab links ki list, Copy, Stop (turant band).
+ - Profile menu > Export to Tally: Masters.xml + Vouchers.xml (Sales/Receipt/Purchase/Payment) + CSV daybook.
+ - ZAROORI: Firestore rules me public_bills / public_portals ka rule publish karna (firestore.rules.secure ya .example ki aakhri 2 lines).
+
 v43.0 (v42.10) - message fix + Order PDF + Profit GST toggle
  - Payment message: jab tak payment mili nahi, "Payment received - thank you" nahi jayega. Due ho aur kuch paid na ho to "Payment reminder" (pending amount + QR).
    Payment mili ho to thank-you (amount + baki pending/cleared).

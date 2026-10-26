@@ -176,6 +176,9 @@
 
     // Direct Real-Time Cloud Methods with Persistence Guarantee
     window.cloudSync = {
+      /* v43: public share pages (view.html) - only a snapshot is written; the page reads it with an unguessable token */
+      putPublic: function (col, id, data) { return F.setDoc(F.doc(db, col, String(id)), data); },
+      delPublic: function (col, id) { return F.deleteDoc(F.doc(db, col, String(id))); },
       saveDoc: function (key, item) {
         var col = MAP[key];
         if (!col || !item || item.id == null) return Promise.resolve();

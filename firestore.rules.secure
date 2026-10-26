@@ -61,6 +61,10 @@ service cloud.firestore {
     match /fcm_tokens/{id} { allow read, write: if signedIn(); }
     match /counters/{id} { allow read, write: if signedIn(); }
 
+    // v43: public share links. Anyone holding the long random token can GET that one document (cannot list or write); only staff publish / revoke.
+    match /public_bills/{t}   { allow get: if true; allow list: if false; allow create, update, delete: if signedIn(); }
+    match /public_portals/{t} { allow get: if true; allow list: if false; allow create, update, delete: if signedIn(); }
+
     match /{other=**} { allow read, write: if false; }
   }
 }

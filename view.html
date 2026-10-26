@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Your Bill - TTESPL</title>
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--tx:#0f172a;--mut:#64748b;--line:#e2e8f0;--pri:#0284c7;--ok:#059669;--bad:#dc2626;--warn:#b45309;--warnbg:#fffbeb}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1220;--card:#131c2e;--tx:#e5edf8;--mut:#93a4bd;--line:#26334a;--pri:#38bdf8;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;--warnbg:#2a2110}}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--tx);font:15px/1.45 -apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:14px}
+.wrap{max-width:720px;margin:0 auto}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+h1{font-size:17px;margin:0}small,.mut{color:var(--mut)}.co{text-align:center}.co b{font-size:16px}.co div{font-size:12.5px;color:var(--mut)}
+.row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)}.row:last-child{border:0}
+.tot{font-size:22px;font-weight:800}.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:800}
+.paid{background:rgba(5,150,105,.14);color:var(--ok)}.due{background:rgba(220,38,38,.12);color:var(--bad)}.part{background:rgba(180,83,9,.14);color:var(--warn)}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:7px 4px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--mut);font-size:11.5px;font-weight:700}
+.note{background:var(--warnbg);color:var(--warn);border:1px solid var(--warn);border-radius:12px;padding:10px 12px;font-size:12.5px;font-weight:600;margin-bottom:12px}
+.btn{display:block;width:100%;text-align:center;padding:13px;border-radius:12px;border:0;font-size:15px;font-weight:800;cursor:pointer;text-decoration:none;margin-top:8px}
+.pri{background:var(--pri);color:#fff}.out{background:transparent;border:1px solid var(--line);color:var(--tx)}
+#qr{width:200px;height:200px;margin:10px auto;background:#fff;padding:8px;border-radius:12px}#qr svg{width:100%;height:100%}
+details{border-top:1px solid var(--line);padding:8px 0}summary{cursor:pointer;display:flex;justify-content:space-between;gap:8px;font-weight:700}
+.center{text-align:center}.foot{font-size:11.5px;color:var(--mut);text-align:center;margin:14px 0}
+@media print{body{background:#fff;color:#000;padding:0}.btn,#qrbox,.noprint{display:none!important}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="card center mut">Loading…</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+(function(){
+  var KEY='AIzaSyAjsq2wbyXmt8_MjEazM9mAYd5vlZW0dy4', PROJ='ttespl';
+  var q=new URLSearchParams(location.search), kind=q.get('b')?'bill':(q.get('c')?'portal':''), tk=(q.get('b')||q.get('c')||'').replace(/[^a-z0-9]/gi,'');
+  var app=document.getElementById('app');
+  function H(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function R(n){return '₹'+(Number(n)||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}
+  function D(s){var m=/^(\d{4})-(\d\d)-(\d\d)/.exec(s||'');return m?m[3]+'-'+m[2]+'-'+m[1]:(s||'')}
+  function fail(t){app.innerHTML='<div class="card center"><h1>'+H(t)+'</h1><p class="mut">Please ask TTESPL for a new link.</p></div>'}
+  if(!kind||!tk){fail('This link is not valid');return}
+  var col=kind==='bill'?'public_bills':'public_portals';
+  fetch('https://firestore.googleapis.com/v1/projects/'+PROJ+'/databases/(default)/documents/'+col+'/'+tk+'?key='+KEY)
+    .then(function(r){if(r.status===404||r.status===403)throw new Error('gone');if(!r.ok)throw new Error('net');return r.json()})
+    .then(function(d){var j=d&&d.fields&&d.fields.j&&d.fields.j.stringValue;if(!j)throw new Error('gone');return JSON.parse(j)})
+    .then(function(s){ if(!s || s.k!==kind) throw new Error('gone'); kind==='bill'?bill(s):portal(s) })
+    .catch(function(e){fail(e.message==='net'?'Could not load. Check your internet and try again.':'This link is no longer active')});
+
+  function head(s){return '<div class="card co"><b>'+H(s.co.n)+'</b><div>'+H(s.co.addr)+'</div><div>GSTIN: '+H(s.co.gstin)+' · '+H(s.co.contact)+'</div></div>'}
+  function note(t){return '<div class="note">'+H(t)+'</div>'}
+  function badge(due,recv){return due<=0.009?'<span class="badge paid">PAID</span>':(recv>0?'<span class="badge part">PARTLY PAID</span>':'<span class="badge due">PAYMENT DUE</span>')}
+  function upiUrl(s,amt,ref){return 'upi://pay?pa='+s.upi.pa+'&pn='+encodeURIComponent(s.upi.pn)+'&am='+Number(amt).toFixed(2)+'&cu=INR&tn='+encodeURIComponent(ref||'')}
+  function payBox(s,amt,ref){
+    if(!(amt>0.009))return '';
+    return '<div class="card center" id="qrbox"><div class="mut">Amount to pay</div><div class="tot" style="color:var(--bad)">'+R(amt)+'</div>'+
+      '<a class="btn pri" href="'+H(upiUrl(s,amt,ref))+'">Pay with UPI app</a><div id="qr"></div><small class="mut">Scan with any UPI app · UPI ID: '+H(s.upi.pa)+'</small></div>';
+  }
+  function qr(s,amt,ref){
+    try{var el=document.getElementById('qr');if(!el||typeof qrcode!=='function')return;var c=qrcode(0,'M');c.addData(upiUrl(s,amt,ref));c.make();el.innerHTML=c.createSvgTag({cellSize:5,margin:1,scalable:true})}
+    catch(e){var x=document.getElementById('qr');if(x)x.style.display='none'}
+  }
+  function bill(s){
+    document.title='Bill '+s.no+' - TTESPL';
+    var rows=s.it.map(function(i,k){return '<tr><td>'+(k+1)+'. '+H(i.n)+'<br><small class="mut">HSN '+H(i.h)+' · GST '+i.g+'%</small></td><td>'+i.q+'</td><td>'+R(i.r)+'</td><td>'+R(i.t)+'</td></tr>'}).join('');
+    var t=s.tax, gst=t.cgst+t.sgst+t.igst;
+    var h=head(s)+note('This is NOT the original GST invoice. It is only an app-generated sample bill. For the original bill, please call or message the Authorized person.')+
+      '<div class="card"><div class="row"><span>Bill no.</span><b>'+H(s.no)+'</b></div><div class="row"><span>Date</span><b>'+H(D(s.date))+'</b></div>'+
+      '<div class="row"><span>Billed to</span><b style="text-align:right">'+H(s.cust.n)+(s.cust.gstin?'<br><small class="mut">GSTIN '+H(s.cust.gstin)+'</small>':'')+'</b></div>'+
+      '<div class="row"><span>Status</span><span>'+badge(s.due,s.recv)+'</span></div></div>'+
+      '<div class="card"><table><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Amount</th></tr>'+rows+'</table>'+
+      (s.courier>0?'<div class="row"><span>Courier / transport</span><span>'+R(s.courier)+'</span></div>':'')+
+      '<div class="row"><span>Taxable value</span><span>'+R(t.taxable)+'</span></div>'+
+      (t.intra?'<div class="row"><span>CGST</span><span>'+R(t.cgst)+'</span></div><div class="row"><span>SGST</span><span>'+R(t.sgst)+'</span></div>':'<div class="row"><span>IGST</span><span>'+R(t.igst)+'</span></div>')+
+      (Math.abs(t.round)>0.004?'<div class="row"><span>Round off</span><span>'+R(t.round)+'</span></div>':'')+
+      '<div class="row"><b>Total</b><span class="tot">'+R(s.tot)+'</span></div>'+
+      '<div class="row"><span>Received</span><b style="color:var(--ok)">'+R(s.recv)+'</b></div>'+
+      '<div class="row"><span>Pending</span><b style="color:'+(s.due>0.009?'var(--bad)':'var(--ok)')+'">'+R(s.due)+'</b></div></div>'+
+      (s.pays.length?'<div class="card"><b>Payments received</b>'+s.pays.map(function(p){return '<div class="row"><span>'+H(D(p.d))+(p.m?' · '+H(p.m):'')+'</span><b>'+R(p.a)+'</b></div>'}).join('')+'</div>':'')+
+      payBox(s,s.due,'Bill '+s.no)+
+      '<button class="btn out noprint" onclick="window.print()">Download / Print as PDF</button>'+
+      '<div class="foot">Updated '+new Date(s.up).toLocaleString('en-IN')+' · Thank you! TTESPL, Bhubaneswar</div>';
+    app.innerHTML=h; qr(s,s.due,'Bill '+s.no);
+  }
+  function portal(s){
+    document.title='Account - '+s.name;
+    var h=head(s)+note('This is an app-generated account summary and not an original GST bill. For original bills, please call or message the Authorized person.')+
+      '<div class="card"><h1>'+H(s.name)+'</h1><div class="row"><span>Total billed</span><b>'+R(s.tot)+'</b></div><div class="row"><span>Received</span><b style="color:var(--ok)">'+R(s.recv)+'</b></div>'+
+      '<div class="row"><b>Pending</b><span class="tot" style="color:'+(s.due>0.009?'var(--bad)':'var(--ok)')+'">'+R(s.due)+'</span></div></div>'+
+      payBox(s,s.due,'Account '+s.name)+
+      '<div class="card"><b>Your bills</b>'+s.bills.map(function(b){
+        return '<details><summary><span>'+H(b.no)+'<br><small class="mut">'+H(D(b.date))+' · '+H(b.st)+'</small></span><span style="text-align:right">'+R(b.tot)+'<br>'+badge(b.due,b.recv)+'</span></summary>'+
+          b.it.map(function(i){return '<div class="row"><span>'+H(i.n)+' × '+i.q+'</span><span>'+R(i.t)+'</span></div>'}).join('')+
+          '<div class="row"><span>Received</span><b>'+R(b.recv)+'</b></div><div class="row"><span>Pending</span><b>'+R(b.due)+'</b></div>'+
+          (b.bt?'<a class="btn out" href="view.html?b='+H(b.bt)+'">Open full bill</a>':'')+'</details>'}).join('')+'</div>'+
+      '<button class="btn out noprint" onclick="document.querySelectorAll(\'details\').forEach(function(d){d.open=true});window.print()">Download / Print statement</button>'+
+      '<div class="foot">Updated '+new Date(s.up).toLocaleString('en-IN')+' · Thank you! TTESPL, Bhubaneswar</div>';
+    app.innerHTML=h; qr(s,s.due,'Account '+s.name);
+  }
+})();
+</script>
+</body>
+</html>
