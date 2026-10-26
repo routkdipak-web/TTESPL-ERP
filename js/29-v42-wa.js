@@ -116,19 +116,29 @@
   }
 
   /* ---------- manual buttons: pending order cards + ledger detail ---------- */
-  function wrapRender() {
-    var o = window.renderOrders; if (typeof o !== 'function' || o.__wa) return;
-    var w = function () {
-      var r = o.apply(this, arguments);
+  /* pending order cards (Orders tab) and delivered bill cards (Ledger tab): add an "📲 Update" button; re-added whenever the list is redrawn */
+  var CARDS = [
+    { box: '#ordersListContainer', find: 'button[onclick*="shareOrderWhatsApp("]', re: /shareOrderWhatsApp\('([^']+)'\)/, type: 'dispatch' },
+    { box: '#billingListContainer', find: 'button[onclick*="openInvoicePrintModal("]', re: /openInvoicePrintModal\('([^']+)'\)/, type: 'delivered' }
+  ], raf = 0;
+  function addButtons() {
+    raf = 0;
+    CARDS.forEach(function (c) {
       try {
-        document.querySelectorAll('#ordersListContainer button[onclick*="shareOrderWhatsApp("]').forEach(function (b) {
-          if (b.parentNode.querySelector('.wa-upd')) return; var m = /shareOrderWhatsApp\('([^']+)'\)/.exec(b.getAttribute('onclick') || ''); if (!m) return;
-          var n = document.createElement('button'); n.type = 'button'; n.className = 'btn btn-outline btn-sm wa-upd'; n.style.flex = '1 1 100%'; n.style.order = '9'; n.textContent = '📲 Update';
-          n.setAttribute('onclick', "triggerAppHaptic(); ttOpenCustomerWA('" + m[1] + "','dispatch')"); b.parentNode.insertBefore(n, b.nextSibling);
+        document.querySelectorAll(c.box + ' ' + c.find).forEach(function (b) {
+          if (b.parentNode.querySelector('.wa-upd')) return; var m = c.re.exec(b.getAttribute('onclick') || ''); if (!m) return;
+          var n = document.createElement('button'); n.type = 'button'; n.className = 'btn btn-outline btn-sm wa-upd'; n.style.flex = '1 1 100%'; n.style.order = '9'; n.textContent = '📲 WhatsApp update to customer';
+          n.setAttribute('onclick', "triggerAppHaptic(); ttOpenCustomerWA('" + m[1] + "','" + c.type + "')"); b.parentNode.appendChild(n);
         });
-      } catch (e) { console.warn('wa render', e); }
-      return r;
-    }; w.__wa = 1; window.renderOrders = w;
+      } catch (e) { console.warn('wa buttons', e); }
+    });
+  }
+  function watchLists() {
+    CARDS.forEach(function (c) {
+      var el = document.querySelector(c.box); if (!el || el.__wa) return; el.__wa = 1;
+      new MutationObserver(function () { if (!raf) raf = requestAnimationFrame(addButtons); }).observe(el, { childList: true, subtree: true });
+    });
+    addButtons();
   }
   function wrapLedger() {
     var o = window.openLedgerDetail; if (typeof o !== 'function' || o.__wa) return;
@@ -144,7 +154,6 @@
       return r;
     }; w.__wa = 1; window.openLedgerDetail = w;
   }
-  function wrapAll() { wrapSave(); wrapDelivery(); wrapPay(); wrapRender(); wrapLedger(); }
+  function wrapAll() { wrapSave(); wrapDelivery(); wrapPay(); watchLists(); wrapLedger(); }
   wrapAll(); document.addEventListener('DOMContentLoaded', wrapAll); setTimeout(wrapAll, 1500);
-  try { renderOrders(); } catch (e) {}
 })();
