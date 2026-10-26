@@ -169,6 +169,7 @@
       var sel = ps.length > 1 ? '<select id="waPay" style="flex:1 1 100%;font-size:12.5px">' + ps.map(function (x) { return '<option value="' + x.i + '"' + (x === ps[ps.length - 1] ? ' selected' : '') + '>' + H(rs(x.p.amount) + ' · ' + String(x.p.at || '').slice(0, 10) + (x.p.mode ? ' · ' + x.p.mode : '')) + '</option>'; }).join('') + '</select>' : '';
       h += sel + '<button type="button" class="ttx-b" data-a="rcpt" style="flex:1 1 100%">🧾 Send Money Receipt (PDF)</button>';
     }
+    if (String(o.status) !== 'Cancelled') h += '<button type="button" class="ttx-b" data-a="blink" style="flex:1 1 48%">🔗 Bill Link</button><button type="button" class="ttx-b" data-a="plink" style="flex:1 1 48%">🌐 Account Link</button>';
     return h ? '<div class="ttx-btns" style="flex-wrap:wrap;margin:6px 0">' + h + '</div>' : '';
   }
 
@@ -196,6 +197,8 @@
       copy: function () { var el = $('waText'); try { navigator.clipboard.writeText(el.value).then(function () { X.toast('Copied'); }); } catch (e) { el.select(); document.execCommand('copy'); X.toast('Copied'); } },
       bill: function () { X.close(ID); shareBill(o); },
       rcpt: function () { var sl = $('waPay'), ps = pays(o), i = sl ? +sl.value : (ps.length ? ps[ps.length - 1].i : -1); var p = (o.payments || [])[i]; X.close(ID); if (p) shareReceipt(o, p); },
+      blink: function () { X.close(ID); if (window.ttShareBillLink) ttShareBillLink(o.id); },
+      plink: function () { X.close(ID); if (window.ttSharePortalLink) ttSharePortalLink(o.id); },
       skip: function () { X.close(ID); }
     } });
     $('waText').value = build(o, S.type, S.extra);
