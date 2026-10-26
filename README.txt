@@ -1,3 +1,9 @@
+v42.8 - UPI QR share
+ - QR dialog (Scan & Pay) me ab "Share QR" button: QR + amount + UPI ID ka PNG banke seedha share (screenshot ki zarurat nahi).
+ - WhatsApp customer message sheet me "Attach UPI QR for pending Rs X" (due ho tabhi, default ON). ON ho to share sheet khulta he
+   (message text + QR image), WhatsApp aur customer chuno. OFF ho to purana direct wa.me text link.
+ - Note: wa.me link se image attach nahi hoti, isliye QR ke saath phone ka share sheet aata he.
+
 v42.7 - Ledger (delivered bills) now has the customer WhatsApp update too: open a bill card in Ledger > '📲 WhatsApp update to customer' (Delivered / Payment / Placed / Out for delivery messages). Button stays after filter / search / refresh. Cache v427
 
 v42.6 - CUSTOMER WHATSAPP UPDATES (manual): order placed / out for delivery / delivered / payment received messages. A sheet opens after a new order, after delivery and after collecting a payment (Send on WhatsApp / Copy / Not now);
