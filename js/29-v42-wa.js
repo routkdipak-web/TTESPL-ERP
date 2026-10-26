@@ -18,6 +18,58 @@
   function phone10(o) { return String(o.phone || '').replace(/\D/g, '').slice(-10); }
   function ymd(s) { return X.fmtD ? X.fmtD(s) : s; }
 
+
+  /* ---------- UPI QR as a shareable PNG ---------- */
+  var UPI_ID = 'eazypay.574099310@icici';
+  function upiPayload(amount) { return 'upi://pay?pa=' + UPI_ID + '&pn=' + encodeURIComponent('TWINTOWN EXPRESS SERVICES') + '&am=' + N(amount).toFixed(2) + '&cu=INR'; }
+  function qrBlob(amount, name) {
+    return new Promise(function (res, rej) {
+      try {
+        var qr = qrcode(0, 'M'); qr.addData(upiPayload(amount)); qr.make();
+        var svg = qr.createSvgTag({ cellSize: 8, margin: 2, scalable: false });
+        var img = new Image();
+        img.onload = function () {
+          var W = 640, Q = 520, c = document.createElement('canvas'); c.width = W; c.height = 860;
+          var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, W, 860);
+          g.textAlign = 'center'; g.fillStyle = '#0a2540'; g.font = '800 30px Arial,sans-serif'; g.fillText('TWINTOWN EXPRESS SERVICES PVT LTD', W / 2, 52);
+          g.fillStyle = '#475569'; g.font = '600 24px Arial,sans-serif'; g.fillText('Scan & Pay via UPI', W / 2, 90);
+          g.imageSmoothingEnabled = false; g.drawImage(img, (W - Q) / 2, 115, Q, Q);
+          g.fillStyle = '#0a2540'; g.font = '900 52px Arial,sans-serif'; g.fillText('₹' + N(amount).toLocaleString('en-IN', { maximumFractionDigits: 2 }), W / 2, 710);
+          if (name) { g.fillStyle = '#475569'; g.font = '600 26px Arial,sans-serif'; g.fillText(String(name).slice(0, 38), W / 2, 755); }
+          g.fillStyle = '#0284c7'; g.font = '700 24px Arial,sans-serif'; g.fillText('UPI ID: ' + UPI_ID, W / 2, 810);
+          c.toBlob(function (b) { b ? res(b) : rej(new Error('png')); }, 'image/png');
+        };
+        img.onerror = function () { rej(new Error('svg')); };
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+      } catch (e) { rej(e); }
+    });
+  }
+  function qrFile(amount, name) { return qrBlob(amount, name).then(function (b) { return new File([b], 'TTESPL-UPI-QR-' + Math.round(N(amount)) + '.png', { type: 'image/png' }); }); }
+  function saveFile(f) { var a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500); }
+  /* share image (+ optional text); returns a Promise; falls back to download when the phone cannot share files */
+  function shareQr(amount, name, text) {
+    return qrFile(amount, name).then(function (f) {
+      var d = { files: [f] }; if (text) d.text = text;
+      if (navigator.canShare && navigator.canShare(d) && navigator.share) {
+        return navigator.share(d).then(function () { return 'shared'; }, function (e) { if (e && e.name === 'AbortError') return 'cancelled'; throw e; });
+      }
+      saveFile(f); X.toast('QR image saved - attach it in WhatsApp'); return 'saved';
+    }).catch(function (e) { console.warn('qr share', e && (e.message||e)); X.toast('Could not create the QR image'); return 'error'; });
+  }
+  window.ttShareUpiQr = shareQr;
+  /* Share button inside the QR dialog */
+  var LASTQ = { name: '', amt: 0 };
+  function wrapUpi() {
+    var f = window.openUpiModal; if (typeof f !== 'function' || f.__wa) return;
+    var w = function (name, amount) { LASTQ = { name: name || '', amt: N(amount) }; return f.apply(this, arguments); }; w.__wa = 1; window.openUpiModal = w;
+    try { openUpiModal = w; } catch (e) {}
+    var card = document.querySelector('#upiModal .auth-card'); if (!card || card.querySelector('.wa-qrshare')) return;
+    var done = card.querySelector('button.btn-primary'); if (!done) return;
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-outline btn-block wa-qrshare'; b.style.marginBottom = '8px'; b.textContent = '📤 Share QR';
+    b.onclick = function () { if (LASTQ.amt > 0) shareQr(LASTQ.amt, LASTQ.name, 'Please pay ' + rs(LASTQ.amt) + ' via UPI.\n*TTESPL, Bhubaneswar*'); };
+    done.parentNode.insertBefore(b, done);
+  }
+
   /* ---------- message text ---------- */
   function payLine(o) {
     var total = N(o.totalAmount), recv = N(o.recvAmount), due = Math.max(0, R2(total - recv));
@@ -55,18 +107,27 @@
 
   /* ---------- sheet ---------- */
   var TYPES = [['placed', '✅ Order placed'], ['dispatch', '🚚 Out for delivery'], ['delivered', '📦 Delivered'], ['payment', '💰 Payment']];
+  function dueOf(o) { return Math.max(0, R2(N(o.totalAmount) - N(o.recvAmount))); }
+  function qrOpt(o) {
+    var d = dueOf(o); if (d <= 0.009) return '';
+    return '<label class="ttx-note" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="waQr"' + (S.qr === false ? '' : ' checked') + ' style="width:auto"> <span>Attach UPI QR for pending <b>' + rs(d) + '</b></span></label>';
+  }
   function draw() {
     var o = ord(S.id); if (!o) return;
     var ph = phone10(o), chips = TYPES.map(function (t) { return '<button type="button" class="ttx-b' + (t[0] === S.type ? ' pri' : '') + '" data-a="type" data-p="' + t[0] + '">' + t[1] + '</button>'; }).join('');
     var h = '<div class="ttx-note"><b>' + H(o.customerName || '') + '</b> · ' + (ph ? '+91 ' + H(ph) : '<span style="color:#d97706">no mobile number saved – WhatsApp will ask you to pick the contact</span>') + '<br><small>Order ' + H(o.id) + ' · ' + H(o.status || '') + '</small></div>' +
       '<div class="ttx-btns wa-chips">' + chips + '</div>' +
+      qrOpt(o) +
       '<textarea id="waText" rows="14" style="width:100%;font-size:13.5px;line-height:1.45"></textarea>' +
       '<div class="ttx-btns"><button class="ttx-b pri" data-a="send" style="flex:1">📲 Send on WhatsApp</button><button class="ttx-b" data-a="copy">📋 Copy</button><button class="ttx-b" data-a="skip">Not now</button></div>' +
-      '<div class="ttx-note" style="font-size:11.5px;opacity:.8">The message opens in WhatsApp – you can edit it there too. Nothing is sent by itself.</div>';
+      '<div class="ttx-note" style="font-size:11.5px;opacity:.8">Without QR the message opens directly in WhatsApp. With QR the phone share sheet opens - pick WhatsApp and the customer. Nothing is sent by itself.</div>';
     X.sheet(ID, '📲 Message to customer', h, { z: 3900 });
     X.bind(ID, { click: {
       type: function (t) { S.type = t; draw(); },
-      send: function () { var tx = ($('waText') || {}).value || ''; var p = phone10(o); window.open((p ? 'https://wa.me/91' + p : 'https://wa.me/') + '?text=' + encodeURIComponent(tx), '_blank'); X.close(ID); },
+      send: function () {
+        var tx = ($('waText') || {}).value || '', q = $('waQr'), d = dueOf(o); S.qr = q ? q.checked : S.qr;
+        if (q && q.checked && d > 0.009) { X.close(ID); shareQr(d, o.customerName, tx); return; }
+        var p = phone10(o); window.open((p ? 'https://wa.me/91' + p : 'https://wa.me/') + '?text=' + encodeURIComponent(tx), '_blank'); X.close(ID); },
       copy: function () { var el = $('waText'); try { navigator.clipboard.writeText(el.value).then(function () { X.toast('Copied'); }); } catch (e) { el.select(); document.execCommand('copy'); X.toast('Copied'); } },
       skip: function () { X.close(ID); }
     } });
@@ -154,6 +215,6 @@
       return r;
     }; w.__wa = 1; window.openLedgerDetail = w;
   }
-  function wrapAll() { wrapSave(); wrapDelivery(); wrapPay(); watchLists(); wrapLedger(); }
+  function wrapAll() { wrapSave(); wrapDelivery(); wrapPay(); watchLists(); wrapLedger(); wrapUpi(); }
   wrapAll(); document.addEventListener('DOMContentLoaded', wrapAll); setTimeout(wrapAll, 1500);
 })();
