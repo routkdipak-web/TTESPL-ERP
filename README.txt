@@ -1,3 +1,9 @@
+v43.0 (v42.10) - message fix + Order PDF + Profit GST toggle
+ - Payment message: jab tak payment mili nahi, "Payment received - thank you" nahi jayega. Due ho aur kuch paid na ho to "Payment reminder" (pending amount + QR).
+   Payment mili ho to thank-you (amount + baki pending/cleared).
+ - Pending/undelivered order ka bhi "Send Order (PDF)" (sample-copy note ke saath); delivered par "Send Bill (PDF)".
+ - Orders aur Ledger ke opened card ke Profit report me "Without GST / With GST" toggle (yaad rehta he).
+
 v42.9 - Bill + Money Receipt PDF on WhatsApp
  - Customer message sheet (order place / delivery / payment / Ledger) me ab: "Send Bill (PDF)" (sirf Delivered order) aur
    "Send Money Receipt (PDF)" (payment ho to; kai payment hon to list se chuno, default latest).
