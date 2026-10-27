@@ -272,9 +272,22 @@ exports.pushOnNotification = onDocumentCreated({ document: 'app_notifications/{i
   }
 });
 
+/* ===== v43.3: customer says "I paid by UPI" on view.html -> push to every staff phone (Admin verifies in the app). Needs: firebase deploy --only functions ===== */
+exports.pushOnClaim = onDocumentCreated({ document: 'payment_claims/{id}', region: 'asia-south1' }, async (event) => {
+  const n = event.data && event.data.data(); if (!n) return;
+  const snap = await admin.firestore().collection('fcm_tokens').get();
+  const tokens = []; snap.forEach((d) => { const x = d.data(); if (x && x.token) tokens.push(x.token); });
+  const title = '💳 Payment claim from customer', body = String((n.by || n.name || 'Customer') + ' says ₹' + Number(n.amt || 0).toLocaleString('en-IN') + ' paid by UPI (UTR ' + String(n.utr || '').slice(0, 30) + '). Please verify.').slice(0, 250);
+  for (let i = 0; i < tokens.length; i += 500) {
+    const r = await admin.messaging().sendEachForMulticast({ tokens: tokens.slice(i, i + 500), notification: { title, body }, data: { type: 'claim' } });
+    const dead = []; r.responses.forEach((x, k) => { const c = x.error && x.error.code; if (c === 'messaging/registration-token-not-registered' || c === 'messaging/invalid-registration-token') dead.push(tokens[i + k]); });
+    await Promise.all(dead.map((t) => admin.firestore().collection('fcm_tokens').doc(t.replace(/\//g, '~')).delete().catch(() => {})));
+  }
+});
+
 /* ===== v41: automatic daily backup to Cloud Storage (backups/YYYY-MM-DD.json, last 30 kept). Needs the Blaze plan. ===== */
 exports.dailyBackup = onSchedule({ schedule: '30 1 * * *', timeZone: 'Asia/Kolkata', region: 'asia-south1', memory: '512MiB', timeoutSeconds: 300 }, async () => {
-  const cols = ['customers', 'inventory', 'machinery', 'leads', 'orders', 'services', 'machine_parts', 'quotations', 'travel_expenses', 'crm_records', 'company_settings', 'catalog_categories', 'brands', 'expenses', 'overheads', 'perms', 'tasks', 'suppliers', 'purchases', 'purchase_bills', 'attendance', 'leaves', 'events', 'notices', 'cash_closings', 'office_config', 'recycle_bin', 'counters', 'staff'];
+  const cols = ['customers', 'inventory', 'machinery', 'leads', 'orders', 'services', 'machine_parts', 'quotations', 'travel_expenses', 'crm_records', 'company_settings', 'catalog_categories', 'brands', 'expenses', 'overheads', 'perms', 'tasks', 'suppliers', 'purchases', 'purchase_bills', 'payment_claims', 'attendance', 'leaves', 'events', 'notices', 'cash_closings', 'office_config', 'recycle_bin', 'counters', 'staff'];
   const out = { app: 'TTESPL-ERP', kind: 'server-backup', exportedAt: new Date().toISOString(), data: {} };
   for (const c of cols) {
     const s = await admin.firestore().collection(c).get(); out.data[c] = [];
