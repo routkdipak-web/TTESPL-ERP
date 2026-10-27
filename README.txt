@@ -1,3 +1,8 @@
+v43.4 - PULL-TO-REFRESH like Chrome (js/37-v43-ptr.js, new)
+  Top par hone ke baad lamba neeche kheenchne par hi refresh. Chhota scroll / drag se kuch nahi hota.
+  Home tab: lamba pull = poora app reload. Baaki tabs (Orders, Ledger, Stock...): sirf wahi page refresh, app reopen nahi hota.
+  Browser ka apna reload gesture block (overscroll-behavior). Distance badalna ho to FULL = 150 (js/37).
+
 v43.3 - Customer payment claims ("Maine pay kar diya")
  NEW FILE: js/36-v43-claims.js   CHANGED: view.html, js/30, js/33, js/26, js/09, js/10, live-sync.js, index.html, sw, 18-v41-core, functions/index.js, firestore.rules.secure/.example
  - view.html: UPI se pay karne ke baad "I have paid" -> amount + UTR (+naam) -> payment_claims me jata he. Page par claim ka status (checking / verified / not verified) dikhta he.
