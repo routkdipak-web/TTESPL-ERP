@@ -41,8 +41,14 @@
     var round = R2(forTax - (sumT + cT + (intra ? half * 2 : tax)));
     return { items: items, intra: intra, sumTaxable: sumT, courTaxable: cT, courierFree: courTax ? 0 : cc, tax: tax, half: half, round: round, total: total, taxable: R2(sumT + cT) };
   }
-  window.ttGstSplit = gstSplit;
+  window.ttGstSplit = gstSplit; window.ttPubRefresh = function () { sched(); };
 
+  /* ---------- customer payment claims (shown back on the page with their status) ---------- */
+  function claimRows(match) {
+    var l = (window.ttx && X.list('PAYMENT_CLAIMS')) || [];
+    return l.filter(function (c) { return c && match(c); }).sort(function (a, b) { return String(b.at || '').localeCompare(String(a.at || '')); }).slice(0, 8)
+      .map(function (c) { return { a: N(c.amt), u: String(c.utr || '').slice(-4), s: c.status === 'verified' ? 'v' : c.status === 'rejected' ? 'r' : 'n', d: String(c.at || '').slice(0, 10) }; });
+  }
   /* ---------- snapshots ---------- */
   function custOf(o) {
     var ph = p10(o.phone), nm = low(o.customerName);
@@ -58,7 +64,7 @@
       tax: { taxable: g.taxable, cgst: g.intra ? g.half : 0, sgst: g.intra ? g.half : 0, igst: g.intra ? 0 : g.tax, intra: g.intra, round: g.round },
       tot: N(o.totalAmount), recv: N(o.recvAmount), due: Math.max(0, R2(N(o.totalAmount) - N(o.recvAmount))),
       pays: (o.payments || []).filter(function (p) { return p && !p.refund && N(p.amount) > 0; }).map(function (p) { return { d: String(p.at || '').slice(0, 10), a: N(p.amount), m: p.mode || '' }; }),
-      upi: UPI
+      upi: UPI, cl: claimRows(function (c) { return c.kind === 'bill' && c.tk === o.pubToken; })
     };
   }
   function ordersOfCustomer(c) {
@@ -76,7 +82,7 @@
         return { no: inv(o), ord: o.id, date: ymdOf(o), st: o.status || '', tot: N(o.totalAmount), recv: N(o.recvAmount), due: Math.max(0, R2(N(o.totalAmount) - N(o.recvAmount))), bt: o.pubToken || '',
           it: (o.items || []).map(function (i) { return { n: i.name, q: N(i.qty), t: N(i.total) }; }) };
       }),
-      upi: UPI
+      upi: UPI, cl: claimRows(function (x) { return x.kind === 'portal' && x.tk === c.pubToken; })
     };
   }
 
@@ -126,7 +132,7 @@
   function sched() { clearTimeout(tmr); tmr = setTimeout(refreshAll, 4000); }
   function wrapStore() {
     var f = window.setStored; if (typeof f !== 'function' || f.__pub) return;
-    var w = function (k) { var r = f.apply(this, arguments); if (k === 'ORDERS' || k === 'CUSTOMERS') sched(); return r; }; w.__pub = 1;
+    var w = function (k) { var r = f.apply(this, arguments); if (k === 'ORDERS' || k === 'CUSTOMERS' || k === 'PAYMENT_CLAIMS') sched(); return r; }; w.__pub = 1;
     window.setStored = w; try { setStored = w; } catch (e) {}
   }
   wrapStore(); setTimeout(wrapStore, 1500); setTimeout(refreshAll, 25000);

@@ -327,6 +327,7 @@
     ['SUPPLIERS', 'Suppliers', function () { return X.list('SUPPLIERS'); }, function (v) { window.TTX.SUPPLIERS = v; }],
     ['PURCHASES', 'Purchase orders & bills', function () { return X.list('PURCHASES'); }, function (v) { window.TTX.PURCHASES = v; }],
     ['PURCHASE_BILLS', 'Purchase bills (stock entry)', function () { return X.list('PURCHASE_BILLS'); }, function (v) { window.TTX.PURCHASE_BILLS = v; }],
+    ['PAYMENT_CLAIMS', 'Customer payment claims', function () { return X.list('PAYMENT_CLAIMS'); }, function (v) { window.TTX.PAYMENT_CLAIMS = v; }],
     ['ATTENDANCE', 'Attendance', function () { return X.list('ATTENDANCE'); }, function (v) { window.TTX.ATTENDANCE = v; }],
     ['LEAVES', 'Leave requests', function () { return X.list('LEAVES'); }, function (v) { window.TTX.LEAVES = v; }],
     ['EVENTS', 'Calendar events', function () { return X.list('EVENTS'); }, function (v) { window.TTX.EVENTS = v; }],
@@ -476,7 +477,7 @@
     if (RS.mode === 'over') D.chg.forEach(function (r) { chgMap[r.id] = r; });
     var merged = now.map(function (r) { return r && chgMap[r.id] ? chgMap[r.id] : r; }).concat(D.add);
     RS.added[k] = D.add.map(function (r) { return r.id; });
-    try { def[3](merged); if (k.match(/^(TASKS|SUPPLIERS|PURCHASES|PURCHASE_BILLS|ATTENDANCE|LEAVES|EVENTS|NOTICES|CLOSINGS)$/)) X.save(k, merged); else setStored(k, merged); } catch (e) { RS.res[k] = { ok: false, err: 'Local save failed: ' + e.message }; return Promise.resolve(); }
+    try { def[3](merged); if (k.match(/^(TASKS|SUPPLIERS|PURCHASES|PURCHASE_BILLS|PAYMENT_CLAIMS|ATTENDANCE|LEAVES|EVENTS|NOTICES|CLOSINGS)$/)) X.save(k, merged); else setStored(k, merged); } catch (e) { RS.res[k] = { ok: false, err: 'Local save failed: ' + e.message }; return Promise.resolve(); }
     return X.cloudConfirm(k, merged).then(function () { RS.res[k] = { ok: true, add: D.add.length, chg: RS.mode === 'over' ? D.chg.length : 0 }; }, function (e) { RS.res[k] = { ok: false, err: 'Cloud did not confirm: ' + (e.message || e), add: D.add.length, chg: RS.mode === 'over' ? D.chg.length : 0 }; });
   }
   function finishRestore() {
@@ -492,7 +493,7 @@
   function undoRestore() {
     if (!RS || !RS.snap) return; if (!confirm('Undo this restore?\n\nChanged records go back to what they were. Records that this restore ADDED will be removed again.')) return;
     var p = Promise.resolve(); RS.keys.forEach(function (k) {
-      p = p.then(function () { var def = SETS.find(function (s) { return s[0] === k; }), snap = RS.snap[k]; def[3](snap); if (k.match(/^(TASKS|SUPPLIERS|PURCHASES|PURCHASE_BILLS|ATTENDANCE|LEAVES|EVENTS|NOTICES|CLOSINGS)$/)) X.save(k, snap); else setStored(k, snap);
+      p = p.then(function () { var def = SETS.find(function (s) { return s[0] === k; }), snap = RS.snap[k]; def[3](snap); if (k.match(/^(TASKS|SUPPLIERS|PURCHASES|PURCHASE_BILLS|PAYMENT_CLAIMS|ATTENDANCE|LEAVES|EVENTS|NOTICES|CLOSINGS)$/)) X.save(k, snap); else setStored(k, snap);
         (RS.added[k] || []).forEach(function (id) { try { if (window.cloudSync && window.cloudSync.deleteItem) window.cloudSync.deleteItem(k, id); } catch (e) {} });
         return X.cloudConfirm(k, snap).then(function () { return true; }, function () { return false; }); });
     });
