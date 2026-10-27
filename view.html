@@ -51,13 +51,46 @@ details{border-top:1px solid var(--line);padding:8px 0}summary{cursor:pointer;di
   function payBox(s,amt,ref){
     if(!(amt>0.009))return '';
     return '<div class="card center" id="qrbox"><div class="mut">Amount to pay</div><div class="tot" style="color:var(--bad)">'+R(amt)+'</div>'+
-      '<a class="btn pri" href="'+H(upiUrl(s,amt,ref))+'">Pay with UPI app</a><div id="qr"></div><small class="mut">Scan with any UPI app · UPI ID: '+H(s.upi.pa)+'</small></div>';
+      '<a class="btn pri" href="'+H(upiUrl(s,amt,ref))+'">Pay with UPI app</a><div id="qr"></div><small class="mut">Scan with any UPI app · UPI ID: '+H(s.upi.pa)+'</small>'+
+      '<button class="btn out" id="claimBtn" onclick="openClaim()">✅ I have paid – tell TTESPL</button></div>';
   }
   function qr(s,amt,ref){
     try{var el=document.getElementById('qr');if(!el||typeof qrcode!=='function')return;var c=qrcode(0,'M');c.addData(upiUrl(s,amt,ref));c.make();el.innerHTML=c.createSvgTag({cellSize:5,margin:1,scalable:true})}
     catch(e){var x=document.getElementById('qr');if(x)x.style.display='none'}
   }
-  function bill(s){
+  var CUR=null;
+  function claimsHtml(s){
+    if(!s.cl||!s.cl.length)return '';
+    return '<div class="card"><b>Your payment reports</b>'+s.cl.map(function(c){
+      var b=c.s==='v'?'<span class="badge paid">VERIFIED</span>':c.s==='r'?'<span class="badge due">NOT VERIFIED</span>':'<span class="badge part">CHECKING</span>';
+      return '<div class="row"><span>'+H(D(c.d))+' · UTR …'+H(c.u)+'</span><span>'+R(c.a)+' '+b+'</span></div>'}).join('')+
+      '<small class="mut">“Checking” means TTESPL will confirm it in the bank and update this page. “Not verified”: please call TTESPL.</small></div>';
+  }
+  window.openClaim=function(){
+    var s=CUR; if(!s)return; var due=s.due!=null?s.due:0;
+    var opts=(s.k==='portal'?'<label class="mut" style="font-size:12.5px">For which bill? (optional)</label><select id="clBill" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--tx);margin-bottom:8px"><option value="">Not sure / all dues</option>'+s.bills.filter(function(b){return b.due>0.009}).map(function(b){return '<option value="'+H(b.ord)+'">'+H(b.no)+' – pending '+R(b.due)+'</option>'}).join('')+'</select>':'');
+    var f=document.getElementById('claimForm'); if(!f){f=document.createElement('div');f.id='claimForm';f.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;z-index:50';document.body.appendChild(f)}
+    f.innerHTML='<div class="card" style="width:100%;max-width:560px;margin:0;border-radius:18px 18px 0 0;max-height:92vh;overflow:auto"><b style="font-size:16px">Payment details</b><p class="mut" style="margin:4px 0 10px;font-size:13px">After you pay by UPI, enter the details so TTESPL can confirm it quickly. The bill will update once TTESPL verifies the payment in the bank.</p>'+opts+
+      '<label class="mut" style="font-size:12.5px">Amount paid (₹)</label><input id="clAmt" type="number" inputmode="decimal" step="0.01" value="'+(due>0?Number(due).toFixed(2):'')+'" style="width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--tx);margin-bottom:8px">'+
+      '<label class="mut" style="font-size:12.5px">UTR / Reference no. (from your UPI app, 12 digits)</label><input id="clUtr" inputmode="text" autocapitalize="characters" maxlength="30" placeholder="e.g. 412345678901" style="width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--tx);margin-bottom:8px">'+
+      '<label class="mut" style="font-size:12.5px">Your name (optional)</label><input id="clBy" maxlength="60" style="width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--tx);margin-bottom:8px">'+
+      '<div id="clMsg" class="mut" style="min-height:18px;font-size:13px"></div><button class="btn pri" id="clGo" onclick="sendClaim()">Send to TTESPL</button><button class="btn out" onclick="document.getElementById(\'claimForm\').remove()">Cancel</button></div>';
+  };
+  window.sendClaim=function(){
+    var s=CUR, msg=document.getElementById('clMsg'), amt=parseFloat(document.getElementById('clAmt').value), utr=(document.getElementById('clUtr').value||'').trim().toUpperCase().replace(/\s+/g,''), by=(document.getElementById('clBy').value||'').trim().slice(0,60), bsel=document.getElementById('clBill');
+    if(!(amt>0)||amt>10000000){msg.style.color='var(--bad)';msg.textContent='Please enter the amount you paid.';return}
+    if(!/^[A-Z0-9]{6,30}$/.test(utr)){msg.style.color='var(--bad)';msg.textContent='Please enter the UTR / reference number (letters and numbers only).';return}
+    var last=0; try{last=+localStorage.getItem('ttClaimAt')||0}catch(e){} if(Date.now()-last<20000){msg.style.color='var(--bad)';msg.textContent='Please wait a few seconds before sending again.';return}
+    var id='c'+Date.now().toString(36)+Math.random().toString(36).slice(2,10), btn=document.getElementById('clGo'); btn.disabled=true; msg.style.color='';msg.textContent='Sending…';
+    var F=function(v){return {stringValue:String(v)}};
+    var body={fields:{id:F(id),kind:F(s.k==='portal'?'portal':'bill'),tk:F(tk),ord:F(bsel?bsel.value:(s.ord||'')),name:F(s.k==='portal'?s.name:(s.cust&&s.cust.n)||''),amt:{doubleValue:amt},utr:F(utr),by:F(by),at:F(new Date().toISOString()),status:F('new')}};
+    fetch('https://firestore.googleapis.com/v1/projects/'+PROJ+'/databases/(default)/documents/payment_claims?documentId='+id+'&key='+KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(function(r){if(!r.ok)throw new Error('x');try{localStorage.setItem('ttClaimAt',String(Date.now()))}catch(e){}
+        document.getElementById('claimForm').innerHTML='<div class="card center" style="width:100%;max-width:560px;margin:0;border-radius:18px 18px 0 0"><div style="font-size:42px">✅</div><b style="font-size:17px">Sent to TTESPL</b><p class="mut">TTESPL will check the payment in the bank and update this page. Thank you!</p><button class="btn pri" onclick="document.getElementById(\'claimForm\').remove()">OK</button></div>';
+        var b=document.getElementById('claimBtn'); if(b){b.textContent='✅ Details sent – TTESPL will confirm';b.disabled=true}})
+      .catch(function(){btn.disabled=false;msg.style.color='var(--bad)';msg.textContent='Could not send. Check internet and try again, or call TTESPL.'});
+  };
+  function bill(s){ CUR=s; s.k='bill';
     document.title='Bill '+s.no+' - TTESPL';
     var rows=s.it.map(function(i,k){return '<tr><td>'+(k+1)+'. '+H(i.n)+'<br><small class="mut">HSN '+H(i.h)+' · GST '+i.g+'%</small></td><td>'+i.q+'</td><td>'+R(i.r)+'</td><td>'+R(i.t)+'</td></tr>'}).join('');
     var t=s.tax, gst=t.cgst+t.sgst+t.igst;
@@ -74,17 +107,17 @@ details{border-top:1px solid var(--line);padding:8px 0}summary{cursor:pointer;di
       '<div class="row"><span>Received</span><b style="color:var(--ok)">'+R(s.recv)+'</b></div>'+
       '<div class="row"><span>Pending</span><b style="color:'+(s.due>0.009?'var(--bad)':'var(--ok)')+'">'+R(s.due)+'</b></div></div>'+
       (s.pays.length?'<div class="card"><b>Payments received</b>'+s.pays.map(function(p){return '<div class="row"><span>'+H(D(p.d))+(p.m?' · '+H(p.m):'')+'</span><b>'+R(p.a)+'</b></div>'}).join('')+'</div>':'')+
-      payBox(s,s.due,'Bill '+s.no)+
+      claimsHtml(s)+payBox(s,s.due,'Bill '+s.no)+
       '<button class="btn out noprint" onclick="window.print()">Download / Print as PDF</button>'+
       '<div class="foot">Updated '+new Date(s.up).toLocaleString('en-IN')+' · Thank you! TTESPL, Bhubaneswar</div>';
     app.innerHTML=h; qr(s,s.due,'Bill '+s.no);
   }
-  function portal(s){
+  function portal(s){ CUR=s; s.due=s.due;
     document.title='Account - '+s.name;
     var h=head(s)+note('This is an app-generated account summary and not an original GST bill. For original bills, please call or message the Authorized person.')+
       '<div class="card"><h1>'+H(s.name)+'</h1><div class="row"><span>Total billed</span><b>'+R(s.tot)+'</b></div><div class="row"><span>Received</span><b style="color:var(--ok)">'+R(s.recv)+'</b></div>'+
       '<div class="row"><b>Pending</b><span class="tot" style="color:'+(s.due>0.009?'var(--bad)':'var(--ok)')+'">'+R(s.due)+'</span></div></div>'+
-      payBox(s,s.due,'Account '+s.name)+
+      claimsHtml(s)+payBox(s,s.due,'Account '+s.name)+
       '<div class="card"><b>Your bills</b>'+s.bills.map(function(b){
         return '<details><summary><span>'+H(b.no)+'<br><small class="mut">'+H(D(b.date))+' · '+H(b.st)+'</small></span><span style="text-align:right">'+R(b.tot)+'<br>'+badge(b.due,b.recv)+'</span></summary>'+
           b.it.map(function(i){return '<div class="row"><span>'+H(i.n)+' × '+i.q+'</span><span>'+R(i.t)+'</span></div>'}).join('')+

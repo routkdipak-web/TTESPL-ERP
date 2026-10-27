@@ -65,6 +65,20 @@ service cloud.firestore {
     match /public_bills/{t}   { allow get: if true; allow list: if false; allow create, update, delete: if signedIn(); }
     match /public_portals/{t} { allow get: if true; allow list: if false; allow create, update, delete: if signedIn(); }
 
+    // v43.3: customers tell us "I paid" from view.html. Anyone may CREATE one claim (strict shape, no read / edit / delete); only the Admin verifies or rejects.
+    match /payment_claims/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['id','kind','tk','ord','name','amt','utr','by','at','status'])
+        && request.resource.data.status == 'new' && request.resource.data.id == id
+        && request.resource.data.utr is string && request.resource.data.utr.size() >= 6 && request.resource.data.utr.size() <= 30
+        && request.resource.data.amt is number && request.resource.data.amt > 0 && request.resource.data.amt <= 10000000
+        && request.resource.data.tk is string && request.resource.data.tk.size() <= 40
+        && request.resource.data.by is string && request.resource.data.by.size() <= 60
+        && request.resource.data.name is string && request.resource.data.name.size() <= 90
+        && request.resource.data.ord is string && request.resource.data.ord.size() <= 60;
+      allow read: if signedIn();
+      allow update, delete: if isAdmin();
+    }
+
     match /{other=**} { allow read, write: if false; }
   }
 }

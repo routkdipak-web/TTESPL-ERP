@@ -49,6 +49,7 @@
     TASKS: 'tasks',
     SUPPLIERS: 'suppliers',
     PURCHASES: 'purchases',
+    PAYMENT_CLAIMS: 'payment_claims',   // v43.3: customers tell us they paid by UPI (admin verifies)
     PURCHASE_BILLS: 'purchase_bills',   // v42.4: direct purchase bill entry (stock goes up on save)
     ATTENDANCE: 'attendance',
     LEAVES: 'leaves',
@@ -62,7 +63,7 @@
   };
 
   // Naye optional collections: inke error/rules ki wajah se app 'Offline' nahi dikhayega
-  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true, CATALOG_CATS: true, BRANDS: true, EXPENSES: true, OVERHEADS: true, PERMS: true, ACTIVITY: true, TASKS: true, SUPPLIERS: true, PURCHASES: true, PURCHASE_BILLS: true, ATTENDANCE: true, LEAVES: true, EVENTS: true, NOTICES: true, CLOSINGS: true, OFFICE_CFG: true, PRODUCT_IMAGES: true, AI_JOBS: true, RECYCLE: true };
+  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true, CATALOG_CATS: true, BRANDS: true, EXPENSES: true, OVERHEADS: true, PERMS: true, ACTIVITY: true, TASKS: true, SUPPLIERS: true, PURCHASES: true, PURCHASE_BILLS: true, PAYMENT_CLAIMS: true, ATTENDANCE: true, LEAVES: true, EVENTS: true, NOTICES: true, CLOSINGS: true, OFFICE_CFG: true, PRODUCT_IMAGES: true, AI_JOBS: true, RECYCLE: true };
   // Inka purana local data pehli baar cloud par automatically upload hota hai (ek baar)
   var MIGRATE_KEYS = OPTIONAL_KEYS;
 
@@ -546,7 +547,7 @@
               }
             }
             break;
-          case 'TASKS': case 'SUPPLIERS': case 'PURCHASES': case 'PURCHASE_BILLS': case 'ATTENDANCE': case 'LEAVES': case 'EVENTS': case 'NOTICES': case 'CLOSINGS': case 'OFFICE_CFG': case 'PRODUCT_IMAGES': case 'AI_JOBS': case 'RECYCLE':
+          case 'TASKS': case 'SUPPLIERS': case 'PURCHASES': case 'PURCHASE_BILLS': case 'PAYMENT_CLAIMS': case 'ATTENDANCE': case 'LEAVES': case 'EVENTS': case 'NOTICES': case 'CLOSINGS': case 'OFFICE_CFG': case 'PRODUCT_IMAGES': case 'AI_JOBS': case 'RECYCLE':
             window.TTX = window.TTX || {}; window.TTX[key] = list; break;
           case 'MACHINE_PARTS':
             machinePartsData = list;

@@ -1,3 +1,17 @@
+v43.3 - Customer payment claims ("Maine pay kar diya")
+ NEW FILE: js/36-v43-claims.js   CHANGED: view.html, js/30, js/33, js/26, js/09, js/10, live-sync.js, index.html, sw, 18-v41-core, functions/index.js, firestore.rules.secure/.example
+ - view.html: UPI se pay karne ke baad "I have paid" -> amount + UTR (+naam) -> payment_claims me jata he. Page par claim ka status (checking / verified / not verified) dikhta he.
+ - App: sab staff ko toast + vibration + Home card + menu badge. Sirf ADMIN verify/reject kar sakta he.
+ - Verify: bank me UTR dekho -> amount badlo (agar chahiye) -> bill chuno -> payment UPI me record (extra amount agle purane dues me). Same UTR dobara record nahi hota (warning).
+ - Closed app par push ke liye: firebase deploy --only functions (pushOnClaim). Rules: secure mode me payment_claims ka naya rule publish karna (open mode `if true` me kuch nahi).
+
+v43.2 - Day Closing, Appearance, Home cards, count-up, Fingerprint
+ NEW FILES: js/32-v43-appearance.js, js/33-v43-home.js, js/34-v43-closing.js, js/35-v43-biometric.js (changed: index.html, js/26, sw, 18-v41-core)
+ - Profile menu > Day Closing Report: din ka summary (sales, cash/UPI/bank collection, staff-wise, expenses, cash movement, dues, low stock) -> owner WhatsApp.
+ - Profile menu > Appearance: Auto/Light/Dark, Dark style (Standard/Soft/True black), 8 accent colours, switches for Home cards & count-up.
+ - Home: "Today at a glance" cards (tap karke related screen) + collection card me 7-day sparkline + numbers count-up animation (Ultra-smooth/lite mode me band).
+ - Profile menu > Fingerprint Unlock: PIN lock screen par "Use fingerprint" (PIN pehle set hona chahiye; HTTPS chahiye).
+
 v43.1 - Online Bill Link + Customer Portal + Tally Export
  NEW FILES: view.html, js/30-v43-public.js, js/31-v43-tally.js   (changed: index.html, live-sync.js, js/26, js/29, sw, 18-v41-core, firestore rules)
  - WhatsApp sheet: "Bill Link" (ek bill ka page) aur "Account Link" (customer ke saare bills + total pending + UPI QR). Link customer ko wa.me se jata he.
