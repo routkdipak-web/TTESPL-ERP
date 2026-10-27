@@ -139,3 +139,7 @@ html.v42-paused *, html.v42-paused *::before, html.v42-paused *::after { animati
 [data-theme="dark"] .pb-tot, [data-theme="dark"] .pb-kpi > div { background: rgba(255, 255, 255, .06); }
 [data-theme="dark"] .pb-tot .t { border-color: rgba(255, 255, 255, .14); }
 [data-theme="dark"] .pb-li { border-color: rgba(255, 255, 255, .08); }
+
+/* v43.4: the browser's own pull-to-refresh must never run (the app has its own, long-pull one) */
+html, body { overscroll-behavior-y: none !important; overscroll-behavior-x: none !important; }
+#ttPullRefreshIndicator { pointer-events: none; }
