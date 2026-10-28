@@ -49,6 +49,9 @@
     TASKS: 'tasks',
     SUPPLIERS: 'suppliers',
     PURCHASES: 'purchases',
+    SHOP_CFG: 'shop_settings',          // v44: online store settings (staff only)
+    SHOP_ORDERS: 'shop_orders',         // v44: orders placed by customers on shop.html
+    SHOP_ENQ: 'shop_enquiries',         // v44: machine enquiries from shop.html
     PAYMENT_CLAIMS: 'payment_claims',   // v43.3: customers tell us they paid by UPI (admin verifies)
     PURCHASE_BILLS: 'purchase_bills',   // v42.4: direct purchase bill entry (stock goes up on save)
     ATTENDANCE: 'attendance',
@@ -63,7 +66,7 @@
   };
 
   // Naye optional collections: inke error/rules ki wajah se app 'Offline' nahi dikhayega
-  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true, CATALOG_CATS: true, BRANDS: true, EXPENSES: true, OVERHEADS: true, PERMS: true, ACTIVITY: true, TASKS: true, SUPPLIERS: true, PURCHASES: true, PURCHASE_BILLS: true, PAYMENT_CLAIMS: true, ATTENDANCE: true, LEAVES: true, EVENTS: true, NOTICES: true, CLOSINGS: true, OFFICE_CFG: true, PRODUCT_IMAGES: true, AI_JOBS: true, RECYCLE: true };
+  var OPTIONAL_KEYS = { QUOTATIONS: true, TRAVEL: true, CRM_RECORDS: true, COMPANY_DETAILS: true, CATALOG_CATS: true, BRANDS: true, EXPENSES: true, OVERHEADS: true, PERMS: true, ACTIVITY: true, TASKS: true, SUPPLIERS: true, PURCHASES: true, PURCHASE_BILLS: true, PAYMENT_CLAIMS: true, SHOP_CFG: true, SHOP_ORDERS: true, SHOP_ENQ: true, ATTENDANCE: true, LEAVES: true, EVENTS: true, NOTICES: true, CLOSINGS: true, OFFICE_CFG: true, PRODUCT_IMAGES: true, AI_JOBS: true, RECYCLE: true };
   // Inka purana local data pehli baar cloud par automatically upload hota hai (ek baar)
   var MIGRATE_KEYS = OPTIONAL_KEYS;
 
@@ -180,6 +183,7 @@
       /* v43: public share pages (view.html) - only a snapshot is written; the page reads it with an unguessable token */
       putPublic: function (col, id, data) { return F.setDoc(F.doc(db, col, String(id)), data); },
       delPublic: function (col, id) { return F.deleteDoc(F.doc(db, col, String(id))); },
+      getPublic: function (col, id) { return F.getDoc(F.doc(db, col, String(id))).then(function (sn) { return sn.exists() ? sn.data() : null; }).catch(function () { return null; }); },
       saveDoc: function (key, item) {
         var col = MAP[key];
         if (!col || !item || item.id == null) return Promise.resolve();
@@ -547,7 +551,7 @@
               }
             }
             break;
-          case 'TASKS': case 'SUPPLIERS': case 'PURCHASES': case 'PURCHASE_BILLS': case 'PAYMENT_CLAIMS': case 'ATTENDANCE': case 'LEAVES': case 'EVENTS': case 'NOTICES': case 'CLOSINGS': case 'OFFICE_CFG': case 'PRODUCT_IMAGES': case 'AI_JOBS': case 'RECYCLE':
+          case 'TASKS': case 'SUPPLIERS': case 'PURCHASES': case 'PURCHASE_BILLS': case 'PAYMENT_CLAIMS': case 'SHOP_CFG': case 'SHOP_ORDERS': case 'SHOP_ENQ': case 'ATTENDANCE': case 'LEAVES': case 'EVENTS': case 'NOTICES': case 'CLOSINGS': case 'OFFICE_CFG': case 'PRODUCT_IMAGES': case 'AI_JOBS': case 'RECYCLE':
             window.TTX = window.TTX || {}; window.TTX[key] = list; break;
           case 'MACHINE_PARTS':
             machinePartsData = list;

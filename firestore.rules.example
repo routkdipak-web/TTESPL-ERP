@@ -28,5 +28,33 @@ service cloud.firestore {
       allow update, delete: if signedIn();
     }
 
+    // v44: ONLINE STORE (shop.html). The catalogue is public by design (prices, photos, offers - no cost / dealer price, no customers).
+    match /shop_catalog/{id} { allow get, list: if true; allow create, update, delete: if signedIn(); }
+    match /shop_img/{id}     { allow get: if true; allow list: if false; allow create, update, delete: if signedIn(); }
+    match /shop_track/{id}   { allow get: if true; allow list: if false; allow create, update, delete: if signedIn(); }
+    match /shop_settings/{id} { allow read: if signedIn(); allow write: if signedIn(); }
+    // customers may only CREATE an order / enquiry (strict shape, size limits); staff read and update them
+    match /shop_orders/{id} {
+      allow read, update: if signedIn();
+      allow delete: if signedIn();
+      allow create: if request.resource.data.keys().hasOnly(['id','no','name','phone','email','addr','city','pin','state','gst','area','note','pay','utr','ij','sub','cdisc','coupon','ship','total','at','status'])
+        && request.resource.data.id == id && request.resource.data.status == 'new'
+        && request.resource.data.name is string && request.resource.data.name.size() >= 2 && request.resource.data.name.size() <= 80
+        && request.resource.data.phone is string && request.resource.data.phone.size() == 10
+        && request.resource.data.addr is string && request.resource.data.addr.size() <= 300
+        && request.resource.data.ij is string && request.resource.data.ij.size() <= 6000
+        && request.resource.data.total is number && request.resource.data.total > 0 && request.resource.data.total <= 5000000
+        && request.resource.data.pay in ['upi','call'];
+    }
+    match /shop_enquiries/{id} {
+      allow read, update: if signedIn();
+      allow delete: if signedIn();
+      allow create: if request.resource.data.keys().hasOnly(['id','pid','pn','name','phone','city','msg','at','status'])
+        && request.resource.data.id == id && request.resource.data.status == 'new'
+        && request.resource.data.name is string && request.resource.data.name.size() >= 2 && request.resource.data.name.size() <= 80
+        && request.resource.data.phone is string && request.resource.data.phone.size() == 10
+        && request.resource.data.msg is string && request.resource.data.msg.size() <= 400;
+    }
+
   }
 }

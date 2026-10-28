@@ -1,3 +1,14 @@
+v44.0 - ONLINE STORE (shop.html) + ONLINE ORDERS section
+ NEW FILES: shop.html, shop-core.js, js/38-v44-shop.js, js/39-v44-shop-orders.js
+ CHANGED: index.html, js/09, js/10, js/18, js/26, js/33, live-sync.js, firebase-messaging-sw.js, functions/index.js, firestore.rules.secure/.example
+ - shop.html: public store. Search, categories, product pages (?p=ID), cart, coupon, bulk discount, delivery Rs100 (Odisha default / All India option), UPI QR + UTR, order tracking (?t=ID).
+   Chemicals = order online. Machines = "Get quote" enquiry only (price shown only if you type one).
+ - ERP menu: "Online Store" (settings, per-product ON/OFF, online price / MRP / offer % / bulk slabs / photos / description / best seller, coupons, SEO pack) and "Online Orders" (orders + machine enquiries).
+ - Order flow: new -> confirmed -> packed -> shipped -> delivered. Admin verifies UTR -> payment recorded on an ERP bill (auto-created). Enquiry -> one tap Lead.
+ - Photos are compressed on the phone (800px) and stored in shop_img/p_<id>. Cost / dealer price and customers are NEVER published.
+ - SEO pack (zip): static page for every product + sitemap.xml + robots.txt. Upload to GitHub next to index.html, then submit sitemap in Google Search Console.
+ - Optional: firebase deploy --only functions  (push notification to all staff phones for new order / enquiry).
+
 v43.4 - PULL-TO-REFRESH like Chrome (js/37-v43-ptr.js, new)
   Top par hone ke baad lamba neeche kheenchne par hi refresh. Chhota scroll / drag se kuch nahi hota.
   Home tab: lamba pull = poora app reload. Baaki tabs (Orders, Ledger, Stock...): sirf wahi page refresh, app reopen nahi hota.
