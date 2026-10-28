@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   var $ = function (id) { return document.getElementById(id); };
-  var KEYS = ['TASKS', 'SUPPLIERS', 'PURCHASES', 'PURCHASE_BILLS', 'PAYMENT_CLAIMS', 'ATTENDANCE', 'LEAVES', 'EVENTS', 'NOTICES', 'CLOSINGS', 'OFFICE_CFG'];
+  var KEYS = ['TASKS', 'SUPPLIERS', 'PURCHASES', 'PURCHASE_BILLS', 'PAYMENT_CLAIMS', 'SHOP_CFG', 'SHOP_ORDERS', 'SHOP_ENQ', 'ATTENDANCE', 'LEAVES', 'EVENTS', 'NOTICES', 'CLOSINGS', 'OFFICE_CFG'];
   window.TTX = window.TTX || {};
   var MODS = [
     ['mHub', '🧰', 'Office Hub menu', 'One menu in Profile that opens all the tools below'],

@@ -60,6 +60,7 @@
     var s = stats();
     return '<div style="display:flex;align-items:center;justify-content:space-between;margin:2px 2px 6px"><b style="font-size:13px">📌 Today at a glance</b><small style="color:var(--text-muted)">tap a card</small></div>' +
       '<div style="display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 10px;-webkit-overflow-scrolling:touch">' +
+      (window.ttShopPending && ttShopPending() ? card('🛒', 'Online orders', String(ttShopPending()), 'new orders / enquiries', 'ttOpenOnline()', 'bad') : '') +
       (window.ttClaimsPending && ttClaimsPending() ? card('💳', 'Payment claims', String(ttClaimsPending()), 'customers say paid · verify', 'ttOpenClaims()', 'bad') : '') +
       card('💰', 'Collected today', inr(s.coll), 'cash + UPI + bank', 'ttOpenDaily&&ttOpenDaily()', 'ok') +
       card('🚚', 'Deliveries', s.delivToday + (s.delivLate ? ' <small style="font-size:11px;color:var(--danger)">+' + s.delivLate + ' late</small>' : ''), 'due today', "ttGoTab('orders')", s.delivLate ? 'warn' : '') +
