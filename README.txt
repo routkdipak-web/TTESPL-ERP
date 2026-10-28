@@ -1,3 +1,19 @@
+v44.3 - Premium store look + online customers in the order customer search
+ CHANGED: shop.html, js/39-v44-shop-orders.js, index.html, js/18-v41-core.js, firebase-messaging-sw.js
+ - shop.html: Amazon / Flipkart style - top offer bar, full company name in header, orange search bar, hero banner, trust strip, round category icons, Best sellers row, premium product cards,
+   "Contact for best price" under every price, Buy now button, premium footer with Office, Nihar (Manager) +91 80930 97520, Dipak (Machinery Specialist) +91 97760 00261 (call + WhatsApp), floating WhatsApp button.
+ - ERP: every online customer (order or enquiry) is now also a normal ERP customer marked Online, so he shows in the customer search of Orders / Leads / Quotation. Old ones are added once from the Admin phone.
+
+v44.2 - Saved customer details on the store + ONLINE CUSTOMERS section
+ CHANGED: shop.html, js/39-v44-shop-orders.js, js/01-core-auth-dashboard-orders-stock.js, js/26-v42-ui.js, index.html, js/18-v41-core.js, firebase-messaging-sw.js
+ - shop.html: after the first order / enquiry the customer's name, mobile, address, city, PIN are remembered on that phone and filled in next time ("Welcome back" + "Not you? Clear").
+ - ERP menu: "Online Customers" - everyone who ordered / enquired online (orders, total spent, repeat, enquiries), call / WhatsApp, open any order, "Add to ERP Customers".
+ - Customers created from online orders / enquiries are marked  Online  in the normal Customers list.
+ - Google login with address book + My Orders on every phone = later (step B).
+
+v44.1 - Shop fixes: header logo now shows on a white badge (was black on dark), new shop icon; tracking link right after ordering shows "order placed - wait for seller confirmation" instead of "Order not found".
+ FILES: shop.html, assets/shop-icon-192.png, assets/shop-icon-512.png
+
 v44.0 - ONLINE STORE (shop.html) + ONLINE ORDERS section
  NEW FILES: shop.html, shop-core.js, js/38-v44-shop.js, js/39-v44-shop-orders.js
  CHANGED: index.html, js/09, js/10, js/18, js/26, js/33, live-sync.js, firebase-messaging-sw.js, functions/index.js, firestore.rules.secure/.example
