@@ -8,7 +8,7 @@
 <link rel="canonical" href="">
 <meta property="og:type" content="website"><meta property="og:title" content="TTESPL Shop - Car Wash Chemicals & Machines"><meta property="og:description" content="Car wash chemicals, detailing products and machines. Bulk discounts, UPI payment, delivery across Odisha.">
 <meta name="theme-color" content="#0b2a4a">
-<link rel="icon" href="assets/icon-192.png">
+<link rel="icon" href="assets/shop-icon-192.png"><link rel="apple-touch-icon" href="assets/shop-icon-192.png">
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--tx:#0f172a;--mut:#64748b;--line:#e3e9f1;--pri:#0369a1;--pri2:#0ea5e9;--ok:#059669;--bad:#dc2626;--warn:#b45309;--hd:#0b2a4a;--chip:#eaf2fb}
 @media (prefers-color-scheme:dark){:root{--bg:#0a111d;--card:#131c2c;--tx:#e6edf7;--mut:#94a3b8;--line:#243249;--pri:#38bdf8;--pri2:#0ea5e9;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;--hd:#08182b;--chip:#1a2740}}
@@ -18,7 +18,7 @@ a{color:var(--pri)}button,input,select,textarea{font:inherit;color:inherit}
 header{position:sticky;top:0;z-index:30;background:linear-gradient(135deg,var(--hd),#0c4a7a);color:#fff;padding:10px 14px 12px;box-shadow:0 4px 18px rgba(0,0,0,.18)}
 .hrow{display:flex;align-items:center;gap:10px;max-width:1100px;margin:0 auto}
 .brand{display:flex;align-items:center;gap:9px;flex:1;min-width:0;cursor:pointer}
-.brand img{width:34px;height:34px;border-radius:9px;background:#fff;padding:2px}
+.brand img{height:36px;width:auto;max-width:96px;border-radius:10px;background:#fff;padding:4px 8px;object-fit:contain}
 .brand b{font-size:15px;letter-spacing:.2px;display:block;line-height:1.1}.brand small{opacity:.8;font-size:11px}
 .ibtn{position:relative;background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:12px;height:40px;min-width:40px;padding:0 11px;font-size:18px;cursor:pointer}
 .ibtn .n{position:absolute;top:-5px;right:-5px;background:#ef4444;color:#fff;border-radius:99px;font-size:11px;font-weight:800;min-width:19px;height:19px;line-height:19px;text-align:center;padding:0 4px}
@@ -83,7 +83,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--pri2)}
 </head>
 <body>
 <header><div class="hrow">
-  <div class="brand" onclick="go('')"><img src="assets/icon-192.png" alt="TTESPL"><div><b id="bn">TTESPL Shop</b><small>Twin Town Express Services · Bhubaneswar</small></div></div>
+  <div class="brand" onclick="go('')"><img src="assets/ttespl-logo-mark.png" alt="TTESPL"><div><b id="bn">TTESPL Shop</b><small>Twin Town Express Services · Bhubaneswar</small></div></div>
   <button class="ibtn" onclick="openTrack()" title="Track order" aria-label="Track order">📦</button>
   <button class="ibtn" onclick="openCart()" aria-label="Cart">🛒<span class="n" id="cn" style="display:none">0</span></button>
 </div>
@@ -328,7 +328,7 @@ window.place=function(){
   var items=qt.rows.map(function(r){return {pid:r.pid,n:r.n,q:r.q,u:r.u,t:r.t}});
   var f=FORM,no=orderNo(OID),o={id:OID,no:no,name:f.name,phone:f.phone,email:f.email||'',addr:f.addr,city:f.city,pin:f.pin,state:f.state||'Odisha',gst:f.gst||'',area:ST.area,note:f.note||'',pay:ST.pay,utr:utr,ij:JSON.stringify(items),sub:qt.sub,cdisc:qt.cdisc,coupon:qt.coupon,ship:qt.ship,total:qt.total,at:new Date().toISOString(),status:'new'};
   fsCreate('shop_orders',OID,o).then(function(){
-    hist.unshift({id:OID,no:no,total:qt.total,ts:Date.now()});ls('TTS_ORD',hist.slice(0,30));
+    hist.unshift({id:OID,no:no,total:qt.total,ts:Date.now(),name:f.name,pay:ST.pay,utr:utr,it:items.map(function(i){return {n:i.n,q:i.q,t:i.t}}),cd:qt.cdisc,sh:qt.ship});ls('TTS_ORD',hist.slice(0,30));
     CART={};saveCart();ST.coupon='';var oid=OID;OID='';
     var link=location.origin+location.pathname+'?t='+oid;
     var wa=(CFG.wa||'').replace(/\D/g,'');var msg='Hello TTESPL, I placed online order '+no+' of '+R(qt.total)+'.'+(utr?' UTR: '+utr:'')+'\n'+link;
@@ -374,8 +374,19 @@ function trackPage(id){
      '<div class="row"><span>Payment</span><b>'+(t.paid?'✅ Received':(t.pay==='upi'?'⏳ Verifying':'On confirmation'))+'</b></div></div>';
     var wa=(CFG.wa||'').replace(/\D/g,'');if(wa.length>=10)h+='<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/'+(wa.length===10?'91'+wa:wa)+'?text='+encodeURIComponent('Hello, about my order '+t.no)+'">💬 Chat with us about this order</a>';
     app.innerHTML=h;
-  }).catch(function(){app.innerHTML='<div class="card" style="text-align:center"><h2>Order not found</h2><p class="mut">Please check the link or contact us.</p><button class="btn" onclick="go(\'\')">Back to store</button></div>'});
+  }).catch(function(){
+    var mine=(ls('TTS_ORD')||[]).filter(function(o){return o.id===id})[0];
+    if(!mine){app.innerHTML='<div class="card" style="text-align:center"><h2>Order not found</h2><p class="mut">Please check the link or contact us.</p><button class="btn" onclick="go(\'\')">Back to store</button></div>';return}
+    var wa=(CFG.wa||'').replace(/\D/g,'');
+    app.innerHTML='<button class="back" onclick="go(\'\')">‹ Store</button><div class="card ok-box"><div class="tick">✅</div><h2>Your order has been placed successfully</h2><div class="mut small">Order '+H(mine.no)+' · '+new Date(mine.ts).toLocaleDateString('en-IN')+'</div>'+
+      '<div class="note" style="text-align:left">⏳ Please wait for confirmation from the seller. Once your order is confirmed, its tracking details will appear on this page.'+(mine.pay==='upi'?' We will also verify your payment (UTR '+H(mine.utr)+').':'')+'</div></div>'+
+      (mine.it?'<div class="card"><h3>Items</h3>'+mine.it.map(function(i){return '<div class="row"><span>'+H(i.n)+' × '+H(i.q)+'</span><b>'+R(i.t)+'</b></div>'}).join('')+'<div class="hr"></div>'+(N(mine.cd)>0?'<div class="row"><span>Coupon</span><b>− '+R(mine.cd)+'</b></div>':'')+'<div class="row"><span>Delivery</span><b>'+(N(mine.sh)>0?R(mine.sh):'FREE')+'</b></div><div class="row" style="font-size:17px"><b>Total</b><b>'+R(mine.total)+'</b></div></div>':'')+
+      (wa.length>=10?'<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/'+(wa.length===10?'91'+wa:wa)+'?text='+encodeURIComponent('Hello, I placed order '+mine.no+'. Please confirm.')+'">💬 Chat with us about this order</a>':'')+
+      '<button class="btn out" style="margin-top:8px" onclick="trackPage(\''+id+'\')">🔄 Check status again</button>';
+    clearTimeout(window.__trk);window.__trk=setTimeout(function(){if(new URLSearchParams(location.search).get('t')===id)trackPage(id)},30000);
+  });
 }
+window.trackPage=trackPage;
 
 load();
 })();
