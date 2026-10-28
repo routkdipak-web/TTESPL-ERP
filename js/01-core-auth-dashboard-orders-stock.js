@@ -3170,7 +3170,7 @@ function renderStockList() {
       card.onclick = () => { triggerAppHaptic(); ttCustDash(cust.id); };
       card.innerHTML = `
         <div class="card-header">
-          <div><strong>${ttEscHtml(cust.name)}</strong><div style="font-size:11px; color:var(--text-muted);">${ttEscHtml(cust.phone)}</div></div>
+          <div><strong>${ttEscHtml(cust.name)}</strong>${(cust.source === 'online' || cust.online) ? ' <span style="font-size:10px;font-weight:800;color:#0369a1;background:rgba(14,165,233,.15);border-radius:999px;padding:2px 7px;">🌐 Online</span>' : ''}<div style="font-size:11px; color:var(--text-muted);">${ttEscHtml(cust.phone)}</div></div>
           <div style="display:flex; gap:6px;">
             <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); ttCustDash(${cust.id})">📊 Dashboard</button>
             <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); triggerAppHaptic(); editCustomerPrompt(${cust.id})">✏️ Edit</button>
