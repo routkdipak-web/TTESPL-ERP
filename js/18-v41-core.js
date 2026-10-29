@@ -467,7 +467,7 @@
     var secureCtx = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     if (!secureCtx) return;
     if (F('offlineApp')) { caches.delete('ttespl-nocache').catch(function () {}); navigator.serviceWorker.register('firebase-messaging-sw.js').catch(function (e) { console.warn('SW', e && e.message); }); }
-    else { caches.open('ttespl-nocache').catch(function () {}); caches.delete('ttespl-shell-v438').catch(function () {}); }
+    else { caches.open('ttespl-nocache').catch(function () {}); caches.delete('ttespl-shell-v440').catch(function () {}); }
   }
   window.addEventListener('load', function () { setTimeout(applyOffline, 1500); });
 

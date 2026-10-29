@@ -757,6 +757,7 @@ function openCatalogDetail(id) {
     ${row('Technical Data / Specs', i.specs)}
     <div id="catalogPriceBlock">${ttCatalogPriceBlockHtml(i)}</div>
     <button class="btn btn-outline btn-sm btn-block" style="margin-bottom:10px;" onclick="triggerAppHaptic(); ttCatProdEdit('${i.id}')">✏️ Edit Product Details</button>
+    <button class="btn btn-outline btn-sm btn-block" style="margin-bottom:10px;" onclick="triggerAppHaptic(); window.ttShopCatPhotos && ttShopCatPhotos('${i.id}')">📷 Website photos (3) – shows on online store</button>
     <div id="catalogAiBox" style="margin:4px 0 10px; padding:10px 12px; border-radius:12px; background:var(--bg); border:1px dashed var(--border); font-size:12.5px; line-height:1.5; color:var(--text-main);">
       <div style="font-weight:800; font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:4px;">🤖 AI Summary (Google Search se)</div>
       <div id="catalogAiBoxBody">⏳ Searching...</div>

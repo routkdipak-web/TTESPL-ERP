@@ -29,7 +29,7 @@
     var c = cfg(), d = co();
     return { name: c.name, wa: c.wa, upi: { pa: c.upiPa, pn: c.upiPn }, area: c.area, ship: { odisha: N(c.shipO), india: N(c.shipI) }, freeAbove: N(c.freeAbove), backorder: !!c.backorder, open: c.open !== false, banner: c.banner, promo: c.promo,
       coupons: (c.coupons || []).filter(function (x) { return x && x.code && x.on !== false; }).map(function (x) { return { code: String(x.code).toUpperCase(), type: x.type === 'flat' ? 'flat' : 'pct', val: N(x.val), min: N(x.min), max: N(x.max), on: true, show: !!x.show }; }),
-      addr: d.address || 'Plot 1270/8566, Satya Vihar, Rasulgarh, Bhubaneswar - 751010', gstin: d.gstin || '21AAICT6014E1ZT', contact: d.contact || '+91 8917465040 / 6743175599' };
+      catN: (window.ttShopCatWant ? ttShopCatCount() : 0), addr: d.address || 'Plot 1270/8566, Satya Vihar, Rasulgarh, Bhubaneswar - 751010', gstin: d.gstin || '21AAICT6014E1ZT', contact: d.contact || '+91 8917465040 / 6743175599' };
   }
   window.ttShopPubProd = pubProd;
 
@@ -45,12 +45,13 @@
     busy = true; var h = hashes(), want = {}, jobs = [], w = 0, d = 0;
     want['shop_catalog/_cfg'] = JSON.stringify(pubCfg());
     inv().forEach(function (i) { if (i && onl(i).on) want['shop_catalog/p_' + i.id] = JSON.stringify(pubProd(i)); });
+    try { if (window.ttShopCatWant) Object.assign(want, ttShopCatWant()); } catch (e) { console.warn('shop cat', e); }
     Object.keys(want).forEach(function (k) {
       var hh = hs(want[k]); if (!force && h[k] === hh) return;
       var p = k.split('/'); jobs.push(cs().putPublic(p[0], p[1], { j: want[k] }).then(function () { h[k] = hh; w++; }));
     });
     Object.keys(h).forEach(function (k) {
-      if (k.indexOf('shop_catalog/p_') === 0 && !want[k]) { var p = k.split('/'); jobs.push(cs().delPublic(p[0], p[1]).then(function () { delete h[k]; d++; })); }
+      if ((k.indexOf('shop_catalog/p_') === 0 || k.indexOf('shop_cat/') === 0) && !want[k]) { var p = k.split('/'); jobs.push(cs().delPublic(p[0], p[1]).then(function () { delete h[k]; d++; })); }
     });
     return Promise.all(jobs.map(function (j) { return j.catch(function (e) { console.warn('shop publish', e); return 'x'; }); })).then(function () {
       saveHashes(h); busy = false; if (dirty) { dirty = false; sched(); } return { w: w, d: d };
@@ -89,7 +90,8 @@
       '<div class="ttx-note" style="word-break:break-all"><b>Store link</b><br>' + H(url) + '</div>' +
       '<div class="ttx-btns" style="flex-wrap:wrap"><button class="ttx-b pri" data-a="pubnow" style="flex:1 1 100%">' + (c.pub ? '🔄 Publish changes now' : '🚀 Start / publish the store') + '</button>' +
       '<button class="ttx-b" data-a="copy" style="flex:1 1 48%">📋 Copy link</button><button class="ttx-b" data-a="wa" style="flex:1 1 48%">📤 Share link</button>' +
-      '<button class="ttx-b" data-a="prods" style="flex:1 1 100%">📦 Choose products, price, photos & offers (' + cnt() + ' online)</button></div>' +
+      '<button class="ttx-b" data-a="prods" style="flex:1 1 100%">📦 Choose products, price, photos & offers (' + cnt() + ' online)</button>' +
+      '<button class="ttx-b" data-a="catw" style="flex:1 1 100%">📚 “Our other products” – Catalog photos (' + (window.ttShopCatCount ? ttShopCatCount() : 0) + ' products)</button></div>' +
       sel('Store status', 'open', { open: c.open !== false ? '1' : '0' }, [['1', '🟢 Open – customers can order'], ['0', '🔴 Closed – browsing only']]) +
       inp('Store name', 'name', c) + inp('Your WhatsApp number (customers can message you)', 'wa', c, 'tel', 'inputmode="numeric" placeholder="10-digit"') +
       inp('Website address (only if you use your own domain, e.g. https://ttespl.in/)', 'baseUrl', c, 'text', 'placeholder="leave blank to use the current GitHub address"') +
@@ -129,6 +131,7 @@
         copy: function () { var u = window.ttShopUrl(); try { navigator.clipboard.writeText(u); X.toast('Link copied'); } catch (e) { prompt('Copy this link', u); } },
         wa: function () { var u = window.ttShopUrl(), t = '🛒 Shop online at ' + (cfg().name || 'TTESPL') + '\nCar wash chemicals, detailing products & machines. Bulk discounts, pay by UPI.\n' + u; if (navigator.share) navigator.share({ text: t }).catch(function () {}); else window.open('https://wa.me/?text=' + encodeURIComponent(t)); },
         prods: function () { openProds(); },
+        catw: function () { if (window.ttShopCatList) ttShopCatList(); },
         addcp: addCoupon,
         cptog: function (n) { var c = cfg(); c.coupons = (c.coupons || []).slice(); c.coupons[n] = Object.assign({}, c.coupons[n], { on: c.coupons[n].on === false }); saveCfg(c); drawCfg(); },
         cpdel: function (n) { if (!confirm('Delete this coupon?')) return; var c = cfg(); c.coupons = (c.coupons || []).filter(function (x, i) { return i !== N(n); }); saveCfg(c); drawCfg(); },
