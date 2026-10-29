@@ -1,3 +1,5 @@
+v44.4 - Invoice No. is blank on the printed Tax Invoice (type your Tally bill no. in Admin Edit Ledger > 'Invoice No. (Tally bill no.)'); the ERP order no. now prints in a separate 'Order No.' box right below it.
+
 v44.3 - Premium store look + online customers in the order customer search
  CHANGED: shop.html, js/39-v44-shop-orders.js, index.html, js/18-v41-core.js, firebase-messaging-sw.js
  - shop.html: Amazon / Flipkart style - top offer bar, full company name in header, orange search bar, hero banner, trust strip, round category icons, Best sellers row, premium product cards,
