@@ -30,6 +30,7 @@ service cloud.firestore {
 
     // v44: ONLINE STORE (shop.html). The catalogue is public by design (prices, photos, offers - no cost / dealer price, no customers).
     match /shop_catalog/{id} { allow get, list: if true; allow create, update, delete: if signedIn(); }
+    match /shop_cat/{id}     { allow get, list: if true; allow create, update, delete: if signedIn(); }
     match /shop_img/{id}     { allow get: if true; allow list: if false; allow create, update, delete: if signedIn(); }
     match /shop_track/{id}   { allow get: if true; allow list: if false; allow create, update, delete: if signedIn(); }
     match /shop_settings/{id} { allow read: if signedIn(); allow write: if signedIn(); }

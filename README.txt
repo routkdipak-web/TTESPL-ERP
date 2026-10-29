@@ -1,3 +1,7 @@
+v44.6 - All dates are now SHOWN as dd/mm/yyyy (screen, printed invoices/PDF, customer store). Stored data is unchanged. New file dmy.js (root).
+
+v44.5 - Store: new top section 'Our other products' = every Product Catalog item (description, specs, up to 3 photos you add in ERP, customer MRP only - dealer price never published, 'contact seller for best price' note, Get best price enquiry). ERP: Catalog product > '📷 Website photos' and Online Store settings > '📚 Our other products'. Hide any product with the 'Hide from website' tick. New Firestore collection shop_cat (rules files updated).
+
 v44.4 - Invoice No. is blank on the printed Tax Invoice (type your Tally bill no. in Admin Edit Ledger > 'Invoice No. (Tally bill no.)'); the ERP order no. now prints in a separate 'Order No.' box right below it.
 
 v44.3 - Premium store look + online customers in the order customer search

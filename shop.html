@@ -139,6 +139,14 @@ footer.ft .co{font-size:15px;font-weight:800;color:#fff;letter-spacing:.6px}foot
 .ct a{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;text-decoration:none;font-size:17px}
 .ct .c{background:var(--pri2);color:#fff}.ct .w{background:#22c55e;color:#fff}
 .cp{font-size:11px;color:#7f98b5;text-align:center;margin-top:18px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px}
+
+/* ---- Our other products (catalog) ---- */
+.ocb{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,#0c3a66,#0b5cad 60%,#0ea5e9);color:#fff;cursor:pointer;box-shadow:var(--shadow)}
+.ocb i{font-style:normal;font-size:30px}.ocb b{display:block;font-size:16px}.ocb small{opacity:.85;font-size:12px}.ocb .go{margin-left:auto;background:var(--gold);color:#1b1200;font-weight:900;border-radius:999px;padding:7px 12px;font-size:13px;white-space:nowrap}
+.oct{display:flex;gap:8px;overflow:auto;padding:2px 2px 8px;scrollbar-width:none}.oct::-webkit-scrollbar{display:none}
+.oct span{flex:0 0 auto;padding:7px 13px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}.oct span.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.ocn{font-size:10.5px;color:var(--mut);line-height:1.35;margin-top:4px}
+.ocs{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--line);font-size:14.5px;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -222,6 +230,8 @@ function route(){
   if(!LOADED)return;
   var q=new URLSearchParams(location.search);closeSheet();
   if(q.get('p'))return product(q.get('p'));
+  if(q.get('op'))return catProd(q.get('op'));
+  if(q.get('oc'))return catList();
   if(q.get('t'))return trackPage(q.get('t'));
   home();
 }
@@ -253,6 +263,7 @@ function home(){
     {'@context':'https://schema.org','@type':'Store',name:CFG.name||'TTESPL',address:{'@type':'PostalAddress',streetAddress:CFG.addr||'Rasulgarh',addressLocality:'Bhubaneswar',addressRegion:'Odisha',addressCountry:'IN'},telephone:CFG.contact||'',url:location.origin+location.pathname});
   var h='',cs=cats(),hasM=LIST.some(function(p){return p.t==='m'}),hasC=LIST.some(function(p){return p.t!=='m'}),fresh=(ST.cat==='ALL'&&!ST.q);
   if(CFG.open===false)h+='<div class="closed">🛑 The online store is closed right now. You can still browse and send an enquiry.</div>';
+  if(fresh&&N(CFG.catN)>0)h+='<div class="ocb" onclick="go(\'oc=1\')"><i>📚</i><div><b>Our other products</b><small>'+N(CFG.catN)+' more machines, equipment &amp; products</small></div><span class="go">View all ›</span></div>';
   if(fresh){
     h+='<div class="hero"><small>'+H(CFG.promo?'Special offer':'Welcome')+'</small><h1>'+H(CFG.banner||'Premium Car Wash Machines & Detailing Chemicals')+'</h1><p>'+H(CFG.promo||'Shop genuine car care products with bulk discounts, UPI payment and delivery to your doorstep.')+'</p><button class="cta" onclick="document.getElementById(\'plist\').scrollIntoView({behavior:\'smooth\'})">Shop now ›</button></div>';
     var tr=[['💳','Pay by UPI'],['🚚',(CFG.area==='india'?'All India':'Odisha')+' delivery'],['📦','Bulk discounts'],['📞','Expert support']];
@@ -417,14 +428,78 @@ window.place=function(){
 };
 function perr(t){var e=$('perr');if(e)e.textContent=t}
 
+
+/* ---------- Our other products (Product Catalog) ---------- */
+var CP={},CL=[],CLOADED=false,OC={q:'',c:'ALL'};
+function loadCat(){
+  if(CLOADED)return Promise.resolve();
+  return fsGet('shop_cat?pageSize=100').then(function(d){
+    (d.documents||[]).forEach(function(x){var o=jf(x);((o&&o.c)||[]).forEach(function(p){CP[p.id]=p;CL.push(p)})});
+    CLOADED=true;
+  });
+}
+function thumbOf(id){
+  var k='t'+id;if(IMG[k]!==undefined)return Promise.resolve(IMG[k]);IMG[k]='';
+  return fsGet('shop_img/ct_'+id).then(function(d){IMG[k]=(d&&d.fields&&d.fields.d&&d.fields.d.stringValue)||''}).catch(function(){IMG[k]=''}).then(function(){return IMG[k]});
+}
+var io2=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;io2.unobserve(e.target);var el=e.target;thumbOf(el.getAttribute('data-t')).then(function(s){if(s)el.innerHTML='<img alt="" src="'+s+'">'})})},{rootMargin:'200px'}):null;
+function watchThumbs(){document.querySelectorAll('[data-t]').forEach(function(el){if(!CP[el.getAttribute('data-t')]||!N(CP[el.getAttribute('data-t')].x))return;if(io2)io2.observe(el);else thumbOf(el.getAttribute('data-t')).then(function(s){if(s)el.innerHTML='<img alt="" src="'+s+'">'})})}
+function cprice(p){return N(p.p)>0?'<div class="pr"><b>MRP '+R(p.p)+'</b></div>':'<div class="pr"><b>Price on request</b></div>'}
+var CNOTE='For details, best price &amp; discount contact seller';
+function ccard(p){
+  return '<div class="pc" onclick="go(\'op='+H(p.id)+'\')"><div class="pimg" data-t="'+H(p.id)+'"><span class="ph">'+H((p.n||'?').charAt(0).toUpperCase())+'</span></div><div class="pb"><div class="pn">'+H(p.n)+'</div><div class="pcat">'+H(p.c||'')+'</div>'+cprice(p)+'<div class="ocn">'+CNOTE+'</div><div style="margin-top:auto;padding-top:6px"><button class="btn sm out" onclick="event.stopPropagation();enquiry(\''+H(p.id)+'\')">Get best price</button></div></div></div>';
+}
+function cfiltered(){
+  var q=OC.q.toLowerCase().trim();
+  return CL.filter(function(p){return (OC.c==='ALL'||p.c===OC.c)&&(!q||(p.n+' '+(p.c||'')+' '+(p.k||'')+' '+(p.d||'')).toLowerCase().indexOf(q)>=0)});
+}
+function catList(){
+  seo('Our other products - Car Wash Machines & Equipment | TTESPL Bhubaneswar','Browse car wash machines, equipment and more from Twin Town Express Services, Bhubaneswar. Contact us for best price and discount.',null);
+  app.innerHTML='<button class="back" onclick="history.length>1?history.back():go(\'\')">‹ Back to store</button><div class="sec"><h2>📚 Our other products</h2><small id="ocn"></small></div><div class="card mut" style="text-align:center">Loading…</div>';
+  loadCat().then(function(){
+    var cs={};CL.forEach(function(p){cs[p.c||'Other']=1});cs=Object.keys(cs).sort();
+    app.innerHTML='<button class="back" onclick="history.length>1?history.back():go(\'\')">‹ Back to store</button><div class="sec"><h2>📚 Our other products</h2><small id="ocn"></small></div>'+
+      '<input class="ocs" id="ocq" placeholder="Search machines &amp; products…" value="'+H(OC.q)+'" oninput="ocSearch(this.value)"><div class="oct">'+['ALL'].concat(cs).map(function(c){return '<span class="'+(OC.c===c?'on':'')+'" data-c="'+H(c)+'" onclick="ocCat(this.dataset.c)">'+(c==='ALL'?'All':H(c))+'</span>'}).join('')+'</div><div id="ocg"></div>'+
+      '<div class="card" style="margin-top:12px;text-align:center"><b>Need help choosing?</b><div class="mut small" style="margin:4px 0 10px">For details, best price &amp; discount contact seller</div><a class="btn wa sm" href="https://wa.me/'+dig(CFG.wa||'8093097520')+'" target="_blank" rel="noopener">💬 WhatsApp us</a></div>';
+    ocDraw();badge();
+  }).catch(function(){app.innerHTML='<div class="card" style="text-align:center"><h2>Could not load</h2><p class="mut">Please check your internet and try again.</p><button class="btn" onclick="go(\'\')">Back to store</button></div>'});
+}
+function ocDraw(){
+  var l=cfiltered(),g=$('ocg');if(!g)return;if($('ocn'))$('ocn').textContent=l.length+' item'+(l.length===1?'':'s');
+  g.innerHTML=l.length?'<div class="grid">'+l.map(ccard).join('')+'</div>':'<div class="card mut" style="text-align:center">No products match your search.</div>';watchThumbs();
+}
+window.ocSearch=function(v){OC.q=v;ocDraw()};
+window.ocCat=function(c){OC.c=c;document.querySelectorAll('.oct span').forEach(function(e){e.classList.toggle('on',e.dataset.c===c)});ocDraw()};
+function catProd(id){
+  app.innerHTML='<div class="card mut" style="text-align:center">Loading…</div>';
+  loadCat().then(function(){
+    var p=CP[id];if(!p){app.innerHTML='<div class="card" style="text-align:center"><h2>Product not found</h2><button class="btn" onclick="go(\'oc=1\')">Back to products</button></div>';return}
+    seo(p.n+' | TTESPL Bhubaneswar',(p.d||p.n).slice(0,155),null);
+    var h='<button class="back" onclick="history.length>1?history.back():go(\'oc=1\')">‹ Back</button><div class="card"><div class="gal" id="gal"><div class="s"><span class="ph" style="font-size:70px">'+H((p.n||'?').charAt(0).toUpperCase())+'</span></div></div>'+
+      '<h2>'+H(p.n)+'</h2><div class="mut small">'+H([p.c,p.k?'Code '+p.k:''].filter(Boolean).join(' · '))+'</div>'+
+      '<div class="pr" style="margin:8px 0"><b style="font-size:24px">'+(N(p.p)>0?'MRP '+R(p.p):'Price on request')+'</b></div>'+
+      '<div class="cfp" style="font-size:11px">'+CNOTE+'</div>'+
+      '<button class="btn" style="margin-top:12px" onclick="enquiry(\''+H(p.id)+'\')">📝 Get best price &amp; discount</button>'+
+      '<a class="btn wa sm" style="margin-top:8px" target="_blank" rel="noopener" href="https://wa.me/'+dig(CFG.wa||'8093097520')+'?text='+encodeURIComponent('Hello, I want details and best price for: '+p.n+(N(p.p)>0?' (MRP '+R(p.p)+')':''))+'">💬 Ask on WhatsApp</a>'+
+      '<a class="btn out sm" style="margin-top:8px" href="tel:+918093097520">📞 Call +91 80930 97520</a></div>';
+    if(p.d)h+='<div class="card"><h3>About this product</h3><div style="white-space:pre-line" class="small">'+H(p.d)+'</div></div>';
+    if(p.sp)h+='<div class="card"><h3>Specifications</h3><div style="white-space:pre-line" class="small">'+H(p.sp)+'</div></div>';
+    var rel=CL.filter(function(x){return x.id!==p.id&&x.c===p.c}).slice(0,4);
+    if(rel.length)h+='<h3 style="margin:14px 0 8px">You may also like</h3><div class="grid">'+rel.map(ccard).join('')+'</div>';
+    app.innerHTML=h;watchThumbs();badge();window.scrollTo(0,0);
+    if(N(p.x))fsGet('shop_img/c_'+id).then(function(d){var s=d&&d.fields&&d.fields.d&&d.fields.d.stringValue,a=s?JSON.parse(s):[],g=$('gal');if(g&&a.length)g.innerHTML=a.map(function(u){return '<div class="s"><img alt="'+H(p.n)+'" src="'+u+'"></div>'}).join('')}).catch(function(){});
+  }).catch(function(){app.innerHTML='<div class="card" style="text-align:center"><h2>Could not load</h2><button class="btn" onclick="go(\'\')">Back to store</button></div>'});
+}
+window.catProd=catProd;
+
 /* ---------- machine enquiry ---------- */
 window.enquiry=function(id){
-  var p=PRODS[id]||{n:''};
+  var p=PRODS[id]||CP[id]||{n:''};
   openSheet(shd('📝 Get a quote')+'<div class="card"><b>'+H(p.n)+'</b><input class="hp" id="web2" tabindex="-1" autocomplete="off">'+
    '<label>Your name *</label><input id="e_name" autocomplete="name" value="'+H(FORM.name||'')+'"><label>Mobile number *</label><input id="e_phone" type="tel" inputmode="numeric" maxlength="10" value="'+H(FORM.phone||'')+'"><label>City</label><input id="e_city" value="'+H(FORM.city||'')+'"><label>What do you need? (optional)</label><textarea id="e_msg" rows="3" placeholder="e.g. need for my car wash centre, budget, quantity"></textarea></div><div id="eerr" class="err"></div><button class="btn" id="eBtn" onclick="sendEnq(\''+H(id)+'\')">Send enquiry</button>');
 };
 window.sendEnq=function(id){
-  var p=PRODS[id]||{n:''},name=val('e_name'),ph=val('e_phone').replace(/\D/g,''),e='';
+  var p=PRODS[id]||CP[id]||{n:''},name=val('e_name'),ph=val('e_phone').replace(/\D/g,''),e='';
   if(name.length<2)e='Please enter your name';else if(!/^[6-9]\d{9}$/.test(ph))e='Enter a valid 10-digit mobile number';
   if(e){$('eerr').textContent=e;return}if($('web2')&&$('web2').value)return;
   var hist=ls('TTS_ENQ')||[];if(hist.filter(function(t){return Date.now()-t<3600000}).length>=5){$('eerr').textContent='Too many enquiries. Please call us.';return}
@@ -470,5 +545,6 @@ window.trackPage=trackPage;
 load();
 })();
 </script>
+<script src="dmy.js?v=440"></script>
 </body>
 </html>
