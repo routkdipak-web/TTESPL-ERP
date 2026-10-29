@@ -87,7 +87,8 @@ function ttBuildInvoicePaged(o, opt) {
       </div>
       <div style="border-left:1px solid #000;">
         <div style="display:grid;grid-template-columns:1fr 1fr;">
-          ${meta(opt.noLabel || 'Invoice No.', ttEscHtml((window.ttInvNo ? ttInvNo(o, opt) : o.id)))}${meta('Dated', ttEscHtml(dt))}
+          ${meta(opt.noLabel || 'Invoice No.', ttEscHtml(opt.noLabel ? (window.ttInvNo ? ttInvNo(o, opt) : o.id) : (o.invoiceNo || '')))}${meta('Dated', ttEscHtml(dt))}
+          ${opt.noLabel ? '' : meta('Order No.', ttEscHtml(o.id)) + meta('Order Date', ttEscHtml(o.orderDate || ''))}
           ${meta('Delivery Note', ttEscHtml((o.invMeta || {}).deliveryNote || ''))}${meta('Mode/Terms of Payment', ttEscHtml(o.payMode && o.payMode !== 'Imported' ? o.payMode : ''))}
           ${meta('Reference No. &amp; Date.', ttEscHtml((o.invMeta || {}).refNo || ''))}${meta('Other References', ttEscHtml((o.invMeta || {}).otherRef || ''))}
           ${meta("Buyer's Order No.", ttEscHtml((o.invMeta || {}).buyerOrderNo || ''))}${meta('Dated', ttEscHtml((o.invMeta || {}).buyerOrderDate || (opt.noOrderDate ? '' : (o.orderDate || ''))))}

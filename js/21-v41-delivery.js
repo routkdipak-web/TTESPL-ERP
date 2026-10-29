@@ -216,22 +216,23 @@
     var anchor = $('editLedgerPrevDueBox'); if (!anchor) return;
     card.style.maxHeight = '92vh'; card.style.overflowY = 'auto';
     var box = document.createElement('div'); box.id = 'tt41EmBox';
-    box.innerHTML = '<div class="tt41-bn" style="margin-bottom:8px;"><div id="tt41EmNo"></div></div><details class="tt41-dt"><summary>📋 Invoice details <small>(prints on the bill)</small></summary>' + metaHtml('tt41Em_') + '</details>';
+    box.innerHTML = '<div class="tt41-bn" style="margin-bottom:8px;"><div id="tt41EmNo"></div></div><label class="form-label">Invoice No. (Tally bill no.)</label><input type="text" id="tt41EmInv" maxlength="30" placeholder="Leave blank, or type the Tally bill number" style="margin-bottom:8px;"><details class="tt41-dt"><summary>📋 Invoice details <small>(prints on the bill)</small></summary>' + metaHtml('tt41Em_') + '</details>';
     anchor.parentNode.insertBefore(box, anchor);
   }
   (function () {
     var o = window.openAdminEditLedgerModal; if (typeof o !== 'function') return;
     window.openAdminEditLedgerModal = function (id) {
       var r = o.apply(this, arguments);
-      try { injectEdit(); var ord = orderById(id); if (ord) { fillMeta('tt41Em_', ord.invMeta); $('tt41EmNo').innerHTML = '🧾 Bill no.: <b>' + H(ord.invoiceNo || ord.id) + '</b>' + (ord.invoiceNo ? '' : ' <small>(old bill – keeps its Ref number)</small>'); } } catch (e) { console.warn(e); }
+      try { injectEdit(); var ord = orderById(id); if (ord) { fillMeta('tt41Em_', ord.invMeta); $('tt41EmNo').innerHTML = '🧾 Order no.: <b>' + H(ord.id) + '</b>' + (ord.invoiceNo ? '' : ' <small>(invoice no. is blank on the bill until you add it below)</small>'); if ($('tt41EmInv')) $('tt41EmInv').value = ord.invoiceNo || ''; } } catch (e) { console.warn(e); }
       return r;
     };
     var s = window.saveAdminLedgerInvoice;
     if (typeof s === 'function') window.saveAdminLedgerInvoice = function () {
-      var id = ($('editLedgerInvId') || {}).value, meta = $('tt41EmBox') ? readMeta('tt41Em_') : null, full = $('tt41EmBox') ? true : false;
+      var id = ($('editLedgerInvId') || {}).value, meta = $('tt41EmBox') ? readMeta('tt41Em_') : null, invNo = $('tt41EmInv') ? String($('tt41EmInv').value || '').trim().slice(0, 30) : null, full = $('tt41EmBox') ? true : false;
       var r = s.apply(this, arguments);
       try {
         var ord = orderById(id);
+        if (ord && invNo !== null && invNo !== (ord.invoiceNo || '')) { if (invNo) ord.invoiceNo = invNo; else delete ord.invoiceNo; setStored('ORDERS', ordersData); try { renderBilling('all'); renderOrders(); } catch (e) {} }
         if (ord && full) {
           var cur = Object.assign({}, ord.invMeta || {}), nm = {}; META.forEach(function (m) { if (meta[m[0]]) nm[m[0]] = meta[m[0]]; });
           if (JSON.stringify(cur) !== JSON.stringify(nm)) { ord.invMeta = nm; setStored('ORDERS', ordersData); }
