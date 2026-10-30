@@ -84,6 +84,7 @@ service cloud.firestore {
     match /shop_cat/{id}     { allow get, list: if true; allow create, update, delete: if signedIn(); }
     match /shop_img/{id}     { allow get: if true; allow list: if false; allow create, update, delete: if signedIn(); }
     match /shop_track/{id}   { allow get: if true; allow list: if false; allow create, update, delete: if signedIn(); }
+    match /shop_users/{id}   { allow get: if true; allow list: if false; allow create, update: if request.resource.data.keys().hasOnly(["j","mob"]) && request.resource.data.j.size() < 60000; allow delete: if signedIn(); }
     match /shop_settings/{id} { allow read: if signedIn(); allow write: if isAdmin(); }
     // customers may only CREATE an order / enquiry (strict shape, size limits); staff read and update them
     match /shop_orders/{id} {

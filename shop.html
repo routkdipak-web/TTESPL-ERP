@@ -147,12 +147,15 @@ footer.ft .co{font-size:15px;font-weight:800;color:#fff;letter-spacing:.6px}foot
 .oct span{flex:0 0 auto;padding:7px 13px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}.oct span.on{background:var(--pri);color:#fff;border-color:var(--pri)}
 .ocn{font-size:10.5px;color:var(--mut);line-height:1.35;margin-top:4px}
 .ocs{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--line);font-size:14.5px;margin-bottom:8px}
+.hrt{position:absolute;top:8px;right:8px;z-index:2;width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#94a3b8;font-size:17px;line-height:32px;padding:0;cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,.18)}.hrt.on{color:#e11d48}
+@media(max-width:430px){.brand small{display:none}.brand b{font-size:13px;line-height:1.2}.ibtn{min-width:38px;padding:0 8px}}
 </style>
 </head>
 <body>
 <div class="topbar" id="topbar">🚚 Delivery across Odisha · 💳 Pay by UPI · 📞 Call <b>+91 80930 97520</b> for bulk orders</div>
 <header><div class="hrow">
   <div class="brand" onclick="go('')"><img src="assets/ttespl-logo-mark.png" alt="TTESPL"><div><b id="bn">Twin Town Express Services Pvt Ltd</b><small>Car Wash Machines · Detailing Chemicals · Bhubaneswar</small></div></div>
+  <button class="ibtn" onclick="openAccount()" title="My account" aria-label="My account">👤</button>
   <button class="ibtn" onclick="openTrack()" title="Track order" aria-label="Track order">📦</button>
   <button class="ibtn" onclick="openCart()" aria-label="Cart">🛒<span class="n" id="cn" style="display:none">0</span></button>
 </div>
@@ -179,7 +182,7 @@ function R(n){return '₹'+(Number(n)||0).toLocaleString('en-IN',{maximumFractio
 function $(i){return document.getElementById(i)}
 function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
 CART=ls('TTS_CART')||{};
-function saveCart(){ls('TTS_CART',CART);badge()}
+function saveCart(){ls('TTS_CART',CART);badge();try{accDirty()}catch(e){}}
 
 /* ---------- Firestore REST ---------- */
 function fsGet(path){return fetch(BASE+path+(path.indexOf('?')<0?'?':'&')+'key='+KEY).then(function(r){if(r.status===404||r.status===403)throw new Error('gone');if(!r.ok)throw new Error('net');return r.json()})}
@@ -220,7 +223,7 @@ function loadImgs(id){
   IMG[id]=[];
   return fsGet('shop_img/p_'+id).then(function(d){var s=d&&d.fields&&d.fields.d&&d.fields.d.stringValue;IMG[id]=s?JSON.parse(s):[]}).catch(function(){IMG[id]=[]}).then(function(){return IMG[id]});
 }
-var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;io.unobserve(e.target);var el=e.target,id=el.getAttribute('data-i');loadImgs(id).then(function(a){if(a[0])el.innerHTML='<img alt="'+H((PRODS[id]||{}).n)+'" src="'+a[0]+'">'+(el.getAttribute('data-x')||'')})})},{rootMargin:'200px'}):null;
+var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;io.unobserve(e.target);var el=e.target,id=el.getAttribute('data-i');loadImgs(id).then(function(a){if(a[0])el.innerHTML='<img alt="'+H((PRODS[id]||{}).n)+'" src="'+a[0]+'">'+(el.getAttribute('data-x')||'')+hrt(id)})})},{rootMargin:'200px'}):null;
 function watchImgs(){document.querySelectorAll('[data-i]').forEach(function(el){if(io)io.observe(el);else loadImgs(el.getAttribute('data-i')).then(function(a){if(a[0])el.innerHTML='<img src="'+a[0]+'">'})})}
 
 /* ---------- routing ---------- */
@@ -249,7 +252,7 @@ function card(p){
   var act=mach?'<button class="btn sm out" onclick="event.stopPropagation();enquiry(\''+H(p.id)+'\')">Get quote</button>'
     :(!inStock(p)?'<div class="oos">Out of stock</div>':(q?'<div class="step" onclick="event.stopPropagation()"><button onclick="chg(\''+H(p.id)+'\',-1)">−</button><b>'+q+'</b><button onclick="chg(\''+H(p.id)+'\',1)">+</button></div>':'<button class="btn sm" onclick="event.stopPropagation();chg(\''+H(p.id)+'\',1)">Add to cart</button>'));
   var stk=(!mach&&N(p.s)>0&&N(p.s)<=5)?'<div class="stk">Only '+N(p.s)+' left</div>':'';
-  return '<div class="pc" onclick="go(\'p='+H(p.id)+'\')"><div class="pimg" data-i="'+H(p.id)+'" data-x="'+(d>0&&!mach?'<span class=off>'+d+'% OFF</span>':'')+(p.f?'<span class=tag>★ Best seller</span>':'')+'"><span class="ph">'+H((p.n||'?').charAt(0).toUpperCase())+'</span>'+(d>0&&!mach?'<span class="off">'+d+'% OFF</span>':'')+(p.f?'<span class="tag">★ Best seller</span>':'')+'</div>'+
+  return '<div class="pc" onclick="go(\'p='+H(p.id)+'\')"><div class="pimg" data-i="'+H(p.id)+'" data-x="'+(d>0&&!mach?'<span class=off>'+d+'% OFF</span>':'')+(p.f?'<span class=tag>★ Best seller</span>':'')+'"><span class="ph">'+H((p.n||'?').charAt(0).toUpperCase())+'</span>'+hrt(p.id)+(d>0&&!mach?'<span class="off">'+d+'% OFF</span>':'')+(p.f?'<span class="tag">★ Best seller</span>':'')+'</div>'+
     '<div class="pb"><div class="pn">'+H(p.n)+'</div><div class="pcat">'+H(p.c||'')+'</div>'+
     (mach?'<div class="pr"><b>'+(N(p.p)>0?'From '+R(N(p.p)):'Call for price')+'</b></div>':'<div class="pr"><b>'+R(u)+'</b>'+(m?'<s>'+R(m)+'</s>':'')+(d>0?'<em>'+d+'% off</em>':'')+'</div>')+'<div class="cfp">Contact for best price</div>'+bk+stk+'<div style="margin-top:auto;padding-top:6px">'+act+'</div></div></div>';
 }
@@ -294,7 +297,7 @@ function product(id){
   var desc=String(p.d||'').slice(0,1500);
   seo(p.n+' - Buy Online | TTESPL Bhubaneswar',(desc||p.n).slice(0,155),{'@context':'https://schema.org','@type':'Product',name:p.n,description:desc||p.n,category:p.c||'',sku:String(p.k||p.id),brand:{'@type':'Brand',name:p.b||'TTESPL'},offers:mach&&!(N(p.p)>0)?undefined:{'@type':'Offer',priceCurrency:'INR',price:String(u),availability:inStock(p)?'https://schema.org/InStock':'https://schema.org/OutOfStock',url:location.origin+location.pathname+'?p='+p.id,seller:{'@type':'Organization',name:CFG.name||'TTESPL'}}});
   var h='<button class="back" onclick="history.length>1?history.back():go(\'\')">‹ Back</button><div class="card"><div class="gal" id="gal"><div class="s"><span class="ph" style="font-size:70px">'+H((p.n||'?').charAt(0).toUpperCase())+'</span></div></div>'+
-   '<h2>'+H(p.n)+'</h2><div class="mut small">'+H([p.c,p.b,p.k?'Code '+p.k:''].filter(Boolean).join(' · '))+'</div>';
+   '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><h2 style="margin:0">'+H(p.n)+'</h2><button class="hrt'+(WL[p.id]?' on':'')+'" style="position:static;flex:none;box-shadow:0 0 0 1px var(--line)" data-w="'+H(p.id)+'" onclick="ttWish(\''+H(p.id)+'\')">♥</button></div><div class="mut small">'+H([p.c,p.b,p.k?'Code '+p.k:''].filter(Boolean).join(' · '))+'</div>';
   if(mach){h+='<div class="pr" style="margin:8px 0"><b style="font-size:22px">'+(N(p.p)>0?'From '+R(N(p.p)):'Call for price')+'</b></div><div class="cfp">Contact for best price · <a href="tel:+919776000261">+91 97760 00261</a> (Dipak, Machinery Specialist)</div><div class="mut small">Price depends on model and configuration. Send an enquiry and our team will call you with the best quote.</div>';
     h+='<button class="btn" style="margin-top:12px" onclick="enquiry(\''+H(p.id)+'\')">📝 Get best quote</button>';}
   else{
@@ -420,6 +423,7 @@ window.place=function(){
     try{ttTrack('purchase',{transaction_id:no,value:qt.total,currency:'INR'})}catch(e){}
     saveProfile();
     hist.unshift({id:OID,no:no,total:qt.total,ts:Date.now(),name:f.name,pay:ST.pay,utr:utr,it:items.map(function(i){return {n:i.n,q:i.q,t:i.t}}),cd:qt.cdisc,sh:qt.ship});ls('TTS_ORD',hist.slice(0,30));
+    try{accOrder({id:OID,no:no,total:qt.total,at:o.at,phone:f.phone,it:items.map(function(i){return {n:i.n,q:i.q}})})}catch(e){}
     CART={};saveCart();ST.coupon='';var oid=OID;OID='';
     var link=location.origin+location.pathname+'?t='+oid;
     var wa=(CFG.wa||'').replace(/\D/g,'');var msg='Hello TTESPL, I placed online order '+no+' of '+R(qt.total)+'.'+(utr?' UTR: '+utr:'')+'\n'+link;
@@ -543,10 +547,57 @@ function trackPage(id){
 }
 window.trackPage=trackPage;
 
+/* ---------- v45 My Account: mobile number only (no password). Cart, wishlist, past orders saved in cloud ---------- */
+var ME=ls('TTS_ME')||'', WL=ls('TTS_WL')||{}, ACC={ord:[]}, accT=null, accBusy=false;
+function accId(m){return 'm'+String(m).replace(/\D/g,'').slice(-10)}
+function accGet(m){return fsGet('shop_users/'+accId(m)).then(function(d){return jf(d)||{}}).catch(function(e){if(e.message==='gone')return {};throw e})}
+function accPut(){
+  if(!ME)return Promise.resolve();
+  var o={name:(FORM&&FORM.name)||ACC.name||'',city:(FORM&&FORM.city)||ACC.city||'',pin:(FORM&&FORM.pin)||ACC.pin||'',wl:Object.keys(WL),cart:CART,ord:(ACC.ord||[]).slice(0,30),ts:Date.now()};
+  ACC.name=o.name;ACC.city=o.city;ACC.pin=o.pin;
+  return fetch(BASE+'shop_users/'+accId(ME)+'?key='+KEY,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{j:{stringValue:JSON.stringify(o)},mob:{stringValue:String(ME)}}})}).catch(function(){});
+}
+function accDirty(){if(!ME||accBusy)return;clearTimeout(accT);accT=setTimeout(accPut,1500)}
+function accUse(m,c){ /* adopt cloud data on this phone */
+  ME=String(m).replace(/\D/g,'').slice(-10);ls('TTS_ME',ME);ACC=c||{};ACC.ord=ACC.ord||[];
+  (ACC.wl||[]).forEach(function(id){WL[id]=1});ls('TTS_WL',WL);
+  var cc=ACC.cart||{};Object.keys(cc).forEach(function(k){if(PRODS[k]&&PRODS[k].t!=='m')CART[k]=Math.max(CART[k]||0,N(cc[k]))});
+  if(!FORM.name&&ACC.name)FORM.name=ACC.name;if(!FORM.city&&ACC.city)FORM.city=ACC.city;if(!FORM.pin&&ACC.pin)FORM.pin=ACC.pin;if(!FORM.phone)FORM.phone=ME;
+  saveCart();badge();
+}
+function accOrder(o){
+  if(!ME&&/^[6-9]\d{9}$/.test(o.phone||''))ME=o.phone,ls('TTS_ME',ME);
+  if(!ME)return;
+  ACC.ord=ACC.ord||[];ACC.ord.unshift({id:o.id,no:o.no,total:o.total,at:o.at,it:o.it});accPut();
+}
+window.ttWish=function(id){if(WL[id])delete WL[id];else WL[id]=1;ls('TTS_WL',WL);accDirty();
+  document.querySelectorAll('[data-w="'+id+'"]').forEach(function(b){b.classList.toggle('on',!!WL[id])});toast(WL[id]?'♥ Saved to wishlist':'Removed from wishlist')};
+function hrt(id){return '<button class="hrt'+(WL[id]?' on':'')+'" data-w="'+H(id)+'" aria-label="Wishlist" onclick="event.stopPropagation();ttWish(\''+H(id)+'\')">♥</button>'}
+window.openAccount=function(tab){
+  if(!ME){openSheet(shd('👤 My account')+'<div class="card"><p class="small mut" style="margin-top:0">Enter your mobile number to see your saved cart, wishlist and past orders on any phone. No password needed.</p><label style="margin-top:0">Mobile number</label><input id="acm" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile" autocomplete="tel"><div id="acerr" class="err"></div><button class="btn" style="margin-top:8px" id="acgo" onclick="accLogin()">Continue</button></div>');return}
+  tab=tab||'o';
+  var tabs=[['o','📦 Orders'],['w','♥ Wishlist'],['c','🛒 Cart']];
+  var h=shd('👤 +91 '+H(ME))+'<div style="display:flex;gap:6px;margin-bottom:10px">'+tabs.map(function(t){return '<button class="btn sm'+(t[0]===tab?'':' out')+'" onclick="openAccount(\''+t[0]+'\')">'+t[1]+'</button>'}).join('')+'</div>';
+  if(tab==='o'){var os=ACC.ord||[];
+    h+=os.length?os.map(function(o){return '<div class="card" style="margin-bottom:8px;cursor:pointer" onclick="closeSheet();go(\'t='+H(o.id)+'\')"><div class="row"><b>'+H(o.no)+'</b><b>'+R(o.total)+'</b></div><div class="mut small">'+H(String(o.at||'').slice(0,10))+' · '+H((o.it||[]).map(function(i){return i.n+' ×'+i.q}).join(', ')).slice(0,120)+'</div><div class="small" style="color:var(--pri2);font-weight:700;margin-top:4px">Track order ›</div></div>'}).join(''):'<div class="card mut" style="text-align:center">No orders yet.</div>'}
+  else if(tab==='w'){var ids=Object.keys(WL).filter(function(i){return PRODS[i]||CP[i]});
+    h+=ids.length?ids.map(function(i){var p=PRODS[i];return p?'<div class="card" style="margin-bottom:8px"><div class="row"><b>'+H(p.n)+'</b><b>'+(p.t==='m'?'':R(unitP(p,1)))+'</b></div><div style="display:flex;gap:6px;margin-top:6px"><button class="btn sm" onclick="closeSheet();go(\'p='+H(i)+'\')">View</button>'+(p.t!=='m'&&inStock(p)?'<button class="btn sm out" onclick="chg(\''+H(i)+'\',1);openAccount(\'w\')">Add to cart</button>':'')+'<button class="btn sm out" style="width:auto" onclick="ttWish(\''+H(i)+'\');openAccount(\'w\')">✕</button></div></div>':''}).join(''):'<div class="card mut" style="text-align:center">Tap ♥ on any product to save it here.</div>'}
+  else{var n=Object.keys(CART).length;h+=n?'<div class="card">'+Object.keys(CART).map(function(k){return PRODS[k]?'<div class="row"><span>'+H(PRODS[k].n)+' × '+CART[k]+'</span></div>':''}).join('')+'<button class="btn" style="margin-top:8px" onclick="openCart()">Open cart</button></div>':'<div class="card mut" style="text-align:center">Your cart is empty.</div>'}
+  h+='<button class="btn out sm" style="margin-top:10px" onclick="accOut()">Not you? Use another number</button>';
+  openSheet(h);
+};
+window.accLogin=function(){
+  var m=val('acm').replace(/\D/g,'');if(!/^[6-9]\d{9}$/.test(m)){$('acerr').textContent='Enter a valid 10-digit mobile number';return}
+  var b=$('acgo');b.disabled=true;b.textContent='Please wait…';
+  accBusy=true;accGet(m).then(function(c){accUse(m,c);accBusy=false;accPut();openAccount('o')}).catch(function(){accBusy=false;b.disabled=false;b.textContent='Continue';$('acerr').textContent='Could not connect. Check your internet and try again.'});
+};
+window.accOut=function(){ME='';ls('TTS_ME','');ACC={ord:[]};openAccount()};
+
+window.PRODS=PRODS;
 load();
 })();
 </script>
-<script src="extras.js?v=444"></script>
+<script src="extras.js?v=445"></script>
 <script>
 /* v44.7 analytics hooks + offline shell */
 (function(){
@@ -561,6 +612,6 @@ load();
   try{if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('firebase-messaging-sw.js').catch(function(){})}catch(e){}
 })();
 </script>
-<script src="dmy.js?v=444"></script>
+<script src="dmy.js?v=445"></script>
 </body>
 </html>
