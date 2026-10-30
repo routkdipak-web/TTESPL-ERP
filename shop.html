@@ -9,6 +9,7 @@
 <meta property="og:type" content="website"><meta property="og:title" content="TTESPL Shop - Car Wash Chemicals & Machines"><meta property="og:description" content="Car wash chemicals, detailing products and machines. Bulk discounts, UPI payment, delivery across Odisha.">
 <meta name="theme-color" content="#0b2a4a">
 <link rel="manifest" href="shop.webmanifest"><link rel="icon" href="assets/shop-icon-192.png"><link rel="apple-touch-icon" href="assets/shop-icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap">
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--tx:#0f172a;--mut:#64748b;--line:#e3e9f1;--pri:#0369a1;--pri2:#0ea5e9;--ok:#059669;--bad:#dc2626;--warn:#b45309;--hd:#0b2a4a;--chip:#eaf2fb}
 @media (prefers-color-scheme:dark){:root{--bg:#0a111d;--card:#131c2c;--tx:#e6edf7;--mut:#94a3b8;--line:#243249;--pri:#38bdf8;--pri2:#0ea5e9;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;--hd:#08182b;--chip:#1a2740}}
@@ -148,22 +149,109 @@ footer.ft .co{font-size:15px;font-weight:800;color:#fff;letter-spacing:.6px}foot
 .ocn{font-size:10.5px;color:var(--mut);line-height:1.35;margin-top:4px}
 .ocs{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--line);font-size:14.5px;margin-bottom:8px}
 .hrt{position:absolute;top:8px;right:8px;z-index:2;width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#94a3b8;font-size:17px;line-height:32px;padding:0;cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,.18)}.hrt.on{color:#e11d48}
-@media(max-width:430px){.brand small{display:none}.brand b{font-size:13px;line-height:1.2}.ibtn{min-width:38px;padding:0 8px}}
+/* v45.1 premium minimalist header */
+.topbar{font-size:10.5px;padding:5px 10px;letter-spacing:.25px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#030b16;color:#9db6cf}
+header{padding:8px 14px 10px;background:var(--hd);box-shadow:0 1px 0 rgba(255,255,255,.06),0 8px 22px rgba(3,12,28,.28)}
+.hrow{gap:4px}
+.brand{gap:10px}
+.brand img{height:26px;max-width:62px;padding:3px 6px;border-radius:8px;box-shadow:none}
+.brand b{font-size:15px;letter-spacing:1.6px;font-weight:800;text-transform:none;line-height:1.1}
+.brand small{display:block;font-size:10.5px;letter-spacing:.2px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand>div{min-width:0}
+.ibtn{background:transparent;backdrop-filter:none;border-radius:50%;width:38px;height:38px;min-width:0;padding:0;display:flex;align-items:center;justify-content:center;color:#e8f1fb;opacity:.92}
+.ibtn:active{background:rgba(255,255,255,.12);transform:scale(.92)}
+.ibtn .n{top:1px;right:0;min-width:17px;height:17px;line-height:17px;font-size:10px;background:var(--gold);color:#1b1200}
+.sr{margin-top:8px;position:relative}
+.sr input{height:40px;padding:0 14px 0 40px;border-radius:12px;border:0;background:rgba(255,255,255,.1);color:#fff;font-size:14.5px;box-shadow:none}
+.sr input::placeholder{color:rgba(255,255,255,.55)}
+.sr input:focus{background:#fff;color:#0f172a;box-shadow:0 0 0 2px var(--gold)}
+.sr input:focus::placeholder{color:#94a3b8}
+.sr .go{position:absolute;left:0;top:0;height:40px;width:40px;background:none;border-radius:0;color:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;pointer-events:none}
+.sr .go svg{width:18px;height:18px}
+.sr input:focus~.go{color:#64748b}
+
+/* ===== v45.2 LUXE LAYER: ivory + ink + champagne gold, serif display font ===== */
+:root{--bg:#f6f4ef;--card:#fff;--tx:#14171f;--mut:#7a7f8c;--line:#ece8df;--pri:#14213d;--pri2:#b8923f;--gold:#c9a45c;--gold2:#a8802f;--hd:#0c1220;--hd2:#141d33;--chip:#f1ede4;--shadow:0 1px 2px rgba(20,23,31,.04),0 10px 30px rgba(20,23,31,.06);--serif:'Playfair Display',Georgia,'Times New Roman',serif}
+@media (prefers-color-scheme:dark){:root{--bg:#0a0d14;--card:#121724;--tx:#ece8df;--mut:#9aa1b0;--line:#222a3b;--pri:#d9b872;--pri2:#d9b872;--gold:#d9b872;--gold2:#b8923f;--hd:#080b12;--hd2:#0f1522;--chip:#1a2133;--shadow:0 1px 2px rgba(0,0,0,.5),0 10px 30px rgba(0,0,0,.4)}}
+body{font-family:'Manrope',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:14.5px;letter-spacing:0;-webkit-font-smoothing:antialiased}
+h1,h2,.sec h2,.hero h1,.brand b,.co,footer.ft .co{font-family:var(--serif)}
+a{color:var(--pri2)}
+.ic{display:block;flex:none}
+.topbar{background:#080b12;color:#a9afbd;letter-spacing:.5px;font-size:10.5px;text-transform:none}.topbar b{color:var(--gold)}
+header{background:var(--hd);border-bottom:1px solid rgba(201,164,92,.22);box-shadow:none}
+.brand b{font-size:17px;font-weight:600;letter-spacing:2.5px;color:#f3ead6}
+.brand small{letter-spacing:.3px;opacity:.55}
+.brand img{border-radius:6px;padding:3px 6px}
+.ibtn{color:#e9dfc6}.ibtn .n{background:var(--gold);color:#14171f}
+.sr input{background:rgba(255,255,255,.07);border-radius:999px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.sr input:focus{background:#fff;color:#14171f;box-shadow:0 0 0 2px var(--gold)}
+.hero{border-radius:20px;padding:30px 22px;background:linear-gradient(150deg,#0c1220 0%,#16203a 60%,#1f2c4d 100%);box-shadow:var(--shadow);border:1px solid rgba(201,164,92,.28)}
+.hero:before{width:160px;height:160px;right:-30px;bottom:-70px;background:radial-gradient(circle,rgba(201,164,92,.28),transparent 70%)}
+.hero:after{width:1px;height:100%;right:22px;top:0;border-radius:0;background:linear-gradient(180deg,transparent,rgba(201,164,92,.5),transparent)}
+.hero small{color:var(--gold);letter-spacing:3px;font-size:10px;font-weight:700}
+.hero h1{font-size:27px;font-weight:600;line-height:1.18;letter-spacing:.2px;margin:10px 0}
+.hero p{font-size:13px;opacity:.78;line-height:1.55}
+.hero .cta{background:linear-gradient(135deg,#e0c387,#b8923f);color:#14171f;border-radius:999px;padding:11px 24px;font-size:13px;letter-spacing:.6px;font-weight:700;box-shadow:0 8px 22px rgba(184,146,63,.3)}
+.trust{gap:8px}
+.trust div{border-radius:16px;box-shadow:none;border:1px solid var(--line);font-size:10.5px;font-weight:600;color:var(--mut);padding:12px 4px;letter-spacing:.2px}
+.trust span{color:var(--pri2);margin:0 auto 6px;display:flex;justify-content:center}
+.perk{border-radius:999px;font-weight:600;color:var(--tx);display:flex;align-items:center;gap:6px;box-shadow:none}.perk .ic{color:var(--pri2)}
+.ocb{border-radius:18px;background:var(--hd);border:1px solid rgba(201,164,92,.3);box-shadow:var(--shadow)}
+.ocb i{color:var(--gold);display:flex}.ocb b{font-family:var(--serif);font-weight:600;font-size:16.5px;letter-spacing:.3px}
+.ocb .go{background:transparent;color:var(--gold);border:1px solid var(--gold);font-weight:700;font-size:12px;letter-spacing:.4px}
+.sec{margin:22px 2px 10px}.sec h2{font-size:20px;font-weight:600;letter-spacing:.2px}
+.sec h2:after{width:28px;height:2px;background:var(--gold);margin-top:6px}
+.cat i{width:58px;height:58px;border:1px solid var(--line);box-shadow:none;color:var(--tx);font-size:0}
+.cat.on i{background:var(--hd);color:var(--gold);border-color:var(--hd)}
+.cat span{font-weight:600;font-size:11px;color:var(--mut)}.cat.on span{color:var(--tx);font-weight:700}
+.pc{border-radius:16px;box-shadow:none;border:1px solid var(--line);background:var(--card)}
+.pc:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.pimg,.pimg img{background:#fff}@media (prefers-color-scheme:dark){.pimg,.pimg img{background:#fff}}
+.pimg{border-bottom:1px solid var(--line)}
+.ph{font-family:var(--serif);color:var(--gold);opacity:.7}
+.off{background:var(--hd);color:var(--gold);box-shadow:none;border-radius:999px;font-weight:700;letter-spacing:.3px;padding:3px 9px;top:10px;left:10px}
+.tag{background:#fff;color:#14171f;box-shadow:0 1px 6px rgba(0,0,0,.15);border-radius:999px;top:10px;right:auto;left:10px;margin-top:26px;font-weight:700;font-size:10px;letter-spacing:.3px}
+.pn{font-weight:600;font-size:13px;color:var(--tx)}
+.pcat{text-transform:uppercase;letter-spacing:.8px;font-size:9.5px;font-weight:600}
+.pr b{font-size:17px;font-weight:700;letter-spacing:-.2px}.pr em{color:var(--pri2)}
+.cfp{letter-spacing:.5px}
+.btn{background:var(--hd);color:#f3ead6;border-radius:999px;box-shadow:none;font-weight:700;letter-spacing:.3px;font-size:13.5px}
+@media (prefers-color-scheme:dark){.btn{background:linear-gradient(135deg,#e0c387,#b8923f);color:#14171f}}
+.btn.out{background:transparent;color:var(--tx);border:1px solid var(--line)}
+.btn.wa{background:#1f9d57;color:#fff}.btn.ok{background:#1f9d57;color:#fff}
+.btn.buy{background:linear-gradient(135deg,#e0c387,#b8923f);color:#14171f;box-shadow:none}
+.chip.on{background:var(--hd);color:var(--gold);border-color:var(--hd)}.chip{font-weight:600}
+.step{border-radius:999px}.step button{border-radius:999px}
+.card{border-radius:18px;box-shadow:none;border:1px solid var(--line)}
+h2,h3{letter-spacing:.1px}
+input,select,textarea{border-radius:12px;border:1px solid var(--line)}input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,164,92,.18)}
+.bar{border-radius:22px 22px 0 0;box-shadow:0 -10px 30px rgba(20,23,31,.12);border-top:1px solid var(--line)}
+.bar .btn{padding:12px 22px}
+.sheet{border-radius:24px 24px 0 0}.x{border-radius:50%}
+.wapp{width:50px;height:50px;background:#14171f;color:var(--gold);border:1px solid rgba(201,164,92,.5);box-shadow:0 8px 24px rgba(0,0,0,.28)}
+footer.ft{background:var(--hd);border-top:1px solid rgba(201,164,92,.22)}
+footer.ft h4{color:var(--gold);font-weight:600;letter-spacing:2px;font-size:11px}
+footer.ft .co{font-weight:600;letter-spacing:1.5px;color:#f3ead6}
+.ct{border-radius:16px;background:rgba(255,255,255,.04)}
+.ct .c{background:transparent;border:1px solid var(--gold);color:var(--gold)}.ct .w{background:transparent;border:1px solid #3fbf7f;color:#3fbf7f}
+.hrt{color:#b5b8c2;box-shadow:0 1px 6px rgba(0,0,0,.14)}
+.skel{border-radius:16px}
+@media (prefers-color-scheme:dark){.cat.on i{background:rgba(217,184,114,.14);border-color:var(--gold);color:var(--gold)}.chip.on{background:rgba(217,184,114,.14);border-color:var(--gold)}}
 </style>
 </head>
 <body>
-<div class="topbar" id="topbar">🚚 Delivery across Odisha · 💳 Pay by UPI · 📞 Call <b>+91 80930 97520</b> for bulk orders</div>
+<div class="topbar" id="topbar">Delivery across Odisha · Pay by UPI · Bulk orders <b>+91 80930 97520</b></div>
 <header><div class="hrow">
-  <div class="brand" onclick="go('')"><img src="assets/ttespl-logo-mark.png" alt="TTESPL"><div><b id="bn">Twin Town Express Services Pvt Ltd</b><small>Car Wash Machines · Detailing Chemicals · Bhubaneswar</small></div></div>
-  <button class="ibtn" onclick="openAccount()" title="My account" aria-label="My account">👤</button>
-  <button class="ibtn" onclick="openTrack()" title="Track order" aria-label="Track order">📦</button>
-  <button class="ibtn" onclick="openCart()" aria-label="Cart">🛒<span class="n" id="cn" style="display:none">0</span></button>
+  <div class="brand" onclick="go('')"><img src="assets/ttespl-logo-mark.png" alt="TTESPL"><div><b id="bn">TTESPL</b><small>Twin Town Express Services · Bhubaneswar</small></div></div>
+  <button class="ibtn" onclick="openAccount()" title="My account" aria-label="My account"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.2 4.2-6 8-6s7 1.8 8 6"/></svg></button>
+  <button class="ibtn" onclick="openTrack()" title="Track order" aria-label="Track order"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></button>
+  <button class="ibtn" onclick="openCart()" aria-label="Cart"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2.5l2.2 11h10.6L20.5 7H6.2"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg><span class="n" id="cn" style="display:none">0</span></button>
 </div>
-<div class="sr"><input id="q" type="search" placeholder="Search products…" oninput="onSearch(this.value)" aria-label="Search products"><button class="go" aria-label="Search" onclick="document.getElementById('q').focus()">🔍</button></div></header>
+<div class="sr"><input id="q" type="search" placeholder="Search products…" oninput="onSearch(this.value)" aria-label="Search products"><button class="go" aria-label="Search" onclick="document.getElementById('q').focus()"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg></button></div></header>
 
 <div class="wrap" id="app"><div class="hero" style="min-height:150px"></div><div class="grid"><div class="skel"></div><div class="skel"></div></div></div>
 <footer class="ft" id="foot"></footer>
-<a class="wapp" id="wapp" target="_blank" rel="noopener" aria-label="Chat on WhatsApp" href="https://wa.me/918093097520?text=Hello%20TTESPL">💬</a>
+<a class="wapp" id="wapp" target="_blank" rel="noopener" aria-label="Chat on WhatsApp" href="https://wa.me/918093097520?text=Hello%20TTESPL"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-12 7l-4 1 1-4A8 8 0 1 1 20 12z"/></svg></a>
 
 <div class="bar" id="bar"><div class="in"><div><small class="mut" id="barN"></small><br><b id="barT" style="font-size:18px"></b></div><button class="btn" style="width:auto;padding:12px 22px" onclick="openCart()">View cart</button></div></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
@@ -178,6 +266,11 @@ var T=window.TTSHOP, N=T.N, R2=T.R2;
 var CFG={}, PRODS={}, LIST=[], IMG={}, CART={}, ST={cat:'ALL',q:'',area:'odisha',coupon:'',pay:'upi'}, LOADED=false, T0=Date.now();
 var app=document.getElementById('app'), sheet=document.getElementById('sheet'), ov=document.getElementById('ov');
 function H(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+/* v45.2 line icons */
+function sv(n,z){var P={card:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18M7 15h3"/>',truck:'<path d="M2 6h11v10H2zM13 10h4l3 3v3h-7"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/>',box:'<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.2"/>',gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13M12 8S10 3 7.5 4.5 9 8 12 8zm0 0s2-5 4.5-3.5S15 8 12 8z"/>',bag:'<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>',drop:'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 17l.8 2.2L22 20l-2.2.8L19 23l-.8-2.2L16 20l2.2-.8z"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',sofa:'<path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3z"/>',win:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18M4 12h16"/>',wheel:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/>',tool:'<path d="M14 6a4 4 0 0 0 5 5l-9 9a2.1 2.1 0 0 1-3-3l9-9a4 4 0 0 0-2-2z"/>',book:'<path d="M4 4h6a3 3 0 0 1 2 1 3 3 0 0 1 2-1h6v15h-6a3 3 0 0 0-2 1 3 3 0 0 0-2-1H4z"/><path d="M12 5v15"/>',chat:'<path d="M20 12a8 8 0 0 1-12 7l-4 1 1-4A8 8 0 1 1 20 12z"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>'};
+  return '<svg class="ic" viewBox="0 0 24 24" width="'+(z||22)+'" height="'+(z||22)+'" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(P[n]||P.drop)+'</svg>';
+}
 function R(n){return '₹'+(Number(n)||0).toLocaleString('en-IN',{maximumFractionDigits:2})}
 function $(i){return document.getElementById(i)}
 function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
@@ -204,12 +297,12 @@ function load(){
 }
 var CONTACTS=[{n:'Nihar',r:'Manager',p:'+91 80930 97520'},{n:'Dipak',r:'Machinery Specialist',p:'+91 97760 00261'}];
 function dig(p){var d=String(p).replace(/\D/g,'');return d.length===10?'91'+d:d}
-function ctRow(n,r,p){return '<div class="ct"><div class="who"><b>'+H(n)+'</b><small>'+H(r)+' · '+H(p)+'</small></div><a class="c" href="tel:+'+dig(p)+'" aria-label="Call '+H(n)+'">📞</a><a class="w" target="_blank" rel="noopener" href="https://wa.me/'+dig(p)+'?text='+encodeURIComponent('Hello, I am interested in your products.')+'" aria-label="WhatsApp '+H(n)+'">💬</a></div>'}
+function ctRow(n,r,p){return '<div class="ct"><div class="who"><b>'+H(n)+'</b><small>'+H(r)+' · '+H(p)+'</small></div><a class="c" href="tel:+'+dig(p)+'" aria-label="Call '+H(n)+'">'+sv('phone',18)+'</a><a class="w" target="_blank" rel="noopener" href="https://wa.me/'+dig(p)+'?text='+encodeURIComponent('Hello, I am interested in your products.')+'" aria-label="WhatsApp '+H(n)+'">'+sv('chat',18)+'</a></div>'}
 function footHtml(){
   var off=String(CFG.contact||'+91 8917465040 / 0674-2580123').split('/').map(function(x){return x.trim()}).filter(Boolean);
   return '<div class="in"><div><div class="co">TWIN TOWN EXPRESS SERVICES PVT LTD</div><p>'+H(CFG.addr||'Plot 1270/8566, Satya Vihar, Rasulgarh, Bhubaneswar - 751010')+'</p>'+(CFG.gstin?'<p>GSTIN: '+H(CFG.gstin)+'</p>':'')+
-   '<p>🚚 Delivery: '+(CFG.area==='india'?'All India':'Odisha')+' · '+R(N((CFG.ship||{}).odisha||100))+(N(CFG.freeAbove)>0?' (free above '+R(CFG.freeAbove)+')':'')+'</p><p>💳 Payment: UPI (QR / any UPI app)</p><p>All prices are inclusive of GST.</p></div>'+
-   '<div><h4>Contact us</h4>'+off.map(function(x,i){return '<div class="ct"><div class="who"><b>'+(i?'Office (Landline)':'Office')+'</b><small>'+H(x)+'</small></div><a class="c" href="tel:'+H(x.replace(/[^\d+]/g,''))+'" aria-label="Call office">📞</a></div>'}).join('')+CONTACTS.map(function(c){return ctRow(c.n,c.r,c.p)}).join('')+'</div></div>'+
+   '<p>Delivery: '+(CFG.area==='india'?'All India':'Odisha')+' · '+R(N((CFG.ship||{}).odisha||100))+(N(CFG.freeAbove)>0?' (free above '+R(CFG.freeAbove)+')':'')+'</p><p>Payment: UPI (QR / any UPI app)</p><p>All prices are inclusive of GST.</p></div>'+
+   '<div><h4>Contact us</h4>'+off.map(function(x,i){return '<div class="ct"><div class="who"><b>'+(i?'Office (Landline)':'Office')+'</b><small>'+H(x)+'</small></div><a class="c" href="tel:'+H(x.replace(/[^\d+]/g,''))+'" aria-label="Call office">'+sv('phone',18)+'</a></div>'}).join('')+CONTACTS.map(function(c){return ctRow(c.n,c.r,c.p)}).join('')+'</div></div>'+
    '<div class="cp">© '+new Date().getFullYear()+' Twin Town Express Services Pvt Ltd. All rights reserved.</div>';
 }
 function pruneCart(){Object.keys(CART).forEach(function(k){if(!PRODS[k]||PRODS[k].t==='m')delete CART[k]});saveCart()}
@@ -266,16 +359,16 @@ function home(){
     {'@context':'https://schema.org','@type':'Store',name:CFG.name||'TTESPL',address:{'@type':'PostalAddress',streetAddress:CFG.addr||'Rasulgarh',addressLocality:'Bhubaneswar',addressRegion:'Odisha',addressCountry:'IN'},telephone:CFG.contact||'',url:location.origin+location.pathname});
   var h='',cs=cats(),hasM=LIST.some(function(p){return p.t==='m'}),hasC=LIST.some(function(p){return p.t!=='m'}),fresh=(ST.cat==='ALL'&&!ST.q);
   if(CFG.open===false)h+='<div class="closed">🛑 The online store is closed right now. You can still browse and send an enquiry.</div>';
-  if(fresh&&N(CFG.catN)>0)h+='<div class="ocb" onclick="go(\'oc=1\')"><i>📚</i><div><b>Our other products</b><small>'+N(CFG.catN)+' more machines, equipment &amp; products</small></div><span class="go">View all ›</span></div>';
+  if(fresh&&N(CFG.catN)>0)h+='<div class="ocb" onclick="go(\'oc=1\')"><i>'+sv('book',28)+'</i><div><b>Our other products</b><small>'+N(CFG.catN)+' more machines, equipment &amp; products</small></div><span class="go">View all ›</span></div>';
   if(fresh){
     h+='<div class="hero"><small>'+H(CFG.promo?'Special offer':'Welcome')+'</small><h1>'+H(CFG.banner||'Premium Car Wash Machines & Detailing Chemicals')+'</h1><p>'+H(CFG.promo||'Shop genuine car care products with bulk discounts, UPI payment and delivery to your doorstep.')+'</p><button class="cta" onclick="document.getElementById(\'plist\').scrollIntoView({behavior:\'smooth\'})">Shop now ›</button></div>';
-    var tr=[['💳','Pay by UPI'],['🚚',(CFG.area==='india'?'All India':'Odisha')+' delivery'],['📦','Bulk discounts'],['📞','Expert support']];
+    var tr=[[sv('card'),'Pay by UPI'],[sv('truck'),(CFG.area==='india'?'All India':'Odisha')+' delivery'],[sv('box'),'Bulk discounts'],[sv('phone'),'Expert support']];
     h+='<div class="trust">'+tr.map(function(x){return '<div><span>'+x[0]+'</span>'+H(x[1])+'</div>'}).join('')+'</div>';
     var cps=(CFG.coupons||[]).filter(function(c){return c.on!==false&&c.show});
-    if(cps.length||N(CFG.freeAbove)>0)h+='<div class="perks">'+cps.map(function(c){return '<div class="perk">🏷️ Use code <b>'+H(c.code)+'</b>: '+(c.type==='flat'?R(c.val):H(c.val)+'%')+' off</div>'}).join('')+(N(CFG.freeAbove)>0?'<div class="perk">🎁 Free delivery above '+R(CFG.freeAbove)+'</div>':'')+'</div>';
+    if(cps.length||N(CFG.freeAbove)>0)h+='<div class="perks">'+cps.map(function(c){return '<div class="perk">'+sv('tag',16)+' Use code <b>'+H(c.code)+'</b>: '+(c.type==='flat'?R(c.val):H(c.val)+'%')+' off</div>'}).join('')+(N(CFG.freeAbove)>0?'<div class="perk">'+sv('gift',16)+' Free delivery above '+R(CFG.freeAbove)+'</div>':'')+'</div>';
   }
-  var icon=function(c){return /wash|shampoo|soap/i.test(c)?'🧼':/polish|compound|wax/i.test(c)?'✨':/machine|pump|steam|jet/i.test(c)?'⚙️':/interior|uphol|leather/i.test(c)?'🛋️':/glass/i.test(c)?'🪟':/tyre|wheel|rim/i.test(c)?'🛞':/spare|part|hose|gun/i.test(c)?'🔧':'🧴'};
-  h+='<div class="catrow"><div class="cat '+(ST.cat==='ALL'?'on':'')+'" onclick="setCat(\'ALL\')"><i>🛍️</i><span>All</span></div>'+(hasC&&hasM?'<div class="cat '+(ST.cat==='__C'?'on':'')+'" onclick="setCat(\'__C\')"><i>🧴</i><span>Chemicals</span></div><div class="cat '+(ST.cat==='__M'?'on':'')+'" onclick="setCat(\'__M\')"><i>⚙️</i><span>Machines</span></div>':'')+cs.map(function(c){return '<div class="cat '+(ST.cat===c?'on':'')+'" onclick="setCat(this.dataset.c)" data-c="'+H(c)+'"><i>'+icon(c)+'</i><span>'+H(c)+'</span></div>'}).join('')+'</div>';
+  var icon=function(c){return sv(/wash|shampoo|soap/i.test(c)?'drop':/polish|compound|wax/i.test(c)?'spark':/machine|pump|steam|jet/i.test(c)?'gear':/interior|uphol|leather/i.test(c)?'sofa':/glass/i.test(c)?'win':/tyre|wheel|rim/i.test(c)?'wheel':/spare|part|hose|gun/i.test(c)?'tool':'drop')};
+  h+='<div class="catrow"><div class="cat '+(ST.cat==='ALL'?'on':'')+'" onclick="setCat(\'ALL\')"><i>'+sv('bag')+'</i><span>All</span></div>'+(hasC&&hasM?'<div class="cat '+(ST.cat==='__C'?'on':'')+'" onclick="setCat(\'__C\')"><i>'+sv('drop')+'</i><span>Chemicals</span></div><div class="cat '+(ST.cat==='__M'?'on':'')+'" onclick="setCat(\'__M\')"><i>'+sv('gear')+'</i><span>Machines</span></div>':'')+cs.map(function(c){return '<div class="cat '+(ST.cat===c?'on':'')+'" onclick="setCat(this.dataset.c)" data-c="'+H(c)+'"><i>'+icon(c)+'</i><span>'+H(c)+'</span></div>'}).join('')+'</div>';
   h+='<div id="plist"></div>';
   app.innerHTML=h;drawList();
 }
@@ -460,10 +553,10 @@ function cfiltered(){
 }
 function catList(){
   seo('Our other products - Car Wash Machines & Equipment | TTESPL Bhubaneswar','Browse car wash machines, equipment and more from Twin Town Express Services, Bhubaneswar. Contact us for best price and discount.',null);
-  app.innerHTML='<button class="back" onclick="history.length>1?history.back():go(\'\')">‹ Back to store</button><div class="sec"><h2>📚 Our other products</h2><small id="ocn"></small></div><div class="card mut" style="text-align:center">Loading…</div>';
+  app.innerHTML='<button class="back" onclick="history.length>1?history.back():go(\'\')">‹ Back to store</button><div class="sec"><h2>Our other products</h2><small id="ocn"></small></div><div class="card mut" style="text-align:center">Loading…</div>';
   loadCat().then(function(){
     var cs={};CL.forEach(function(p){cs[p.c||'Other']=1});cs=Object.keys(cs).sort();
-    app.innerHTML='<button class="back" onclick="history.length>1?history.back():go(\'\')">‹ Back to store</button><div class="sec"><h2>📚 Our other products</h2><small id="ocn"></small></div>'+
+    app.innerHTML='<button class="back" onclick="history.length>1?history.back():go(\'\')">‹ Back to store</button><div class="sec"><h2>Our other products</h2><small id="ocn"></small></div>'+
       '<input class="ocs" id="ocq" placeholder="Search machines &amp; products…" value="'+H(OC.q)+'" oninput="ocSearch(this.value)"><div class="oct">'+['ALL'].concat(cs).map(function(c){return '<span class="'+(OC.c===c?'on':'')+'" data-c="'+H(c)+'" onclick="ocCat(this.dataset.c)">'+(c==='ALL'?'All':H(c))+'</span>'}).join('')+'</div><div id="ocg"></div>'+
       '<div class="card" style="margin-top:12px;text-align:center"><b>Need help choosing?</b><div class="mut small" style="margin:4px 0 10px">For details, best price &amp; discount contact seller</div><a class="btn wa sm" href="https://wa.me/'+dig(CFG.wa||'8093097520')+'" target="_blank" rel="noopener">💬 WhatsApp us</a></div>';
     ocDraw();badge();
@@ -597,7 +690,7 @@ window.PRODS=PRODS;
 load();
 })();
 </script>
-<script src="extras.js?v=445"></script>
+<script src="extras.js?v=447"></script>
 <script>
 /* v44.7 analytics hooks + offline shell */
 (function(){
@@ -612,6 +705,6 @@ load();
   try{if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('firebase-messaging-sw.js').catch(function(){})}catch(e){}
 })();
 </script>
-<script src="dmy.js?v=445"></script>
+<script src="dmy.js?v=447"></script>
 </body>
 </html>

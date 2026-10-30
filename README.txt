@@ -1,3 +1,7 @@
+v45.2 - Store ULTRA PREMIUM look: ivory + ink + champagne-gold theme (dark mode too), Playfair Display headings + Manrope text (Google Fonts), thin line icons instead of emoji, pill buttons, refined product cards, discount pills, luxe footer. Only shop.html changed in design; cache v447.
+
+v45.1 - Store header redesigned: compact minimalist (small logo, TTESPL name, line icons, slim search, one-line top strip).
+
 v45.0 - ONLINE STORE: My Account with only a mobile number (no password / OTP). Cart, wishlist (heart on products) and past orders are saved in the cloud and open on any phone after entering the mobile number; first order creates it automatically. Also FIXES a v44.7 bug where Add to cart / product page could fail on the store. New Firestore doc collection shop_users (rules files updated).
 
 v44.9 - NEW Control Center: tap the Live chip in the header to open a glass panel (Dark mode, Sounds, Vibration, Notifications, Auto backup, Low-stock, Lite mode, Install app, Refresh + shortcuts + recent activity). Compact "Running now" pill under the header shows backup / store update live. Lite mode (no blur) auto-on for weak phones. New files css/16-v44-cp.css, js/45-v44-controlpanel.js.
