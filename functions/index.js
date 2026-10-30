@@ -341,3 +341,22 @@ exports.dailySummary = onSchedule({ schedule: '0 20 * * *', timeZone: 'Asia/Kolk
   const f = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
   await db.collection('app_notifications').doc('DS-' + today).set({ id: 'DS-' + today, title: '📊 Today: ' + f(sales) + ' sales', body: bills + ' bills delivered · collected ' + f(coll) + ' · ' + booked + ' new orders · ' + pend + ' pending deliveries · total dues ' + f(due), type: 'summary', by: 'system', at: Date.now() });
 });
+
+
+/* ===== v44.7: low-stock summary every morning (9 am IST) -> becomes a push notification through pushOnNotification. Needs: firebase deploy --only functions ===== */
+exports.lowStockDaily = onSchedule({ schedule: '0 9 * * *', timeZone: 'Asia/Kolkata', region: 'asia-south1', memory: '256MiB', timeoutSeconds: 120 }, async () => {
+  const db = admin.firestore();
+  const today = new Date(Date.now() + 5.5 * 3600 * 1000).toISOString().slice(0, 10);
+  const snap = await db.collection('inventory').get();
+  const low = [];
+  snap.forEach((d) => {
+    const i = d.data(); if (!i || !i.name || i.category === 'Catalog Equipment' || i.category === 'Machines & Equipment') return;
+    if (i.stock === '' || i.stock == null) return; const s = Number(i.stock); if (!isFinite(s)) return;
+    const lim = Number(i.minStock) > 0 ? Number(i.minStock) : 5;
+    if (s <= lim && !(s <= 0 && !i.code && !i.rate)) low.push({ n: String(i.name), s });
+  });
+  if (!low.length) return;
+  low.sort((a, b) => a.s - b.s);
+  const top = low.slice(0, 8).map((x) => x.n + (x.s <= 0 ? ' (out)' : ' (' + x.s + ')')).join(', ') + (low.length > 8 ? ' +' + (low.length - 8) + ' more' : '');
+  await db.collection('app_notifications').doc('LS-' + today).set({ id: 'LS-' + today, title: '⚠️ ' + low.length + ' items low in stock', body: top, type: 'stock', by: 'Stock alert', timestamp: Date.now() });
+});
