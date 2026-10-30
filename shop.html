@@ -8,7 +8,7 @@
 <link rel="canonical" href="">
 <meta property="og:type" content="website"><meta property="og:title" content="TTESPL Shop - Car Wash Chemicals & Machines"><meta property="og:description" content="Car wash chemicals, detailing products and machines. Bulk discounts, UPI payment, delivery across Odisha.">
 <meta name="theme-color" content="#0b2a4a">
-<link rel="icon" href="assets/shop-icon-192.png"><link rel="apple-touch-icon" href="assets/shop-icon-192.png">
+<link rel="manifest" href="shop.webmanifest"><link rel="icon" href="assets/shop-icon-192.png"><link rel="apple-touch-icon" href="assets/shop-icon-192.png">
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--tx:#0f172a;--mut:#64748b;--line:#e3e9f1;--pri:#0369a1;--pri2:#0ea5e9;--ok:#059669;--bad:#dc2626;--warn:#b45309;--hd:#0b2a4a;--chip:#eaf2fb}
 @media (prefers-color-scheme:dark){:root{--bg:#0a111d;--card:#131c2c;--tx:#e6edf7;--mut:#94a3b8;--line:#243249;--pri:#38bdf8;--pri2:#0ea5e9;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;--hd:#08182b;--chip:#1a2740}}
@@ -417,6 +417,7 @@ window.place=function(){
   var items=qt.rows.map(function(r){return {pid:r.pid,n:r.n,q:r.q,u:r.u,t:r.t}});
   var f=FORM,no=orderNo(OID),o={id:OID,no:no,name:f.name,phone:f.phone,email:f.email||'',addr:f.addr,city:f.city,pin:f.pin,state:f.state||'Odisha',gst:f.gst||'',area:ST.area,note:f.note||'',pay:ST.pay,utr:utr,ij:JSON.stringify(items),sub:qt.sub,cdisc:qt.cdisc,coupon:qt.coupon,ship:qt.ship,total:qt.total,at:new Date().toISOString(),status:'new'};
   fsCreate('shop_orders',OID,o).then(function(){
+    try{ttTrack('purchase',{transaction_id:no,value:qt.total,currency:'INR'})}catch(e){}
     saveProfile();
     hist.unshift({id:OID,no:no,total:qt.total,ts:Date.now(),name:f.name,pay:ST.pay,utr:utr,it:items.map(function(i){return {n:i.n,q:i.q,t:i.t}}),cd:qt.cdisc,sh:qt.ship});ls('TTS_ORD',hist.slice(0,30));
     CART={};saveCart();ST.coupon='';var oid=OID;OID='';
@@ -506,7 +507,7 @@ window.sendEnq=function(id){
   var b=$('eBtn');b.disabled=true;b.textContent='Sending…';
   var eid=newId();
   fsCreate('shop_enquiries',eid,{id:eid,pid:String(id),pn:String(p.n).slice(0,120),name:name.slice(0,80),phone:ph,city:val('e_city').slice(0,60),msg:val('e_msg').slice(0,400),at:new Date().toISOString(),status:'new'}).then(function(){
-    hist.unshift(Date.now());ls('TTS_ENQ',hist.slice(0,20));FORM.name=FORM.name||name;FORM.phone=FORM.phone||ph;FORM.city=FORM.city||val('e_city');saveProfile();
+    hist.unshift(Date.now());ls('TTS_ENQ',hist.slice(0,20));try{ttTrack('generate_lead',{item_name:String(p.n).slice(0,80)})}catch(e){}FORM.name=FORM.name||name;FORM.phone=FORM.phone||ph;FORM.city=FORM.city||val('e_city');saveProfile();
     openSheet(shd('Enquiry sent')+'<div class="card ok-box"><div class="tick">✅</div><h2>Thank you!</h2><p class="mut">Our team will call you on '+H(ph)+' with the best quote for <b>'+H(p.n)+'</b>.</p></div><button class="btn" onclick="closeSheet()">Done</button>');
   }).catch(function(){b.disabled=false;b.textContent='Send enquiry';$('eerr').textContent='Could not send. Check your internet and try again.'});
 };
@@ -545,6 +546,21 @@ window.trackPage=trackPage;
 load();
 })();
 </script>
-<script src="dmy.js?v=440"></script>
+<script src="extras.js?v=444"></script>
+<script>
+/* v44.7 analytics hooks + offline shell */
+(function(){
+  var T=function(n,p){try{window.ttTrack&&ttTrack(n,p)}catch(e){}},seen={};
+  function once(k,f){if(seen[k])return;seen[k]=1;f()}
+  var _chg=window.chg;window.chg=function(id,d){if(d>0&&PRODS[id])T('add_to_cart',{items:[{item_id:String(id),item_name:PRODS[id].n}]});return _chg.apply(this,arguments)};
+  var _p=window.product;window.product=function(id){if(PRODS[id])once('p'+id,function(){T('view_item',{items:[{item_id:String(id),item_name:PRODS[id].n}]})});return _p.apply(this,arguments)};
+  var _cp=window.catProd;window.catProd=function(id){once('c'+id,function(){T('view_item',{items:[{item_id:'c'+id}]})});return _cp.apply(this,arguments)};
+  var _cl=window.catList;window.catList=function(){once('cl',function(){T('view_item_list',{item_list_name:'Our other products'})});return _cl.apply(this,arguments)};
+  var _co=window.checkout;if(_co)window.checkout=function(){once('co',function(){T('begin_checkout')});return _co.apply(this,arguments)};
+  var _os=window.onSearch,st=null;if(_os)window.onSearch=function(v){clearTimeout(st);st=setTimeout(function(){if(String(v||'').trim().length>2)T('search',{search_term:String(v).trim().slice(0,40)})},1200);return _os.apply(this,arguments)};
+  try{if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('firebase-messaging-sw.js').catch(function(){})}catch(e){}
+})();
+</script>
+<script src="dmy.js?v=444"></script>
 </body>
 </html>

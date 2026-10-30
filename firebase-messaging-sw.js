@@ -1,5 +1,5 @@
 /* TTESPL service worker (v42.1): push notifications + offline app shell. One file, one registration. */
-var CACHE = 'ttespl-shell-v440';
+var CACHE = 'ttespl-shell-v444';
 try {
   /* v42.3: same SDK version as the page (12.19.0); if that bundle cannot load, fall back to the old 10.12.2 one */
   try { importScripts('https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/12.19.0/firebase-messaging-compat.js'); }
@@ -32,5 +32,5 @@ function netFirst(r) {
   return (fetch(r.mode === 'navigate' ? r.url : new Request(r, { cache: 'no-cache' }), r.mode === 'navigate' ? { cache: 'no-cache', credentials: 'same-origin' } : undefined).then(function (res) {
     if (res && (res.ok || res.type === 'opaque')) { var c = res.clone(); caches.open(CACHE).then(function (ch) { ch.put(r, c); }).catch(function () {}); }
     return res;
-  }).catch(function () { return caches.match(r, { ignoreSearch: false }).then(function (m) { return m || (r.mode === 'navigate' ? caches.match('index.html') || caches.match('./') : undefined); }); }));
+  }).catch(function () { return caches.match(r, { ignoreSearch: false }).then(function (m) { return m || (r.mode === 'navigate' ? (/shop\.html/.test(r.url) ? caches.match('shop.html') : (caches.match('index.html') || caches.match('./'))) : undefined); }); }));
 }

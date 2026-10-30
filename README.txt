@@ -1,3 +1,9 @@
+v44.9 - NEW Control Center: tap the Live chip in the header to open a glass panel (Dark mode, Sounds, Vibration, Notifications, Auto backup, Low-stock, Lite mode, Install app, Refresh + shortcuts + recent activity). Compact "Running now" pill under the header shows backup / store update live. Lite mode (no blur) auto-on for weak phones. New files css/16-v44-cp.css, js/45-v44-controlpanel.js.
+
+v44.8 - STAFF ACCOUNTS: no self sign-up (Admin adds staff; username = mobile). New 'My Account' (profile menu): employee changes own password / PIN / date of birth. Forgot password: mobile + (PIN or date of birth ddmmyyyy). Add staff has optional date of birth. New file js/44-v44-account.js.
+
+v44.7 - NEW: (1) Google Analytics (extras.js; anonymous events in ERP + store; off per device with ?noga=1). (2) "Install app" pill in ERP and store (shop.webmanifest added; store works offline too). (3) Low-stock alerts: phone warning + push to all staff when an item FALLS to its low level (js/42) + cloud function lowStockDaily (9 am). (4) Automatic daily backups kept on the Admin phone, last 7, restore with preview (js/43; Menu > Auto backups). Needs 'firebase deploy --only functions' for lowStockDaily.
+
 v44.6 - All dates are now SHOWN as dd/mm/yyyy (screen, printed invoices/PDF, customer store). Stored data is unchanged. New file dmy.js (root).
 
 v44.5 - Store: new top section 'Our other products' = every Product Catalog item (description, specs, up to 3 photos you add in ERP, customer MRP only - dealer price never published, 'contact seller for best price' note, Get best price enquiry). ERP: Catalog product > '📷 Website photos' and Online Store settings > '📚 Our other products'. Hide any product with the 'Hide from website' tick. New Firestore collection shop_cat (rules files updated).
