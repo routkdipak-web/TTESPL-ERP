@@ -1,0 +1,78 @@
+/* TTESPL v44.9 - Control Center (glass panel) + live activity pill.
+   Performance rules: only transform / opacity animate on the big panel; the small pill uses contain:layout paint so its size animation never touches the page;
+   one blurred layer at a time; nothing animates while closed; "lite" mode (auto on weak phones, or switch in the panel) removes the blur completely. */
+:root{--cp-spring:cubic-bezier(.2,1.15,.35,1);--cp-ease:cubic-bezier(.22,.9,.3,1)}
+@supports (transition-timing-function:linear(0,1)){:root{--cp-spring:linear(0,.009,.035 2.1%,.141 4.4%,.723 12.9%,.938 16.7%,1.017 19.9%,1.077 23.5%,1.121 27.7%,1.14 32.5%,1.121 37.3%,1.073 43.2%,1.02 49.9%,.998 56.2%,.992 63%,1)}}
+
+/* ---------- header live chip is tappable ---------- */
+.tt-live-pill{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.tt-live-pill::after{content:"›";font-size:10px;font-weight:900;margin-left:2px;opacity:.7;transform:rotate(90deg);display:inline-block}
+
+/* ---------- activity pill (island) ---------- */
+.cpi{position:fixed;left:50%;top:var(--cpi-top,76px);z-index:2500;width:34px;height:34px;border-radius:17px;transform:translateX(-50%) scale(.6);opacity:0;pointer-events:none;visibility:hidden;
+  color:#fff;background:rgba(14,20,34,.82);border:1px solid rgba(255,255,255,.16);box-shadow:0 10px 30px rgba(2,8,23,.35);overflow:hidden;contain:layout paint style;
+  -webkit-backdrop-filter:blur(12px) saturate(1.4);backdrop-filter:blur(12px) saturate(1.4);
+  transition:width .55s var(--cp-spring),height .55s var(--cp-spring),border-radius .55s var(--cp-spring),transform .45s var(--cp-spring),opacity .22s ease,visibility 0s linear .5s}
+.cpi.on{visibility:visible;opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto;transition:width .55s var(--cp-spring),height .55s var(--cp-spring),border-radius .55s var(--cp-spring),transform .45s var(--cp-spring),opacity .22s ease,visibility 0s}
+.cpi.c{width:min(230px,72vw);height:34px;border-radius:17px}
+.cpi.x{width:min(92vw,360px);border-radius:24px}
+.cpi-c,.cpi-x{position:absolute;left:0;right:0;top:0;transition:opacity .2s ease}
+.cpi-c{height:34px;display:flex;align-items:center;gap:8px;padding:0 12px;font:700 12.5px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;white-space:nowrap}
+.cpi-c .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cpi-c .n{background:rgba(255,255,255,.2);border-radius:9px;padding:2px 6px;font-size:11px}
+.cpi-bar{position:absolute;left:12px;right:12px;bottom:3px;height:2px;border-radius:2px;overflow:hidden;background:rgba(255,255,255,.14)}
+.cpi-bar i{display:block;width:40%;height:100%;border-radius:2px;background:linear-gradient(90deg,#38bdf8,#34d399);transform:translateX(-100%);animation:cpiBar 1.4s linear infinite;will-change:transform}
+.cpi.done .cpi-bar i{animation:none;width:100%;transform:none;background:#34d399}
+@keyframes cpiBar{to{transform:translateX(260%)}}
+.cpi-x{opacity:0;pointer-events:none;padding:12px 14px 12px}
+.cpi.x .cpi-x{opacity:1;pointer-events:auto;transition-delay:.12s}.cpi.x .cpi-c{opacity:0;pointer-events:none}
+.cpi-x h4{margin:0 0 8px;font:800 13px/1.2 system-ui,sans-serif;display:flex;justify-content:space-between;align-items:center}
+.cpi-x .r{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid rgba(255,255,255,.1);font:600 12.5px/1.25 system-ui,sans-serif}
+.cpi-x .r b{display:block;font-weight:700}.cpi-x .r small{opacity:.7;font-size:11px;font-weight:500}
+.cpi-x .r .e{margin-left:auto;opacity:.75;font-variant-numeric:tabular-nums;font-size:11.5px}
+.cpi-x .bt{display:flex;gap:8px;margin-top:8px}
+.cpi-x button,.cp-btn{border:0;border-radius:12px;padding:9px 10px;font:800 12.5px system-ui,sans-serif;color:#fff;background:rgba(255,255,255,.16);cursor:pointer;flex:1;-webkit-tap-highlight-color:transparent}
+.cpi-x button.p{background:linear-gradient(135deg,#0ea5e9,#0b5cad)}
+
+/* ---------- control center ---------- */
+.cp{position:fixed;inset:0;z-index:3200;visibility:hidden;pointer-events:none;transition:visibility 0s linear .4s}
+.cp.on{visibility:visible;pointer-events:auto;transition:none}
+.cp-scrim{position:absolute;inset:0;background:rgba(6,12,24,.42);opacity:0;transition:opacity .3s ease}
+.cp.on .cp-scrim{opacity:1}
+.cp-panel{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 8px);width:min(94vw,420px);max-height:calc(100dvh - 24px);overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  border-radius:28px;padding:14px;color:var(--text-main,#0f172a);
+  background:rgba(255,255,255,.66);border:1px solid rgba(255,255,255,.55);box-shadow:0 24px 60px rgba(2,8,23,.35),inset 0 1px 0 rgba(255,255,255,.7);
+  -webkit-backdrop-filter:blur(14px) saturate(1.6);backdrop-filter:blur(14px) saturate(1.6);
+  transform:translate(-50%,-26px) scale(.94);transform-origin:50% 0;opacity:0;transition:transform .35s var(--cp-ease),opacity .2s ease}
+.cp.on .cp-panel{transform:translate(-50%,0) scale(1);opacity:1;transition:transform .55s var(--cp-spring),opacity .2s ease}
+body[data-theme="dark"] .cp-panel{background:rgba(16,22,36,.68);border-color:rgba(255,255,255,.14);color:#f1f5f9;box-shadow:0 24px 60px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08)}
+.cp-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cp-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#0b5cad);color:#fff;font:800 17px/40px system-ui,sans-serif;text-align:center;flex:none}
+.cp-hd b{display:block;font:800 15px/1.2 system-ui,sans-serif}.cp-hd small{opacity:.7;font:600 11.5px system-ui,sans-serif}
+.cp-x{margin-left:auto;width:34px;height:34px;border-radius:50%;border:0;background:rgba(120,130,150,.22);color:inherit;font-size:15px;cursor:pointer}
+.cp-sec{font:800 10.5px/1 system-ui,sans-serif;letter-spacing:.8px;text-transform:uppercase;opacity:.6;margin:12px 4px 7px}
+.cp-g{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.cp-t{position:relative;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:12px;background:rgba(255,255,255,.4);color:inherit;cursor:pointer;font:700 13px/1.2 system-ui,sans-serif;
+  transition:transform .25s var(--cp-spring),background .2s ease,box-shadow .2s ease;-webkit-tap-highlight-color:transparent;min-height:58px}
+body[data-theme="dark"] .cp-t{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1)}
+.cp-t:active{transform:scale(.94)}
+.cp-t i{font-style:normal;font-size:21px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(120,130,150,.2);flex:none;transition:background .2s ease}
+.cp-t small{display:block;font-weight:600;opacity:.65;font-size:11px;margin-top:2px}
+.cp-t.on{background:linear-gradient(135deg,rgba(14,165,233,.3),rgba(11,92,173,.24));border-color:rgba(14,165,233,.5);box-shadow:0 6px 18px rgba(14,165,233,.22)}
+.cp-t.on i{background:linear-gradient(135deg,#0ea5e9,#0b5cad);color:#fff}
+.cp-t .bd{position:absolute;right:10px;top:8px;background:#e11d48;color:#fff;border-radius:10px;padding:1px 6px;font-size:10.5px;font-weight:800}
+.cp-q{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cp-q .cp-t{flex-direction:column;justify-content:center;text-align:center;gap:4px;padding:10px 4px;min-height:68px;font-size:11.5px}
+.cp-q .cp-t i{width:32px;height:32px;font-size:18px}
+.cp-act{border-radius:16px;background:rgba(255,255,255,.34);padding:4px 12px;font:600 12.5px/1.3 system-ui,sans-serif}
+body[data-theme="dark"] .cp-act{background:rgba(255,255,255,.06)}
+.cp-act div{display:flex;gap:8px;align-items:center;padding:7px 0;border-top:1px solid rgba(120,130,150,.2)}.cp-act div:first-child{border-top:0}.cp-act span.e{margin-left:auto;opacity:.6;font-size:11px}
+.cp-ft{margin:10px 4px 2px;font:600 11px system-ui,sans-serif;opacity:.55;display:flex;justify-content:space-between}
+
+/* ---------- lite mode: no blur, no motion extras ---------- */
+.cp-lite .cp-panel{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none}
+.cp-lite[data-theme="dark"] .cp-panel,body[data-theme="dark"].cp-lite .cp-panel{background:#141b2b}
+.cp-lite .cpi{background:#0e1422;-webkit-backdrop-filter:none;backdrop-filter:none}
+.cp-lite .cp-scrim{background:rgba(6,12,24,.55)}
+@media (prefers-reduced-motion:reduce){.cpi,.cpi-c,.cpi-x,.cp-panel,.cp-scrim,.cp-t{transition:none!important}.cpi-bar i{animation:none!important;transform:none;width:60%}}
+@media (prefers-reduced-transparency:reduce){.cp-panel,.cpi{-webkit-backdrop-filter:none;backdrop-filter:none}.cp-panel{background:var(--card,#fff)}}
