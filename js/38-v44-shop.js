@@ -42,7 +42,7 @@
   function publishAll(force) {
     var c = cfg(); if (!c.pub || !cs() || !cs().putPublic) return Promise.resolve({ w: 0, d: 0 });
     if (busy) { dirty = true; return Promise.resolve({ w: 0, d: 0 }); }
-    busy = true; var h = hashes(), want = {}, jobs = [], w = 0, d = 0;
+    busy = true; var h = hashes(), want = {}, jobs = [], w = 0, d = 0; try { window.ttActivity && ttActivity.start('shop', { icon: '🏪', label: 'Updating online store' }); } catch (e) {}
     want['shop_catalog/_cfg'] = JSON.stringify(pubCfg());
     inv().forEach(function (i) { if (i && onl(i).on) want['shop_catalog/p_' + i.id] = JSON.stringify(pubProd(i)); });
     try { if (window.ttShopCatWant) Object.assign(want, ttShopCatWant()); } catch (e) { console.warn('shop cat', e); }
@@ -54,7 +54,7 @@
       if ((k.indexOf('shop_catalog/p_') === 0 || k.indexOf('shop_cat/') === 0) && !want[k]) { var p = k.split('/'); jobs.push(cs().delPublic(p[0], p[1]).then(function () { delete h[k]; d++; })); }
     });
     return Promise.all(jobs.map(function (j) { return j.catch(function (e) { console.warn('shop publish', e); return 'x'; }); })).then(function () {
-      saveHashes(h); busy = false; if (dirty) { dirty = false; sched(); } return { w: w, d: d };
+      saveHashes(h); busy = false; try { window.ttActivity && ttActivity.end('shop'); } catch (e) {} if (dirty) { dirty = false; sched(); } return { w: w, d: d };
     });
   }
   function sched() { clearTimeout(tmr); tmr = setTimeout(function () { publishAll(false); }, 4000); }

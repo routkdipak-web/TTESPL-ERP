@@ -373,6 +373,7 @@
     var fi = document.getElementById('ttxBKf'); if (fi && !fi.__b) { fi.__b = 1; fi.addEventListener('change', function () { var f = fi.files && fi.files[0]; if (f) readFile(f); }); }
   }
   window.ttOpenBackupCentre = bkOpen;
+  window.ttxBackupMake = makeBackup;
   X.hubTiles.push({ mod: 'mBackup', admin: true, icon: '💾', label: 'Backup & Restore', sub: function () { var l = lastBk(); return l ? 'Last ' + X.fmtD(l.slice(0, 10)) : 'No backup yet'; }, fn: bkOpen });
 
   /* ----- validation ----- */
@@ -436,13 +437,19 @@
     var fr = new FileReader(); fr.onerror = function () { X.toast('Could not read that file', 1); };
     fr.onload = function () {
       var obj; try { obj = JSON.parse(fr.result); } catch (e) { return showRestore({ fatal: ['This is not valid JSON — the file is damaged or is not a backup. (' + H(e.message) + ')'], warn: [], sets: {} }, null, f.name); }
-      var R = validate(obj); if (R.fatal.length) return showRestore(R, null, f.name);
-      RS = { R: R, obj: obj, name: f.name, D: {}, pick: {}, mode: 'add' };
-      Object.keys(R.sets).forEach(function (k) { var S = R.sets[k]; if (!S.known || S.fatal) return; RS.D[k] = diffSet(S); RS.pick[k] = RS.D[k].add.length > 0; });
-      showRestore(R, RS, f.name);
+      openObj(obj, f.name);
     };
     fr.readAsText(f);
   }
+  /* v44.7: same preview-and-confirm restore, but from an already-loaded backup object (used by Automatic backups) */
+  function openObj(obj, name) {
+    if (!isAdm()) return X.toast('Only Admin can restore', 1);
+    var R = validate(obj); if (R.fatal.length) return showRestore(R, null, name);
+    RS = { R: R, obj: obj, name: name, D: {}, pick: {}, mode: 'add' };
+    Object.keys(R.sets).forEach(function (k) { var S = R.sets[k]; if (!S.known || S.fatal) return; RS.D[k] = diffSet(S); RS.pick[k] = RS.D[k].add.length > 0; });
+    showRestore(R, RS, name);
+  }
+  window.ttxRestoreObj = openObj;
   function showRestore(R, S, name) {
     var h = '<div class="ttx-note">File: <b>' + H(name) + '</b></div>';
     if (R.fatal.length) h += '<div class="ttx-note bad">❌ <b>Cannot restore this file.</b><ul class="ttx-ul">' + R.fatal.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>';

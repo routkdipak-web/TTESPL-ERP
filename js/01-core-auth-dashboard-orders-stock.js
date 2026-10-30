@@ -998,7 +998,7 @@ window.registeredEmployees = registeredEmployees;
 let currentUser = (function () {
   const u = getStored("SESSION_USER", null);
   if (!u) return null;
-  const c = Object.assign({}, u); delete c.pass; delete c.pin; delete c.passHash; delete c.pinHash;
+  const c = Object.assign({}, u); delete c.pass; delete c.pin; delete c.passHash; delete c.pinHash; delete c.dobHash;
   return c;
 })();
 // Admin check ko case/whitespace ki galti se surakshit banaya (jaise 'admin' ya ' Admin ' register ho gaya ho)
@@ -1301,7 +1301,7 @@ async function ttCheckSecret(user, field, secret) {
   }
   return false;
 }
-function ttPublicUser(u) { if (!u) return null; const c = Object.assign({}, u); delete c.pass; delete c.pin; delete c.passHash; delete c.pinHash; return c; }
+function ttPublicUser(u) { if (!u) return null; const c = Object.assign({}, u); delete c.pass; delete c.pin; delete c.passHash; delete c.pinHash; delete c.dobHash; return c; }
 function ttCleanText(s, max) { return String(s == null ? '' : s).replace(/[<>&"'`\\]/g, '').replace(/\s+/g, ' ').trim().slice(0, max || 60); }
 function ttEscHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 window.ttEscHtml = ttEscHtml;

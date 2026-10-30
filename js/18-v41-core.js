@@ -361,7 +361,7 @@
   window.ttV41.secureOn = secureOn; window.ttV41.baseUrl = baseUrl;
   function whenCloud(ms) { return new Promise(function (res, rej) { var t0 = Date.now(); (function w() { if (window.cloudSync && window.cloudSync.secureSignIn) return res(); if (Date.now() - t0 > (ms || 8000)) return rej(new Error('cloud not ready')); setTimeout(w, 200); })(); }); }
   function applyFlags() {
-    var hide = !F('openRegister') || secureOn();
+    var hide = ((typeof registeredEmployees !== 'undefined' && registeredEmployees) || []).length > 0 || !F('openRegister') || secureOn();
     document.querySelectorAll('[onclick*="showAuthMode(\'register\'"],[onclick*="showAuthMode(\\"register\\""]').forEach(function (e) { e.style.display = hide ? 'none' : ''; });
   }
   (function () {
@@ -467,7 +467,7 @@
     var secureCtx = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     if (!secureCtx) return;
     if (F('offlineApp')) { caches.delete('ttespl-nocache').catch(function () {}); navigator.serviceWorker.register('firebase-messaging-sw.js').catch(function (e) { console.warn('SW', e && e.message); }); }
-    else { caches.open('ttespl-nocache').catch(function () {}); caches.delete('ttespl-shell-v440').catch(function () {}); }
+    else { caches.open('ttespl-nocache').catch(function () {}); caches.delete('ttespl-shell-v444').catch(function () {}); }
   }
   window.addEventListener('load', function () { setTimeout(applyOffline, 1500); });
 
