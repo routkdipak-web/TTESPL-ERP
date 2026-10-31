@@ -163,7 +163,7 @@
       '<div class="ttx-btns"><button class="ttx-b pri" data-a="save" style="flex:1">💾 Save &amp; preview message</button><button class="ttx-b" data-a="cancel">Cancel</button></div>';
     X.sheet(EID, est ? '🔧 Visit report & estimate' : '🏁 Final charges', h, { z: 3950 });
     var upd = function () { readEd(); var t = tot(ED), el = $('svTot'); if (el) el.textContent = (est ? 'Estimated total: ' : 'Total: ') + rs(t.total) + (est ? '' : '   ·   Pending: ' + rs(t.due)); };
-    var box = $(EID); if (box) { box.__upd = upd; if (!box.__svIn) { box.__svIn = 1; box.addEventListener('input', function () { box.__upd && box.__upd(); }); } }
+    var box = $(EID); if (box) { box.__upd = upd; if (!box.__svIn) { box.__svIn = 1; box.addEventListener('input', function (ev) { box.__upd && box.__upd(); var t = ev.target; if (t && t.getAttribute && t.getAttribute('data-k') === 'n') showSg(t); }); box.addEventListener('focusin', function (ev) { var t = ev.target; if (!(t && t.getAttribute && t.getAttribute('data-k') === 'n')) clearSg(); }); } }
     X.bind(EID, { click: {
       add: function () { readEd(); ED.items.push({}); ED.items.push({}); editor(id, mode); },
       cancel: function () { X.close(EID); },
@@ -178,6 +178,37 @@
       }
     } });
     upd();
+  }
+  /* ---------- part / product suggestions (stock items by name or code, any word order) ---------- */
+  function inv() { return (typeof sampleInventory !== 'undefined' && sampleInventory) || []; }
+  function findParts(q) {
+    var toks = String(q || '').toLowerCase().split(/[\s,\-_/()\[\]]+/).filter(Boolean); if (!toks.length) return [];
+    var out = [];
+    inv().forEach(function (p) {
+      var nm = String(p.name || '').toLowerCase(), cd = String(p.code || '').toLowerCase(), hay = nm + ' ' + cd;
+      if (!toks.every(function (t) { return hay.indexOf(t) >= 0; })) return;
+      var sc = (cd === toks[0] ? 0 : cd.indexOf(toks[0]) === 0 ? 1 : nm.indexOf(toks[0]) === 0 ? 2 : 3);
+      out.push({ p: p, sc: sc });
+    });
+    out.sort(function (a, b) { return a.sc - b.sc || String(a.p.name).localeCompare(String(b.p.name)); });
+    return out.slice(0, 8).map(function (x) { return x.p; });
+  }
+  function clearSg() { document.querySelectorAll('#' + EID + ' .sv-sg').forEach(function (e) { e.remove(); }); }
+  function showSg(inp) {
+    clearSg(); var q = inp.value.trim(); if (q.length < 1) return;
+    var ms = findParts(q); if (!ms.length) return;
+    var d = document.createElement('div'); d.className = 'sv-sg'; d.style.cssText = 'border:1px solid var(--border,#d9dee5);border-radius:12px;background:var(--card,#fff);margin:-2px 0 8px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.12)';
+    d.innerHTML = ms.map(function (p, k) {
+      return '<div class="sv-si" data-k="' + k + '" style="display:flex;gap:8px;align-items:center;padding:9px 11px;border-bottom:1px solid var(--border,#eef1f5);cursor:pointer"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;line-height:1.25">' + H(p.name) + '</div><div style="font-size:11px;opacity:.65">Code: ' + H(p.code || 'N/A') + ' · Stock: ' + H(p.stock == null ? 0 : p.stock) + '</div></div><b style="font-size:13px;white-space:nowrap">' + rs(p.rate || 0) + '</b></div>';
+    }).join('');
+    var row = inp.closest('.sv-r'); row.parentNode.insertBefore(d, row.nextSibling);
+    d.__ms = ms; d.__row = row;
+    d.addEventListener('pointerdown', function (ev) {
+      var it = ev.target.closest('.sv-si'); if (!it) return; ev.preventDefault();
+      var pr = d.__ms[+it.getAttribute('data-k')], r = d.__row, n = r.querySelector('[data-k="n"]'), q2 = r.querySelector('[data-k="q"]'), rt = r.querySelector('[data-k="r"]');
+      n.value = pr.name; if (!q2.value) q2.value = 1; if (pr.rate != null) rt.value = pr.rate;
+      clearSg(); rt.dispatchEvent(new Event('input', { bubbles: true })); q2.focus();
+    });
   }
   window.ttOpenServiceCharges = function (id, mode) { ED = null; editor(id, mode || 'bill'); };
 
