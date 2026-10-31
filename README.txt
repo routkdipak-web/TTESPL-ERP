@@ -1,3 +1,5 @@
+v45.3 - SERVICE customer messages + PDF: (1) Request raised - engineer name + mobile + visit date dd/mm/yyyy, (2) Visit report - problem found + products/parts estimate + charges, PDF "Visit Report & Estimate", (3) Service completed - everything installed, service charge, transport, discount, received, balance, warranty note, PDF "Service Bill". Service card: "WhatsApp update" + "Visit report / estimate" / "Final charges" buttons; offered automatically after a new service call and when it is marked Work Completed. New file js/46-v45-service-wa.js.
+
 v45.2 - Store ULTRA PREMIUM look: ivory + ink + champagne-gold theme (dark mode too), Playfair Display headings + Manrope text (Google Fonts), thin line icons instead of emoji, pill buttons, refined product cards, discount pills, luxe footer. Only shop.html changed in design; cache v447.
 
 v45.1 - Store header redesigned: compact minimalist (small logo, TTESPL name, line icons, slim search, one-line top strip).
