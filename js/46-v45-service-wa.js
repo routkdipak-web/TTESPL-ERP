@@ -46,10 +46,18 @@
     return { text: o, t: t };
   }
 
+  function extraLines(s) {
+    var o = '';
+    if (s.serialNo) o += '\n*Machine Serial No.:* ' + s.serialNo;
+    if (s.installDate) o += '\n*Installation date:* ' + dmy(s.installDate);
+    if (s.prevServiceDate) o += '\n*Previous service:* ' + dmy(s.prevServiceDate);
+    return o;
+  }
   /* ---------- message text ---------- */
   function build(s, type) {
     var hi = 'Dear ' + (s.customerName || 'Customer') + ',\n\n', e = eng(s), est = s.est || {}, bill = s.bill || {};
     var head = '*Request ID:* ' + s.id + (s.machine ? '\n*Machine:* ' + s.machine : '');
+    var headX = head + extraLines(s);
     if (type === 'raised') {
       return hi + '✅ *Your service request has been raised!*\n\n' + head + (s.problem ? '\n*Issue reported:* ' + s.problem : '') + '\n*Request date:* ' + dmy(s.recvDate) +
         '\n\n👨‍🔧 Our service engineer *' + e.name + '*' + (e.mob ? ' (Mob: +91 ' + e.mob + ')' : '') + ' will visit you on *' + dmy(s.targetDate) + '*.' +
@@ -57,13 +65,13 @@
     }
     if (type === 'visit') {
       var c = costBlock(est, 'Products / parts required (estimate)'), tt = c.t, vis = N(est.visit);
-      return hi + '🔧 *Service visit report*\n\n' + head + '\n*Visited by:* ' + e.name + (e.mob ? ' (+91 ' + e.mob + ')' : '') + '\n*Visit date:* ' + dmy(est.date || s.targetDate) +
+      return hi + '🔧 *Service visit report*\n\n' + headX + '\n*Visited by:* ' + e.name + (e.mob ? ' (+91 ' + e.mob + ')' : '') + '\n*Visit date:* ' + dmy(est.date || s.targetDate) +
         '\n\n*Problem found:* ' + (est.problem || (s.report && s.report.cause) || s.problem || '-') + (est.advice ? '\n*Work advised:* ' + est.advice : '') + '\n\n' +
         (hasAmt(est) ? c.text + '*Estimated total:* ' + rs(tt.total) + '\n\nPlease confirm to proceed with the work.' : 'We will share the estimate shortly.') + '\n\n' + SIGN;
     }
     /* done */
     var c2 = costBlock(bill, 'Products / parts installed'), t2 = c2.t, used = (!lines(bill.items).length && s.partUsed) ? '*Part used:* ' + s.partUsed + ' × ' + (s.partQty || 1) + '\n' : '';
-    return hi + '✅ *Your service is completed!*\n\n' + head + '\n*Serviced by:* ' + e.name + '\n*Completed on:* ' + dmy(bill.date || (s.report && s.report.date) || s.targetDate) +
+    return hi + '✅ *Your service is completed!*\n\n' + headX + '\n*Serviced by:* ' + e.name + '\n*Completed on:* ' + dmy(bill.date || (s.report && s.report.date) || s.targetDate) +
       '\n\n*Work done:* ' + (s.actionDone || (s.report && s.report.actionTaken) || '-') + '\n' + used + (hasAmt(bill) ? '\n' + c2.text + '─────────────\n*Total amount:* ' + rs(t2.total) + '\n' +
         (t2.recv > 0 ? '💵 *Received:* ' + rs(t2.recv) + (bill.mode ? ' (' + bill.mode + ')' : '') + '\n' : '') + (t2.due > 0.009 ? '⏳ *Pending:* ' + rs(t2.due) : '✅ *Balance:* Nil – fully paid') + '\n' : '') +
       (bill.warranty ? '\n🛡️ *Warranty / note:* ' + bill.warranty + '\n' : '') + '\nThank you for choosing us. We are always at your service.\n\n' + SIGN;
@@ -83,6 +91,7 @@
       '<table style="width:100%;font-size:13px;line-height:1.7"><tr><td><b>Request ID:</b> ' + H(s.id) + '</td><td style="text-align:right"><b>Date:</b> ' + dmy(kind === 'bill' ? (bill.date || (s.report && s.report.date) || s.targetDate) : (est.date || s.targetDate)) + '</td></tr>' +
       '<tr><td colspan="2"><b>Customer:</b> ' + H(s.customerName || '') + (s.phone ? ' (' + H(s.phone) + ')' : '') + '</td></tr>' +
       '<tr><td colspan="2"><b>Machine:</b> ' + H(s.machine || '-') + '</td></tr>' +
+      (s.serialNo ? '<tr><td colspan="2"><b>Machine Serial No.:</b> ' + H(s.serialNo) + '</td></tr>' : '') + (s.installDate ? '<tr><td colspan="2"><b>Installation date:</b> ' + dmy(s.installDate) + '</td></tr>' : '') + (s.prevServiceDate ? '<tr><td colspan="2"><b>Previous service date:</b> ' + dmy(s.prevServiceDate) + '</td></tr>' : '') +
       '<tr><td colspan="2"><b>Service engineer:</b> ' + H(e.name) + (e.mob ? ' (+91 ' + e.mob + ')' : '') + '</td></tr>' +
       '<tr><td colspan="2"><b>' + (kind === 'bill' ? 'Work done' : 'Problem found') + ':</b> ' + H(prob || '-') + '</td></tr>' +
       (kind !== 'bill' && est.advice ? '<tr><td colspan="2"><b>Work advised:</b> ' + H(est.advice) + '</td></tr>' : '') + '</table>' +
@@ -206,7 +215,7 @@
     d.addEventListener('pointerdown', function (ev) {
       var it = ev.target.closest('.sv-si'); if (!it) return; ev.preventDefault();
       var pr = d.__ms[+it.getAttribute('data-k')], r = d.__row, n = r.querySelector('[data-k="n"]'), q2 = r.querySelector('[data-k="q"]'), rt = r.querySelector('[data-k="r"]');
-      n.value = pr.name; if (!q2.value) q2.value = 1; if (pr.rate != null) rt.value = pr.rate;
+      n.value = (pr.code && String(pr.name).indexOf(String(pr.code)) < 0) ? pr.code + ' - ' + pr.name : pr.name; if (!q2.value) q2.value = 1; if (pr.rate != null) rt.value = pr.rate;
       clearSg(); rt.dispatchEvent(new Event('input', { bubbles: true })); q2.focus();
     });
   }
@@ -235,10 +244,11 @@
   function wrapSave() {
     var o = window.saveServiceAction; if (typeof o !== 'function' || o.__sv) return;
     var w = function () {
-      var editId = ($('editServiceId') || {}).value, was = editId && svc(editId) && svc(editId).status, st = ($('srvStatusSelect') || {}).value, n0 = svcs().length, r = o.apply(this, arguments);
+      var xf = { serialNo: (($('srvSerialNo') || {}).value || '').trim(), installDate: ($('srvInstallDate') || {}).value || '', prevServiceDate: ($('srvPrevServiceDate') || {}).value || '' }; var editId = ($('editServiceId') || {}).value, was = editId && svc(editId) && svc(editId).status, st = ($('srvStatusSelect') || {}).value, n0 = svcs().length, r = o.apply(this, arguments);
       try {
         var rec = editId ? svc(editId) : svcs()[0], isNew = !editId && svcs().length > n0;
         if (rec) {
+          rec.serialNo = xf.serialNo; rec.installDate = xf.installDate; rec.prevServiceDate = xf.prevServiceDate; try { setStored('SERVICES', serviceCallsData); } catch (e2) {}
           if (isNew) setTimeout(function () { open(rec.id, 'raised'); }, 500);
           else if (st === 'Work Completed' && was !== 'Work Completed') setTimeout(function () { editor(rec.id, 'bill'); }, 900);
         }
@@ -246,7 +256,15 @@
       return r;
     }; w.__sv = 1; window.saveServiceAction = w; try { saveServiceAction = w; } catch (e) {}
   }
-  function all() { wrapSave(); watch(); }
+  function wrapOpen() {
+    var o = window.openServiceCallModal; if (typeof o !== 'function' || o.__sv) return;
+    var w = function (srv) {
+      var r = o.apply(this, arguments);
+      try { var set = function (id, v) { var e = $(id); if (e) e.value = v || ''; }; set('srvSerialNo', srv && srv.serialNo); set('srvInstallDate', srv && srv.installDate); set('srvPrevServiceDate', srv && srv.prevServiceDate); } catch (e) {}
+      return r;
+    }; w.__sv = 1; window.openServiceCallModal = w; try { openServiceCallModal = w; } catch (e) {}
+  }
+  function all() { wrapSave(); wrapOpen(); watch(); }
   all(); document.addEventListener('DOMContentLoaded', all); setTimeout(all, 1500);
   if (X.hubTiles) { /* no hub tile needed */ }
 })();
