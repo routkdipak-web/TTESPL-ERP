@@ -77,24 +77,36 @@
     if (recv > 0) return '💵 *Payment received:* ' + rs(recv) + '\n⏳ *Pending:* ' + rs(due);
     return '⏳ *Payment due:* ' + rs(due);
   }
-  function itemsBlock(o, withAmt) {
-    var it = (o.items || []).map(function (i, k) { return (k + 1) + '. ' + i.name + ' × ' + i.qty + (withAmt && N(i.total) ? ' – ' + rs(i.total) : ''); });
-    return '*Items:*\n' + (it.join('\n') || '-');
+  function partCode(i) {
+    try { var inv0 = (typeof sampleInventory !== 'undefined' && sampleInventory) || [], p = inv0.filter(function (x) { return String(x.id) === String(i.id); })[0]; return p && p.code ? String(p.code) : (i.code ? String(i.code) : ''); } catch (e) { return ''; }
+  }
+  /* full line: name + part code, MRP, discount %, rate after discount, qty x rate = amount */
+  function itemsBlock(o) {
+    var it = (o.items || []).map(function (i, k) {
+      var q = N(i.qty), rate = N(i.rate), mrp = N(i.mrp), disc = N(i.disc), amt = N(i.total) || R2(q * rate), code = partCode(i);
+      if (!(disc > 0) && mrp > 0 && rate > 0 && rate < mrp) disc = R2((1 - rate / mrp) * 100);
+      var l1 = (k + 1) + '. *' + i.name + '*' + (code && String(i.name).indexOf(code) < 0 ? '\n    Part Code: ' + code : '');
+      var l2 = []; if (mrp > 0) l2.push('MRP ' + rs(mrp)); if (disc > 0) l2.push('Disc ' + (Math.round(disc * 100) / 100) + '%'); if (rate > 0) l2.push('Rate ' + rs(rate));
+      var l3 = rate > 0 ? rs(rate) + ' × ' + q + ' = *' + rs(amt) + '*' : 'Qty ' + q + (amt ? ' = *' + rs(amt) + '*' : '');
+      return l1 + (l2.length ? '\n    ' + l2.join(' | ') : '') + '\n    ' + l3;
+    });
+    var cc = N(o.courierCharge);
+    return '*Items:*\n' + (it.join('\n') || '-') + (cc > 0 ? '\n\n*Transport charges - ' + rs(cc) + '*' : '');
   }
   function build(o, type, ex) {
     ex = ex || {}; var hi = 'Dear ' + (o.customerName || 'Customer') + ',\n\n', cc = N(o.courierCharge), due = Math.max(0, R2(N(o.totalAmount) - N(o.recvAmount)));
     var ordLine = '*Order ID:* ' + o.id;
     if (type === 'placed') {
-      return hi + '✅ *Your order has been placed!*\n\n' + ordLine + '\n' + itemsBlock(o, true) + '\n' + (cc > 0 ? '*Courier / Transport charges:* ' + rs(cc) + '\n' : '') +
+      return hi + '✅ *Your order has been placed!*\n\n' + ordLine + '\n' + itemsBlock(o) + '\n\n' +
         '*Total Amount:* ' + rs(o.totalAmount) + '\n' + payLine(o) + '\n\nYour order will be delivered soon. When it is out for delivery, we will inform you.\n\n' + SIGN;
     }
     if (type === 'dispatch') {
-      return hi + '🚚 *Your order is out for delivery!*\n\n' + ordLine + '\n' + itemsBlock(o, false) + '\n*Total Amount:* ' + rs(o.totalAmount) + '\n' + payLine(o) +
+      return hi + '🚚 *Your order is out for delivery!*\n\n' + ordLine + '\n' + itemsBlock(o) + '\n*Total Amount:* ' + rs(o.totalAmount) + '\n' + payLine(o) +
         (due > 0 ? '\n\nPlease keep the pending amount ready at the time of delivery.' : '') + '\n\n' + SIGN;
     }
     if (type === 'delivered') {
       var invNo = inv(o);
-      return hi + '📦 *Your order has been delivered!*\n\n' + ordLine + (invNo && invNo !== o.id ? '\n*Invoice No:* ' + invNo : '') + '\n' + itemsBlock(o, false) + '\n*Total Amount:* ' + rs(o.totalAmount) + '\n' +
+      return hi + '📦 *Your order has been delivered!*\n\n' + ordLine + (invNo && invNo !== o.id ? '\n*Invoice No:* ' + invNo : '') + '\n' + itemsBlock(o) + '\n*Total Amount:* ' + rs(o.totalAmount) + '\n' +
         (N(ex.paidNow) > 0 ? '💰 *Payment received now:* ' + rs(ex.paidNow) + (ex.mode ? ' (' + ex.mode + ')' : '') + '\n' : '') + payLine(o) + '\n\nWe look forward to serving you again.\n\n' + SIGN;
     }
     /* payment */
